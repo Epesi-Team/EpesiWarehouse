@@ -39,6 +39,11 @@ class Premium_Warehouse_InventoryItemsCommon extends ModuleCommon {
 		return array('Warehouse'=>array('__submenu__'=>1,'Inventory Items'=>array()));
 	}
 
+	public static function generate_id($id) {
+		if (is_array($id)) $id = $id['id'];
+		return '#'.str_pad($id, 6, '0', STR_PAD_LEFT);
+	}
+
 	public static function applet_caption() {
 		return 'Inventory Items';
 	}

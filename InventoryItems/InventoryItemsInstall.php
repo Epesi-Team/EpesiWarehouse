@@ -16,9 +16,18 @@ class Premium_Warehouse_InventoryItemsInstall extends ModuleInstall {
 		
 		Base_ThemeCommon::install_default_theme($this->get_type());
 		$fields = array(
-			array('name'=>'Item Name', 'type'=>'text', 'required'=>true, 'param'=>'128', 'extra'=>false, 'visible'=>true,'display_callback'=>array('Premium_Warehouse_InventoryItemsCommon', 'display_item_name')),
-			array('name'=>'Quantity', 'type'=>'integer', 'required'=>true, 'extra'=>false, 'visible'=>true),
-			array('name'=>'Description', 'type'=>'long text', 'required'=>false, 'param'=>'255', 'extra'=>false)
+			array('name'=>'SKU', 			'type'=>'calculated', 'required'=>false, 'param'=>'VARCHAR(16)', 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_InventoryItemsCommon','display_sku_id')),
+			array('name'=>'Item Name', 		'type'=>'text', 'required'=>true, 'param'=>'128', 'extra'=>false, 'visible'=>true,'display_callback'=>array('Premium_Warehouse_InventoryItemsCommon', 'display_item_name')),
+			array('name'=>'Product Code', 	'type'=>'text', 'required'=>false, 'param'=>'32', 'extra'=>false, 'visible'=>true),
+			array('name'=>'UPC', 			'type'=>'text', 'required'=>false, 'param'=>'12', 'extra'=>false, 'visible'=>true),
+			array('name'=>'Manufacturer parts number', 'type'=>'text', 'required'=>false, 'param'=>'32', 'extra'=>false, 'visible'=>true),
+			array('name'=>'Sales Price', 	'type'=>'currency', 'required'=>false, 'extra'=>false, 'visible'=>true),
+			array('name'=>'Cost', 			'type'=>'currency', 'required'=>false, 'extra'=>false, 'visible'=>true),
+			array('name'=>'Tax', 			'type'=>'select', 'required'=>true, 'extra'=>false, 'visible'=>true, 'param'=>'__COMMON__::Premium_InventoryItems_Tax'),
+			array('name'=>'Quantity', 		'type'=>'integer', 'required'=>true, 'extra'=>false, 'visible'=>true),
+			array('name'=>'Reorder point', 	'type'=>'integer', 'required'=>true, 'extra'=>false, 'visible'=>false), // TODO: default: 0
+			array('name'=>'Vendor',		 	'type'=>'select', 'required'=>false, 'extra'=>false, 'visible'=>false), // TODO: Set params - vendor companies
+			array('name'=>'Description', 	'type'=>'long text', 'required'=>false, 'param'=>'255', 'extra'=>false)
 		);
 
 		Utils_RecordBrowserCommon::install_new_recordset('premium_inventoryitems', $fields);

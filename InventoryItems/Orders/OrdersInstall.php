@@ -39,7 +39,7 @@ class Premium_Warehouse_InventoryItems_OrdersInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::new_addon('premium_inventoryitems_orders', 'Premium/Warehouse/InventoryItems/Orders', 'attachment_addon', 'Notes');
 
 // ************ other ************** //
-		Utils_CommonDataCommon::new_array('Premium_InventoryItems_Orders',array(0=>'Input',1=>'Output',2=>'Difference'));
+		Utils_CommonDataCommon::new_array('Premium_InventoryItems_Orders',array(0=>'Purchase',1=>'Sale',2=>'Inventory Adjustment'));
 	
 		$this->add_aco('browse orders',array('Employee'));
 		$this->add_aco('view orders',array('Employee'));

@@ -77,11 +77,6 @@ class Premium_Warehouse_InventoryItems_OrdersCommon extends ModuleCommon {
 		return array();
 	}
 
-	public static function generate_id($id) {
-		if (is_array($id)) $id = $id['id'];
-		return '#'.str_pad($id, 5, '0', STR_PAD_LEFT);
-	}
-
 	public static function watchdog_label($rid = null, $events = array()) {
 		return Utils_RecordBrowserCommon::watchdog_label(
 				'premium_inventoryitems_orders',
