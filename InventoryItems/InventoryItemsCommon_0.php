@@ -18,10 +18,22 @@ class Premium_Warehouse_InventoryItemsCommon extends ModuleCommon {
     		return Utils_RecordBrowserCommon::get_records('premium_inventoryitems', $crits, $cols);
 	}
 
+	public static function vendors_crits() {
+		return array('group'=>'vendor');
+	}
+	
+	public static function employee_crits() {
+		return array('group'=>'office');
+	}
+
     public static function display_item_name($v, $nolink=false) {
 		return Utils_RecordBrowserCommon::create_linked_label_r('premium_inventoryitems', 'Item Name', $v, $nolink);
 	}
-
+	
+	public static function display_sku($r, $nolink) {
+		return Utils_RecordBrowserCommon::create_linked_label_r('premium_inventoryitems', 'SKU', $r, $nolink);
+	}
+	
 	public static function access_inventoryitems($action, $param){
 		$i = self::Instance();
 		switch ($action) {
@@ -66,6 +78,24 @@ class Premium_Warehouse_InventoryItemsCommon extends ModuleCommon {
 				$events,
 				'item_name'
 			);
+	}
+	
+	public static function submit_invitem($values, $mode) {
+		switch ($mode) {
+			case 'delete':
+				return;
+			case 'restore':
+				return;
+			case 'add':
+				return $values;
+			case 'view':
+				return;
+			case 'edit':
+			case 'added':
+				$values['sku'] = self::generate_id($values['id']);
+				Utils_RecordBrowserCommon::update_record('premium_inventoryitems',$values['id'],array('sku'=>$values['sku']), false, null, true);
+		}
+		return $values;
 	}
 	
 }

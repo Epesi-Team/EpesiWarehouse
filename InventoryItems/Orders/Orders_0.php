@@ -53,10 +53,26 @@ class Premium_Warehouse_InventoryItems_Orders extends Module {
 		$opts['actions'][] = Utils_RecordBrowserCommon::applet_new_record_button('premium_inventoryitems_orders',array());
 		$this->display_module($rb, $conds, 'mini_view');
 	}
+	
+	public function transaction_history_addon($arg){
+		// TODO: order by created_on (/sign, dammit...)
+		// Add button? Add what? Order or Details? (/sign, dammit...)
+		$rb = $this->init_module('Utils/RecordBrowser','premium_inventoryitems_orders_details');
+		$order = array(array('item_sku'=>$arg['id']), array('item_sku'=>false), array());
+		$rb->set_defaults(array('item_sku'=>$arg['id']));
+		$this->display_module($rb,$order,'show_data');
+	}
+
+	public function order_details_addon($arg){
+		$rb = $this->init_module('Utils/RecordBrowser','premium_inventoryitems_orders_details');
+		$order = array(array('order_id'=>$arg['id']), array('order_id'=>false), array());
+		$rb->set_defaults(array('order_id'=>$arg['id']));
+		$this->display_module($rb,$order,'show_data');
+	}
 
 	public function attachment_addon($arg){
 		$a = $this->init_module('Utils/Attachment',array($arg['id'],'Premium/Warehouse/InventoryItems/Orders/'.$arg['id']));
-		$a->additional_header('Item: '.$arg['item']); // Field is 'Project Name' but it is converted to lowercase and spec replaced with '_'
+		$a->additional_header('Order ID: '.$arg['order_id']); // Field is 'Project Name' but it is converted to lowercase and spec replaced with '_'
 		$a->allow_protected($this->acl_check('view protected notes'),$this->acl_check('edit protected notes'));
 		$a->allow_public($this->acl_check('view public notes'),$this->acl_check('edit public notes'));
 		$this->display_module($a);
