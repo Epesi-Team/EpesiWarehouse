@@ -27,7 +27,7 @@ class Premium_Warehouse_InventoryItemsInstall extends ModuleInstall {
 			array('name'=>'Quantity', 		'type'=>'integer', 'required'=>true, 'extra'=>false, 'visible'=>true),
 			// TODO: What about it? 0 or something? If something then what about the order?
 			array('name'=>'Reorder point', 	'type'=>'integer', 'required'=>true, 'extra'=>false, 'visible'=>false), // TODO: default: 0
-			array('name'=>'Vendor',		 	'type'=>'crm_company', 'required'=>false, 'extra'=>false, 'visible'=>false, 'param'=>array('field_type'=>'select','crits'=>array('Premium_Warehouse_InventoryItemsCommon','vendors_crits'))), // TODO: Set params - vendor companies
+			array('name'=>'Vendor',		 	'type'=>'crm_company', 'required'=>false, 'extra'=>false, 'visible'=>false, 'param'=>array('field_type'=>'select','crits'=>array('Premium_Warehouse_InventoryItemsCommon','vendors_crits'))),
 			array('name'=>'Description', 	'type'=>'long text', 'required'=>false, 'param'=>'255', 'extra'=>false)
 		);
 

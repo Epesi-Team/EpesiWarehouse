@@ -22,7 +22,7 @@ class Premium_Warehouse_InventoryItems_OrdersInstall extends ModuleInstall {
 			array('name'=>'Employee', 		'type'=>'crm_contact', 'param'=>array('field_type'=>'select','crits'=>array('Premium_Warehouse_InventoryItemsCommon','employee_crits')), 'required'=>true, 'extra'=>false, 'visible'=>true),
 			array('name'=>'Transaction Date','type'=>'date', 'required'=>true, 'extra'=>false, 'visible'=>true),
 			array('name'=>'Transaction Type','type'=>'select', 'required'=>true, 'extra'=>false, 'visible'=>true, 'param'=>'__COMMON__::Premium_InventoryItems_Orders_Trans_Types'),
-// TODO: separate tab?
+// TODO: separate tab
 // TODO: company and contact as chained select? Perhaps just to fill other fields?
 			array('name'=>'Company Name', 	'type'=>'text', 'param'=>'64', 'required'=>false, 'extra'=>false, 'visible'=>false),
 			array('name'=>'Last Name', 		'type'=>'text', 'param'=>'64', 'required'=>false, 'extra'=>false, 'visible'=>false),
@@ -33,16 +33,13 @@ class Premium_Warehouse_InventoryItems_OrdersInstall extends ModuleInstall {
 			array('name'=>'Country',		'type'=>'commondata', 'required'=>true, 'param'=>array('Countries'), 'extra'=>false, 'QFfield_callback'=>array('Data_CountriesCommon', 'QFfield_country')),
 			array('name'=>'Zone',			'type'=>'commondata', 'required'=>false, 'param'=>array('Countries','Country'), 'extra'=>false, 'visible'=>true, 'QFfield_callback'=>array('Data_CountriesCommon', 'QFfield_zone')),
 			array('name'=>'Postal Code',	'type'=>'text', 'param'=>'64', 'required'=>false, 'extra'=>false, 'visible'=>false),
-// TODO: which one to pick?			
+// TODO: which one to pick? (Company or Work Phone)
 			array('name'=>'Phone',	 		'type'=>'text', 'param'=>'64', 'required'=>false, 'extra'=>false, 'visible'=>false),
-
-// Payment/Shipment type - eCommerce only?
 			array('name'=>'Payment Type', 	'type'=>'select', 'param'=>'__COMMON__::Premium_InventoryItems_Orders_Payment_Types', 'required'=>false, 'extra'=>false, 'visible'=>false),
 			array('name'=>'Payment No', 	'type'=>'text', 'param'=>'64', 'required'=>false, 'extra'=>false, 'visible'=>false),
 			array('name'=>'Shipment Type', 	'type'=>'select', 'param'=>'__COMMON__::Premium_InventoryItems_Orders_Shipment_Types', 'required'=>false, 'extra'=>false, 'visible'=>false),
 			array('name'=>'Shipment No',	'type'=>'text', 'param'=>'64', 'required'=>false, 'extra'=>false, 'visible'=>false),
-// Terms?			
-//			array('name'=>'Terms',			'type'=>'date', 'required'=>true, 'extra'=>false, 'visible'=>true),			
+			array('name'=>'Terms',			'type'=>'select', 'param'=>'__COMMON__::Premium_InventoryItems_Orders_Terms', 'required'=>true, 'extra'=>false, 'visible'=>true),
 			array('name'=>'Paid',			'type'=>'checkbox', 'extra'=>false, 'visible'=>true),
 			array('name'=>'Delivered',		'type'=>'checkbox', 'extra'=>false, 'visible'=>true),
 
@@ -61,13 +58,17 @@ class Premium_Warehouse_InventoryItems_OrdersInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::set_processing_method('premium_inventoryitems_orders', array('Premium_Warehouse_InventoryItems_OrdersCommon', 'submit_order'));
 			
 		$fields = array(
-// TODO: Advanced?
-			array('name'=>'Order ID', 	'type'=>'select', 'required'=>true, 'param'=>'premium_inventoryitems_orders::Order ID;Premium_Warehouse_InventoryItems_OrdersCommon::orders_crits', 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_InventoryItems_OrdersCommon', 'display_order_id_in_details')),
-			array('name'=>'Item SKU', 	'type'=>'select', 'required'=>true, 'param'=>'premium_inventoryitems::Item Name;Premium_Warehouse_InventoryItems_OrdersCommon::items_crits', 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_InventoryItems_OrdersCommon', 'display_item_name')),
-			array('name'=>'Quantity', 	'type'=>'integer', 'required'=>true, 'extra'=>false, 'visible'=>true),
-			array('name'=>'Price', 		'type'=>'currency', 'required'=>true, 'extra'=>false, 'visible'=>true),
-			array('name'=>'Total', 		'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>true),
-			array('name'=>'Description','type'=>'long text', 'required'=>false, 'param'=>'255', 'extra'=>false)
+// TODO: Order ID Freezed
+			array('name'=>'Order ID', 			'type'=>'select', 'required'=>true, 'param'=>'premium_inventoryitems_orders::Order ID;Premium_Warehouse_InventoryItems_OrdersCommon::orders_crits', 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_InventoryItems_OrdersCommon', 'display_order_id_in_details')),
+			array('name'=>'Item SKU', 			'type'=>'select', 'required'=>true, 'param'=>'premium_inventoryitems::Item Name;Premium_Warehouse_InventoryItems_OrdersCommon::items_crits', 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_InventoryItems_OrdersCommon', 'display_item_name')),
+// TODO: autofill
+			array('name'=>'Item Name', 			'type'=>'text', 'required'=>true, 'param'=>'premium_inventoryitems::Item Name;Premium_Warehouse_InventoryItems_OrdersCommon::items_crits', 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_InventoryItems_OrdersCommon', 'display_item_name')),
+			array('name'=>'Quantity/Serial (2 fields)','type'=>'integer', 'required'=>true, 'extra'=>false, 'visible'=>true),
+			array('name'=>'Price', 				'type'=>'currency', 'required'=>true, 'extra'=>false, 'visible'=>true),
+// TODO: autofill
+			array('name'=>'Tax', 				'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>true),
+			array('name'=>'Total', 				'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>true),
+			array('name'=>'Quantity On Hand/Available',	'type'=>'integer', 'required'=>true, 'extra'=>false, 'visible'=>true),
 		);
 
 		Utils_RecordBrowserCommon::install_new_recordset('premium_inventoryitems_orders_details', $fields);
@@ -92,6 +93,7 @@ class Premium_Warehouse_InventoryItems_OrdersInstall extends ModuleInstall {
 		Utils_CommonDataCommon::new_array('Premium_InventoryItems_Orders_Trans_Types',array(0=>'Purchase',1=>'Sale',2=>'Inventory Adjustment'));
 		Utils_CommonDataCommon::new_array('Premium_InventoryItems_Orders_Payment_Types',array(0=>'Cash',1=>'Check'));
 		Utils_CommonDataCommon::new_array('Premium_InventoryItems_Orders_Shipment_Types',array(0=>'Acceptance',1=>'Mail delivery'));
+		Utils_CommonDataCommon::new_array('Premium_InventoryItems_Orders_Terms',array(0=>'Due on Receipt',15=>'Net 15',30=>'Net 30'));
 	
 		$this->add_aco('browse orders',array('Employee'));
 		$this->add_aco('view orders',array('Employee'));
