@@ -18,16 +18,16 @@ class Premium_Warehouse_ItemsInstall extends ModuleInstall {
 		$fields = array(
 			array('name'=>'SKU', 			'type'=>'calculated', 'required'=>false, 'param'=>'VARCHAR(16)', 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_ItemsCommon','display_sku')),
 			array('name'=>'Item Name', 		'type'=>'text', 'required'=>true, 'param'=>'128', 'extra'=>false, 'visible'=>true,'display_callback'=>array('Premium_Warehouse_ItemsCommon', 'display_item_name')),
-			array('name'=>'Product Code', 	'type'=>'text', 'required'=>false, 'param'=>'32', 'extra'=>false, 'visible'=>true),
+			array('name'=>'Product Code', 	'type'=>'text', 'required'=>false, 'param'=>'32', 'extra'=>false, 'visible'=>false),
 			array('name'=>'UPC', 			'type'=>'text', 'required'=>false, 'param'=>'12', 'extra'=>false, 'visible'=>true),
-			array('name'=>'Manufacturer parts number', 'type'=>'text', 'required'=>false, 'param'=>'32', 'extra'=>false, 'visible'=>true),
-			array('name'=>'Sales Price', 	'type'=>'currency', 'required'=>false, 'extra'=>false, 'visible'=>true),
-			array('name'=>'Cost', 			'type'=>'currency', 'required'=>false, 'extra'=>false, 'visible'=>true),
+			array('name'=>'Manufacturer Part Number', 'type'=>'text', 'required'=>false, 'param'=>'32', 'extra'=>false, 'visible'=>true),
+			array('name'=>'Net Price', 	'type'=>'currency', 'required'=>false, 'extra'=>false, 'visible'=>true),
+			array('name'=>'Cost', 			'type'=>'currency', 'required'=>false, 'extra'=>false, 'visible'=>false),
 			array('name'=>'Tax', 			'type'=>'select', 'required'=>true, 'extra'=>false, 'visible'=>true, 'param'=>'__COMMON__::Premium_Warehouse_Items_Tax'),
 			array('name'=>'Quantity', 		'type'=>'integer', 'required'=>true, 'extra'=>false, 'visible'=>true),
 			// TODO: What about it? 0 or something? If something then what about the order?
 			array('name'=>'Reorder point', 	'type'=>'integer', 'required'=>true, 'extra'=>false, 'visible'=>false), // TODO: default: 0
-			array('name'=>'Vendor',		 	'type'=>'crm_company', 'required'=>false, 'extra'=>false, 'visible'=>false, 'param'=>array('field_type'=>'select','crits'=>array('Premium_Warehouse_ItemsCommon','vendors_crits'))),
+			array('name'=>'Vendor',		 	'type'=>'crm_company', 'required'=>false, 'extra'=>false, 'visible'=>true, 'param'=>array('field_type'=>'select','crits'=>array('Premium_Warehouse_ItemsCommon','vendors_crits'))),
 			array('name'=>'Description', 	'type'=>'long text', 'required'=>false, 'param'=>'255', 'extra'=>false)
 		);
 
