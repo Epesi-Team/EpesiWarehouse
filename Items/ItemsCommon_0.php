@@ -34,6 +34,10 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 		return Utils_RecordBrowserCommon::create_linked_label_r('premium_warehouse_items', 'SKU', $r, $nolink);
 	}
 	
+	public static function display_gross_price($r, $nolink) {
+		return Utils_CurrencyFieldCommon::format(($r['net_price']*(100+$r['tax']))/100);
+	}
+	
 	public static function access_items($action, $param){
 		$i = self::Instance();
 		switch ($action) {

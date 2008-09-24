@@ -18,7 +18,7 @@ class Premium_Warehouse_Items extends Module {
 		// set defaults
 		$this->rb->set_default_order(array('item_name'=>'ASC'));		
 		$this->rb->set_cut_lengths(array('item_name'=>30));
-		$this->rb->set_defaults(array('quantity'=>'0'));		
+		$this->rb->set_defaults(array('quantity'=>'0','reorder_point'=>'0'));		
 		$this->display_module($this->rb);
 	}
 

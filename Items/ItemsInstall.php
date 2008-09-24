@@ -21,11 +21,11 @@ class Premium_Warehouse_ItemsInstall extends ModuleInstall {
 			array('name'=>'Product Code', 	'type'=>'text', 'required'=>false, 'param'=>'32', 'extra'=>false, 'visible'=>false),
 			array('name'=>'UPC', 			'type'=>'text', 'required'=>false, 'param'=>'12', 'extra'=>false, 'visible'=>true),
 			array('name'=>'Manufacturer Part Number', 'type'=>'text', 'required'=>false, 'param'=>'32', 'extra'=>false, 'visible'=>true),
-			array('name'=>'Net Price', 	'type'=>'currency', 'required'=>false, 'extra'=>false, 'visible'=>true),
-			array('name'=>'Cost', 			'type'=>'currency', 'required'=>false, 'extra'=>false, 'visible'=>false),
+			array('name'=>'Net Price', 		'type'=>'currency', 'required'=>false, 'extra'=>false, 'visible'=>true),
 			array('name'=>'Tax', 			'type'=>'select', 'required'=>true, 'extra'=>false, 'visible'=>true, 'param'=>'__COMMON__::Premium_Warehouse_Items_Tax'),
+			array('name'=>'Gross Price', 	'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>true, 'style'=>'currency', 'display_callback'=>array('Premium_Warehouse_ItemsCommon','display_gross_price')),
 			array('name'=>'Quantity', 		'type'=>'integer', 'required'=>true, 'extra'=>false, 'visible'=>true),
-			// TODO: What about it? 0 or something? If something then what about the order?
+//			array('name'=>'Cost', 			'type'=>'currency', 'required'=>false, 'extra'=>false, 'visible'=>false),
 			array('name'=>'Reorder point', 	'type'=>'integer', 'required'=>true, 'extra'=>false, 'visible'=>false), // TODO: default: 0
 			array('name'=>'Vendor',		 	'type'=>'crm_company', 'required'=>false, 'extra'=>false, 'visible'=>true, 'param'=>array('field_type'=>'select','crits'=>array('Premium_Warehouse_ItemsCommon','vendors_crits'))),
 			array('name'=>'Description', 	'type'=>'long text', 'required'=>false, 'param'=>'255', 'extra'=>false)
@@ -46,7 +46,7 @@ class Premium_Warehouse_ItemsInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::new_addon('premium_warehouse_items', 'Premium/Warehouse/Items', 'attachment_addon', 'Notes');
 
 // ************ other ************** //	
-		Utils_CommonDataCommon::new_array('Premium_Warehouse_Items_Tax',array(0=>'Non-Taxable')); // TODO: Key should be a percent value of the tax! (will this be enough?)
+		Utils_CommonDataCommon::new_array('Premium_Warehouse_Items_Tax',array(0=>'Non-Taxable')); // Notice: Key should be a percent value of the tax
 
 		$this->add_aco('browse items',array('Employee'));
 		$this->add_aco('view items',array('Employee'));
