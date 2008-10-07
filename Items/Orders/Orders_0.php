@@ -17,6 +17,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 		$this->rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items_orders','premium_warehouse_items_orders');
 		// set defaults
 //		$this->rb->set_default_order(array(':Created_on'=>'DESC'));		
+		$this->rb->set_defaults(array('transaction_date'=>date('Y-m-d')));
 		$this->rb->set_cut_lengths(array('item'=>30));
 		$this->display_module($this->rb);
 	}
@@ -68,7 +69,14 @@ class Premium_Warehouse_Items_Orders extends Module {
 		$rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items_orders_details');
 		$order = array(array('order_id'=>$arg['id']), array('order_id'=>false), array());
 		$rb->set_defaults(array('order_id'=>$arg['id']));
+		$rb->enable_quick_new_records();
 		$this->display_module($rb,$order,'show_data');
+		$js =	'Event.observe(\'item_sku\',\'change\', onchange_item_sku);'.
+				'function onchange_item_sku() {'.
+					'var isku=$("item_sku");'.
+					'$("item_name").value = isku.options[isku.selectedIndex].text;'.
+				'};';
+		eval_js($js);
 	}
 
 	public function attachment_addon($arg){

@@ -24,6 +24,7 @@ class Premium_Warehouse_ItemsInstall extends ModuleInstall {
 			array('name'=>'Net Price', 		'type'=>'currency', 'required'=>false, 'extra'=>false, 'visible'=>true),
 			array('name'=>'Tax', 			'type'=>'select', 'required'=>true, 'extra'=>false, 'visible'=>true, 'param'=>'__COMMON__::Premium_Warehouse_Items_Tax'),
 			array('name'=>'Gross Price', 	'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>true, 'style'=>'currency', 'display_callback'=>array('Premium_Warehouse_ItemsCommon','display_gross_price')),
+			array('name'=>'Single Pieces', 	'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>true),
 			array('name'=>'Quantity', 		'type'=>'integer', 'required'=>true, 'extra'=>false, 'visible'=>true),
 			array('name'=>'Cost', 			'type'=>'currency', 'required'=>false, 'extra'=>false, 'visible'=>false),
 			array('name'=>'Reorder point', 	'type'=>'integer', 'required'=>true, 'extra'=>false, 'visible'=>false),

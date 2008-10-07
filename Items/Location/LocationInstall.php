@@ -35,7 +35,7 @@ class Premium_Warehouse_Items_LocationInstall extends ModuleInstall {
 			
 // ************ addons ************** //
 //		Utils_RecordBrowserCommon::new_addon('premium_warehouse_location', 'Premium/Warehouse/Location', 'attachment_addon', 'Notes');
-		Utils_RecordBrowserCommon::new_addon('premium_warehouse_items', 'Premium/Warehouse/Location', 'location_addon', 'Items Locations');
+		Utils_RecordBrowserCommon::new_addon('premium_warehouse_items', 'Premium/Warehouse/Items/Location', 'location_addon', 'Items Locations');
 
 // ************ other ************** //
 		Utils_RecordBrowserCommon::set_access_callback('premium_warehouse_location', 'Premium_Warehouse_Items_LocationCommon', 'access_location');
@@ -84,10 +84,7 @@ class Premium_Warehouse_Items_LocationInstall extends ModuleInstall {
 	}
 	
 	public static function backup() {
-		return array_merge(
-				Utils_RecordBrowserCommon::get_tables('premium_warehouse_items_orders'),		
-				Utils_RecordBrowserCommon::get_tables('premium_warehouse_items_orders_details')
-			);
+		return Utils_RecordBrowserCommon::get_tables('premium_warehouse_location');		
 	}
 }
 

@@ -42,6 +42,18 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		return Utils_RecordBrowserCommon::create_linked_label('premium_warehouse_items_orders', 'order_id', $r['order_id'], $nolink);	
 	}
 
+	public static function display_order_details_tax($r, $nolink) {
+		return Utils_CommonDataCommon::get_value('Premium_Warehouse_Items_Tax/'.Utils_RecordBrowserCommon::get_value('premium_warehouse_items',$r['item_sku'],'tax'),true);
+	}
+	
+	public static function display_order_details_total($r, $nolink) {
+		return '?';	
+	}
+
+	public static function display_order_details_qty($r, $nolink) {
+		return Utils_RecordBrowserCommon::get_value('premium_warehouse_items',$r['item_sku'],'quantity');
+	}
+
 	public static function access_orders($action, $param){
 		$i = self::Instance();
 		switch ($action) {
@@ -51,7 +63,8 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 							return false;
 			case 'edit':	return $i->acl_check('edit orders');
 			case 'delete':	return $i->acl_check('delete orders');
-			case 'fields':	return array('item'=>'read-only');
+			case 'fields':	if ($param!='new') return array('transaction_type'=>'read-only');
+							else return array();
 		}
 		return false;
     }
@@ -65,7 +78,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 							return false;
 			case 'edit':	return $i->acl_check('edit items');
 			case 'delete':	return $i->acl_check('delete items');
-			case 'fields':	return array('quantity'=>'read-only');
+			case 'fields':	return array('quantity'=>'read-only','single_pieces'=>'read-only');
 		}
 		return false;
     }
@@ -104,11 +117,12 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		return '#'.str_pad($id, 6, '0', STR_PAD_LEFT);
 	}
 
-	public static function change_total_qty($details, $action=null) {
+	public static function change_total_qty($details, $action=null, $force_change=false) {
 		$item_id = $details['item_sku'];
 		$new_qty = Utils_RecordBrowserCommon::get_value('premium_warehouse_items', $item_id, 'quantity');
-		$old_details = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders_details', $details['id']);
 		$order = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $details['order_id']);
+		if ($order['transaction_type']==0 && $order['delivered']==0 && !$force_change) return;
+		if ($action!=='add') $old_details = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders_details', $details['id']);
 		if ($action!=='add' && $action!=='restore') {
 			if ($order['transaction_type']==1) $mult = -1;
 			else $mult = 1;
@@ -139,6 +153,12 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 				return;
 			case 'edit':
 				$values['order_id'] = self::generate_id($values['id']);
+				$old_values = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $values['id']);
+				if ($old_values['delivered']!=$values['delivered']) {
+					$det = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('order_id'=>$values['id']));
+					foreach ($det as $d)
+						self::change_total_qty($d, $values['delivered']?'add':'delete', true);
+				}
 				break;
 			case 'added':
 				Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders',$values['id'],array('order_id'=>self::generate_id($values['id'])), false, null, true);

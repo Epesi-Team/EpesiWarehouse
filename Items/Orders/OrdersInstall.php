@@ -20,7 +20,7 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 			array('name'=>'Transaction Type','type'=>'select', 'required'=>true, 'extra'=>false, 'visible'=>true, 'param'=>'__COMMON__::Premium_Items_Orders_Trans_Types'),
 			array('name'=>'Warehouse', 		'type'=>'select', 'required'=>true, 'extra'=>false, 'visible'=>true, 'param'=>'premium_warehouse::Warehouse;::', 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_warehouse')),
 			array('name'=>'Ref No', 		'type'=>'text', 'param'=>'64', 'required'=>true, 'extra'=>false, 'visible'=>true),
-			array('name'=>'Employee', 		'type'=>'crm_contact', 'param'=>array('field_type'=>'select','crits'=>array('Premium_Warehouse_ItemsCommon','employee_crits')), 'required'=>true, 'extra'=>false, 'visible'=>true),
+			array('name'=>'Employee', 		'type'=>'crm_contact', 'param'=>array('field_type'=>'select','crits'=>array('Premium_Warehouse_ItemsCommon','employee_crits'), 'format'=>array('CRM_ContactsCommon','contact_format_no_company')), 'required'=>true, 'extra'=>false, 'visible'=>true),
 			array('name'=>'Transaction Date','type'=>'date', 'required'=>true, 'extra'=>false, 'visible'=>true),
 			array('name'=>'Payment Type', 	'type'=>'select', 'param'=>'__COMMON__::Premium_Items_Orders_Payment_Types', 'required'=>false, 'extra'=>false, 'visible'=>false),
 			array('name'=>'Payment No', 	'type'=>'text', 'param'=>'64', 'required'=>false, 'extra'=>false, 'visible'=>false),
@@ -56,7 +56,7 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::set_recent('premium_warehouse_items_orders', 15);
 		Utils_RecordBrowserCommon::set_caption('premium_warehouse_items_orders', 'Items Orders');
 //		Utils_RecordBrowserCommon::set_icon('premium_warehouse_items_orders', Base_ThemeCommon::get_template_filename('Premium/Warehouse/Items/Orders', 'icon.png'));
-//		Utils_RecordBrowserCommon::set_access_callback('premium_warehouse_items_orders', 'Premium_Warehouse_Items_OrdersCommon', 'access_orders');
+		Utils_RecordBrowserCommon::set_access_callback('premium_warehouse_items_orders', 'Premium_Warehouse_Items_OrdersCommon', 'access_orders');
 		Utils_RecordBrowserCommon::enable_watchdog('premium_warehouse_items_orders', array('Premium_Warehouse_Items_OrdersCommon','watchdog_label'));
 		Utils_RecordBrowserCommon::set_processing_method('premium_warehouse_items_orders', array('Premium_Warehouse_Items_OrdersCommon', 'submit_order'));
 			
@@ -70,9 +70,9 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 			array('name'=>'Serial',				'type'=>'text', 'required'=>true, 'param'=>'128', 'extra'=>false, 'visible'=>true),
 			array('name'=>'Price', 				'type'=>'currency', 'required'=>true, 'extra'=>false, 'visible'=>true),
 // TODO: autofill
-			array('name'=>'Tax', 				'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>true),
-			array('name'=>'Total', 				'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>true),
-			array('name'=>'Quantity On Hand',	'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>true)
+			array('name'=>'Tax', 				'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_order_details_tax')),
+			array('name'=>'Total', 				'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_order_details_total')),
+			array('name'=>'Quantity On Hand',	'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_order_details_qty'))
 		);
 
 		Utils_RecordBrowserCommon::install_new_recordset('premium_warehouse_items_orders_details', $fields);

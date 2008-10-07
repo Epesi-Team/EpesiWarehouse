@@ -47,6 +47,7 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 							return false;
 			case 'edit':	return $i->acl_check('edit items');
 			case 'delete':	return $i->acl_check('delete items');
+			case 'fields':	return array('single_pieces'=>'read-only');
 		}
 		return false;
     }
