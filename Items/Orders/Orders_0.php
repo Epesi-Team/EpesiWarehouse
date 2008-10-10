@@ -56,11 +56,9 @@ class Premium_Warehouse_Items_Orders extends Module {
 	}
 	
 	public function transaction_history_addon($arg){
-		// TODO: order by created_on (/sign, dammit...)
-		// Add button? Add what? Order or Details? (/sign, dammit...)
 		$rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items_orders_details');
-		$order = array(array('item_sku'=>$arg['id']), array('item_sku'=>false));
-//		$order = array();
+		$order = array(array('item_sku'=>$arg['id']), array('item_sku'=>false, $arg['single_pieces']?'quantity':'serial'=>false), array());
+		$rb->set_button(false);
 		$rb->set_defaults(array('item_sku'=>$arg['id']));
 		$this->display_module($rb,$order,'show_data');
 	}

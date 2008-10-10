@@ -67,7 +67,7 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 // TODO: autofill
 			array('name'=>'Item Name', 			'type'=>'text', 'required'=>true, 'param'=>'128', 'extra'=>false, 'visible'=>true),
 			array('name'=>'Quantity',			'type'=>'integer', 'required'=>true, 'extra'=>false, 'visible'=>true),
-			array('name'=>'Serial',				'type'=>'text', 'required'=>true, 'param'=>'128', 'extra'=>false, 'visible'=>true),
+			array('name'=>'Serial',				'type'=>'text', 'required'=>false, 'param'=>'128', 'extra'=>false, 'visible'=>true),
 			array('name'=>'Price', 				'type'=>'currency', 'required'=>true, 'extra'=>false, 'visible'=>true),
 // TODO: autofill
 			array('name'=>'Tax', 				'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_order_details_tax')),
