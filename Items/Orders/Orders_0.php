@@ -65,21 +65,21 @@ class Premium_Warehouse_Items_Orders extends Module {
 
 	public function order_details_addon($arg){
 		$rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items_orders_details');
-		$order = array(array('order_id'=>$arg['id']), array('order_id'=>false), array());
-		$rb->set_defaults(array('order_id'=>$arg['id']));
+		$cols = array('transaction_id'=>false);
+		if ($arg['transaction_type']==0) $cols['tax'] = false;
+		if ($arg['transaction_type']==2) {
+			$cols['tax'] = false;
+			$cols['total'] = false;
+		}
+		$order = array(array('transaction_id'=>$arg['id']), $cols, array());
+		$rb->set_defaults(array('transaction_id'=>$arg['id']));
 		$rb->enable_quick_new_records();
 		$this->display_module($rb,$order,'show_data');
-		$js =	'Event.observe(\'item_sku\',\'change\', onchange_item_sku);'.
-				'function onchange_item_sku() {'.
-					'var isku=$("item_sku");'.
-					'$("item_name").value = isku.options[isku.selectedIndex].text;'.
-				'};';
-		eval_js($js);
 	}
 
 	public function attachment_addon($arg){
 		$a = $this->init_module('Utils/Attachment',array($arg['id'],'Premium/Warehouse/Items/Orders/'.$arg['id']));
-		$a->additional_header('Order ID: '.$arg['order_id']);
+		$a->additional_header('Transaction ID: '.$arg['transaction_id']);
 		$a->allow_protected($this->acl_check('view protected notes'),$this->acl_check('edit protected notes'));
 		$a->allow_public($this->acl_check('view public notes'),$this->acl_check('edit public notes'));
 		$this->display_module($a);

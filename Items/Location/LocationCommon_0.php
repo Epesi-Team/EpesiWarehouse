@@ -22,7 +22,7 @@ class Premium_Warehouse_Items_LocationCommon extends ModuleCommon {
 		return array();
 	}
 
-	public static function orders_crits() {
+	public static function transactions_crits() {
 		return array();
 	}
 

@@ -74,7 +74,7 @@ class Premium_Warehouse_Items_LocationInstall extends ModuleInstall {
 	
 	public static function info() {
 		return array(
-			'Description'=>'Items Orders - Premium Module',
+			'Description'=>'Items Transactions - Premium Module',
 			'Author'=>'abisaga@telaxus.com',
 			'License'=>'SPL');
 	}
