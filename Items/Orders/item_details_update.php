@@ -12,7 +12,7 @@ $rec = Utils_RecordBrowserCommon::get_record('premium_warehouse_items',$id);
 $js = '';
 $js .= '$("price").value="'.$rec['net_price'].'";';
 $js .= '$("item_name").value="'.$rec['item_name'].'";';
-if ($rec['single_pieces']) {
+if (isset($rec['single_pieces']) && $rec['single_pieces']) {
 	$js .= '$("quantity").style.display="none";';
 	$js .= '$("serial").style.display="inline";';
 	$js .= '$("quantity").value=1;';
