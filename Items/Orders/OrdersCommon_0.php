@@ -171,7 +171,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		if ($order['transaction_type']==0 && $order['delivered']==0 && !$force_change) return;
 		$item = Utils_RecordBrowserCommon::get_record('premium_warehouse_items', $item_id);
 		$new_qty = $item['quantity'];
-		$sp = $item['single_pieces'];
+		$sp = (isset($arg['single_pieces']) && $arg['single_pieces']);
 		if ($action!=='add') $old_details = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders_details', $details['id']);
 		if (!$sp) $location_id = Utils_RecordBrowserCommon::get_id('premium_warehouse_location',array('item_sku','warehouse'),array($item_id,$order['warehouse']));
 		else {
