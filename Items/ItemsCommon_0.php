@@ -75,13 +75,14 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 			'Description: '.$r['description'];
 	}
 
-	public static function watchdog_label($rid = null, $events = array()) {
+	public static function watchdog_label($rid = null, $events = array(), $details = true) {
 		return Utils_RecordBrowserCommon::watchdog_label(
 				'premium_warehouse_items',
 				Base_LangCommon::ts('Premium_Warehouse_Items','Items'),
 				$rid,
 				$events,
-				'item_name'
+				'item_name',
+				$details
 			);
 	}
 	

@@ -150,13 +150,14 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			'Description: '.$r['description'];
 	}
 
-	public static function watchdog_label($rid = null, $events = array()) {
+	public static function watchdog_label($rid = null, $events = array(), $details = true) {
 		return Utils_RecordBrowserCommon::watchdog_label(
 				'premium_warehouse_items_orders',
 				Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Orders'),
 				$rid,
 				$events,
-				'item'
+				'item',
+				$details
 			);
 	}
 	

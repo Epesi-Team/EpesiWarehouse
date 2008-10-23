@@ -39,13 +39,14 @@ class Premium_WarehouseCommon extends ModuleCommon {
 		return array('Warehouse'=>array('__submenu__'=>1,'Warehouses'=>array()));
 	}
 
-	public static function watchdog_label($rid = null, $events = array()) {
+	public static function watchdog_label($rid = null, $events = array(), $details = true) {
 		return Utils_RecordBrowserCommon::watchdog_label(
 				'premium_warehouse',
 				Base_LangCommon::ts('Premium_Warehouse','Warehouse'),
 				$rid,
 				$events,
-				'warehouse'
+				'warehouse',
+				$details
 			);
 	}
 	
