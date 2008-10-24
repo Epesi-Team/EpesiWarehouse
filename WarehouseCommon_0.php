@@ -22,6 +22,16 @@ class Premium_WarehouseCommon extends ModuleCommon {
 		return Utils_RecordBrowserCommon::create_linked_label_r('premium_warehouse', 'Warehouse', $v, $nolink);
 	}
 	
+	public static function user_settings(){
+		$rec = Utils_RecordBrowserCommon::get_records('premium_warehouse', array(), array('warehouse'), array('warehouse'=>'ASC'));
+		$warehouses = array(''=>'---');
+		foreach ($rec as $v)
+			$warehouses[$v['id']] = $v['warehouse'];
+		return array('Warehouse'=>array(
+			array('name'=>'my_warehouse','label'=>'My main Warehouse','type'=>'select','values'=>$warehouses,'default'=>'')
+			));
+	}
+	
 	public static function access_warehouse($action, $param){
 		$i = self::Instance();
 		switch ($action) {

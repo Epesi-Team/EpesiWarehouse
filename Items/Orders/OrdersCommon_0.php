@@ -54,6 +54,18 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		return Utils_RecordBrowserCommon::create_linked_label_r('premium_warehouse_items_orders', 'transaction_id', $r, $nolink);	
 	}
 	
+	public static function display_transaction_type($r, $nolink) {
+		return Utils_CommonDataCommon::get_value('Premium_Items_Orders_Trans_Types/'.Utils_RecordBrowserCommon::get_value('premium_warehouse_items_orders', $r['transaction_id'], 'transaction_type'),true);	
+	}
+	
+	public static function display_transaction_date($r, $nolink) {
+		return Base_RegionalSettingsCommon::time2reg(Utils_RecordBrowserCommon::get_value('premium_warehouse_items_orders', $r['transaction_id'], 'transaction_date'), false);	
+	}
+	
+	public static function display_transaction_warehouse($r, $nolink) {
+		return Utils_RecordBrowserCommon::create_linked_label('premium_warehouse', 'warehouse', Utils_RecordBrowserCommon::get_value('premium_warehouse_items_orders', $r['transaction_id'], 'warehouse'), $nolink);	
+	}
+	
 	public static function display_transaction_id_in_details($r, $nolink) {
 		return Utils_RecordBrowserCommon::create_linked_label('premium_warehouse_items_orders', 'transaction_id', $r['transaction_id'], $nolink);	
 	}
@@ -63,28 +75,27 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	}
 	
 	public static function display_order_details_total($r, $nolink) {
-		$ret = $r['quantity']*$r['price'];
+		$ret = $r['quantity']*$r['net_price'];
 		$ret *= (100+Utils_RecordBrowserCommon::get_value('premium_warehouse_items',$r['item_sku'],'tax'));
 		$ret /= 100;
 		return Utils_CurrencyFieldCommon::format($ret);
 	}
 
 	public static function display_order_details_tax_value($r, $nolink) {
-		$ret = $r['quantity']*$r['price'];
-		$ret *= (100+Utils_RecordBrowserCommon::get_value('premium_warehouse_items',$r['item_sku'],'tax'));
+		$ret = $r['tax_rate']*$r['net_price']*$r['quantity'];
 		$ret /= 100;
 		return Utils_CurrencyFieldCommon::format($ret);
 	}
 
 	public static function display_order_details_gross_price($r, $nolink) {
-		$ret = $r['quantity']*$r['price'];
-		$ret *= (100+Utils_RecordBrowserCommon::get_value('premium_warehouse_items',$r['item_sku'],'tax'));
+		$ret = (100+$r['tax_rate'])*$r['net_price']*$r['quantity'];
 		$ret /= 100;
 		return Utils_CurrencyFieldCommon::format($ret);
 	}
 
 	public static function display_order_details_qty($r, $nolink) {
-		return Utils_RecordBrowserCommon::get_value('premium_warehouse_items',$r['item_sku'],'quantity');
+		return Premium_Warehouse_Items_LocationCommon::display_item_quantity(Utils_RecordBrowserCommon::get_record('premium_warehouse_items',$r['item_sku']), $nolink);
+//		return Utils_RecordBrowserCommon::get_value('premium_warehouse_items',$r['item_sku'],'quantity');
 	}
 	
 	public static function QFfield_company_name(&$form, $field, $label, $mode, $default){
@@ -169,7 +180,10 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			case 'edit':	return $i->acl_check('edit items');
 			case 'delete':	return $i->acl_check('delete items');
 			case 'fields':	if ($param=='new') return array('quantity'=>'read-only');
-							else return array('quantity'=>'read-only','item_type'=>'read-only');
+							else {
+								if ($param['item_type']==2) return array('reorder_point'=>'hide','quantity'=>'hide','item_type'=>'read-only');
+								return array('quantity'=>'read-only','item_type'=>'read-only');
+							}
 		}
 		return false;
     }
@@ -248,6 +262,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		switch ($mode) {
 			case 'adding':
 			case 'editing':
+				if (!isset($values['transaction_type'])) trigger_error(print_r($values,true));
 				if ($values['transaction_type']!=2) {
 					load_js('modules\Premium\Warehouse\Items\Orders\contractor_update.js');
 					eval_js('new ContractorUpdate()');

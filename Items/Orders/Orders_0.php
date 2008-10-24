@@ -18,10 +18,12 @@ class Premium_Warehouse_Items_Orders extends Module {
 		// set defaults
 		$this->rb->set_default_order(array('transaction_date'=>'DESC'));
 		$this->rb->set_button(false);
+		$me = CRM_ContactsCommon::get_my_record();
+		$defaults = array('transaction_date'=>date('Y-m-d'), 'employee'=>$me['id'], 'warehouse'=>Base_User_SettingsCommon::get('Premium_Warehouse','my_warehouse'), 'terms'=>0);
 		$this->rb->set_defaults(array(
-			$lang->t('Purchase')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'purchase.png'), 'defaults'=>array('transaction_date'=>date('Y-m-d'), 'transaction_type'=>0)),
-			$lang->t('Sale')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'sale.png'), 'defaults'=>array('transaction_date'=>date('Y-m-d'), 'transaction_type'=>1)),
-			$lang->t('Inv. Adjustment')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'inv_adj.png'), 'defaults'=>array('transaction_date'=>date('Y-m-d'), 'transaction_type'=>2))
+			$lang->t('Purchase')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'purchase.png'), 'defaults'=>array_merge($defaults,array('transaction_type'=>0))),
+			$lang->t('Sale')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'sale.png'), 'defaults'=>array_merge($defaults,array('transaction_type'=>1))),
+			$lang->t('Inv. Adjustment')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'inv_adj.png'), 'defaults'=>array_merge($defaults,array('transaction_type'=>2)))
 			), true);
 		$this->rb->set_cut_lengths(array('item'=>30));
 		$this->display_module($this->rb);
@@ -79,6 +81,9 @@ class Premium_Warehouse_Items_Orders extends Module {
 		// TODO: leightbox do wybierania przedmiotow do select'a (sic! ^^)
 		$rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items_orders_details');
 		$cols = array('transaction_id'=>false);
+		$cols['transaction_type'] = false;			
+		$cols['transaction_date'] = false;			
+		$cols['warehouse'] = false;			
 		if ($arg['transaction_type']==2) {
 			$cols['tax'] = false;
 			$cols['total'] = false;

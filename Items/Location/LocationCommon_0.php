@@ -43,6 +43,21 @@ class Premium_Warehouse_Items_LocationCommon extends ModuleCommon {
 		}
 		return false;
     }
-
+	
+	public static function display_item_quantity($r, $nolink) {
+		$my_quantity = 0;
+		$my_warehouse = Base_User_SettingsCommon::get('Premium_Warehouse','my_warehouse');
+		if (!$my_warehouse) return $r['quantity'];
+		$recs = Utils_RecordBrowserCommon::get_records('premium_warehouse_location', array('item_sku'=>$r['id'], 'warehouse'=>$my_warehouse), array('quantity'));
+		foreach ($recs as $v) {
+			$my_quantity += $v['quantity'];
+		}
+		return $my_quantity.' / '.$r['quantity'];
+	}
+	
+	public static function location_addon_parameters($record) {
+		if ($record['item_type']==2) return array('show'=>false);
+		return array('show'=>true, 'label'=>'Items Locations');
+	}
 }
 ?>
