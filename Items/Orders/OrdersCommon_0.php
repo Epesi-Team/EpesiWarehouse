@@ -69,6 +69,20 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		return Utils_CurrencyFieldCommon::format($ret);
 	}
 
+	public static function display_order_details_tax_value($r, $nolink) {
+		$ret = $r['quantity']*$r['price'];
+		$ret *= (100+Utils_RecordBrowserCommon::get_value('premium_warehouse_items',$r['item_sku'],'tax'));
+		$ret /= 100;
+		return Utils_CurrencyFieldCommon::format($ret);
+	}
+
+	public static function display_order_details_gross_price($r, $nolink) {
+		$ret = $r['quantity']*$r['price'];
+		$ret *= (100+Utils_RecordBrowserCommon::get_value('premium_warehouse_items',$r['item_sku'],'tax'));
+		$ret /= 100;
+		return Utils_CurrencyFieldCommon::format($ret);
+	}
+
 	public static function display_order_details_qty($r, $nolink) {
 		return Utils_RecordBrowserCommon::get_value('premium_warehouse_items',$r['item_sku'],'quantity');
 	}
@@ -93,25 +107,54 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			case 'edit':	return $i->acl_check('edit orders');
 			case 'delete':	return $i->acl_check('delete orders');
 			case 'fields':	if (is_array($param)) {
-								$sp = Utils_RecordBrowserCommon::get_value('premium_warehouse_items', $param['item_sku'], 'single_pieces');
+								$sp = (Utils_RecordBrowserCommon::get_value('premium_warehouse_items', $param['item_sku'], 'item_type')==1);
 								return array($sp?'quantity':'serial'=>'hide', 'item_sku'=>'read-only','transaction_id'=>'read-only');
 							}
 							return array();
 		}
 		return false;
 	}
-	public static function access_orders($action, $param){
+	public static function access_orders($action, $param, $defaults){
 		$i = self::Instance();
 		switch ($action) {
 			case 'add':
 			case 'browse':	return $i->acl_check('browse orders');
 			case 'view':	if($i->acl_check('view orders')) return true;
 							return false;
-			case 'edit':	return $i->acl_check('edit orders');
+			case 'edit':	if ((isset($param['paid']) && $param['paid']) ||
+								(isset($param['delivered']) && $param['delivered']))
+								return false;
+							return $i->acl_check('edit orders');
 			case 'delete':	return $i->acl_check('delete orders');
-			case 'fields':	if (is_array($param)) return array('company'=>'hide','contact'=>'hide');
-							if ($param!='new') return array('transaction_type'=>'read-only','warehouse'=>'read-only');
-							return array();
+			case 'fields':	$ret = array();
+							if (is_array($param)) {
+								$ret = array('transaction_type'=>'read-only','warehouse'=>'read-only','company'=>'hide','contact'=>'hide');
+								$tt = $param['transaction_type'];
+							}
+							if ($param=='new') {
+								$ret = array('transaction_type'=>'read-only','paid'=>'hide','delivered'=>'hide');
+								if (!isset($defaults['transaction_type'])) trigger_error(serialize($defaults));
+								$tt = $defaults['transaction_type'];
+							}
+							if (isset($tt) && $tt==2) {
+								$ret['company'] = 'hide';
+								$ret['contact'] = 'hide';
+								$ret['company_name'] = 'hide';
+								$ret['first_name'] = 'hide';
+								$ret['last_name'] = 'hide';
+								$ret['address_1'] = 'hide';
+								$ret['address_2'] = 'hide';
+								$ret['city'] = 'hide';
+								$ret['country'] = 'hide';
+								$ret['zone'] = 'hide';
+								$ret['postal_code'] = 'hide';
+								$ret['phone'] = 'hide';
+								$ret['payment_type'] = 'hide';
+								$ret['payment_no'] = 'hide';
+								$ret['terms'] = 'hide';
+								$ret['paid'] = 'hide';
+							}
+							return $ret;
 		}
 		return false;
     }
@@ -126,7 +169,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			case 'edit':	return $i->acl_check('edit items');
 			case 'delete':	return $i->acl_check('delete items');
 			case 'fields':	if ($param=='new') return array('quantity'=>'read-only');
-							else return array('quantity'=>'read-only','single_pieces'=>'read-only');
+							else return array('quantity'=>'read-only','item_type'=>'read-only');
 		}
 		return false;
     }
@@ -172,7 +215,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		if ($order['transaction_type']==0 && $order['delivered']==0 && !$force_change) return;
 		$item = Utils_RecordBrowserCommon::get_record('premium_warehouse_items', $item_id);
 		$new_qty = $item['quantity'];
-		$sp = (isset($arg['single_pieces']) && $arg['single_pieces']);
+		$sp = ($item['item_type']==1);
 		if ($action!=='add') $old_details = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders_details', $details['id']);
 		if (!$sp) $location_id = Utils_RecordBrowserCommon::get_id('premium_warehouse_location',array('item_sku','warehouse'),array($item_id,$order['warehouse']));
 		else {
@@ -205,9 +248,11 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		switch ($mode) {
 			case 'adding':
 			case 'editing':
-				load_js('modules\Premium\Warehouse\Items\Orders\contractor_update.js');
-				eval_js('new ContractorUpdate()');
-				return;
+				if ($values['transaction_type']!=2) {
+					load_js('modules\Premium\Warehouse\Items\Orders\contractor_update.js');
+					eval_js('new ContractorUpdate()');
+				}
+				return array('transaction_type'=>$values['transaction_type']);
 			case 'delete':
 				$det = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$values['id']));
 				foreach ($det as $d)

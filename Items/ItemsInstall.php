@@ -24,7 +24,7 @@ class Premium_Warehouse_ItemsInstall extends ModuleInstall {
 			array('name'=>'Net Price', 		'type'=>'currency', 'required'=>false, 'extra'=>false, 'visible'=>true),
 			array('name'=>'Tax', 			'type'=>'select', 'required'=>true, 'extra'=>false, 'visible'=>true, 'param'=>'__COMMON__::Premium_Warehouse_Items_Tax'),
 			array('name'=>'Gross Price', 	'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>true, 'style'=>'currency', 'display_callback'=>array('Premium_Warehouse_ItemsCommon','display_gross_price')),
-			array('name'=>'Single Pieces', 	'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>true),
+			array('name'=>'Item Type', 		'type'=>'select', 'param'=>'__COMMON__::Premium_Warehouse_Items_Type', 'required'=>false, 'extra'=>false, 'visible'=>true),
 			array('name'=>'Quantity', 		'type'=>'integer', 'required'=>true, 'extra'=>false, 'visible'=>true),
 			array('name'=>'Cost', 			'type'=>'currency', 'required'=>false, 'extra'=>false, 'visible'=>false),
 			array('name'=>'Reorder point', 	'type'=>'integer', 'required'=>true, 'extra'=>false, 'visible'=>false),
@@ -48,6 +48,7 @@ class Premium_Warehouse_ItemsInstall extends ModuleInstall {
 
 // ************ other ************** //	
 		Utils_CommonDataCommon::new_array('Premium_Warehouse_Items_Tax',array(0=>'Non-Taxable')); // Notice: Key should be a percent value of the tax
+		Utils_CommonDataCommon::new_array('Premium_Warehouse_Items_Type',array(0=>'Stack Items', 1=>'Single Pieces', 2=>'Service')); // TODO: Ustalic nazewnictwo - pewnie da sie lepiej
 
 		$this->add_aco('browse items',array('Employee'));
 		$this->add_aco('view items',array('Employee'));

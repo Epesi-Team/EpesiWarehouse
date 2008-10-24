@@ -13,6 +13,11 @@ class Premium_Warehouse_Items extends Module {
 	private $rb;
 
 	public function body() {
+//Magazyn per user
+//Quantity itemu format: - posiadam w moim magazynie (wszystkie)
+
+		// Nie ma pol (service): UPC, Man Part Num, quantity, reorder point
+		// Quickjump jak do ticketow, ale po UPC code
 		$lang = $this->init_module('Base/Lang');
 		$this->rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items','premium_warehouse_items_module');
 		// set defaults
