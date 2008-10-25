@@ -64,8 +64,8 @@ class Premium_WarehouseInstall extends ModuleInstall {
 				 array('type'=>'text','name'=>'warehouse','label'=>'Warehouse','default'=>'','param'=>array('maxlength'=>128), 'rule'=>array(array('type'=>'required','message'=>'Field required'))),
 			     array('type'=>'text','name'=>'address1','label'=>'Address 1','default'=>'','param'=>array('maxlength'=>64), 'rule'=>array(array('type'=>'required','message'=>'Field required'))),
 			     array('type'=>'text','name'=>'address2','label'=>'Address 2','default'=>'','param'=>array('maxlength'=>64)),
-			     array('type'=>'callback','name'=>'country','func'=>array('CRM_ContactsInstall','country_element'),'default'=>$loc['country']),
-			     array('type'=>'callback','name'=>'state','func'=>array('CRM_ContactsInstall','state_element'),'default'=>$loc['state']),
+			     array('type'=>'callback','name'=>'country','func'=>array('Premium_WarehouseInstall','country_element'),'default'=>$loc['country']),
+			     array('type'=>'callback','name'=>'state','func'=>array('Premium_WarehouseInstall','state_element'),'default'=>$loc['state']),
 			     array('type'=>'text','name'=>'city','label'=>'City','default'=>'','param'=>array('maxlength'=>64), 'rule'=>array(array('type'=>'required','message'=>'Field required'))),
 			     array('type'=>'text','name'=>'postal','label'=>'Postal Code','default'=>'','param'=>array('maxlength'=>64))
 //			     array('type'=>'text','name'=>'phone','label'=>'Phone','default'=>'','param'=>array('maxlength'=>64)),
@@ -73,9 +73,20 @@ class Premium_WarehouseInstall extends ModuleInstall {
 //			     array('type'=>'text','name'=>'web','label'=>'Web address','default'=>'','param'=>array('maxlength'=>64))
 			     );
 	}
+	
+	private static $country_elem_name;
+	public static function country_element($name, $args, & $def_js) {
+		self::$country_elem_name = $name;
+		return HTML_QuickForm::createElement('commondata',$name,'Country','Countries');
+	}
+
+	public static function state_element($name, $args, & $def_js) {
+		return HTML_QuickForm::createElement('commondata',$name,'State',array('Countries',self::$country_elem_name),array('empty_option'=>true));
+	}
+
 
 	public static function post_install_process($val) {
-		Utils_RecordBrowserCommon::new_record('warehouse',
+		Utils_RecordBrowserCommon::new_record('premium_warehouse',
 			array('warehouse'=>$val['warehouse'],
 				'address_1'=>isset($val['address1'])?$val['address1']:'',
 				'address_2'=>isset($val['address2'])?$val['address2']:'',
