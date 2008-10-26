@@ -13,14 +13,10 @@ class Premium_Warehouse_Items extends Module {
 	private $rb;
 
 	public function body() {
-//Magazyn per user
-//Quantity itemu format: - posiadam w moim magazynie (wszystkie)
-
-		// Nie ma pol (service): UPC, Man Part Num, quantity, reorder point
 		// Quickjump jak do ticketow, ale po UPC code
+		// Leightbox przy dodawaniu itemu (po type) - tak jak transaction
 		$lang = $this->init_module('Base/Lang');
 		$this->rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items','premium_warehouse_items_module');
-		// set defaults
 		$this->rb->set_default_order(array('item_name'=>'ASC'));		
 		$this->rb->set_cut_lengths(array('item_name'=>30));
 		$this->rb->set_defaults(array('quantity'=>'0','reorder_point'=>'0'));		
@@ -32,13 +28,6 @@ class Premium_Warehouse_Items extends Module {
 		$rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items','premium_warehouse_items');
 		$limit = null;
 		$crits = array();
-		// $conds - parameters for the applet
-		// 1st - table field names, width, truncate
-		// 2nd - criteria (filter)
-		// 3rd - sorting
-		// 4th - function to return tooltip
-		// 5th - limit how many records are returned, null = no limit
-		// 6th - Actions icons - default are view + info (with tooltip)
 		
 		$sorting = array('item_name'=>'ASC');
 		$cols = array(

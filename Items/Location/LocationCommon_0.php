@@ -35,24 +35,26 @@ class Premium_Warehouse_Items_LocationCommon extends ModuleCommon {
 		switch ($action) {
 			case 'add':
 			case 'browse':	return $i->acl_check('browse location');
-			case 'view':	if($i->acl_check('view location')) return true;
-							return false;
-			case 'edit':	return $i->acl_check('edit location');
+			case 'view':	return true;
+			case 'edit':	return false;
 			case 'delete':	return $i->acl_check('delete location');
 			case 'fields':	return array();
 		}
 		return false;
     }
 	
-	public static function display_item_quantity($r, $nolink) {
+	public static function get_item_quantity_in_warehouse($r, $warehouse) {
 		$my_quantity = 0;
-		$my_warehouse = Base_User_SettingsCommon::get('Premium_Warehouse','my_warehouse');
-		if (!$my_warehouse) return $r['quantity'];
-		$recs = Utils_RecordBrowserCommon::get_records('premium_warehouse_location', array('item_sku'=>$r['id'], 'warehouse'=>$my_warehouse), array('quantity'));
+		$recs = Utils_RecordBrowserCommon::get_records('premium_warehouse_location', array('item_sku'=>$r['id'], 'warehouse'=>$warehouse), array('quantity'));
 		foreach ($recs as $v) {
 			$my_quantity += $v['quantity'];
 		}
-		return $my_quantity.' / '.$r['quantity'];
+		return $my_quantity;
+	}
+	public static function display_item_quantity($r, $nolink) {
+		$my_warehouse = Base_User_SettingsCommon::get('Premium_Warehouse','my_warehouse');
+		if (!$my_warehouse) return $r['quantity'];
+		return self::get_item_quantity_in_warehouse($r, $my_warehouse).' / '.$r['quantity'];
 	}
 	
 	public static function location_addon_parameters($record) {

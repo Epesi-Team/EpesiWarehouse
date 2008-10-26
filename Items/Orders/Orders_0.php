@@ -15,17 +15,21 @@ class Premium_Warehouse_Items_Orders extends Module {
 	public function body() {
 		$lang = $this->init_module('Base/Lang');
 		$this->rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items_orders','premium_warehouse_items_orders');
-		// set defaults
 		$this->rb->set_default_order(array('transaction_date'=>'DESC'));
 		$this->rb->set_button(false);
 		$me = CRM_ContactsCommon::get_my_record();
-		$defaults = array('transaction_date'=>date('Y-m-d'), 'employee'=>$me['id'], 'warehouse'=>Base_User_SettingsCommon::get('Premium_Warehouse','my_warehouse'), 'terms'=>0);
+		$defaults = array(	'country'=>Base_User_SettingsCommon::get('Base_RegionalSettings','default_country'),
+							'zone'=>Base_User_SettingsCommon::get('Base_RegionalSettings','default_state'),
+							'transaction_date'=>date('Y-m-d'),
+							'employee'=>$me['id'],
+							'warehouse'=>Base_User_SettingsCommon::get('Premium_Warehouse','my_warehouse'),
+							'terms'=>0);
 		$this->rb->set_defaults(array(
 			$lang->t('Purchase')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'purchase.png'), 'defaults'=>array_merge($defaults,array('transaction_type'=>0))),
 			$lang->t('Sale')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'sale.png'), 'defaults'=>array_merge($defaults,array('transaction_type'=>1))),
 			$lang->t('Inv. Adjustment')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'inv_adj.png'), 'defaults'=>array_merge($defaults,array('transaction_type'=>2)))
 			), true);
-		$this->rb->set_cut_lengths(array('item'=>30));
+		$this->rb->set_header_properties(array('terms'=>array('width'=>1, 'wrapmode'=>'nowrap')));
 		$this->display_module($this->rb);
 	}
 
@@ -34,14 +38,6 @@ class Premium_Warehouse_Items_Orders extends Module {
 		$rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items_orders','premium_warehouse_items_orders');
 		$limit = null;
 		$crits = array();
-		// $conds - parameters for the applet
-		// 1st - table field names, width, truncate
-		// 2nd - criteria (filter)
-		// 3rd - sorting
-		// 4th - function to return tooltip
-		// 5th - limit how many records are returned, null = no limit
-		// 6th - Actions icons - default are view + info (with tooltip)
-		
 		$sorting = array('item_name'=>'ASC');
 		$cols = array(
 							array('field'=>'item', 'width'=>10, 'cut'=>18),
@@ -64,28 +60,23 @@ class Premium_Warehouse_Items_Orders extends Module {
 	
 	public function transaction_history_addon($arg){
 		$rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items_orders_details');
-		// TODO: Order by "Transaction Date"
-		// TODO: Show transaction type and warehouse
-		$order = array(array('item_sku'=>$arg['id']), array('quantity_on_hand'=>false,'item_name'=>false,'item_sku'=>false, ($arg['item_type']==1)?'quantity':'serial'=>false), array());
+		$order = array(array('item_sku'=>$arg['id']), array('quantity_on_hand'=>false,'item_name'=>false,'item_sku'=>false, ($arg['item_type']==1)?'quantity':'serial'=>false), array('transaction_id'=>'DESC'));
 		$rb->set_button(false);
 		$rb->set_defaults(array('item_sku'=>$arg['id']));
 		$this->display_module($rb,$order,'show_data');
 	}
 
 	public function order_details_addon($arg){
-		
-		// TODO: Price/Cost label - zalezy od typu
-		// TODO: Pokaz zawsze Tax Rate, dodaj tez Tax Value
-		// TODO: Wyswietlaj ilosci przedmiotu w magazynie i total (np. 5/11)
-		// TODO: Przy sprzedawaniu nie pokazuje tego co jest zero (total!)
 		// TODO: leightbox do wybierania przedmiotow do select'a (sic! ^^)
 		$rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items_orders_details');
 		$cols = array('transaction_id'=>false);
 		$cols['transaction_type'] = false;			
 		$cols['transaction_date'] = false;			
 		$cols['warehouse'] = false;			
+		if ($arg['transaction_type']==0)
+			$rb->set_header_properties(array('net_price'=>array('name'=>'Net Cost'), 'gross_price'=>array('name'=>'Gross Cost')));
 		if ($arg['transaction_type']==2) {
-			$cols['tax'] = false;
+			$cols['tax_rate'] = false;
 			$cols['total'] = false;
 			$cols['price'] = false;			
 		}

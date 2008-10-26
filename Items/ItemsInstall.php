@@ -17,18 +17,18 @@ class Premium_Warehouse_ItemsInstall extends ModuleInstall {
 		Base_ThemeCommon::install_default_theme($this->get_type());
 		$fields = array(
 			array('name'=>'SKU', 			'type'=>'calculated', 'required'=>false, 'param'=>'VARCHAR(16)', 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_ItemsCommon','display_sku')),
+			array('name'=>'Item Type', 		'type'=>'select', 'param'=>'__COMMON__::Premium_Warehouse_Items_Type', 'required'=>false, 'extra'=>false, 'visible'=>true),
 			array('name'=>'Item Name', 		'type'=>'text', 'required'=>true, 'param'=>'128', 'extra'=>false, 'visible'=>true,'display_callback'=>array('Premium_Warehouse_ItemsCommon', 'display_item_name')),
 			array('name'=>'Product Code', 	'type'=>'text', 'required'=>false, 'param'=>'32', 'extra'=>false, 'visible'=>false),
 			array('name'=>'UPC', 			'type'=>'text', 'required'=>false, 'param'=>'12', 'extra'=>false, 'visible'=>true),
 			array('name'=>'Manufacturer Part Number', 'type'=>'text', 'required'=>false, 'param'=>'32', 'extra'=>false, 'visible'=>true),
+			array('name'=>'Vendor',		 	'type'=>'crm_company', 'required'=>false, 'extra'=>false, 'visible'=>true, 'param'=>array('field_type'=>'select','crits'=>array('Premium_Warehouse_ItemsCommon','vendors_crits'))),
 			array('name'=>'Net Price', 		'type'=>'currency', 'required'=>false, 'extra'=>false, 'visible'=>true),
-			array('name'=>'Tax', 			'type'=>'select', 'required'=>true, 'extra'=>false, 'visible'=>true, 'param'=>'__COMMON__::Premium_Warehouse_Items_Tax'),
+			array('name'=>'Tax Rate', 		'type'=>'select', 'required'=>true, 'extra'=>false, 'visible'=>true, 'param'=>'__COMMON__::Premium_Warehouse_Items_Tax', 'style'=>'integer'),
 			array('name'=>'Gross Price', 	'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>true, 'style'=>'currency', 'display_callback'=>array('Premium_Warehouse_ItemsCommon','display_gross_price')),
-			array('name'=>'Item Type', 		'type'=>'select', 'param'=>'__COMMON__::Premium_Warehouse_Items_Type', 'required'=>false, 'extra'=>false, 'visible'=>true),
 			array('name'=>'Quantity', 		'type'=>'integer', 'required'=>true, 'extra'=>false, 'visible'=>true),
 			array('name'=>'Cost', 			'type'=>'currency', 'required'=>false, 'extra'=>false, 'visible'=>false),
 			array('name'=>'Reorder point', 	'type'=>'integer', 'required'=>true, 'extra'=>false, 'visible'=>false),
-			array('name'=>'Vendor',		 	'type'=>'crm_company', 'required'=>false, 'extra'=>false, 'visible'=>true, 'param'=>array('field_type'=>'select','crits'=>array('Premium_Warehouse_ItemsCommon','vendors_crits'))),
 			array('name'=>'Description', 	'type'=>'long text', 'required'=>false, 'param'=>'255', 'extra'=>false)
 		);
 
@@ -48,7 +48,7 @@ class Premium_Warehouse_ItemsInstall extends ModuleInstall {
 
 // ************ other ************** //	
 		Utils_CommonDataCommon::new_array('Premium_Warehouse_Items_Tax',array(0=>'Non-Taxable')); // Notice: Key should be a percent value of the tax
-		Utils_CommonDataCommon::new_array('Premium_Warehouse_Items_Type',array(0=>'Stack Items', 1=>'Single Pieces', 2=>'Service')); // TODO: Ustalic nazewnictwo - pewnie da sie lepiej
+		Utils_CommonDataCommon::new_array('Premium_Warehouse_Items_Type',array(0=>'Stack Items', 1=>'Single Pieces', 2=>'Service'));
 
 		$this->add_aco('browse items',array('Employee'));
 		$this->add_aco('view items',array('Employee'));
