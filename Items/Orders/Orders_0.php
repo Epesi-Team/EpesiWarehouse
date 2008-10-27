@@ -59,6 +59,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 	}
 	
 	public function transaction_history_addon($arg){
+		// TODO: service?
 		$rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items_orders_details');
 		$order = array(array('item_sku'=>$arg['id']), array('quantity_on_hand'=>false,'item_name'=>false,'item_sku'=>false, ($arg['item_type']==1)?'quantity':'serial'=>false), array('transaction_id'=>'DESC'));
 		$rb->set_button(false);

@@ -47,8 +47,8 @@ class Premium_Warehouse_ItemsInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::new_addon('premium_warehouse_items', 'Premium/Warehouse/Items', 'attachment_addon', 'Notes');
 
 // ************ other ************** //	
+		Utils_CommonDataCommon::new_array('Premium_Warehouse_Items_Type',array(0=>'Inventory Items', 1=>'Serialized Items', 2=>'Non-Inventory Item', 3=>'Service')); 
 		Utils_CommonDataCommon::new_array('Premium_Warehouse_Items_Tax',array(0=>'Non-Taxable')); // Notice: Key should be a percent value of the tax
-		Utils_CommonDataCommon::new_array('Premium_Warehouse_Items_Type',array(0=>'Stack Items', 1=>'Single Pieces', 2=>'Service'));
 
 		$this->add_aco('browse items',array('Employee'));
 		$this->add_aco('view items',array('Employee'));
