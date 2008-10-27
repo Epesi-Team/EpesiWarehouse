@@ -55,6 +55,7 @@ class Premium_Warehouse_Items_LocationInstall extends ModuleInstall {
 	}
 	
 	public function uninstall() {
+		Utils_RecordBrowserCommon::delete_addon('premium_warehouse_items', 'Premium/Warehouse/Items/Location', 'location_addon');
 		Utils_RecordBrowserCommon::unset_display_method('premium_warehouse_items', 'Quantity');
 		Base_ThemeCommon::uninstall_default_theme($this->get_type());
 		Utils_RecordBrowserCommon::delete_addon('premium_warehouse_items', 'Premium/Warehouse/Location', 'location_addon');

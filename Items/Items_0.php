@@ -61,6 +61,10 @@ class Premium_Warehouse_Items extends Module {
 		$a->allow_public($this->acl_check('view public notes'),$this->acl_check('edit public notes'));
 		$this->display_module($a);
 	}
+	
+	public function warehouse_item_list_addon($arg) {
+		// TODO: whole thing...
+	}
 
 	public function caption(){
 		if (isset($this->rb)) return $this->rb->caption();
