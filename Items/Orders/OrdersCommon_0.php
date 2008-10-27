@@ -11,6 +11,12 @@ defined("_VALID_ACCESS") || die('Direct access forbidden');
 
 class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	private static $trans = null;
+	public static function user_settings() {
+		return array('Transaction'=>array(
+			array('name'=>'my_transaction','label'=>'None','type'=>'hidden','default'=>'')
+			));
+	}
+	
     public static function get_order($id) {
 		return Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $id);
     }
@@ -48,7 +54,11 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	}
 
     public static function display_item_name($v, $nolink=false) {
-		return Utils_RecordBrowserCommon::create_linked_label('premium_warehouse_items', 'SKU', $v['item_sku'], $nolink);
+		return Utils_RecordBrowserCommon::create_linked_label('premium_warehouse_items', 'item_name', $v['item_sku'], $nolink);
+	}
+	
+    public static function display_item_sku($v, $nolink=false) {
+		return Utils_RecordBrowserCommon::create_linked_label('premium_warehouse_items', 'sku', $v['item_sku'], $nolink);
 	}
 	
 	public static function calculate_tax_and_total_value($r, $arg) {
@@ -190,7 +200,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			if ($mode=='edit') $form->setDefaults(array($field=>$default));
 		} else {
 			$form->addElement('static', $field, $label);
-			$form->setDefaults(array($field=>self::display_item_name(array('item_name'=>$default), null, array('id'=>'item_name'))));
+			$form->setDefaults(array($field=>self::display_item_sku(array('item_name'=>$default), null, array('id'=>'item_name'))));
 		}
 	}
 
@@ -373,6 +383,19 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			case 'add':
 				return $values;
 			case 'view':
+				$active = (Base_User_SettingsCommon::get('Premium_Warehouse_Items_Orders','my_transaction')==$values['id']);
+				if (isset($_REQUEST['premium_warehouse_change_active_order']) && $_REQUEST['premium_warehouse_change_active_order']===$values['id']) {
+					Base_User_SettingsCommon::save('Premium_Warehouse_Items_Orders','my_transaction',$active?'':$values['id']);
+					$active = !$active;
+				}
+				if ($active) {
+					$icon = Base_ThemeCommon::get_template_file('Premium_Warehouse_Items_Orders','deactivate.png');
+					$label = Base_LangCommon::ts('Utils_Watchdog','Leave this trans.');
+				} else {
+					$icon = Base_ThemeCommon::get_template_file('Premium_Warehouse_Items_Orders','activate.png');
+					$label = Base_LangCommon::ts('Utils_Watchdog','Use this Trans.');
+				}
+				Base_ActionBarCommon::add($icon,$label,Module::create_href(array('premium_warehouse_change_active_order'=>$values['id'])));
 				return;
 			case 'edit':
 				$values['transaction_id'] = self::generate_id($values['id']);
@@ -385,6 +408,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 				break;
 			case 'added':
 				Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders',$values['id'],array('transaction_id'=>self::generate_id($values['id'])), false, null, true);
+				Base_User_SettingsCommon::save('Premium_Warehouse_Items_Orders','my_transaction',$values['id']);
 		}
 		return $values;
 	}

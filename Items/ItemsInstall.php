@@ -45,8 +45,6 @@ class Premium_Warehouse_ItemsInstall extends ModuleInstall {
 		
 // ************ addons ************** //
 		Utils_RecordBrowserCommon::new_addon('premium_warehouse_items', 'Premium/Warehouse/Items', 'attachment_addon', 'Notes');
-		Utils_RecordBrowserCommon::new_addon('premium_warehouse', 'Premium/Warehouse/Items', 'warehouse_item_list_addon', 'Item List');
-		Utils_RecordBrowserCommon::set_addon_pos('premium_warehouse', 'Premium/Warehouse/Items', 'warehouse_item_list_addon', 1);
 
 // ************ other ************** //	
 		Utils_CommonDataCommon::new_array('Premium_Warehouse_Items_Type',array(0=>'Inventory Items', 1=>'Serialized Items', 2=>'Non-Inventory Item', 3=>'Service')); 
