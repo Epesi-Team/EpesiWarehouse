@@ -95,6 +95,28 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 			case 'add':
 				return $values;
 			case 'view':
+				$my_trans = Base_User_SettingsCommon::get('Premium_Warehouse_Items_Orders','my_transaction');
+				if ($my_trans) {
+					$trans = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $my_trans);
+					if ($trans['paid'] || $trans['delivered']) {
+						Base_User_SettingsCommon::save('Premium_Warehouse_Items_Orders','my_transaction','');
+						return;
+					}
+				}
+				if ($my_trans) {
+					$icon = Base_ThemeCommon::get_template_file('Premium_Warehouse_Items_Orders','deactivate.png');
+					$label = Base_LangCommon::ts('Utils_Watchdog','Add to my Trans.');
+					$defaults = array(
+						'transaction_id'=>$my_trans,
+						'item_sku'=>$values['id'],
+						'quantity'=>1,
+						'item_name'=>Utils_RecordBrowserCommon::get_value('premium_warehouse_items', $values['id'], 'item_name'),
+						'net_price'=>Utils_RecordBrowserCommon::get_value('premium_warehouse_items', $values['id'], 'net_price'),
+						'tax_rate'=>Utils_RecordBrowserCommon::get_value('premium_warehouse_items', $values['id'], 'tax_rate'),
+						'single_pieces'=>Utils_RecordBrowserCommon::get_value('premium_warehouse_items', $values['id'], 'item_type')==1
+					);
+					Base_ActionBarCommon::add($icon,$label,Utils_RecordBrowserCommon::create_new_record_href('premium_warehouse_items_orders_details', $defaults,'add_to_order'));
+				}
 				return;
 			case 'edit':
 				$values['sku'] = self::generate_id($values['id']);

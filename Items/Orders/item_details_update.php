@@ -22,10 +22,9 @@ if ($rec['item_type']==1) {
 	$js .= '$("serial").style.display="inline";';
 	$js .= '$("quantity").value=1;';
 	$js .= 'focus_by_id("serial");';
-
 	if ($trans['transaction_type']==1) {
 		$js .= 'var new_opts={';
-		$locs = Utils_RecordBrowserCommon::get_records('premium_warehouse_location',array('item_sku'=>$id, '!quantity'=>0, 'warehouse'=>$trans['warehouse']));
+		$locs = Utils_RecordBrowserCommon::get_records('premium_warehouse_location',array('item_sku'=>$id, '!quantity'=>0, 'warehouse'=>$trans['warehouse']), array(), array('serial'=>'ASC'));
 		$first = true;
 		foreach ($locs as $k=>$v) {
 			if (!$first) $js .= ',';

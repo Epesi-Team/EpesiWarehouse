@@ -1,22 +1,21 @@
 var ItemDetailsUpdate = Class.create();
 ItemDetailsUpdate.prototype = {
-	request_f:null,
 	stop_f:null,
 	trasn_v:null,
 	loads:0,
 	initialize:function(trans) {
-		this.trans_v=trans; 
-		this.request_f=this.request.bindAsEventListener(this);
-		Event.observe('item_sku','change',this.request_f);
-		this.stop_f=this.stop.bindAsEventListener(this);
-		Event.observe(document,'e:load',this.stop_f);
+		this.trans_v=trans;
+		Event.observe('item_sku','change',this.request.bindAsEventListener(this));
+		Event.observe(document,'e:load',this.stop.bindAsEventListener(this));
+		this.request();
 	},
 	stop:function() {
 		this.loads++;
 		if(this.loads==2) {
-			if ($('item_sku')!=null)
-				Event.stopObserving('item_sku','change',this.request_f);
-			Event.stopObserving(document,'e:load',this.stop_f);
+			if ($('item_sku')!=null) {
+				Event.stopObserving('item_sku','change',this.request.bindAsEventListener(this));
+			}
+			Event.stopObserving(document,'e:load',this.stop.bindAsEventListener(this));
 		}
 	},
 	request:function() {
