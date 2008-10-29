@@ -23,10 +23,11 @@ class Premium_Warehouse_ItemsInstall extends ModuleInstall {
 			array('name'=>'UPC', 			'type'=>'text', 'required'=>false, 'param'=>'12', 'extra'=>false, 'visible'=>true),
 			array('name'=>'Manufacturer Part Number', 'type'=>'text', 'required'=>false, 'param'=>'32', 'extra'=>false, 'visible'=>true),
 			array('name'=>'Vendor',		 	'type'=>'crm_company', 'required'=>false, 'extra'=>false, 'visible'=>true, 'param'=>array('field_type'=>'select','crits'=>array('Premium_Warehouse_ItemsCommon','vendors_crits'))),
+			array('name'=>'Category',		'type'=>'multiselect', 'required'=>false, 'visible'=>false, 'extra'=>false, 'filter'=>true, 'param'=>'__COMMON__::Premium_Warehouse_Items_Categories'),
 			array('name'=>'Net Price', 		'type'=>'currency', 'required'=>false, 'extra'=>false, 'visible'=>true),
 			array('name'=>'Tax Rate', 		'type'=>'select', 'required'=>true, 'extra'=>false, 'visible'=>true, 'param'=>'__COMMON__::Premium_Warehouse_Items_Tax', 'style'=>'integer'),
 			array('name'=>'Gross Price', 	'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>true, 'style'=>'currency', 'display_callback'=>array('Premium_Warehouse_ItemsCommon','display_gross_price')),
-			array('name'=>'Quantity', 		'type'=>'integer', 'required'=>true, 'extra'=>false, 'visible'=>true),
+			array('name'=>'Quantity on Hand','type'=>'integer', 'required'=>true, 'extra'=>false, 'visible'=>true),
 			array('name'=>'Cost', 			'type'=>'currency', 'required'=>false, 'extra'=>false, 'visible'=>false),
 			array('name'=>'Reorder point', 	'type'=>'integer', 'required'=>true, 'extra'=>false, 'visible'=>false),
 			array('name'=>'Description', 	'type'=>'long text', 'required'=>false, 'param'=>'255', 'extra'=>false)
@@ -49,6 +50,7 @@ class Premium_Warehouse_ItemsInstall extends ModuleInstall {
 // ************ other ************** //	
 		Utils_CommonDataCommon::new_array('Premium_Warehouse_Items_Type',array(0=>'Inventory Items', 1=>'Serialized Items', 2=>'Non-Inventory Item', 3=>'Service')); 
 		Utils_CommonDataCommon::new_array('Premium_Warehouse_Items_Tax',array(0=>'Non-Taxable')); // Notice: Key should be a percent value of the tax
+		Utils_CommonDataCommon::new_array('Premium_Warehouse_Items_Categories',array());
 
 		$this->add_aco('browse items',array('Employee'));
 		$this->add_aco('view items',array('Employee'));

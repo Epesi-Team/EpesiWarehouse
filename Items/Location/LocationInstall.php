@@ -42,7 +42,7 @@ class Premium_Warehouse_Items_LocationInstall extends ModuleInstall {
 
 // ************ other ************** //
 		Utils_RecordBrowserCommon::set_access_callback('premium_warehouse_location', 'Premium_Warehouse_Items_LocationCommon', 'access_location');
-		Utils_RecordBrowserCommon::set_display_method('premium_warehouse_items', 'Quantity', 'Premium_Warehouse_Items_LocationCommon', 'display_item_quantity');
+		Utils_RecordBrowserCommon::set_display_method('premium_warehouse_items', 'Quantity on Hand', 'Premium_Warehouse_Items_LocationCommon', 'display_item_quantity');
 
 		$this->add_aco('browse location',array('Employee'));
 		$this->add_aco('view location',array('Employee'));
@@ -59,7 +59,7 @@ class Premium_Warehouse_Items_LocationInstall extends ModuleInstall {
 	
 	public function uninstall() {
 		Utils_RecordBrowserCommon::delete_addon('premium_warehouse_items', 'Premium/Warehouse/Items/Location', 'location_addon');
-		Utils_RecordBrowserCommon::unset_display_method('premium_warehouse_items', 'Quantity');
+		Utils_RecordBrowserCommon::unset_display_method('premium_warehouse_items', 'Quantity on Hand');
 		Base_ThemeCommon::uninstall_default_theme($this->get_type());
 		Utils_RecordBrowserCommon::delete_addon('premium_warehouse_items', 'Premium/Warehouse/Location', 'location_addon');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_warehouse_location');

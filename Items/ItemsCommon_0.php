@@ -71,7 +71,7 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 	public static function applet_info_format($r){
 		return
 			'Item Name: '.$r['item_name'].'<HR>'.
-			'Quantity: '.$r['quantity'].'<br>'.
+			'Quantity: '.$r['quantity_on_hand'].'<br>'.
 			'Description: '.$r['description'];
 	}
 
@@ -95,6 +95,7 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 			case 'add':
 				return $values;
 			case 'view':
+				// TODO: Check if module installed
 				$my_trans = Base_User_SettingsCommon::get('Premium_Warehouse_Items_Orders','my_transaction');
 				if ($my_trans) {
 					$trans = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $my_trans);
@@ -102,8 +103,6 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 						Base_User_SettingsCommon::save('Premium_Warehouse_Items_Orders','my_transaction','');
 						return;
 					}
-				}
-				if ($my_trans) {
 					$icon = Base_ThemeCommon::get_template_file('Premium_Warehouse_Items_Orders','deactivate.png');
 					$label = Base_LangCommon::ts('Utils_Watchdog','Add to my Trans.');
 					$defaults = array(

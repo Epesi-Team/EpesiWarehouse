@@ -108,6 +108,9 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 		Utils_CommonDataCommon::new_array('Premium_Items_Orders_Payment_Types',array(0=>'Cash',1=>'Check'));
 		Utils_CommonDataCommon::new_array('Premium_Items_Orders_Shipment_Types',array(0=>'Acceptance',1=>'Mail delivery'));
 		Utils_CommonDataCommon::new_array('Premium_Items_Orders_Terms',array(0=>'Due on Receipt',15=>'Net 15',30=>'Net 30'));
+
+		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items', 'Quantity on Route', 'calculated', true, false, '', 'integer', false, false, 14);
+		Utils_RecordBrowserCommon::set_display_method('premium_warehouse_items', 'Quantity on Route', 'Premium_Warehouse_Items_OrdersCommon', 'display_quantity_on_route');
 	
 		$this->add_aco('browse orders',array('Employee'));
 		$this->add_aco('view orders',array('Employee'));

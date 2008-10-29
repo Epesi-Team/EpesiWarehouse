@@ -52,10 +52,10 @@ class Premium_Warehouse_Items_LocationCommon extends ModuleCommon {
 		return $my_quantity;
 	}
 	public static function display_item_quantity($r, $nolink) {
-		if ($r['item_type']>=2) return '---'; 
+		if ($r['item_type']>=2) return '---';
 		$my_warehouse = Base_User_SettingsCommon::get('Premium_Warehouse','my_warehouse');
-		if (!$my_warehouse) return $r['quantity'];
-		return self::get_item_quantity_in_warehouse($r, $my_warehouse).' / '.$r['quantity'];
+		if (!$my_warehouse) return $r['quantity_on_hand'];
+		return self::get_item_quantity_in_warehouse($r, $my_warehouse).' / '.$r['quantity_on_hand'];
 	}
 	
 	public static function location_addon_parameters($record) {

@@ -84,8 +84,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 		$order = array(array('transaction_id'=>$arg['id']), $cols, array());
 		$rb->set_button(false);
 		$rb->set_defaults(array('transaction_id'=>$arg['id']));
-		if ((!isset($arg['paid']) || !$arg['paid']) &&
-			(!isset($arg['delivered']) || !$arg['delivered'])) $rb->enable_quick_new_records();
+		$rb->enable_quick_new_records();
 		$this->display_module($rb,$order,'show_data');
 	}
 
