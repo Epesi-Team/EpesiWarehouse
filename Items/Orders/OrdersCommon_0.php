@@ -340,7 +340,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			case 'edit':	return $i->acl_check('edit items');
 			case 'delete':	return $i->acl_check('delete items');
 			case 'fields':	if ($param=='new') $param = $defaults; 
-							if ($param['item_type']==2 || $param['item_type']==3) return array('reorder_point'=>'hide','quantity_on_hand'=>'hide','item_type'=>'read-only','upc'=>'hide','manufacturer_part_number'=>'hide');
+							if ($param['item_type']==2 || $param['item_type']==3) return array('reorder_point'=>'hide','quantity_on_hand'=>'hide','item_type'=>'read-only','upc'=>'hide','manufacturer_part_number'=>'hide', 'quantity_on_route'=>'hide');
 							return array('quantity_on_hand'=>'read-only','item_type'=>'read-only');
 		}
 		return false;
@@ -487,6 +487,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 				return;
 			case 'add':
 				if (Utils_RecordBrowserCommon::get_value('premium_warehouse_items', $values['item_sku'], 'item_type')==1) $values['quantity']=1;
+				if (self::$trans['transaction_type']<2) Utils_RecordBrowserCommon::update_record('premium_warehouse_items', $values['item_sku'], array(self::$trans['transaction_type']==0?'last_purchase_price':'last_sale_price'=>$values['net_price']));
 				self::change_total_qty($values, 'add');
 				return $values;
 			case 'view':

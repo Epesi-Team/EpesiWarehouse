@@ -16,7 +16,7 @@ $trans = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders',
 $js = '';
 $js .= '$("item_name").value="'.$rec['item_name'].'";';
 $js .= '$("tax_rate").value="'.$rec['tax_rate'].'";';
-$js .= 'if($("net_price"))$("net_price").value="'.($trans['transaction_type']==0?$rec['cost']:$rec['net_price']).'";';
+$js .= 'if($("net_price"))$("net_price").value="'.($trans['transaction_type']==0?(isset($rec['last_purchase_price'])&&$rec['last_purchase_price']?$rec['last_purchase_price']:$rec['cost']):(isset($rec['last_sale_price'])&&$rec['last_sale_price']?$rec['last_sale_price']:$rec['net_price'])).'";';
 if ($rec['item_type']==1) {
 	$js .= '$("quantity").style.display="none";';
 	$js .= '$("serial").style.display="inline";';
