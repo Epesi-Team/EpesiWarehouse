@@ -25,5 +25,5 @@ $js .= '$("city").value="'.$rec['city'].'";';
 $js .= '$("postal_code").value="'.$rec['postal_code'].'";';
 $js .= '$("country").value="'.$rec['country'].'";';
 // TODO: copy zone
-print(json_encode($js));
+print($js);
 ?>

@@ -27,8 +27,7 @@ ItemDetailsUpdate.prototype = {
 				cid: Epesi.client_id
 			},
 			onSuccess:function(t) {
-				var resp = t.responseText.evalJSON();
-				eval(resp);
+				eval(t.responseText);
 			}
 		});
 	}

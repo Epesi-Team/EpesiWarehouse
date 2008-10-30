@@ -52,10 +52,35 @@ class Premium_Warehouse_Items_LocationCommon extends ModuleCommon {
 		return $my_quantity;
 	}
 	public static function display_item_quantity($r, $nolink) {
-		if ($r['item_type']>=2) return '---';
 		$my_warehouse = Base_User_SettingsCommon::get('Premium_Warehouse','my_warehouse');
-		if (!$my_warehouse) return $r['quantity_on_hand'];
-		return self::get_item_quantity_in_warehouse($r, $my_warehouse).' / '.$r['quantity_on_hand'];
+		return self::display_item_quantity_in_warehouse_and_total($r, $my_warehouse, $nolink);
+	}
+	
+	public static function display_item_quantity_in_warehouse_and_total($r, $warehouse, $nolink=false, $custom_qty=null, $custom_label=null) {
+		if ($r['item_type']>=2) return '---';
+		if (!$warehouse) return $r['quantity_on_hand'];
+		if ($custom_qty===null) $custom_qty = self::get_item_quantity_in_warehouse($r, $warehouse);
+		$ret = $custom_qty.' / '.$r['quantity_on_hand'];
+		if ($custom_label===null) $custom_label = array(
+			'main'=>'Quantity on hand',
+			'in_one'=>'In <b>%s</b> warehouse',
+			'in_all'=>'In all warehouses',
+		);
+		if (!$nolink) $ret = Utils_TooltipCommon::create($ret, 
+			'<b>'.
+			Base_LangCommon::ts('Premium_Warehouse_Items_Location',$custom_label['main'].':').
+			'</b>'.
+			'<table border=0><tr><td style="width:5px;" /><td nowrap="1">'.
+			Base_LangCommon::ts('Premium_Warehouse_Items_Location',$custom_label['in_one'], array(Utils_RecordBrowserCommon::get_value('premium_warehouse',$warehouse,'warehouse'))).
+			'</td><td style="text-align:right;">'.
+			$custom_qty.
+			'</td></tr><tr><td style="width:5px;" /><td>'.
+			Base_LangCommon::ts('Premium_Warehouse_Items_Location',$custom_label['in_all']).
+			'</td><td style="text-align:right;">'.
+			$r['quantity_on_hand'].
+			'</td></tr></table>'
+			,false);
+		return $ret;
 	}
 	
 	public static function location_addon_parameters($record) {

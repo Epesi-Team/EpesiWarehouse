@@ -78,8 +78,12 @@ class Premium_Warehouse_Items_Orders extends Module {
 			$rb->set_header_properties(array('net_price'=>array('name'=>'Net Cost'), 'gross_price'=>array('name'=>'Gross Cost')));
 		if ($arg['transaction_type']==2) {
 			$cols['tax_rate'] = false;
-			$cols['total'] = false;
-			$cols['price'] = false;			
+			$cols['net_total'] = false;
+			$cols['net_price'] = false;			
+			$cols['tax_value'] = false;			
+			$cols['gross_total'] = false;			
+			$cols['debit'] = true;			
+			$cols['credit'] = true;			
 		}
 		$order = array(array('transaction_id'=>$arg['id']), $cols, array());
 		$rb->set_button(false);

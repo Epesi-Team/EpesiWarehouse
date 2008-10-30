@@ -45,7 +45,7 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 			array('name'=>'Address 2', 		'type'=>'text', 'param'=>'64', 'required'=>false, 'extra'=>true, 'visible'=>false, 'display_callback'=>array('CRM_ContactsCommon','maplink')),
 			array('name'=>'City',	 		'type'=>'text', 'param'=>'64', 'required'=>false, 'extra'=>true, 'visible'=>false, 'display_callback'=>array('CRM_ContactsCommon','maplink')),
 			array('name'=>'Country',		'type'=>'commondata', 'required'=>true, 'param'=>array('Countries'), 'extra'=>true, 'QFfield_callback'=>array('Data_CountriesCommon', 'QFfield_country')),
-			array('name'=>'Zone',			'type'=>'commondata', 'required'=>false, 'param'=>array('Countries','Country'), 'extra'=>true, 'visible'=>true, 'QFfield_callback'=>array('Data_CountriesCommon', 'QFfield_zone')),
+			array('name'=>'Zone',			'type'=>'commondata', 'required'=>false, 'param'=>array('Countries','Country'), 'extra'=>true, 'visible'=>false, 'QFfield_callback'=>array('Data_CountriesCommon', 'QFfield_zone')),
 			array('name'=>'Postal Code',	'type'=>'text', 'param'=>'64', 'required'=>false, 'extra'=>true, 'visible'=>false),
 			array('name'=>'Phone',	 		'type'=>'text', 'param'=>'64', 'required'=>false, 'extra'=>true, 'visible'=>false)
 		);
@@ -71,6 +71,8 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 			array('name'=>'Item SKU', 			'type'=>'select', 'required'=>true, 'param'=>'premium_warehouse_items::SKU|Item Name;Premium_Warehouse_Items_OrdersCommon::items_crits', 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_item_sku'), 'QFfield_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'QFfield_item_name')),
 
 			array('name'=>'Item Name', 			'type'=>'text', 'required'=>true, 'param'=>'128', 'extra'=>false, 'visible'=>true),
+			array('name'=>'Debit',				'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>false, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_debit')),
+			array('name'=>'Credit',				'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>false, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_credit')),
 			array('name'=>'Serial',				'type'=>'text', 'required'=>false, 'param'=>'128', 'extra'=>false, 'visible'=>true, 'QFfield_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'QFfield_serial')),
 			array('name'=>'Quantity',			'type'=>'integer', 'required'=>true, 'extra'=>false, 'visible'=>true, 'QFfield_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'QFfield_quantity')),
 			array('name'=>'Net Price', 			'type'=>'currency', 'required'=>true, 'extra'=>false, 'visible'=>true),
@@ -111,8 +113,8 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 
 		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items', 'Quantity on Route', 'calculated', true, false, '', 'integer', false, false, 10);
 		Utils_RecordBrowserCommon::set_display_method('premium_warehouse_items', 'Quantity on Route', 'Premium_Warehouse_Items_OrdersCommon', 'display_quantity_on_route');
-		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items', 'Last Sale Price', 'currency', false, false, '', '', false, false);
-		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items', 'Last Purchase Price', 'currency', false, false, '', '', false, false);
+		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items', 'Last Sale Price', 'currency', false, false, '', 'currency', false, false);
+		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items', 'Last Purchase Price', 'currency', false, false, '', 'currency', false, false);
 	
 		$this->add_aco('browse orders',array('Employee'));
 		$this->add_aco('view orders',array('Employee'));
