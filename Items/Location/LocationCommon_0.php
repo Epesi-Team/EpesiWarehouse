@@ -43,9 +43,13 @@ class Premium_Warehouse_Items_LocationCommon extends ModuleCommon {
 		return false;
     }
 	
-	public static function get_item_quantity_in_warehouse($r, $warehouse) {
+	public static function get_item_quantity_in_warehouse($r, $warehouse=null, $rental=false) {
 		$my_quantity = 0;
-		$recs = Utils_RecordBrowserCommon::get_records('premium_warehouse_location', array('item_sku'=>$r['id'], 'warehouse'=>$warehouse), array('quantity'));
+		$crits = array('item_sku'=>$r['id']);
+		if ($warehouse!==null) $crits['warehouse'] = $warehouse;
+		if ($rental) $crits['rental_item']=1;
+		else $crits['rental_item']=0;
+		$recs = Utils_RecordBrowserCommon::get_records('premium_warehouse_location', $crits, array('quantity'));
 		foreach ($recs as $v) {
 			$my_quantity += $v['quantity'];
 		}

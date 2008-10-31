@@ -27,7 +27,8 @@ class Premium_Warehouse_Items_Orders extends Module {
 		$this->rb->set_defaults(array(
 			$lang->t('Purchase')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'purchase.png'), 'defaults'=>array_merge($defaults,array('transaction_type'=>0))),
 			$lang->t('Sale')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'sale.png'), 'defaults'=>array_merge($defaults,array('transaction_type'=>1))),
-			$lang->t('Inv. Adjustment')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'inv_adj.png'), 'defaults'=>array_merge($defaults,array('transaction_type'=>2)))
+			$lang->t('Inv. Adjustment')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'inv_adj.png'), 'defaults'=>array_merge($defaults,array('transaction_type'=>2))),
+			$lang->t('Rental')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'rental.png'), 'defaults'=>array_merge($defaults,array('transaction_type'=>3)))
 			), true);
 		$this->rb->set_header_properties(array('terms'=>array('width'=>1, 'wrapmode'=>'nowrap')));
 		$this->display_module($this->rb);
@@ -85,11 +86,39 @@ class Premium_Warehouse_Items_Orders extends Module {
 			$cols['debit'] = true;			
 			$cols['credit'] = true;			
 		}
+		if ($arg['transaction_type']==3) {
+			$cols['tax_rate'] = false;
+			$cols['net_total'] = false;
+			$cols['net_price'] = false;			
+			$cols['tax_value'] = false;			
+			$cols['gross_total'] = false;			
+			$cols['quantity'] = false;
+			$cols['debit'] = false;
+			$cols['credit'] = false;
+			$rb->set_additional_actions_method($this, 'actions_for_order_details');
+		}
 		$order = array(array('transaction_id'=>$arg['id']), $cols, array());
 		$rb->set_button(false);
 		$rb->set_defaults(array('transaction_id'=>$arg['id']));
 		$rb->enable_quick_new_records();
 		$this->display_module($rb,$order,'show_data');
+	}
+	
+	public function mark_as_returned($r) {
+		$order = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $r['transaction_id']);
+		Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders_details', $r['id'], array('returned'=>1));
+		$location_id = Utils_RecordBrowserCommon::get_id('premium_warehouse_location',array('item_sku','warehouse','serial','rental_item'),array($r['item_sku'],$order['warehouse'],$r['serial'],1));
+		if ($location_id===null || $location_id===false) {
+			Utils_RecordBrowserCommon::new_record('premium_warehouse_location', array('quantity'=>1, 'item_sku'=>$r['item_sku'], 'warehouse'=>$order['warehouse'], 'serial'=>$r['serial'], 'rental_item'=>1));
+		} else {
+			Utils_RecordBrowserCommon::update_record('premium_warehouse_location', $location_id, array('quantity'=>Utils_RecordBrowserCommon::get_value('premium_warehouse_location', $location_id, 'quantity')+1));
+		}
+		Utils_RecordBrowserCommon::update_record('premium_warehouse_items', $r['item_sku'], array('quantity_on_hand'=>Utils_RecordBrowserCommon::get_value('premium_warehouse_items', $r['item_sku'], 'quantity_on_hand')+1));
+		return false;
+	}
+	
+	public function actions_for_order_details($r, & $gb_row) {
+		if (!$r['returned']) $gb_row->add_action($this->create_callback_href(array($this,'mark_as_returned'),array($r)),'Restore', 'Mark as returned');
 	}
 
 	public function attachment_addon($arg){

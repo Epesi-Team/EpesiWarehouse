@@ -31,7 +31,7 @@ if ($trans['transaction_type']<2) {
 		$js .= 'focus_by_id("serial");';
 		if ($trans['transaction_type']==1) {
 			$js .= 'var new_opts={';
-			$locs = Utils_RecordBrowserCommon::get_records('premium_warehouse_location',array('item_sku'=>$id, '!quantity'=>0, 'warehouse'=>$trans['warehouse']), array(), array('serial'=>'ASC'));
+			$locs = Utils_RecordBrowserCommon::get_records('premium_warehouse_location',array('item_sku'=>$id, '!quantity'=>0, 'warehouse'=>$trans['warehouse'], 'rental_item'=>0), array(), array('serial'=>'ASC'));
 			$first = true;
 			foreach ($locs as $k=>$v) {
 				if (!$first) $js .= ',';
@@ -53,7 +53,8 @@ if ($trans['transaction_type']<2) {
 		$js .= 'if(!$("quantity").value)$("quantity").value=1;';
 		$js .= 'focus_by_id("quantity");';
 	}
-} else {
+}
+if ($trans['transaction_type']==2) {
 	$js .= '$("quantity").value=1;';
 	$js .= '$("serial").style.display="none";';
 	if ($rec['item_type']==1) {
@@ -84,6 +85,23 @@ if ($trans['transaction_type']<2) {
 		if ($location_id!==null) $js .= '$("order_details_debit").style.display="inline";';
 		else $js .= '$("order_details_debit").style.display="none";';
 	}
+}
+if ($trans['transaction_type']==3) {
+	$js .= 'var new_opts={';
+	$locs = Utils_RecordBrowserCommon::get_records('premium_warehouse_location',array('item_sku'=>$id, '!quantity'=>0, 'warehouse'=>$trans['warehouse'], 'rental_item'=>1), array(), array('serial'=>'ASC'));
+	$first = true;
+	foreach ($locs as $k=>$v) {
+		if (!$first) $js .= ',';
+		$first = false;
+		$js .= '"'.$v['serial'].'":"'.$v['serial'].'"';
+	}
+	$js .= '};';
+	$js .= 'var obj=$("serial");';
+	$js .= 'var opts=obj.options;';
+	$js .= 'opts.length=0;';
+	$js .= 'for(y in new_opts) {';
+	$js .= 'opts[opts.length] = new Option(new_opts[y],y);';
+	$js .= '}';
 }
 
 print($js);

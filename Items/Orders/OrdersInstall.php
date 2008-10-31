@@ -22,6 +22,7 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 			array('name'=>'Ref No', 		'type'=>'text', 'param'=>'64', 'required'=>true, 'extra'=>false, 'visible'=>true),
 			array('name'=>'Employee', 		'type'=>'crm_contact', 'param'=>array('field_type'=>'select','crits'=>array('Premium_Warehouse_ItemsCommon','employee_crits'), 'format'=>array('CRM_ContactsCommon','contact_format_no_company')), 'required'=>true, 'extra'=>false, 'visible'=>true),
 			array('name'=>'Transaction Date','type'=>'date', 'required'=>true, 'extra'=>false, 'visible'=>true),
+			array('name'=>'Return Date',	'type'=>'date', 'required'=>false, 'extra'=>false, 'visible'=>false),
 			array('name'=>'Payment Type', 	'type'=>'select', 'param'=>'__COMMON__::Premium_Items_Orders_Payment_Types', 'required'=>false, 'extra'=>false, 'visible'=>false),
 			array('name'=>'Payment No', 	'type'=>'text', 'param'=>'64', 'required'=>false, 'extra'=>false, 'visible'=>false),
 			array('name'=>'Shipment Type', 	'type'=>'select', 'param'=>'__COMMON__::Premium_Items_Orders_Shipment_Types', 'required'=>false, 'extra'=>false, 'visible'=>false),
@@ -67,6 +68,8 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 			array('name'=>'Transaction Type', 	'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_transaction_type')),
 			array('name'=>'Transaction Date', 	'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_transaction_date')),
 			array('name'=>'Warehouse', 			'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_transaction_warehouse')),
+			array('name'=>'Return Date', 		'type'=>'date', 'required'=>false, 'extra'=>false, 'visible'=>false),
+			array('name'=>'Returned', 			'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>false),
 
 			array('name'=>'Item SKU', 			'type'=>'select', 'required'=>true, 'param'=>'premium_warehouse_items::SKU|Item Name;Premium_Warehouse_Items_OrdersCommon::items_crits', 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_item_sku'), 'QFfield_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'QFfield_item_name')),
 
@@ -106,7 +109,7 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 // ************ other ************** //
 		Utils_RecordBrowserCommon::set_access_callback('premium_warehouse_items', 'Premium_Warehouse_Items_OrdersCommon', 'access_items');
 
-		Utils_CommonDataCommon::new_array('Premium_Items_Orders_Trans_Types',array(0=>'Purchase',1=>'Sale',2=>'Inventory Adjustment'));
+		Utils_CommonDataCommon::new_array('Premium_Items_Orders_Trans_Types',array(0=>'Purchase',1=>'Sale',2=>'Inventory Adjustment',3=>'Rental'));
 		Utils_CommonDataCommon::new_array('Premium_Items_Orders_Payment_Types',array(0=>'Cash',1=>'Check'));
 		Utils_CommonDataCommon::new_array('Premium_Items_Orders_Shipment_Types',array(0=>'Acceptance',1=>'Mail delivery'));
 		Utils_CommonDataCommon::new_array('Premium_Items_Orders_Terms',array(0=>'Due on Receipt',15=>'Net 15',30=>'Net 30'));
