@@ -194,21 +194,32 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		return $r['quantity']>0?$r['quantity']:'';
 	}
 	
+	public static function display_serial($r, $nolink){
+		if (!is_numeric($r['serial'])) return $r['serial'];
+		return Utils_RecordBrowserCommon::get_value('premium_warehouse_location',$r['serial'],'serial');
+	}
+	
+	public static function get_trans() {
+		if (!self::$trans) self::$trans = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders',Utils_RecordBrowser::$last_record['transaction_id']);
+	}
+	
 	public static function QFfield_serial(&$form, $field, $label, $mode, $default){
+		self::get_trans();
 		if ($mode=='view' || ($mode=='edit' && self::$trans['transaction_type']==1)) {
 			$form->addElement('static', $field, $label);
-			$form->setDefaults(array($field=>$default));
+			if (is_numeric($default)) $form->setDefaults(array($field=>Utils_RecordBrowserCommon::get_value('premium_warehouse_location',$default,'serial')));
 		} else {
 			if (self::$trans['transaction_type']==1 || self::$trans['transaction_type']==3) {
 				$form->addElement('select', $field, $label, array(), array('id'=>'serial'));
 			} else {
 				$form->addElement('text', $field, $label, array('id'=>'serial'));
-				if ($mode=='edit') $form->setDefaults(array($field=>$default));
+				if ($mode=='edit' && is_numeric($default)) $form->setDefaults(array($field=>Utils_RecordBrowserCommon::get_value('premium_warehouse_location',$default,'serial')));
 			}
 		}
 	}
 	
 	public static function QFfield_item_name(&$form, $field, $label, $mode, $default){
+		self::get_trans();
 		if (self::$trans['transaction_type']==2) {
 			eval_js('$("'.Utils_RecordBrowserCommon::get_calcualted_id('premium_warehouse_items_orders_details', 'debit', null).'").innerHTML="";');
 			eval_js('$("'.Utils_RecordBrowserCommon::get_calcualted_id('premium_warehouse_items_orders_details', 'credit', null).'").innerHTML="";');
@@ -269,6 +280,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	}
 
 	public static function check_qty_on_hand($data){
+		self::get_trans();
 //		if (intval($data['quantity'])!=$data['quantity']) return array('quantity'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders', 'Invallid amount.'));
 		if (self::$trans['transaction_type']==1) {
 			if ($data['quantity']<=0) return array('quantity'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders', 'Invallid amount.'));
@@ -421,46 +433,78 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		return '#'.str_pad($id, 6, '0', STR_PAD_LEFT);
 	}
 
-	public static function change_total_qty($details, $action=null, $force_change=false) {
+	public static function change_total_qty(& $details, $action=null, $force_change=false) {
 		$item_id = $details['item_sku'];
 		$order = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $details['transaction_id']);
 		if ($order['transaction_type']==0 && $order['delivered']==0 && !$force_change) return;
 		if ($order['transaction_type']==3 && $details['returned'] && ($action=='delete' || $action=='restore')) return;
 		$item = Utils_RecordBrowserCommon::get_record('premium_warehouse_items', $item_id);
 		$new_qty = $item['quantity_on_hand'];
-		$sp = ($item['item_type']==1);
-		if ($action!=='add') $old_details = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders_details', $details['id']);
-		if (!$sp) $location_id = Utils_RecordBrowserCommon::get_id('premium_warehouse_location',array('item_sku','warehouse'),array($item_id,$order['warehouse']));
-		else {
-			if ($action=='add') $location_id = Utils_RecordBrowserCommon::get_id('premium_warehouse_location',array('item_sku','warehouse','serial','rental_item'),array($item_id,$order['warehouse'],$details['serial'],($order['transaction_type']==3)?1:0));
-			else $location_id = Utils_RecordBrowserCommon::get_id('premium_warehouse_location',array('item_sku','warehouse','serial','rental_item'),array($item_id,$order['warehouse'],$old_details['serial'],($order['transaction_type']==3)?1:0));
-		}
-		if ($action!=='add' && $action!=='restore') {
+		if ($item['item_type']==1) {
+			$sale = ($order['transaction_type']==1 || $order['transaction_type']==3 || ($order['transaction_type']==2 && $order['quantity']==-1));
+			if ($action=='add' && !$sale) {
+				$loc_id = Utils_RecordBrowserCommon::new_record('premium_warehouse_location',array('item_sku'=>$item['id'], 'quantity'=>1, 'serial'=>$details['serial'], 'warehouse'=>$order['warehouse']));
+				$details['serial'] = $loc_id; 
+				$new_qty++;
+			}
+			if ($action=='restore' && !$sale) {
+				Utils_RecordBrowserCommon::restore_record('premium_warehouse_location',$details['serial']);
+				$new_qty++;
+			}
+			if (($action=='add' || $action=='restore') && $sale) {
+				Utils_RecordBrowserCommon::delete_record('premium_warehouse_location',$details['serial']);
+				$new_qty--;
+			}
+			if ($action=='delete') {
+				if ($sale) {
+					Utils_RecordBrowserCommon::restore_record('premium_warehouse_location', $details['serial']);
+					$new_qty++;
+				} else {
+					Utils_RecordBrowserCommon::delete_record('premium_warehouse_location', $details['serial']);
+					$new_qty--;
+				}
+			}
+			if ($action=='edit' && !$sale) {
+				$old_details = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders_details', $details['id']);
+				Utils_RecordBrowserCommon::update_record('premium_warehouse_location', $old_details['serial'], array('serial'=>$details['serial']));
+				$details['serial'] = $old_details['serial'];
+			}
+			if ($action=='edit' && $sale) {
+				$old_details = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders_details', $details['id']);
+				Utils_RecordBrowserCommon::restore_record('premium_warehouse_location',$old_details['serial']);
+				Utils_RecordBrowserCommon::delete_record('premium_warehouse_location',$details['serial']);
+			}
+			Utils_RecordBrowserCommon::update_record('premium_warehouse_items', $item_id, array('quantity_on_hand'=>$new_qty));
+		} else {
+			if ($action!=='add') $old_details = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders_details', $details['id']);
+			if ($action!=='add' && $action!=='restore') {
+				$location_id = Utils_RecordBrowserCommon::get_id('premium_warehouse_location',array('item_sku','warehouse'),array($item_id,$order['warehouse']));
+				if ($order['transaction_type']==1 || $order['transaction_type']==3) $mult = -1;
+				else $mult = 1;
+				$new_qty = $new_qty-$old_details['quantity']*$mult;
+				if ($location_id===false ||$location_id===null)
+					$location_id = Utils_RecordBrowserCommon::new_record('premium_warehouse_location', array('item_sku'=>$item_id, 'warehouse'=>$order['warehouse'], 'quantity'=>-$old_details['quantity']*$mult, 'serial'=>$old_details['serial'],'rental_item'=>($order['transaction_type']==3)?1:0));
+				else {
+					$new_loc_qty = Utils_RecordBrowserCommon::get_value('premium_warehouse_location', $location_id, 'quantity')-$old_details['quantity']*$mult;
+					if ($new_loc_qty===0) Utils_RecordBrowserCommon::delete_record('premium_warehouse_location', $location_id, true);
+					Utils_RecordBrowserCommon::update_record('premium_warehouse_location', $location_id, array('quantity'=>$new_loc_qty, 'serial'=>$old_details['serial']));
+				}
+			}
 			if ($order['transaction_type']==1 || $order['transaction_type']==3) $mult = -1;
 			else $mult = 1;
-			$new_qty = $new_qty-$old_details['quantity']*$mult;
-			if ($location_id===false ||$location_id===null)
-				$location_id = Utils_RecordBrowserCommon::new_record('premium_warehouse_location', array('item_sku'=>$item_id, 'warehouse'=>$order['warehouse'], 'quantity'=>-$old_details['quantity']*$mult, 'serial'=>$old_details['serial'],'rental_item'=>($order['transaction_type']==3)?1:0));
-			else {
-				$new_loc_qty = Utils_RecordBrowserCommon::get_value('premium_warehouse_location', $location_id, 'quantity')-$old_details['quantity']*$mult;
-				if ($new_loc_qty===0) Utils_RecordBrowserCommon::delete_record('premium_warehouse_location', $location_id, true);
-				else Utils_RecordBrowserCommon::update_record('premium_warehouse_location', $location_id, array('quantity'=>$new_loc_qty, 'serial'=>$old_details['serial']));
+			if ($action!=='delete') {
+				$location_id = Utils_RecordBrowserCommon::get_id('premium_warehouse_location',array('item_sku','warehouse'),array($item_id,$order['warehouse']));
+				$new_qty = $new_qty+$details['quantity']*$mult;
+				if ($location_id===false ||$location_id===null)
+					Utils_RecordBrowserCommon::new_record('premium_warehouse_location', array('item_sku'=>$item_id, 'warehouse'=>$order['warehouse'], 'quantity'=>+$details['quantity']*$mult, 'serial'=>$details['serial'],'rental_item'=>($order['transaction_type']==3)?1:0));
+				else {
+					$new_loc_qty = Utils_RecordBrowserCommon::get_value('premium_warehouse_location', $location_id, 'quantity')+$details['quantity']*$mult;
+					if ($new_loc_qty===0) Utils_RecordBrowserCommon::delete_record('premium_warehouse_location', $location_id, true);
+					else Utils_RecordBrowserCommon::update_record('premium_warehouse_location', $location_id, array('quantity'=>$new_loc_qty, 'serial'=>$details['serial']));
+				}
 			}
+			Utils_RecordBrowserCommon::update_record('premium_warehouse_items', $item_id, array('quantity_on_hand'=>$new_qty));
 		}
-		if ($order['transaction_type']==1 || $order['transaction_type']==3) $mult = -1;
-		else $mult = 1;
-		if ($sp && $action!=='add') $location_id = Utils_RecordBrowserCommon::get_id('premium_warehouse_location',array('item_sku','warehouse','serial','rental_item'),array($item_id,$order['warehouse'],$details['serial'],($order['transaction_type']==3)?1:0));
-		if ($action!=='delete') {
-			$new_qty = $new_qty+$details['quantity']*$mult;
-			if ($location_id===false ||$location_id===null)
-				Utils_RecordBrowserCommon::new_record('premium_warehouse_location', array('item_sku'=>$item_id, 'warehouse'=>$order['warehouse'], 'quantity'=>+$details['quantity']*$mult, 'serial'=>$details['serial'],'rental_item'=>($order['transaction_type']==3)?1:0));
-			else {
-				$new_loc_qty = Utils_RecordBrowserCommon::get_value('premium_warehouse_location', $location_id, 'quantity')+$details['quantity']*$mult;
-				if ($new_loc_qty===0) Utils_RecordBrowserCommon::delete_record('premium_warehouse_location', $location_id, true);
-				else Utils_RecordBrowserCommon::update_record('premium_warehouse_location', $location_id, array('quantity'=>$new_loc_qty, 'serial'=>$details['serial']));
-			}
-		}
-		Utils_RecordBrowserCommon::update_record('premium_warehouse_items', $item_id, array('quantity_on_hand'=>$new_qty));
 	}
 	
 	public static function submit_order($values, $mode) {
@@ -554,7 +598,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			case 'view':
 				return;
 			case 'edit':
-				self::change_total_qty($values);
+				self::change_total_qty($values, 'edit');
 				return $values;
 			case 'added':
 				location(array());

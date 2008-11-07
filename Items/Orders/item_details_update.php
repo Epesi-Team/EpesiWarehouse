@@ -36,7 +36,7 @@ if ($trans['transaction_type']<2) {
 			foreach ($locs as $k=>$v) {
 				if (!$first) $js .= ',';
 				$first = false;
-				$js .= '"'.$v['serial'].'":"'.$v['serial'].'"';
+				$js .= '"'.$v['id'].'":"'.$v['serial'].'"';
 			}
 			$js .= '};';
 			$js .= 'var obj=$("serial");';

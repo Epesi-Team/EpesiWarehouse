@@ -25,14 +25,7 @@ class Premium_Warehouse_Items_Location extends Module {
 	}
 	
 	public function set_rental($r, $state=true){
-		if ($r['quantity']-1==0) Utils_RecordBrowserCommon::delete_record('premium_warehouse_location', $r['id'], true);
-		else Utils_RecordBrowserCommon::update_record('premium_warehouse_location', $r['id'], array('quantity'=>$r['quantity']-1));
-		$location_id = Utils_RecordBrowserCommon::get_id('premium_warehouse_location',array('item_sku','warehouse','serial','rental_item'),array($r['item_sku'],$r['warehouse'],$r['serial'],$r['rental_item']?0:1));
-		if ($location_id===null || $location_id===false) {
-			Utils_RecordBrowserCommon::new_record('premium_warehouse_location', array('quantity'=>1, 'item_sku'=>$r['item_sku'], 'warehouse'=>$r['warehouse'], 'serial'=>$r['serial'], 'rental_item'=>$state?1:0));
-		} else {
-			Utils_RecordBrowserCommon::update_record('premium_warehouse_location', $location_id, array('quantity'=>Utils_RecordBrowserCommon::get_value('premium_warehouse_location', $location_id, 'quantity')+1));
-		}
+		Utils_RecordBrowserCommon::update_record('premium_warehouse_location', $r['id'], array('rental_item'=>$state?1:0));
 		return false;
 	}
 
