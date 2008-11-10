@@ -4,7 +4,7 @@
  * @author abisaga@telaxus.com
  * @copyright abisaga@telaxus.com
  * @license SPL
- * @version 0.3
+ * @version 0.9
  * @package premium-warehouse
  */
 defined("_VALID_ACCESS") || die('Direct access forbidden');
@@ -95,26 +95,28 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 			case 'add':
 				return $values;
 			case 'view':
-				// TODO: Check if module installed
-				$my_trans = Base_User_SettingsCommon::get('Premium_Warehouse_Items_Orders','my_transaction');
-				if ($my_trans) {
-					$trans = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $my_trans);
-					if ($trans['paid'] || $trans['delivered']) {
-						Base_User_SettingsCommon::save('Premium_Warehouse_Items_Orders','my_transaction','');
-						return;
+				if (ModuleManager::is_installed('Premium_Warehouse_Items_Orders')>=0) {
+					$my_trans = Base_User_SettingsCommon::get('Premium_Warehouse_Items_Orders','my_transaction');
+					if ($my_trans) {
+						$trans = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $my_trans);
+						if (!$trans) return;
+						if (!Utils_RecordBrowserCommon::get_access('premium_warehouse_items_orders','edit',$trans)) {
+							Base_User_SettingsCommon::save('Premium_Warehouse_Items_Orders','my_transaction','');
+							return;
+						}
+						$icon = Base_ThemeCommon::get_template_file('Premium_Warehouse_Items_Orders','deactivate.png');
+						$label = Base_LangCommon::ts('Utils_Watchdog','Add to my Trans.');
+						$defaults = array(
+							'transaction_id'=>$my_trans,
+							'item_sku'=>$values['id'],
+							'quantity'=>1,
+							'item_name'=>Utils_RecordBrowserCommon::get_value('premium_warehouse_items', $values['id'], 'item_name'),
+							'net_price'=>Utils_RecordBrowserCommon::get_value('premium_warehouse_items', $values['id'], 'net_price'),
+							'tax_rate'=>Utils_RecordBrowserCommon::get_value('premium_warehouse_items', $values['id'], 'tax_rate'),
+							'single_pieces'=>Utils_RecordBrowserCommon::get_value('premium_warehouse_items', $values['id'], 'item_type')==1
+						);
+						Base_ActionBarCommon::add($icon,$label,Utils_RecordBrowserCommon::create_new_record_href('premium_warehouse_items_orders_details', $defaults,'add_to_order'));
 					}
-					$icon = Base_ThemeCommon::get_template_file('Premium_Warehouse_Items_Orders','deactivate.png');
-					$label = Base_LangCommon::ts('Utils_Watchdog','Add to my Trans.');
-					$defaults = array(
-						'transaction_id'=>$my_trans,
-						'item_sku'=>$values['id'],
-						'quantity'=>1,
-						'item_name'=>Utils_RecordBrowserCommon::get_value('premium_warehouse_items', $values['id'], 'item_name'),
-						'net_price'=>Utils_RecordBrowserCommon::get_value('premium_warehouse_items', $values['id'], 'net_price'),
-						'tax_rate'=>Utils_RecordBrowserCommon::get_value('premium_warehouse_items', $values['id'], 'tax_rate'),
-						'single_pieces'=>Utils_RecordBrowserCommon::get_value('premium_warehouse_items', $values['id'], 'item_type')==1
-					);
-					Base_ActionBarCommon::add($icon,$label,Utils_RecordBrowserCommon::create_new_record_href('premium_warehouse_items_orders_details', $defaults,'add_to_order'));
 				}
 				return;
 			case 'edit':

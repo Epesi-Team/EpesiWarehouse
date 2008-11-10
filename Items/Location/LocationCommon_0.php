@@ -4,7 +4,7 @@
  * @author abisaga@telaxus.com
  * @copyright abisaga@telaxus.com
  * @license SPL
- * @version 0.3
+ * @version 0.9
  * @package premium-warehouse
  */
 defined("_VALID_ACCESS") || die('Direct access forbidden');
@@ -36,9 +36,9 @@ class Premium_Warehouse_Items_LocationCommon extends ModuleCommon {
 			case 'add':
 			case 'browse':	return $i->acl_check('browse location');
 			case 'view':	return true;
-			case 'edit':	return false;
-			case 'delete':	return $i->acl_check('delete location');
-			case 'fields':	return array();
+			case 'edit':	return true;
+			case 'delete':	return false;
+			case 'fields':	return array('item_sku'=>'read-only', 'quantity'=>'read-only', 'warehouse'=>'read-only');
 		}
 		return false;
     }

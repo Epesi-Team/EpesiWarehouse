@@ -31,7 +31,7 @@ if ($trans['transaction_type']<2) {
 		$js .= 'focus_by_id("serial");';
 		if ($trans['transaction_type']==1) {
 			$js .= 'var new_opts={';
-			$locs = Utils_RecordBrowserCommon::get_records('premium_warehouse_location',array('item_sku'=>$id, '!quantity'=>0, 'warehouse'=>$trans['warehouse'], 'rental_item'=>0), array(), array('serial'=>'ASC'));
+			$locs = Utils_RecordBrowserCommon::get_records('premium_warehouse_location',array('item_sku'=>$id, '!quantity'=>0, 'warehouse'=>$trans['warehouse'], 'rental_item'=>array('',0)), array(), array('serial'=>'ASC'));
 			$first = true;
 			foreach ($locs as $k=>$v) {
 				if (!$first) $js .= ',';
@@ -69,7 +69,7 @@ if ($trans['transaction_type']==2) {
 		foreach ($locs as $k=>$v) {
 			if (!$first) $js .= ',';
 			$first = false;
-			$js .= '"'.$v['serial'].'":"'.$v['serial'].'"';
+			$js .= '"'.$v['id'].'":"'.$v['serial'].'"';
 		}
 		$js .= '};';
 		$js .= 'var obj=$("serial_debit");';
@@ -93,7 +93,7 @@ if ($trans['transaction_type']==3) {
 	foreach ($locs as $k=>$v) {
 		if (!$first) $js .= ',';
 		$first = false;
-		$js .= '"'.$v['serial'].'":"'.$v['serial'].'"';
+		$js .= '"'.$v['id'].'":"'.$v['serial'].'"';
 	}
 	$js .= '};';
 	$js .= 'var obj=$("serial");';

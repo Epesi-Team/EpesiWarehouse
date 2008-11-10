@@ -4,7 +4,7 @@
  * @author abisaga@telaxus.com
  * @copyright abisaga@telaxus.com
  * @license SPL
- * @version 0.3
+ * @version 0.9
  * @package premium-warehouse
  */
 defined("_VALID_ACCESS") || die('Direct access forbidden');
@@ -145,7 +145,7 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 	}
 	
 	public function version() {
-		return array("0.1");
+		return array("0.9");
 	}
 	
 	public function requires($v) {

@@ -4,7 +4,7 @@
  * @author abisaga@telaxus.com
  * @copyright abisaga@telaxus.com
  * @license SPL
- * @version 0.3
+ * @version 0.9
  * @package premium-warehouse
  */
 defined("_VALID_ACCESS") || die('Direct access forbidden');
