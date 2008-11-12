@@ -1,5 +1,5 @@
 <?php
-if(!isset($_POST['parameters']) || !isset($_POST['rec_id']))
+if(!isset($_POST['parameters']) || !isset($_POST['rec_id']) || !isset($_POST['cid']))
 	die('alert(\'Invalid request\')');
 
 define('JS_OUTPUT',1);
