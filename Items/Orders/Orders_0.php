@@ -87,14 +87,18 @@ class Premium_Warehouse_Items_Orders extends Module {
 			$cols['credit'] = true;			
 		}
 		if ($arg['transaction_type']==3) {
-			$cols['tax_rate'] = false;
-			$cols['net_total'] = false;
-			$cols['net_price'] = false;			
-			$cols['tax_value'] = false;			
-			$cols['gross_total'] = false;			
+			if (!$arg['payment']) {
+				$cols['tax_rate'] = false;
+				$cols['net_total'] = false;
+				$cols['net_price'] = false;			
+				$cols['tax_value'] = false;			
+				$cols['gross_total'] = false;
+			}			
 			$cols['quantity'] = false;
 			$cols['debit'] = false;
 			$cols['credit'] = false;
+			$cols['return_date'] = true;
+			$rb->set_defaults(array('return_date'=>$arg['return_date']));
 			$rb->set_additional_actions_method($this, 'actions_for_order_details');
 		}
 		$order = array(array('transaction_id'=>$arg['id']), $cols, array());
@@ -107,13 +111,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 	public function mark_as_returned($r) {
 		$order = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $r['transaction_id']);
 		Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders_details', $r['id'], array('returned'=>1));
-		$location_id = Utils_RecordBrowserCommon::get_id('premium_warehouse_location',array('item_sku','warehouse','serial','rental_item'),array($r['item_sku'],$order['warehouse'],$r['serial'],1));
-		if ($location_id===null || $location_id===false) {
-			Utils_RecordBrowserCommon::new_record('premium_warehouse_location', array('quantity'=>1, 'item_sku'=>$r['item_sku'], 'warehouse'=>$order['warehouse'], 'serial'=>$r['serial'], 'rental_item'=>1));
-		} else {
-			Utils_RecordBrowserCommon::update_record('premium_warehouse_location', $location_id, array('quantity'=>Utils_RecordBrowserCommon::get_value('premium_warehouse_location', $location_id, 'quantity')+1));
-		}
-		Utils_RecordBrowserCommon::update_record('premium_warehouse_items', $r['item_sku'], array('quantity_on_hand'=>Utils_RecordBrowserCommon::get_value('premium_warehouse_items', $r['item_sku'], 'quantity_on_hand')+1));
+		Utils_RecordBrowserCommon::restore_record('premium_warehouse_location', $r['serial']);
 		return false;
 	}
 	

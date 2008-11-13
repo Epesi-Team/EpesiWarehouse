@@ -79,11 +79,15 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	}
 	
 	public static function display_total_value($r, $nolink=false) {
-		return $r['transaction_type']!=2?Utils_CurrencyFieldCommon::format(self::calculate_tax_and_total_value($r, 'total')):'---';
+		if ($r['transaction_type']==2 || ($r['transaction_type']==3 && !$r['payment']))
+			return '---';
+		return Utils_CurrencyFieldCommon::format(self::calculate_tax_and_total_value($r, 'total'));
 	}
 	
 	public static function display_tax_value($r, $nolink=false) {
-		return $r['transaction_type']!=2?Utils_CurrencyFieldCommon::format(self::calculate_tax_and_total_value($r, 'tax')):'---';
+		if ($r['transaction_type']==2 || ($r['transaction_type']==3 && !$r['payment']))
+			return '---';
+		return Utils_CurrencyFieldCommon::format(self::calculate_tax_and_total_value($r, 'tax'));
 	}
 
 	public static function display_transaction_id($r, $nolink) {
@@ -196,7 +200,19 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	
 	public static function display_serial($r, $nolink){
 		if (!is_numeric($r['serial'])) return $r['serial'];
-		return Utils_RecordBrowserCommon::get_value('premium_warehouse_location',$r['serial'],'serial');
+		return Premium_Warehouse_Items_LocationCommon::mark_used(Utils_RecordBrowserCommon::get_value('premium_warehouse_location',$r['serial'],'used')).Utils_RecordBrowserCommon::get_value('premium_warehouse_location',$r['serial'],'serial');
+	}
+	
+	public static function display_return_date($r, $nolink) {
+		if ($r['returned']) $icon = Base_ThemeCommon::get_template_file('Premium_Warehouse_Items_Orders','return_date_returned.png');
+		else {
+			if ($r['return_date']<date('Y-m-d')) $icon = Base_ThemeCommon::get_template_file('Premium_Warehouse_Items_Orders','return_date_overdue.png');
+			elseif ($r['return_date']<date('Y-m-d',strtotime('+3 days'))) $icon = Base_ThemeCommon::get_template_file('Premium_Warehouse_Items_Orders','return_date_nearing.png');
+		}
+		$ret = '';
+		if (isset($icon)) $ret = '<img src="'.$icon.'" />';
+		$ret .= $r['return_date'];
+		return $ret;
 	}
 	
 	public static function get_trans() {
@@ -205,7 +221,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	
 	public static function QFfield_serial(&$form, $field, $label, $mode, $default){
 		self::get_trans();
-		if ($mode=='view' || ($mode=='edit' && self::$trans['transaction_type']==1)) {
+		if ($mode=='view' || ($mode=='edit' && self::$trans['transaction_type']!=0 && self::$trans['transaction_type']!=2)) {
 			$form->addElement('static', $field, $label);
 			if (is_numeric($default)) $form->setDefaults(array($field=>Utils_RecordBrowserCommon::get_value('premium_warehouse_location',$default,'serial')));
 		} else {
@@ -240,6 +256,16 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			}
 			$recs = Utils_RecordBrowserCommon::get_records('premium_warehouse_items', $crits, array(), array('item_name'=>'ASC'));
 			$opts = array(''=>'---');
+			if (is_numeric($default)) {
+				$default_included = false;
+				foreach ($recs as $r) {
+					if ($r['id']==$default) {
+						$default_included = true;
+						break;
+					}
+				}
+				if (!$default_included) $recs[$default] = Utils_RecordBrowserCommon::get_record('premium_warehouse_items', $default);
+			}
 			foreach ($recs as $r) {
 				if ($r['item_type']>=2) {
 					$opts[$r['id']] = $r['item_name'];
@@ -247,9 +273,10 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 				}
 				$r['quantity_on_hand'] = Premium_Warehouse_Items_LocationCommon::get_item_quantity_in_warehouse($r, null, self::$trans['transaction_type']==3);
 				$qty_in_warehouse = Premium_Warehouse_Items_LocationCommon::get_item_quantity_in_warehouse($r, self::$trans['warehouse'], self::$trans['transaction_type']==3);
-				if ((self::$trans['transaction_type']==1 || self::$trans['transaction_type']==3) && $qty_in_warehouse==0) continue;
+				if ((self::$trans['transaction_type']==1 || self::$trans['transaction_type']==3) && $qty_in_warehouse==0 && $default!==$r['id']) continue;
 				$opts[$r['id']] = Base_LangCommon::ts('Premium_Warehouse_Items_Orders','%s, qty: %s', array($r['item_name'], Premium_Warehouse_items_LocationCommon::display_item_quantity_in_warehouse_and_total($r, self::$trans['warehouse'], true, $qty_in_warehouse)));
 			}
+			natcasesort($opts);
 			$form->addElement('select', $field, $label, $opts, array('id'=>$field));
 			if ($mode=='edit') $form->setDefaults(array($field=>$default));
 		} else {
@@ -340,9 +367,23 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 							else
 								$trans_id = $param['transaction_id'];
 							$trans = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $trans_id);
-							if ($trans['transaction_type']!=3) {
+							if ($trans['transaction_type']!=3 && $param=='new') {
 								$ret['return_date'] = 'hide';
 								$ret['returned'] = 'hide';
+							}
+							if ($trans['transaction_type']==3 && $param!='new') {
+								$ret['transaction_date'] = 'hide';
+								$ret['transaction_type'] = 'hide';
+								$ret['warehouse'] = 'hide';
+								$ret['debit'] = 'hide';
+								$ret['credit'] = 'hide';
+								$ret['net_price'] = 'hide';
+								$ret['net_total'] = 'hide';
+								$ret['tax_rate'] = 'hide';
+								$ret['tax_value'] = 'hide';
+								$ret['gross_total'] = 'hide';
+								$ret['quantity_on_hand'] = 'hide';
+								$ret['returned'] = 'read-only';
 							}
 							if ($trans['transaction_type']!=2 && $param=='new') {
 								$ret['credit'] = 'hide';
@@ -369,10 +410,24 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 							if (is_array($param)) {
 								$ret = array('transaction_type'=>'read-only','warehouse'=>'read-only','company'=>'hide','contact'=>'hide');
 								$tt = $param['transaction_type'];
+								$payment = $param['payment'];
 							}
 							if ($param=='new') {
 								$ret = array('transaction_type'=>'read-only','paid'=>'hide','delivered'=>'hide');
 								$tt = $defaults['transaction_type'];
+							}
+							if (isset($tt) && $tt!=3) {
+								$ret['payment'] = 'hide';
+							}
+							if (isset($payment) && !$payment) {
+								$ret['payment_type'] = 'hide';
+								$ret['payment_no'] = 'hide';
+								$ret['shipment_type'] = 'hide';
+								$ret['shipment_no'] = 'hide';
+								$ret['terms'] = 'hide';
+								$ret['total_value'] = 'hide';
+								$ret['tax_value'] = 'hide';
+								$ret['paid'] = 'hide';
 							}
 							if (isset($tt) && $tt==2) {
 								$ret['company'] = 'hide';
@@ -606,6 +661,9 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			case 'add':
 				$item_type=Utils_RecordBrowserCommon::get_value('premium_warehouse_items', $values['item_sku'], 'item_type');
 				if ($item_type==1) $values['quantity']=1;
+				if (self::$trans['transaction_type']==3) {
+					Utils_RecordBrowserCommon::update_record('premium_warehouse_location', $values['serial'], array('used'=>1));
+				}
 				if (self::$trans['transaction_type']==2) {
 					if ($item_type==1) {
 						if ($values['order_details_credit_or_debit']=='debit') {

@@ -30,6 +30,14 @@ class Premium_Warehouse_Items_LocationCommon extends ModuleCommon {
 		return Utils_RecordBrowserCommon::create_linked_label('premium_warehouse', 'Warehouse', $v['warehouse'], $nolink);
 	}
 
+    public static function mark_used($r) {
+    	if ($r) return '* ';
+    	else return '';
+    }
+    public static function display_serial($r, $nolink=false) {
+		return self::mark_used($r['used']).$r['serial'];
+	}
+
 	public static function access_location($action, $param){
 		$i = self::Instance();
 		switch ($action) {
