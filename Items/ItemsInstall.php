@@ -70,6 +70,10 @@ class Premium_Warehouse_ItemsInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::delete_addon('premium_warehouse', 'Premium/Warehouse/Items', 'warehouse_item_list_addon');
 		Utils_RecordBrowserCommon::delete_addon('premium_warehouse_items', 'Premium/Warehouse/Items', 'attachment_addon');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_warehouse_items');
+
+		Utils_CommonDataCommon::remove('Premium_Warehouse_Items_Type'); 
+		Utils_CommonDataCommon::remove('Premium_Warehouse_Items_Tax');
+		Utils_CommonDataCommon::remove('Premium_Warehouse_Items_Categories');
 		return true;
 	}
 	

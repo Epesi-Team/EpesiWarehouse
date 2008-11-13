@@ -143,6 +143,11 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::delete_addon('premium_warehouse_items', 'Premium/Warehouse/Items/Orders', 'transaction_history_addon');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_warehouse_items_orders');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_warehouse_items_orders_details');
+
+		Utils_CommonDataCommon::remove('Premium_Items_Orders_Trans_Types');
+		Utils_CommonDataCommon::remove('Premium_Items_Orders_Payment_Types');
+		Utils_CommonDataCommon::remove('Premium_Items_Orders_Shipment_Types');
+		Utils_CommonDataCommon::remove('Premium_Items_Orders_Terms');
 		return true;
 	}
 	
