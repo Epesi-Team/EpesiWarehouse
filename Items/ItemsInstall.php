@@ -22,6 +22,7 @@ class Premium_Warehouse_ItemsInstall extends ModuleInstall {
 			array('name'=>'Product Code', 	'type'=>'text', 'required'=>false, 'param'=>'32', 'extra'=>false, 'visible'=>false),
 			array('name'=>'UPC', 			'type'=>'text', 'required'=>false, 'param'=>'12', 'extra'=>false, 'visible'=>true),
 			array('name'=>'Quantity on Hand','type'=>'integer', 'required'=>true, 'extra'=>false, 'visible'=>true),
+			array('name'=>'Quantity Sold',	'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_ItemsCommon', 'display_quantity_sold')),
 			array('name'=>'Reorder point', 	'type'=>'integer', 'required'=>true, 'extra'=>false, 'visible'=>false),
 			array('name'=>'Manufacturer Part Number', 'type'=>'text', 'required'=>false, 'param'=>'32', 'extra'=>false, 'visible'=>true),
 			array('name'=>'Vendor',		 	'type'=>'crm_company', 'required'=>false, 'extra'=>false, 'visible'=>true, 'param'=>array('field_type'=>'select','crits'=>array('Premium_Warehouse_ItemsCommon','vendors_crits'))),

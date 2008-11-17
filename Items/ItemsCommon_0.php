@@ -38,6 +38,10 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 		return Utils_CurrencyFieldCommon::format(($r['net_price']*(100+$r['tax_rate']))/100);
 	}
 	
+	public static function display_quantity_sold($r, $nolink) {
+		return -$r['quantity_on_hand'];
+	}
+	
 	public static function access_items($action, $param){
 		$i = self::Instance();
 		switch ($action) {

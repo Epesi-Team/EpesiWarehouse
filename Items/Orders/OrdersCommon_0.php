@@ -472,9 +472,8 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 							return false;
 			case 'edit':	return $i->acl_check('edit items');
 			case 'delete':	return $i->acl_check('delete items');
-			case 'fields':	if ($param=='new') $param = $defaults; 
-							if ($param['item_type']==2 || $param['item_type']==3) return array('reorder_point'=>'hide','quantity_on_hand'=>'hide','item_type'=>'read-only','upc'=>'hide','manufacturer_part_number'=>'hide', 'quantity_on_route'=>'hide');
-							return array('quantity_on_hand'=>'read-only','item_type'=>'read-only');
+			case 'fields':	if ($param['item_type']==2 || $param['item_type']==3) return array('reorder_point'=>'hide','quantity_on_hand'=>'hide','item_type'=>'read-only','upc'=>'hide','manufacturer_part_number'=>'hide', 'quantity_on_route'=>'hide');
+							return array('quantity_on_hand'=>'read-only','item_type'=>'read-only','quantity_sold'=>'hide');
 		}
 		return false;
     }
