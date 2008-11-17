@@ -28,7 +28,7 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 			array('name'=>'Payment No', 	'type'=>'text', 'param'=>'64', 'required'=>false, 'extra'=>false, 'visible'=>false),
 			array('name'=>'Shipment Type', 	'type'=>'select', 'param'=>'__COMMON__::Premium_Items_Orders_Shipment_Types', 'required'=>false, 'extra'=>false, 'visible'=>false),
 			array('name'=>'Shipment No',	'type'=>'text', 'param'=>'64', 'required'=>false, 'extra'=>false, 'visible'=>false),
-			array('name'=>'Terms',			'type'=>'select', 'param'=>'__COMMON__::Premium_Items_Orders_Terms', 'required'=>true, 'extra'=>false, 'visible'=>true),
+			array('name'=>'Terms',			'type'=>'select', 'param'=>'__COMMON__::Premium_Items_Orders_Terms', 'required'=>false, 'extra'=>false, 'visible'=>true),
 			array('name'=>'Total Value',	'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_total_value'), 'style'=>'currency'),
 			array('name'=>'Tax Value',		'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_tax_value'), 'style'=>'currency'),
 			array('name'=>'Paid',			'type'=>'checkbox', 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_paid')),
