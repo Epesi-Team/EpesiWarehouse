@@ -161,7 +161,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 				Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $r['id'], array($desc['id']=>1));
 				unset($_REQUEST[$href_id]);
 				location(array());
-			} else $ret .= ' <a '.Module::create_href(array($href_id=>true)).'>['.Base_LangCommon::ts('Premium_Warehouse_Items_Orders','mark as paid').']</a>';
+			} else $ret .= ' <a '.Module::create_confirm_href(Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Are you sure you want to mark this transaction as Paid?'),array($href_id=>true)).'>['.Base_LangCommon::ts('Premium_Warehouse_Items_Orders','mark as paid').']</a>';
 		}
 		return $ret;
 	}
@@ -178,7 +178,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 				Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $r['id'], array($desc['id']=>1));
 				unset($_REQUEST[$href_id]);
 				location(array());
-			} else $ret .= ' <a '.Module::create_href(array($href_id=>true)).'>['.Base_LangCommon::ts('Premium_Warehouse_Items_Orders','mark as delivered').']';
+			} else $ret .= ' <a '.Module::create_confirm_href(Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Are you sure you want to mark this transaction as Paid?'),array($href_id=>true)).'>['.Base_LangCommon::ts('Premium_Warehouse_Items_Orders','mark as delivered').']';
 		}
 		return $ret;
 	}
