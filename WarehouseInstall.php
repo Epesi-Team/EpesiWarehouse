@@ -59,15 +59,15 @@ class Premium_WarehouseInstall extends ModuleInstall {
 	}
 	
 	public static function post_install() {
-		$loc = Base_RegionalSettingsCommon::get_default_location();
+		$main_company = CRM_ContactsCommon::get_company(CRM_ContactsCommon::get_main_company());
 		return array(
 				 array('type'=>'text','name'=>'warehouse','label'=>'Warehouse','default'=>'','param'=>array('maxlength'=>128), 'rule'=>array(array('type'=>'required','message'=>'Field required'))),
-			     array('type'=>'text','name'=>'address1','label'=>'Address 1','default'=>'','param'=>array('maxlength'=>64), 'rule'=>array(array('type'=>'required','message'=>'Field required'))),
-			     array('type'=>'text','name'=>'address2','label'=>'Address 2','default'=>'','param'=>array('maxlength'=>64)),
-			     array('type'=>'callback','name'=>'country','func'=>array('Premium_WarehouseInstall','country_element'),'default'=>$loc['country']),
-			     array('type'=>'callback','name'=>'state','func'=>array('Premium_WarehouseInstall','state_element'),'default'=>$loc['state']),
-			     array('type'=>'text','name'=>'city','label'=>'City','default'=>'','param'=>array('maxlength'=>64), 'rule'=>array(array('type'=>'required','message'=>'Field required'))),
-			     array('type'=>'text','name'=>'postal','label'=>'Postal Code','default'=>'','param'=>array('maxlength'=>64))
+			     array('type'=>'text','name'=>'address1','label'=>'Address 1','default'=>$main_company['address_1'],'param'=>array('maxlength'=>64), 'rule'=>array(array('type'=>'required','message'=>'Field required'))),
+			     array('type'=>'text','name'=>'address2','label'=>'Address 2','default'=>$main_company['address_2'],'param'=>array('maxlength'=>64)),
+			     array('type'=>'callback','name'=>'country','func'=>array('Premium_WarehouseInstall','country_element'),'default'=>$main_company['country']),
+			     array('type'=>'callback','name'=>'state','func'=>array('Premium_WarehouseInstall','state_element'),'default'=>$main_company['zone']),
+			     array('type'=>'text','name'=>'city','label'=>'City','default'=>$main_company['city'],'param'=>array('maxlength'=>64), 'rule'=>array(array('type'=>'required','message'=>'Field required'))),
+			     array('type'=>'text','name'=>'postal','label'=>'Postal Code','default'=>$main_company['postal_code'],'param'=>array('maxlength'=>64))
 //			     array('type'=>'text','name'=>'phone','label'=>'Phone','default'=>'','param'=>array('maxlength'=>64)),
 //			     array('type'=>'text','name'=>'fax','label'=>'Fax','default'=>'','param'=>array('maxlength'=>64)),
 //			     array('type'=>'text','name'=>'web','label'=>'Web address','default'=>'','param'=>array('maxlength'=>64))
