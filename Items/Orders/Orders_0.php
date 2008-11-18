@@ -62,9 +62,9 @@ class Premium_Warehouse_Items_Orders extends Module {
 	public function transaction_history_addon($arg){
 		// TODO: service?
 		$rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items_orders_details');
-		$order = array(array('item_sku'=>$arg['id']), array('quantity_on_hand'=>false,'item_name'=>false,'item_sku'=>false, ($arg['item_type']==1)?'quantity':'serial'=>false), array('transaction_id'=>'DESC'));
+		$order = array(array('item_name'=>$arg['id']), array('quantity_on_hand'=>false,'item_name'=>false,'item_name'=>false, ($arg['item_type']==1)?'quantity':'serial'=>false), array('transaction_id'=>'DESC'));
 		$rb->set_button(false);
-		$rb->set_defaults(array('item_sku'=>$arg['id']));
+		$rb->set_defaults(array('item_name'=>$arg['id']));
 		$this->display_module($rb,$order,'show_data');
 	}
 
@@ -105,6 +105,19 @@ class Premium_Warehouse_Items_Orders extends Module {
 		$rb->set_button(false);
 		$rb->set_defaults(array('transaction_id'=>$arg['id']));
 		$rb->enable_quick_new_records();
+		$rb->set_cut_lengths(array('description'=>50));
+		$rb->set_header_properties(array(
+			'item_name'=>array('width'=>1, 'wrapmode'=>'nowrap'),
+			'gross_total'=>array('width'=>1, 'wrapmode'=>'nowrap'),
+			'tax_value'=>array('width'=>1, 'wrapmode'=>'nowrap'),
+			'tax_rate'=>array('width'=>1, 'wrapmode'=>'nowrap'),
+			'net_total'=>array('width'=>1, 'wrapmode'=>'nowrap'),
+			'net_price'=>array('width'=>20, 'wrapmode'=>'nowrap'),
+			'debit'=>array('width'=>20, 'wrapmode'=>'nowrap'),
+			'credit'=>array('width'=>20, 'wrapmode'=>'nowrap'),
+			'quantity'=>array('width'=>20, 'wrapmode'=>'nowrap'),
+			'serial'=>array('width'=>40, 'wrapmode'=>'nowrap')
+		));
 		$this->display_module($rb,$order,'show_data');
 	}
 	

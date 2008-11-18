@@ -20,7 +20,7 @@ if (!isset($location_id) || !$location_id)
 	$location_id = null;
 
 $js = '';
-$js .= '$("item_name").value="'.$rec['item_name'].'";';
+$js .= '$("description").value="'.$rec['description'].'";';
 if ($trans['transaction_type']<2) {
 	$js .= '$("tax_rate").value="'.$rec['tax_rate'].'";';
 	$js .= 'if($("net_price"))$("net_price").value="'.($trans['transaction_type']==0?(isset($rec['last_purchase_price'])&&$rec['last_purchase_price']?$rec['last_purchase_price']:$rec['cost']):(isset($rec['last_sale_price'])&&$rec['last_sale_price']?$rec['last_sale_price']:$rec['net_price'])).'";';
