@@ -113,7 +113,7 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 
 		Utils_CommonDataCommon::new_array('Premium_Items_Orders_Trans_Types',array(0=>'Purchase',1=>'Sale',2=>'Inventory Adjustment',3=>'Rental'));
 		Utils_CommonDataCommon::new_array('Premium_Items_Orders_Payment_Types',array(0=>'Cash',1=>'Check'));
-		Utils_CommonDataCommon::new_array('Premium_Items_Orders_Shipment_Types',array(0=>'Acceptance',1=>'Mail delivery'));
+		Utils_CommonDataCommon::new_array('Premium_Items_Orders_Shipment_Types',array(0=>'Pickup',1=>'USPS',2=>'UPS',3=>'DHL',4=>'FedEx',5=>'Courier',6=>'Other'));
 		Utils_CommonDataCommon::new_array('Premium_Items_Orders_Terms',array(0=>'Due on Receipt',15=>'Net 15',30=>'Net 30'));
 
 		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items', 'Quantity on Route', 'calculated', true, false, '', 'integer', false, false, 10);
