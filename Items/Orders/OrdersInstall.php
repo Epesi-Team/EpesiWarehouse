@@ -31,8 +31,7 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 			array('name'=>'Terms',			'type'=>'select', 'param'=>'__COMMON__::Premium_Items_Orders_Terms', 'required'=>false, 'extra'=>false, 'visible'=>true),
 			array('name'=>'Total Value',	'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_total_value'), 'style'=>'currency'),
 			array('name'=>'Tax Value',		'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_tax_value'), 'style'=>'currency'),
-			array('name'=>'Paid',			'type'=>'checkbox', 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_paid')),
-			array('name'=>'Delivered',		'type'=>'checkbox', 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_delivered')),
+			array('name'=>'Status',			'type'=>'text', 'extra'=>false, 'param'=>'8', 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_status'),'QFfield_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'QFfield_status')),
 
 			array('name'=>'Memo',			'type'=>'long text', 'required'=>false, 'param'=>'255', 'extra'=>false),
 

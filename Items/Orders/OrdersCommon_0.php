@@ -128,7 +128,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	}
 	
 	public static function display_quantity_on_route($r, $nolink){
-		$trans = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders', array('!delivered'=>1, 'transaction_type'=>0), array('id', 'warehouse'));
+		$trans = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders', array('!status'=>20, 'transaction_type'=>0), array('id', 'warehouse'));
 		$my_warehouse = Base_User_SettingsCommon::get('Premium_Warehouse','my_warehouse');
 		$my_qty = 0;
 		$qty = 0;
@@ -145,38 +145,36 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		return $qty;
 	}
 
-	public static function display_paid($r, $nolink, $desc) {
-		if ($r['transaction_type']==2) return '---';
-		$yes = Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Yes');
-		$no = Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Not yet'); 
-		if ($r[$desc['id']]) $ret = $yes;
-		else $ret = $no;
-		if (!$nolink && !$r[$desc['id']]) {
-			$href_id = 'transaction_'.$r['id'].'_'.$desc['id'].'_mark_done';
-			if (isset($_REQUEST[$href_id])) { 
-				Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $r['id'], array($desc['id']=>1));
-				unset($_REQUEST[$href_id]);
-				location(array());
-			} else $ret .= ' <a '.Module::create_confirm_href(Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Are you sure you want to mark this transaction as Paid?'),array($href_id=>true)).'>['.Base_LangCommon::ts('Premium_Warehouse_Items_Orders','mark as paid').']</a>';
+	public static function get_status_array($trans, $payment=null) {
+		switch ($trans['transaction_type']) {
+			case 0: $opts = array(''=>'Purchase Order', 1=>'Purchase configuration', 2=>'Payment', 3=>'Aquire items', 20=>'Completed'); break;
+			case 1: $opts = array(''=>'Quote', 1=>'Sale configuration', 2=>'Check payment', 3=>'Process picklist', 4=>'Payment aquired', 5=>'Shipment release', 20=>'Delivered'); break;
+			case 2: $opts = array(''=>'Active', 20=>'Completed'); break;
+			case 3: if ($payment===true || ($payment===null && isset($trans['payment']) && $trans['payment']))
+						$opts = array(''=>'Rental order', 1=>'Create picklist', 2=>'Check payment', 3=>'Process picklist', 4=>'Payment', 5=>'Items rented', 6=>'Partially returned', 20=>'Completed', 21=>'Completed (Items lost)');
+					else
+						$opts = array(''=>'Create picklist', 1=>'Items rented', 2=>'Partially returned', 20=>'Completed', 21=>'Completed (Items lost)');
+					break;
 		}
-		return $ret;
+		foreach ($opts as $k=>$v)
+			$opts[$k] = Base_LangCommon::ts('Premium_Warehouse_Items_Orders',$v);
+		return $opts;
 	}
-	
-	public static function display_delivered($r, $nolink, $desc) {
-		if ($r['transaction_type']==2) return '---';
-		$yes = Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Yes');
-		$no = Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Not yet'); 
-		if ($r[$desc['id']]) $ret = $yes;
-		else $ret = $no;
-		if (!$nolink && !$r[$desc['id']]) {
-			$href_id = 'transaction_'.$r['id'].'_'.$desc['id'].'_mark_done';
-			if (isset($_REQUEST[$href_id])) { 
-				Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $r['id'], array($desc['id']=>1));
-				unset($_REQUEST[$href_id]);
-				location(array());
-			} else $ret .= ' <a '.Module::create_confirm_href(Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Are you sure you want to mark this transaction as Paid?'),array($href_id=>true)).'>['.Base_LangCommon::ts('Premium_Warehouse_Items_Orders','mark as delivered').']';
+
+	public static function display_status($r, $nolink){
+		$opts = self::get_status_array($r);
+		return $opts[$r['status']];
+	}
+
+	public static function QFfield_status(&$form, $field, $label, $mode, $default, $desc, $rb_obj){
+		$opts = self::get_status_array($rb_obj->record);
+		if ($mode=='edit') {
+			$form->addElement('select', $field, $label, $opts, array('id'=>'status'));
+			$form->setDefaults(array($field=>$default));
+		} else {
+			$form->addElement('static', $field, $label, array('id'=>'status'));
+			$form->setDefaults(array($field=>$opts[$default]));
 		}
-		return $ret;
 	}
 	
 /*	public static function display_order_details_qty($r, $nolink) {
@@ -394,8 +392,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			case 'browse':	return $i->acl_check('browse orders');
 			case 'view':	if($i->acl_check('view orders')) return true;
 							return false;
-			case 'edit':	if (((isset($param['paid']) && $param['paid']) ||
-								 (isset($param['delivered']) && $param['delivered'])) &&
+			case 'edit':	if ( $param['status']>=20 &&
 								 $param['transaction_date']<=date('Y-m-d', strtotime('-7 days')))
 								return false;
 							return $i->acl_check('edit orders');
@@ -405,16 +402,31 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 							if (is_array($param))
 								$ret = array('transaction_type'=>'read-only','warehouse'=>'read-only','company'=>'hide','contact'=>'hide');
 							if ($action_details=='new')
-								$ret = array('transaction_type'=>'read-only','paid'=>'hide','delivered'=>'hide');
+								$ret = array('transaction_type'=>'read-only','paid'=>'hide','status'=>'hide');
 							if ($tt==3 && $action_details!='view') {
-								eval_js('trans_rental_disable = function(){'.
-								'arg=!$(\'payment\').checked;'.
-								'if ($(\'paid\')) $(\'paid\').disabled = arg;'.
-								'$(\'payment_type\').disabled = arg;'.
-								'$(\'payment_no\').disabled = arg;'.
-								'$(\'shipment_type\').disabled = arg;'.
-								'$(\'shipment_no\').disabled = arg;'.
-								'$(\'terms\').disabled = arg;'.
+								$opts_pay = self::get_status_array($param,true);
+								$opts_no_pay = self::get_status_array($param,false);
+								eval_js(
+								'trans_rental_disable = function(){'.
+									'arg=!$(\'payment\').checked;'.
+									'if ($(\'paid\')) $(\'paid\').disabled = arg;'.
+									'$(\'payment_type\').disabled = arg;'.
+									'$(\'payment_no\').disabled = arg;'.
+									'$(\'shipment_type\').disabled = arg;'.
+									'$(\'shipment_no\').disabled = arg;'.
+									'$(\'terms\').disabled = arg;'.
+									'if($(\'status\')){'.
+										'if(arg)'.
+											'new_opts = '.json_encode($opts_no_pay).';'.
+										'else '.
+											'new_opts = '.json_encode($opts_pay).';'.
+										'var obj=$(\'status\');'.
+										'var opts=obj.options;'.
+										'opts.length=0;'.
+										'for(y in new_opts) {'.
+											'opts[opts.length] = new Option(new_opts[y],y);'.
+										'}'.
+									'}'.
 								'};'.
 								'trans_rental_disable();'.
 								'Event.observe(\'payment\', \'change\', trans_rental_disable)');
@@ -453,7 +465,6 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 									$ret['paid'] = 'hide';
 									$ret['total_value'] = 'hide';
 									$ret['tax_value'] = 'hide';
-									$ret['delivered'] = 'hide';
 								}
 							}
 							return $ret;
@@ -522,7 +533,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			if ($action=='add' && !$sale) {
 				$loc_id = Utils_RecordBrowserCommon::new_record('premium_warehouse_location',array('item_sku'=>$item['id'], 'quantity'=>1, 'serial'=>$details['serial'], 'warehouse'=>$order['warehouse']));
 				$details['serial'] = $loc_id; 
-				if ($order['transaction_type']==0 && $order['delivered']==0) Utils_RecordBrowserCommon::delete_record('premium_warehouse_location',$loc_id);
+				if ($order['transaction_type']==0 && $order['status']<20) Utils_RecordBrowserCommon::delete_record('premium_warehouse_location',$loc_id);
 				else $new_qty++;
 			}
 			if ($action=='restore' && !$sale) {
@@ -553,7 +564,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 				Utils_RecordBrowserCommon::delete_record('premium_warehouse_location',$details['serial']);
 			}
 			if ($action=='change_delivered') {
-				if ($order['delivered']!=0) { // That's an old 'delivered' value here
+				if ($order['status']>=20) { // That's an old 'status' value here
 					Utils_RecordBrowserCommon::delete_record('premium_warehouse_location',$details['serial']);
 					$new_qty--;
 				} else {
@@ -563,8 +574,8 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			}
 			Utils_RecordBrowserCommon::update_record('premium_warehouse_items', $item_id, array('quantity_on_hand'=>$new_qty));
 		} else {
-			if ($order['transaction_type']==0 && $order['delivered']==0 && $action!='change_delivered' && !$force_change) return;
-			if ($order['transaction_type']==0 && $action=='change_delivered') $action=($order['delivered']==0?'add':'delete'); 
+			if ($order['transaction_type']==0 && $order['status']<20 && $action!='change_delivered' && !$force_change) return;
+			if ($order['transaction_type']==0 && $action=='change_delivered') $action=($order['status']<20?'add':'delete'); 
 			if ($action!=='add') $old_details = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders_details', $details['id']);
 			if ($action!=='add' && $action!=='restore') {
 				$location_id = Utils_RecordBrowserCommon::get_id('premium_warehouse_location',array('item_sku','warehouse'),array($item_id,$order['warehouse']));
@@ -639,7 +650,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			case 'edit':
 				$values['transaction_id'] = self::generate_id($values['id']);
 				$old_values = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $values['id']);
-				if ($old_values['delivered']!=$values['delivered'] && $values['transaction_type']==0) {
+				if ((19-$old_values['status'])*(19-$values['status'])<0 && $values['transaction_type']==0) {
 					$det = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$values['id']));
 					foreach ($det as $d)
 						self::change_total_qty($d, 'change_delivered', true);
