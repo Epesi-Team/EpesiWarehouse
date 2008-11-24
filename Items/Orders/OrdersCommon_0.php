@@ -147,9 +147,13 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 
 	public static function get_status_array($trans, $payment=null) {
 		switch ($trans['transaction_type']) {
+			// PURCHASE
 			case 0: $opts = array(''=>'Purchase Order', 1=>'Purchase configuration', 2=>'Payment', 3=>'Aquire items', 20=>'Completed'); break;
-			case 1: $opts = array(''=>'Quote', 1=>'Sale configuration', 2=>'Check payment', 3=>'Process picklist', 4=>'Payment aquired', 5=>'Shipment release', 20=>'Delivered'); break;
+			// SALE
+			case 1: $opts = array(''=>'Quote', 1=>'Sale configuration', 2=>'Check payment', 3=>'Process picklist', 4=>'On hold', 5=>'Verify order', 6=>'Payment aquired', 7=>'Shipment release', 20=>'Delivered'); break;
+			// INV. ADJUSTMENT
 			case 2: $opts = array(''=>'Active', 20=>'Completed'); break;
+			// RENTAL
 			case 3: if ($payment===true || ($payment===null && isset($trans['payment']) && $trans['payment']))
 						$opts = array(''=>'Rental order', 1=>'Create picklist', 2=>'Check payment', 3=>'Process picklist', 4=>'Payment', 5=>'Items rented', 6=>'Partially returned', 20=>'Completed', 21=>'Completed (Items lost)');
 					else
