@@ -16,7 +16,7 @@ class Premium_Warehouse_ItemsInstall extends ModuleInstall {
 		
 		Base_ThemeCommon::install_default_theme($this->get_type());
 		$fields = array(
-			array('name'=>'SKU', 			'type'=>'calculated', 'required'=>false, 'param'=>'VARCHAR(16)', 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_ItemsCommon','display_sku')),
+			array('name'=>'SKU', 			'type'=>'calculated', 'required'=>false, 'param'=>Utils_RecordBrowserCommon::actual_db_type('text',16), 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_ItemsCommon','display_sku')),
 			array('name'=>'Item Type', 		'type'=>'select', 'param'=>'__COMMON__::Premium_Warehouse_Items_Type', 'required'=>false, 'extra'=>false, 'visible'=>true),
 			array('name'=>'Item Name', 		'type'=>'text', 'required'=>true, 'param'=>'128', 'extra'=>false, 'visible'=>true,'display_callback'=>array('Premium_Warehouse_ItemsCommon', 'display_item_name')),
 			array('name'=>'Product Code', 	'type'=>'text', 'required'=>false, 'param'=>'32', 'extra'=>false, 'visible'=>false),
