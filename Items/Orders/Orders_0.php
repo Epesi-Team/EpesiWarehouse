@@ -133,7 +133,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 	}
 
 	public function attachment_addon($arg){
-		$a = $this->init_module('Utils/Attachment',array($arg['id'],'Premium/Warehouse/Items/Orders/'.$arg['id']));
+		$a = $this->init_module('Utils/Attachment',array('Premium/Warehouse/Items/Orders/'.$arg['id']));
 		$a->additional_header('Transaction ID: '.$arg['transaction_id']);
 		$a->allow_protected($this->acl_check('view protected notes'),$this->acl_check('edit protected notes'));
 		$a->allow_public($this->acl_check('view public notes'),$this->acl_check('edit public notes'));
