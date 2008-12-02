@@ -132,5 +132,12 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 		return $values;
 	}
 	
+	public static function search_format($id) {
+		if($this->acl_check('browse items')) return false;
+		$row = Utils_RecordBrowserCommon::get_records('premium_warehouse_items',array('id'=>$id));
+		if(!$row) return false;
+		$row = array_pop($row);
+		return Utils_RecordBrowserCommon::record_link_open_tag('premium_warehouse_items', $row['id']).Base_LangCommon::ts('Premium_Warehouse_Items', 'Item in warehouse (attachment) #%d, %s %s', array($row['sku'], $row['item_type'], $row['item_name'])).Utils_RecordBrowserCommon::record_link_close_tag();
+	}
 }
 ?>

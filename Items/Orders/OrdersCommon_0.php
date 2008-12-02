@@ -712,5 +712,13 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		}
 		return $values;
 	}
+
+	public static function search_format($id) {
+		if($this->acl_check('browse orders')) return false;
+		$row = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders',array('id'=>$id));
+		if(!$row) return false;
+		$row = array_pop($row);
+		return Utils_RecordBrowserCommon::record_link_open_tag('premium_warehouse_items_orders', $row['id']).Base_LangCommon::ts('Premium_Warehouse_Items_Orders', 'Item order (attachment) #%d, %s %s', array($row['transaction_id'], $row['transaction_type'], $row['warehouse'])).Utils_RecordBrowserCommon::record_link_close_tag();
+	}
 }
 ?>

@@ -60,5 +60,12 @@ class Premium_WarehouseCommon extends ModuleCommon {
 			);
 	}
 	
+	public static function search_format($id) {
+		if($this->acl_check('browse warehouses')) return false;
+		$row = Utils_RecordBrowserCommon::get_records('premium_warehouse',array('id'=>$id));
+		if(!$row) return false;
+		$row = array_pop($row);
+		return Utils_RecordBrowserCommon::record_link_open_tag('premium_warehouse', $row['id']).Base_LangCommon::ts('Premium_Warehouse', 'Warehouse (attachment) #%d, %s', array($row['id'], $row['warehouse'])).Utils_RecordBrowserCommon::record_link_close_tag();
+	}
 }
 ?>
