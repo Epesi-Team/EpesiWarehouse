@@ -1,12 +1,18 @@
 <?php
 /**
+ * WARNING: This is a commercial software
+ * Please see the included license.html file for more information
+ *
  * Warehouse - Items
- * @author abisaga@telaxus.com
- * @copyright abisaga@telaxus.com
- * @license SPL
- * @version 0.9
- * @package premium-warehouse
+ *
+ * @author Arkadiusz Bisaga <abisaga@telaxus.com>
+ * @copyright Copyright &copy; 2008, Telaxus LLC
+ * @license Commercial
+ * @version 1.0
+ * @package epesi-premium
+ * @subpackage warehouse-items
  */
+
 defined("_VALID_ACCESS") || die('Direct access forbidden');
 
 class Premium_Warehouse_ItemsInstall extends ModuleInstall {
@@ -92,7 +98,7 @@ class Premium_Warehouse_ItemsInstall extends ModuleInstall {
 		return array(
 			'Description'=>'Warehouse Items - Premium Module',
 			'Author'=>'abisaga@telaxus.com',
-			'License'=>'SPL');
+			'License'=>'Commercial');
 	}
 	
 	public static function simple_setup() {

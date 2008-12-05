@@ -1,11 +1,16 @@
 <?php
 /**
+ * WARNING: This is a commercial software
+ * Please see the included license.html file for more information
+ *
  * Warehouse - Items Orders
- * @author abisaga@telaxus.com
- * @copyright abisaga@telaxus.com
- * @license SPL
- * @version 0.9
- * @package premium-warehouse
+ *
+ * @author Arkadiusz Bisaga <abisaga@telaxus.com>
+ * @copyright Copyright &copy; 2008, Telaxus LLC
+ * @license Commercial
+ * @version 1.0
+ * @package epesi-premium
+ * @subpackage warehouse-items-orders
  */
 defined("_VALID_ACCESS") || die('Direct access forbidden');
 

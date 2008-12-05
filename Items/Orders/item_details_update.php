@@ -1,4 +1,17 @@
 <?php
+/**
+ * WARNING: This is a commercial software
+ * Please see the included license.html file for more information
+ *
+ * Warehouse - Items Orders
+ *
+ * @author Arkadiusz Bisaga <abisaga@telaxus.com>
+ * @copyright Copyright &copy; 2008, Telaxus LLC
+ * @license Commercial
+ * @version 1.0
+ * @package epesi-premium
+ * @subpackage warehouse-items-orders
+ */
 if(!isset($_POST['rec_id']) || !isset($_POST['trans']) || !isset($_POST['cid']))
 	die('alert(\'Invalid request\')');
 
