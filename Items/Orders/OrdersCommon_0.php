@@ -153,7 +153,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	public static function get_status_array($trans, $payment=null) {
 		switch ($trans['transaction_type']) {
 			// PURCHASE
-			case 0: $opts = array(''=>'Purchase Order', 1=>'Purchase configuration', 2=>'Payment', 3=>'Aquire items', 20=>'Completed'); break;
+			case 0: $opts = array(''=>'New', 1=>'Quote', 2=>'Purchase Order', 3=>'New Shipment', 4=>'Shipment Received', 5=>'On Hold', 20=>'Delivered', 21=>'Canceled'); break;
 			// SALE
 			case 1: $opts = array(''=>'Quote', 1=>'Sale configuration', 2=>'Check payment', 3=>'Process picklist', 4=>'On hold', 5=>'Verify order', 6=>'Payment aquired', 7=>'Shipment release', 20=>'Delivered'); break;
 			// INV. ADJUSTMENT
@@ -182,14 +182,14 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			$form->setDefaults(array($field=>$default));
 		} else {
 			$form->addElement('static', $field, $label, array('id'=>'status'));
-			$form->setDefaults(array($field=>$opts[$default]));
+			$obj = $rb_obj->init_module('Premium/Warehouse/Items/Orders');
+			$rb_obj->display_module($obj, array(Utils_RecordBrowser::$last_record, $default), 'change_status_leightbox');
+			$href = $obj->get_href();
+			if ($href) $label = '<a '.$href.'>'.$opts[$default].'</a>';
+			else $label = $opts[$default];
+			$form->setDefaults(array($field=>$label));
 		}
 	}
-	
-/*	public static function display_order_details_qty($r, $nolink) {
-		$item = Utils_RecordBrowserCommon::get_record('premium_warehouse_items',$r['item_sku']);
-		return Premium_Warehouse_Items_LocationCommon::display_item_quantity_in_warehouse_and_total($item, Utils_RecordBrowserCommon::get_value('premium_warehouse_items_orders',$r['transaction_id'],'warehouse'), $nolink);
-	}*/
 	
 	public static function display_debit($r, $nolink) {
 		return $r['quantity']<0?-$r['quantity']:'';
@@ -407,6 +407,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 							return $i->acl_check('edit orders');
 			case 'delete':	return $i->acl_check('delete orders');
 			case 'fields':	$ret = array();
+							$ret['status'] = 'read-only';
 							$tt = $param['transaction_type'];
 							if (is_array($param))
 								$ret = array('transaction_type'=>'read-only','warehouse'=>'read-only','company'=>'hide','contact'=>'hide');
