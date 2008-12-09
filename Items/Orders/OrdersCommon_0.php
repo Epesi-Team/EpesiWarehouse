@@ -474,16 +474,17 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 									$ret['total_value'] = 'hide';
 									$ret['tax_value'] = 'hide';
 								}
-								if ($tt==0 && $param['status']<3) {
-									$ret['payment_no'] = 'hide';
-									$ret['payment_type'] = 'hide';
-									$ret['shipment_type'] = 'hide';
-									$ret['terms'] = 'hide';
-									$ret['total_value'] = 'hide';
-									$ret['tax_value'] = 'hide';
-								}
-								if ($tt==0 && $param['status']<20) {
-									$ret['shipment_no'] = 'hide';
+								if ($tt==0 && isset($param['status'])) {
+									if ($param['status']<3) {
+										$ret['payment_no'] = 'hide';
+										$ret['payment_type'] = 'hide';
+										$ret['shipment_type'] = 'hide';
+										$ret['terms'] = 'hide';
+										$ret['total_value'] = 'hide';
+										$ret['tax_value'] = 'hide';
+									} elseif ($param['status']<20) { 
+										$ret['shipment_no'] = 'hide';
+									}
 								}
 								if ($tt==0 && $param['status']!=1) $ret['expiry_date'] = 'hide';
 							}
