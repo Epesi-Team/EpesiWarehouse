@@ -21,7 +21,7 @@ class Premium_Warehouse_Items_Location extends Module {
 		$rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_location');
 		$rb->set_button(false);
 		$rb->set_additional_actions_method($this, 'rental_actions');
-		$order = array(array('item_sku'=>$arg['id'], '!quantity'=>0), array('rental_item'=>true, 'item_sku'=>false, 'serial'=>($arg['item_type']==1)?true:false), array());
+		$order = array(array('item_sku'=>$arg['id'], '!quantity'=>0), array('rental_item'=>($arg['item_type']==1)?true:false, 'item_sku'=>false, 'serial'=>($arg['item_type']==1)?true:false), array());
 		$this->display_module($rb,$order,'show_data');
 	}
 

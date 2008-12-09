@@ -35,13 +35,13 @@ if (!isset($location_id) || !$location_id)
 $js = '';
 $js .= '$("description").value="'.$rec['description'].'";';
 if ($trans['transaction_type']<2) {
-	$js .= '$("tax_rate").value="'.$rec['tax_rate'].'";';
+	$js .= 'if($("tax_rate"))$("tax_rate").value="'.$rec['tax_rate'].'";';
 	$js .= 'if($("net_price"))$("net_price").value="'.($trans['transaction_type']==0?(isset($rec['last_purchase_price'])&&$rec['last_purchase_price']?$rec['last_purchase_price']:$rec['cost']):(isset($rec['last_sale_price'])&&$rec['last_sale_price']?$rec['last_sale_price']:$rec['net_price'])).'";';
 	if ($rec['item_type']==1) {
 		$js .= '$("quantity").style.display="none";';
-		$js .= '$("serial").style.display="inline";';
+		$js .= 'if($("serial"))$("serial").style.display="inline";';
 		$js .= '$("quantity").value=1;';
-		$js .= 'focus_by_id("serial");';
+		$js .= 'if($("serial"))focus_by_id("serial");';
 		if ($trans['transaction_type']==1) {
 			$js .= 'var new_opts={';
 			$locs = Utils_RecordBrowserCommon::get_records('premium_warehouse_location',array('item_sku'=>$id, '!quantity'=>0, 'warehouse'=>$trans['warehouse'], 'rental_item'=>array('',0)), array(), array('serial'=>'ASC'));
@@ -60,11 +60,11 @@ if ($trans['transaction_type']<2) {
 			$js .= '}';
 		}
 	} else {
-		$js .= '$("quantity").style.display="inline";';
-		$js .= '$("serial").style.display="none";';
-		$js .= '$("serial").value="";';
+		$js .= 'if($("quantity"))$("quantity").style.display="inline";';
+		$js .= 'if($("serial"))$("serial").style.display="none";';
+		$js .= 'if($("serial"))$("serial").value="";';
 		$js .= 'if(!$("quantity").value)$("quantity").value=1;';
-		$js .= 'focus_by_id("quantity");';
+		$js .= 'if($("quantity"))focus_by_id("quantity");';
 	}
 }
 if ($trans['transaction_type']==2) {

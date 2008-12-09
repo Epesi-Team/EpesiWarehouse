@@ -133,7 +133,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	}
 	
 	public static function display_quantity_on_route($r, $nolink){
-		$trans = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders', array('!status'=>20, 'transaction_type'=>0), array('id', 'warehouse'));
+		$trans = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders', array('(status'=>3, '|status'=>4, 'transaction_type'=>0), array('id', 'warehouse'));
 		$my_warehouse = Base_User_SettingsCommon::get('Premium_Warehouse','my_warehouse');
 		$my_qty = 0;
 		$qty = 0;
@@ -454,7 +454,6 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 									$ret['terms'] = 'hide';
 									$ret['total_value'] = 'hide';
 									$ret['tax_value'] = 'hide';
-									$ret['paid'] = 'hide';
 								}
 								if ($tt==2) {
 									$ret['company'] = 'hide';
@@ -472,10 +471,21 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 									$ret['payment_type'] = 'hide';
 									$ret['payment_no'] = 'hide';
 									$ret['terms'] = 'hide';
-									$ret['paid'] = 'hide';
 									$ret['total_value'] = 'hide';
 									$ret['tax_value'] = 'hide';
 								}
+								if ($tt==0 && $param['status']<3) {
+									$ret['payment_no'] = 'hide';
+									$ret['payment_type'] = 'hide';
+									$ret['shipment_type'] = 'hide';
+									$ret['terms'] = 'hide';
+									$ret['total_value'] = 'hide';
+									$ret['tax_value'] = 'hide';
+								}
+								if ($tt==0 && $param['status']<20) {
+									$ret['shipment_no'] = 'hide';
+								}
+								if ($tt==0 && $param['status']!=1) $ret['expiry_date'] = 'hide';
 							}
 							return $ret;
 		}
