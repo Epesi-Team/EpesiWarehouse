@@ -485,8 +485,8 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 									} elseif ($param['status']<20) { 
 										$ret['shipment_no'] = 'hide';
 									}
+									if ($param['status']!=1) $ret['expiry_date'] = 'hide';
 								}
-								if ($tt==0 && $param['status']!=1) $ret['expiry_date'] = 'hide';
 							}
 							return $ret;
 		}
