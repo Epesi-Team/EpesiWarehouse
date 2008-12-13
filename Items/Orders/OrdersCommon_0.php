@@ -153,9 +153,9 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	public static function get_status_array($trans, $payment=null) {
 		switch ($trans['transaction_type']) {
 			// PURCHASE
-			case 0: $opts = array(''=>'New', 1=>'Quote', 2=>'Purchase Order', 3=>'New Shipment', 4=>'Shipment Received', 5=>'On Hold', 20=>'Delivered', 21=>'Canceled'); break;
+			case 0: $opts = array(''=>'New', 1=>'Purchase Quote', 2=>'Purchase Order', 3=>'New Shipment', 4=>'Shipment Received', 5=>'On Hold', 20=>'Delivered', 21=>'Canceled'); break;
 			// SALE
-			case 1: $opts = array(''=>'Quote', 1=>'Sale configuration', 2=>'Check payment', 3=>'Process picklist', 4=>'On hold', 5=>'Verify order', 6=>'Payment aquired', 7=>'Shipment release', 20=>'Delivered'); break;
+			case 1: $opts = array(''=>'Sales Quote', 1=>'Sale configuration', 2=>'Check payment', 3=>'Process picklist', 4=>'On hold', 5=>'Verify order', 6=>'Payment aquired', 7=>'Shipment release', 20=>'Delivered'); break;
 			// INV. ADJUSTMENT
 			case 2: $opts = array(''=>'Active', 20=>'Completed'); break;
 			// RENTAL
@@ -401,8 +401,8 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			case 'browse':	return $i->acl_check('browse orders');
 			case 'view':	if($i->acl_check('view orders')) return true;
 							return false;
-			case 'edit':	if ( $param['status']>=20 &&
-								 $param['transaction_date']<=date('Y-m-d', strtotime('-7 days')))
+			case 'edit':	if ($param['status']>=20 ||
+								($param['status']>=2 && $param['transaction_type']==0))
 								return false;
 							return $i->acl_check('edit orders');
 			case 'delete':	return $i->acl_check('delete orders');
@@ -485,7 +485,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 									} elseif ($param['status']<20) { 
 										$ret['shipment_no'] = 'hide';
 									}
-									if ($param['status']!=1) $ret['expiry_date'] = 'hide';
+									if ($param['status']!=1) $ret['expiration_date'] = 'hide';
 								}
 							}
 							return $ret;
@@ -550,6 +550,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		$item = Utils_RecordBrowserCommon::get_record('premium_warehouse_items', $item_id);
 		$new_qty = $item['quantity_on_hand'];
 		if ($item['item_type']==1) {
+			if ($order['status']!=20) return;
 			$sale = ($order['transaction_type']==1 || $order['transaction_type']==3 || ($order['transaction_type']==2 && $details['quantity']==-1));
 			if ($action=='add' && !$sale) {
 				$loc_id = Utils_RecordBrowserCommon::new_record('premium_warehouse_location',array('item_sku'=>$item['id'], 'quantity'=>1, 'serial'=>$details['serial'], 'warehouse'=>$order['warehouse']));
@@ -699,7 +700,6 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 				return;
 			case 'add':
 				$item_type=Utils_RecordBrowserCommon::get_value('premium_warehouse_items', $values['item_name'], 'item_type');
-				if ($item_type==1) $values['quantity']=1;
 				if (self::$trans['transaction_type']==3) {
 					Utils_RecordBrowserCommon::update_record('premium_warehouse_location', $values['serial'], array('used'=>1));
 				}

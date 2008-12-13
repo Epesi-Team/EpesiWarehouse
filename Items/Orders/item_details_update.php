@@ -38,11 +38,11 @@ if ($trans['transaction_type']<2) {
 	$js .= 'if($("tax_rate"))$("tax_rate").value="'.$rec['tax_rate'].'";';
 	$js .= 'if($("net_price"))$("net_price").value="'.($trans['transaction_type']==0?(isset($rec['last_purchase_price'])&&$rec['last_purchase_price']?$rec['last_purchase_price']:$rec['cost']):(isset($rec['last_sale_price'])&&$rec['last_sale_price']?$rec['last_sale_price']:$rec['net_price'])).'";';
 	if ($rec['item_type']==1) {
-		$js .= '$("quantity").style.display="none";';
-		$js .= 'if($("serial"))$("serial").style.display="inline";';
 		$js .= '$("quantity").value=1;';
 		$js .= 'if($("serial"))focus_by_id("serial");';
 		if ($trans['transaction_type']==1) {
+			$js .= '$("quantity").style.display="none";';
+			$js .= 'if($("serial"))$("serial").style.display="inline";';
 			$js .= 'var new_opts={';
 			$locs = Utils_RecordBrowserCommon::get_records('premium_warehouse_location',array('item_sku'=>$id, '!quantity'=>0, 'warehouse'=>$trans['warehouse'], 'rental_item'=>array('',0)), array(), array('serial'=>'ASC'));
 			$first = true;
