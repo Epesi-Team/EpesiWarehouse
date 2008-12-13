@@ -18,7 +18,6 @@ class Premium_Warehouse extends Module {
 	private $rb;
 
 	public function body() {
-		$lang = $this->init_module('Base/Lang');
 		$this->rb = $this->init_module('Utils/RecordBrowser','premium_warehouse','premium_warehouse_module');
 		$this->rb->set_defaults(array(	'country'=>Base_User_SettingsCommon::get('Base_RegionalSettings','default_country'),
 										'zone'=>Base_User_SettingsCommon::get('Base_RegionalSettings','default_state')));

@@ -20,16 +20,15 @@ class Premium_Warehouse_Items extends Module {
 	public function body() {
 		// Quickjump jak do ticketow, ale po UPC code
 		// TODO: service/non-inventory: quantity rename to amount sold and set to +X instead -X
-		$lang = $this->init_module('Base/Lang');
 		$this->rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items','premium_warehouse_items_module');
 		$this->rb->set_default_order(array('item_name'=>'ASC'));		
 		$this->rb->set_cut_lengths(array('item_name'=>30));
 		$defaults = array('quantity_on_hand'=>'0','reorder_point'=>'0');
 		$this->rb->set_defaults(array(
-			$lang->t('Inv. Item')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'inv_item.png'), 'defaults'=>array_merge($defaults,array('item_type'=>0))),
-			$lang->t('Serialized Item')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'serialized.png'), 'defaults'=>array_merge($defaults,array('item_type'=>1))),
-			$lang->t('Non-Inv. Items')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'non-inv.png'), 'defaults'=>array_merge($defaults,array('item_type'=>2))),
-			$lang->t('Service')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'service.png'), 'defaults'=>array_merge($defaults,array('item_type'=>3)))
+			$this->t('Inv. Item')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'inv_item.png'), 'defaults'=>array_merge($defaults,array('item_type'=>0))),
+			$this->t('Serialized Item')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'serialized.png'), 'defaults'=>array_merge($defaults,array('item_type'=>1))),
+			$this->t('Non-Inv. Items')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'non-inv.png'), 'defaults'=>array_merge($defaults,array('item_type'=>2))),
+			$this->t('Service')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'service.png'), 'defaults'=>array_merge($defaults,array('item_type'=>3)))
 			), true);
 		$this->display_module($this->rb);
 	}
