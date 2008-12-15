@@ -731,7 +731,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	}
 
 	public static function search_format($id) {
-		if($this->acl_check('browse orders')) return false;
+		if(Acl::check('Premium_Warehouse_Items_Orders','browse orders')) return false;
 		$row = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders',array('id'=>$id));
 		if(!$row) return false;
 		$row = array_pop($row);
