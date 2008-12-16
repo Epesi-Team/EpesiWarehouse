@@ -306,7 +306,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 					$split->setDefaults(array('header'=>'Select quantity and items you want to place in new transaction'));
 					$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$trans['id']));
 					foreach ($items as $v)
-						$split->addElement((Utils_RecordBrowserCommon::get_value('premium_warehouse_items', $v['item_name'], 'item_type')==1)?'checkbox':'text', 'item__'.$v['id'], Premium_Warehouse_Items_OrdersCommon::display_item_name($v, true));
+						$split->addElement('text', 'item__'.$v['id'], Premium_Warehouse_Items_OrdersCommon::display_item_name($v, true));
 					$lp->add_option('partial_order', $this->t('Partial Order'), null, $split);
 					$lp->add_option('cancel', $this->t('Cancel'), null, null);
 					$this->display_module($lp, array($this->t('Final Inspection. All items received?')));
@@ -319,19 +319,15 @@ class Premium_Warehouse_Items_Orders extends Module {
 						} elseif ($vals['option']=='partial_order') {
 							$id = Utils_RecordBrowserCommon::new_record('premium_warehouse_items_orders', $trans);
 							foreach ($items as $v)
-								if (Utils_RecordBrowserCommon::get_value('premium_warehouse_items', $v['item_name'], 'item_type')==1){
-									if (isset($vals['form']['item__'.$v['id']])) Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders_details', $v['id'], array('transaction_id'=>$id));
-								} else {
-									if (intval($vals['form']['item__'.$v['id']])>0) {
-										$vals['form']['item__'.$v['id']] = intval($vals['form']['item__'.$v['id']]);
-										$old = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders_details', $v['id']);
-										if ($vals['form']['item__'.$v['id']]>$old['quantity']) $vals['form']['item__'.$v['id']] = $old['quantity'];
-										if ($vals['form']['item__'.$v['id']]!=$old['quantity']) Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders_details', $v['id'], array('quantity'=>$old['quantity']-$vals['form']['item__'.$v['id']]));
-										else Utils_RecordBrowserCommon::delete_record('premium_warehouse_items_orders_details', $v['id']);
-										$old['transaction_id'] = $id;
-										$old['quantity'] = $vals['form']['item__'.$v['id']];
-										Utils_RecordBrowserCommon::new_record('premium_warehouse_items_orders_details', $old);
-									}
+								if (intval($vals['form']['item__'.$v['id']])>0) {
+									$vals['form']['item__'.$v['id']] = intval($vals['form']['item__'.$v['id']]);
+									$old = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders_details', $v['id']);
+									if ($vals['form']['item__'.$v['id']]>$old['quantity']) $vals['form']['item__'.$v['id']] = $old['quantity'];
+									if ($vals['form']['item__'.$v['id']]!=$old['quantity']) Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders_details', $v['id'], array('quantity'=>$old['quantity']-$vals['form']['item__'.$v['id']]));
+									else Utils_RecordBrowserCommon::delete_record('premium_warehouse_items_orders_details', $v['id']);
+									$old['transaction_id'] = $id;
+									$old['quantity'] = $vals['form']['item__'.$v['id']];
+									Utils_RecordBrowserCommon::new_record('premium_warehouse_items_orders_details', $old);
 								}
 							break;		
 						} else {
