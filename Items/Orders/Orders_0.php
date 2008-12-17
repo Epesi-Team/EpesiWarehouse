@@ -152,29 +152,63 @@ class Premium_Warehouse_Items_Orders extends Module {
 		$this->display_module($a);
 	}
 	
+	public function revise_items($items) {
+		$po_form = $this->init_module('Libs/QuickForm');
+		$po_form->addElement('select', 'payment_type', $this->t('Payment Type'), array(''=>'---')+Utils_CommonDataCommon::get_array('Premium_Items_Orders_Payment_Types'));
+		$po_form->addElement('text', 'payment_no', $this->t('Payment No'));
+		$po_form->addElement('select', 'terms', $this->t('Terms'), array(''=>'---')+Utils_CommonDataCommon::get_array('Premium_Items_Orders_Terms'));
+		$po_form->addElement('select', 'shipment_type', $this->t('Shipment Type'), array(''=>'---')+Utils_CommonDataCommon::get_array('Premium_Items_Orders_Shipment_Types'));
+
+		$taxes = Utils_CommonDataCommon::get_array('Premium_Warehouse_Items_Tax');
+		$po_form->addElement('static', 'item_header', '');
+		$po_form->setDefaults(array('item_header'=>$this->t('Please revise items quantity, price and tax rate')));
+		foreach ($items as $v) {
+			$elements = array();
+			$elements[] = $po_form->createElement('text', 'quantity', $this->t('Price'));
+			$elements[] = $po_form->createElement('text', 'net_price', $this->t('Price'));
+			$elements[] = $po_form->createElement('select', 'tax_rate', $this->t('Tax'), $taxes);
+			$po_form->addGroup($elements, 'item__'.$v['id'], Premium_Warehouse_Items_OrdersCommon::display_item_name($v, true));
+			$po_form->setDefaults(array('item__'.$v['id']=>array('quantity'=>$v['quantity'], 'net_price'=>number_format($v['net_price'],2), 'tax_rate'=>$v['tax_rate'])));
+		}
+		return $po_form;
+	}
+	
+	public function split_items_form($items) {
+		$split = $this->init_module('Libs/QuickForm');
+		$split->addElement('static', 'header', '');
+		$split->setDefaults(array('header'=>'Enter items quantity for original (first field) and new (second field) transaction'));
+		foreach ($items as $v) {
+			$elements = array();
+			$elements[] = $split->createElement('text', 'original_qty', $this->t('Price'), array('id'=>'original_item__'.$v['id'] ,'onkeyup'=>'$(\'total_item__'.$v['id'].'\').innerHTML=parseInt(this.value)+parseInt($(\'new_item__'.$v['id'].'\').value);'));
+			$elements[] = $split->createElement('text', 'new_qty', $this->t('Price'), array('id'=>'new_item__'.$v['id'] ,'onkeyup'=>'$(\'total_item__'.$v['id'].'\').innerHTML=parseInt(this.value)+parseInt($(\'original_item__'.$v['id'].'\').value);'));
+			$elements[] = $split->createElement('static', 'total', $this->t('Total'));
+			$split->addGroup($elements, 'item__'.$v['id'], Premium_Warehouse_Items_OrdersCommon::display_item_name($v, true));
+			$split->setDefaults(array('item__'.$v['id']=>array('original_qty'=>$v['quantity'], 'new_qty'=>0, 'total'=>'<b>'.$this->t('Total').':</b> <span id="total_item__'.$v['id'].'">'.$v['quantity'].'</span>')));
+		}
+		return $split;
+	}
+	
+	public function split_items_process($items, $trans, $vals) {
+		$id = null;
+		foreach ($items as $v)
+			if (intval($vals['item__'.$v['id']]['new_qty'])>0) {
+				if ($id===null) $id = Utils_RecordBrowserCommon::new_record('premium_warehouse_items_orders', $trans);
+				$old = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders_details', $v['id']);
+				if (intval($vals['item__'.$v['id']]['original_qty'])!=0) Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders_details', $v['id'], array('quantity'=>intval($vals['item__'.$v['id']]['original_qty'])));
+				else Utils_RecordBrowserCommon::delete_record('premium_warehouse_items_orders_details', $v['id']);
+				$old['transaction_id'] = $id;
+				$old['quantity'] = intval($vals['item__'.$v['id']]['new_qty']);
+				Utils_RecordBrowserCommon::new_record('premium_warehouse_items_orders_details', $old);
+			}
+	}
+	
 	public function change_status_leightbox($trans, $status) {
 		$lp = $this->init_module('Utils/LeightboxPrompt');
 		if ($trans['transaction_type']==0) {
 			switch ($status) {			
 				case '':
-					$po_form = $this->init_module('Libs/QuickForm');
-					$po_form->addElement('select', 'payment_type', $this->t('Payment Type'), array(''=>'---')+Utils_CommonDataCommon::get_array('Premium_Items_Orders_Payment_Types'));
-					$po_form->addElement('text', 'payment_no', $this->t('Payment No'));
-					$po_form->addElement('select', 'terms', $this->t('Terms'), array(''=>'---')+Utils_CommonDataCommon::get_array('Premium_Items_Orders_Terms'));
-					$po_form->addElement('select', 'shipment_type', $this->t('Shipment Type'), array(''=>'---')+Utils_CommonDataCommon::get_array('Premium_Items_Orders_Shipment_Types'));
-
 					$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$trans['id']));
-					$taxes = Utils_CommonDataCommon::get_array('Premium_Warehouse_Items_Tax');
-					$po_form->addElement('static', 'item_header', '');
-					$po_form->setDefaults(array('item_header'=>$this->t('Please revise items prices and tax rates')));
-					foreach ($items as $v) {
-						$elements = array();
-						$elements[] = $po_form->createElement('text', 'net_price', $this->t('Price'));
-						$elements[] = $po_form->createElement('select', 'tax_rate', $this->t('Tax'), $taxes);
-						$po_form->addGroup($elements, 'item__'.$v['id'], Premium_Warehouse_Items_OrdersCommon::display_item_name($v, true));
-						$po_form->setDefaults(array('item__'.$v['id']=>array('net_price'=>$v['net_price'], 'tax_rate'=>$v['tax_rate'])));
-					}
-
+					$po_form = $this->revise_items($items);
 					$lp->add_option('po', $this->t('PO'), null, $po_form);
 
 					$quote_form = $this->init_module('Libs/QuickForm');
@@ -196,24 +230,8 @@ class Premium_Warehouse_Items_Orders extends Module {
 					}
 					break;
 				case 1:
-					$po_form = $this->init_module('Libs/QuickForm');
-					$po_form->addElement('select', 'payment_type', $this->t('Payment Type'), array(''=>'---')+Utils_CommonDataCommon::get_array('Premium_Items_Orders_Payment_Types'));
-					$po_form->addElement('text', 'payment_no', $this->t('Payment No'));
-					$po_form->addElement('select', 'terms', $this->t('Terms'), array(''=>'---')+Utils_CommonDataCommon::get_array('Premium_Items_Orders_Terms'));
-					$po_form->addElement('select', 'shipment_type', $this->t('Shipment Type'), array(''=>'---')+Utils_CommonDataCommon::get_array('Premium_Items_Orders_Shipment_Types'));
-
 					$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$trans['id']));
-					$taxes = Utils_CommonDataCommon::get_array('Premium_Warehouse_Items_Tax');
-					$po_form->addElement('static', 'item_header', '');
-					$po_form->setDefaults(array('item_header'=>$this->t('Please revise items prices and tax rates')));
-					foreach ($items as $v) {
-						$elements = array();
-						$elements[] = $po_form->createElement('text', 'net_price', $this->t('Price'));
-						$elements[] = $po_form->createElement('select', 'tax_rate', $this->t('Tax'), $taxes);						
-						$po_form->addGroup($elements, 'item__'.$v['id'], Premium_Warehouse_Items_OrdersCommon::display_item_name($v, true));
-						$po_form->setDefaults(array('item__'.$v['id']=>array('net_price'=>$v['net_price'], 'tax_rate'=>$v['tax_rate'])));
-					}
-
+					$po_form = $this->revise_items($items);
 					$lp->add_option('po', $this->t('PO'), null, $po_form);
 
 					$lp->add_option('cancel', $this->t('Cancel'), null, null);
@@ -244,14 +262,25 @@ class Premium_Warehouse_Items_Orders extends Module {
 					}
 					break;
 				case 3:
-					$lp->add_option('received', $this->t('Items Received'), null, null);
+					$ship_received = $this->init_module('Libs/QuickForm');
+					$emps_ids = CRM_ContactsCommon::get_contacts(Premium_Warehouse_ItemsCommon::employee_crits(), array(), array('last_name'=>'ASC','first_name'=>'ASC'));
+					$emps = array(''=>'---');
+					$my_id = '';
+					foreach ($emps_ids as $v) {
+						if ($v['login']==Acl::get_user()) $my_id = $v['id'];
+						$emps[$v['id']] = CRM_ContactsCommon::contact_format_no_company($v,true);
+					}
+					$ship_received->addElement('datepicker', 'shipment_date', 'Shipment - receive date');
+					$ship_received->addElement('select', 'shipment_employee', 'Shipment - received by', $emps);
+					$ship_received->setDefaults(array('shipment_date'=>date('Y-m-d'), 'shipment_employee'=>$my_id));
+					$lp->add_option('received', $this->t('Items Received'), null, $ship_received);
 					$lp->add_option('onhold', $this->t('Put On Hold'), null, null);
 					$this->display_module($lp, array($this->t('Shipment Received?')));
 					$this->href = $lp->get_href();
 					$vals = $lp->export_values();
 					if ($vals!==null) {
-						$vals['form'] = array();
-						$vals['form']['status'] = ($vals['option']=='received')?4:5; 
+						if (!isset($vals['form']) || !is_array($vals['form'])) $vals['form'] = array();
+						$vals['form']['status'] = ($vals['option']=='received')?4:5;
 						Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $trans['id'], $vals['form']);
 						location(array());
 					}
@@ -269,20 +298,25 @@ class Premium_Warehouse_Items_Orders extends Module {
 								$serials->addElement('text', 'serial__'.$v['id'].'__'.$i, Premium_Warehouse_Items_OrdersCommon::display_item_name($v, true));
 						}
 					}
+					$split = $this->split_items_form($items);
 
 					$lp->add_option('received', $this->t('All items delivered'), null, $any_item?$serials:null);
+					$lp->add_option('incomplete', $this->t('Incomplete Shipment'), null, $split);
 					$lp->add_option('onhold', $this->t('Put On Hold'), null, null);
 					$this->display_module($lp, array($this->t('Final Inspection. All items received?')));
 					$this->href = $lp->get_href();
 					$vals = $lp->export_values();
 					if ($vals!==null) {
 						if (!isset($vals['form']) || !is_array($vals['form'])) $vals['form'] = array();
-						if ($vals['option']=='received') {
-							$vals['form']['status'] = 20;
-						} else {
+						if ($vals['option']=='onhold') {
 							$vals['form']['status'] = 5;
+						} elseif ($vals['option']=='received') {
+							$vals['form']['status'] = 20;
 						}
 						Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $trans['id'], $vals['form']);
+						if ($vals['option']=='incomplete') {
+							$this->split_items_process($items, $trans, $vals['form']);
+						}
 						if ($any_item && $vals['option']=='received') {
 							foreach ($items as $v) {
 								if (Utils_RecordBrowserCommon::get_value('premium_warehouse_items', $v['item_name'], 'item_type')==1) {
@@ -301,12 +335,8 @@ class Premium_Warehouse_Items_Orders extends Module {
 					break;
 				case 5:
 					$lp->add_option('items_available', $this->t('Items Available'), null, null);
-					$split = $this->init_module('Libs/QuickForm');
-					$split->addElement('static', 'header', '');
-					$split->setDefaults(array('header'=>'Select quantity and items you want to place in new transaction'));
 					$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$trans['id']));
-					foreach ($items as $v)
-						$split->addElement('text', 'item__'.$v['id'], Premium_Warehouse_Items_OrdersCommon::display_item_name($v, true));
+					$split = $this->split_items_form($items);
 					$lp->add_option('partial_order', $this->t('Partial Order'), null, $split);
 					$lp->add_option('cancel', $this->t('Cancel'), null, null);
 					$this->display_module($lp, array($this->t('Final Inspection. All items received?')));
@@ -317,18 +347,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 						if ($vals['option']=='items_available') {
 							$up_vals['status'] = 2;
 						} elseif ($vals['option']=='partial_order') {
-							$id = Utils_RecordBrowserCommon::new_record('premium_warehouse_items_orders', $trans);
-							foreach ($items as $v)
-								if (intval($vals['form']['item__'.$v['id']])>0) {
-									$vals['form']['item__'.$v['id']] = intval($vals['form']['item__'.$v['id']]);
-									$old = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders_details', $v['id']);
-									if ($vals['form']['item__'.$v['id']]>$old['quantity']) $vals['form']['item__'.$v['id']] = $old['quantity'];
-									if ($vals['form']['item__'.$v['id']]!=$old['quantity']) Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders_details', $v['id'], array('quantity'=>$old['quantity']-$vals['form']['item__'.$v['id']]));
-									else Utils_RecordBrowserCommon::delete_record('premium_warehouse_items_orders_details', $v['id']);
-									$old['transaction_id'] = $id;
-									$old['quantity'] = $vals['form']['item__'.$v['id']];
-									Utils_RecordBrowserCommon::new_record('premium_warehouse_items_orders_details', $old);
-								}
+							$this->split_items_process($items, $trans, $vals['form']);
 							break;		
 						} else {
 							$up_vals['status'] = 21;
