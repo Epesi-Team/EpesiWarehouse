@@ -60,7 +60,13 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	}
 
     public static function display_item_name($v, $nolink=false) {
+    	if (!$v['item_name'] && isset($v['item_sku'])) $v['item_name'] = $v['item_sku'];
 		return Utils_RecordBrowserCommon::create_linked_label('premium_warehouse_items', 'item_name', $v['item_name'], $nolink);
+	}
+	
+    public static function display_item_sku($v, $nolink=false) {
+    	if (!$v['item_name'] && isset($v['item_sku'])) $v['item_name'] = $v['item_sku'];
+		return Utils_RecordBrowserCommon::create_linked_label('premium_warehouse_items', 'sku', $v['item_name'], $nolink);
 	}
 	
 	public static function calculate_tax_and_total_value($r, $arg) {
@@ -97,6 +103,11 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	
 	public static function display_transaction_type($r, $nolink) {
 		return Utils_CommonDataCommon::get_value('Premium_Items_Orders_Trans_Types/'.Utils_RecordBrowserCommon::get_value('premium_warehouse_items_orders', $r['transaction_id'], 'transaction_type'),true);	
+	}
+	
+	public static function display_transaction_status($r, $nolink) {
+		$trans = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $r['transaction_id']);
+		return self::display_status($trans);	
 	}
 	
 	public static function display_transaction_date($r, $nolink) {
@@ -170,12 +181,16 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		return $opts;
 	}
 
-	public static function display_status($r, $nolink){
+	public static function display_status($r, $nolink=false){
 		$opts = self::get_status_array($r);
 		return $opts[$r['status']];
 	}
 
 	public static function QFfield_status(&$form, $field, $label, $mode, $default, $desc, $rb_obj){
+		if ($mode!='view') {
+			load_js('modules\Premium\Warehouse\Items\Orders\contractor_update.js');
+			eval_js('new ContractorUpdate()');
+		}
 		$opts = self::get_status_array($rb_obj->record);
 		if ($mode=='edit') {
 			$form->addElement('select', $field, $label, $opts, array('id'=>'status'));
@@ -235,6 +250,17 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		}
 	}
 	
+	public static function QFfield_details_tax_rate(&$form, $field, $label, $mode, $default){
+		if ($mode=='add' || $mode=='edit') {
+			$tax_rates = array(''=>'---')+Utils_CommonDataCommon::get_translated_array('Premium_Warehouse_Items_Tax');
+			$form->addElement('select', $field, $label, $tax_rates, array('onkeypress'=>'var key=event.which || event.keyCode;if(key==13){'.$form->get_submit_form_js().'};'));
+			if ($mode=='edit') $form->setDefaults(array($field=>$default));
+		} else {
+			$form->addElement('static', $field, $label);
+			$form->setDefaults(array($field=>Utils_CommonDataCommon::get_value('Premium_Warehouse_Items_Tax/'.$default,true)));
+		}
+	} 
+	
 	public static function QFfield_item_name(&$form, $field, $label, $mode, $default){
 		self::get_trans();
 		if (self::$trans['transaction_type']==2) {
@@ -282,6 +308,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			natcasesort($opts);
 			$form->addElement('select', $field, $label, $opts, array('id'=>$field));
 			if ($mode=='edit') $form->setDefaults(array($field=>$default));
+			eval_js('focus_by_id(\'item_name\');');
 		} else {
 			$form->addElement('static', $field, $label);
 			$form->setDefaults(array($field=>self::display_item_name(array('item_name'=>$default), null, array('id'=>'item_name'))));
@@ -413,10 +440,16 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			case 'fields':	$ret = array();
 							$ret['status'] = 'read-only';
 							$tt = $param['transaction_type'];
-							if (is_array($param))
-								$ret = array('transaction_type'=>'read-only','warehouse'=>'read-only','company'=>'hide','contact'=>'hide');
+							if (is_array($param)) {
+								$ret = array('warehouse'=>'read-only');
+								if ($action_details=='view') {
+									$ret['company'] = 'hide';
+									$ret['contact'] = 'hide';
+								}
+							}
 							if ($action_details=='new')
-								$ret = array('transaction_type'=>'read-only','paid'=>'hide','status'=>'hide');
+								$ret = array('status'=>'hide');
+							$ret['transaction_type'] = 'read-only';
 							if ($tt==3 && $action_details!='view') {
 								$opts_pay = self::get_status_array($param,true);
 								$opts_no_pay = self::get_status_array($param,false);
@@ -640,10 +673,6 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	public static function submit_order($values, $mode) {
 		switch ($mode) {
 			case 'adding':
-				if ($values['transaction_type']!=2) {
-					load_js('modules\Premium\Warehouse\Items\Orders\contractor_update.js');
-					eval_js('new ContractorUpdate()');
-				}
 			case 'editing':
 				return array('transaction_type'=>$values['transaction_type']);
 			case 'delete':

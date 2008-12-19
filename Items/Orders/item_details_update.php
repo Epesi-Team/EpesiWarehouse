@@ -34,12 +34,12 @@ if (!isset($location_id) || !$location_id)
 
 $js = '';
 $js .= '$("description").value="'.$rec['description'].'";';
+$js .= 'if($("description"))focus_by_id("description");';
 if ($trans['transaction_type']<2) {
 	$js .= 'if($("tax_rate"))$("tax_rate").value="'.$rec['tax_rate'].'";';
 	$js .= 'if($("net_price"))$("net_price").value="'.($trans['transaction_type']==0?(isset($rec['last_purchase_price'])&&$rec['last_purchase_price']?$rec['last_purchase_price']:$rec['cost']):(isset($rec['last_sale_price'])&&$rec['last_sale_price']?$rec['last_sale_price']:$rec['net_price'])).'";';
 	if ($rec['item_type']==1) {
 		$js .= '$("quantity").value=1;';
-		$js .= 'if($("serial"))focus_by_id("serial");';
 		if ($trans['transaction_type']==1) {
 			$js .= '$("quantity").style.display="none";';
 			$js .= 'if($("serial"))$("serial").style.display="inline";';
@@ -64,7 +64,6 @@ if ($trans['transaction_type']<2) {
 		$js .= 'if($("serial"))$("serial").style.display="none";';
 		$js .= 'if($("serial"))$("serial").value="";';
 		$js .= 'if(!$("quantity").value)$("quantity").value=1;';
-		$js .= 'if($("quantity"))focus_by_id("quantity");';
 	}
 }
 if ($trans['transaction_type']==2) {

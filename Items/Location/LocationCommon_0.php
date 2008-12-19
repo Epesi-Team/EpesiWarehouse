@@ -31,6 +31,14 @@ class Premium_Warehouse_Items_LocationCommon extends ModuleCommon {
 		return array();
 	}
 
+	public function display_rental($r, $nolink = false){
+		if (isset($r['rental_item']) && $r['rental_item']) $ret = 'Yes';
+		else $ret = 'No';
+		return Base_LangCommon::ts('Premium_Warehouse_Items_Location',$ret);
+		//Utils_RecordBrowserCommon::update_record('premium_warehouse_location', $r['id'], array('rental_item'=>$state?1:0));
+		//return false;
+	}
+
     public static function display_warehouse($v, $nolink=false) {
 		return Utils_RecordBrowserCommon::create_linked_label('premium_warehouse', 'Warehouse', $v['warehouse'], $nolink);
 	}

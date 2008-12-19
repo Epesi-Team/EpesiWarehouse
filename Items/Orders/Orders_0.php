@@ -67,9 +67,15 @@ class Premium_Warehouse_Items_Orders extends Module {
 	public function transaction_history_addon($arg){
 		// TODO: service?
 		$rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items_orders_details');
-		$order = array(array('item_name'=>$arg['id']), array('quantity_on_hand'=>false,'item_name'=>false,'item_name'=>false, ($arg['item_type']==1)?'quantity':'serial'=>false), array('transaction_id'=>'DESC'));
+		$order = array(array('item_name'=>$arg['id']), array('quantity_on_hand'=>false,'item_name'=>false,'description'=>false,'item_name'=>false, ($arg['item_type']==1)?'quantity':'serial'=>false), array('transaction_id'=>'DESC'));
 		$rb->set_button(false);
 		$rb->set_defaults(array('item_name'=>$arg['id']));
+		$rb->set_header_properties(array(
+			'transaction_id'=>array('name'=>'Trans. ID', 'width'=>1, 'wrapmode'=>'nowrap'),
+			'transaction_date'=>array('name'=>'Trans. Date', 'width'=>1, 'wrapmode'=>'nowrap'),
+			'transaction_type'=>array('name'=>'Trans. Type', 'width'=>1),
+			'transaction_status'=>array('name'=>'Trans. Status', 'width'=>1)
+									));
 		$this->display_module($rb,$order,'show_data');
 	}
 
@@ -192,7 +198,10 @@ class Premium_Warehouse_Items_Orders extends Module {
 		$id = null;
 		foreach ($items as $v)
 			if (intval($vals['item__'.$v['id']]['new_qty'])>0) {
-				if ($id===null) $id = Utils_RecordBrowserCommon::new_record('premium_warehouse_items_orders', $trans);
+				if ($id===null) {
+					$id = Utils_RecordBrowserCommon::new_record('premium_warehouse_items_orders', $trans);
+					$this->set_module_variable('split_transaction_id', $id);
+				}
 				$old = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders_details', $v['id']);
 				if (intval($vals['item__'.$v['id']]['original_qty'])!=0) Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders_details', $v['id'], array('quantity'=>intval($vals['item__'.$v['id']]['original_qty'])));
 				else Utils_RecordBrowserCommon::delete_record('premium_warehouse_items_orders_details', $v['id']);
@@ -203,6 +212,11 @@ class Premium_Warehouse_Items_Orders extends Module {
 	}
 	
 	public function change_status_leightbox($trans, $status) {
+		if ($this->isset_module_variable('split_transaction_id')) {
+			$id = $this->get_module_variable('split_transaction_id');
+			$this->unset_module_variable('split_transaction_id');
+			print($this->t('<b>The transaction was split succesfully.<br>The ID of newly created transaction is: %s', array(Utils_RecordBrowserCommon::create_linked_label('premium_warehouse_items_orders', 'transaction_id', $id))));
+		}
 		$lp = $this->init_module('Utils/LeightboxPrompt');
 		if ($trans['transaction_type']==0) {
 			switch ($status) {			

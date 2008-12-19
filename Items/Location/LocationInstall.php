@@ -26,7 +26,7 @@ class Premium_Warehouse_Items_LocationInstall extends ModuleInstall {
 			array('name'=>'Item Name', 	'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>false, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_item_name')),
 			array('name'=>'Quantity',	'type'=>'integer', 'required'=>true, 'extra'=>false, 'visible'=>true),
 			array('name'=>'Serial',		'type'=>'text', 'required'=>true, 'param'=>'128', 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_LocationCommon', 'display_serial')),
-			array('name'=>'Rental Item','type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>false),
+			array('name'=>'Rental Item','type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>false, 'display_callback'=>array('Premium_Warehouse_Items_LocationCommon', 'display_rental')),
 			array('name'=>'Used',		'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>false),
 			array('name'=>'Warehouse', 	'type'=>'select', 'required'=>true, 'param'=>'premium_warehouse::Warehouse;::', 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_LocationCommon', 'display_warehouse'))
 		);
