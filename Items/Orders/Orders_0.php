@@ -35,6 +35,8 @@ class Premium_Warehouse_Items_Orders extends Module {
 			$this->t('Inv. Adjustment')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'inv_adj.png'), 'defaults'=>array_merge($defaults,array('transaction_type'=>2))),
 			$this->t('Rental')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'rental.png'), 'defaults'=>array_merge($defaults,array('transaction_type'=>3)))
 			), true);
+		$warehouse = Base_User_SettingsCommon::get('Premium_Warehouse', 'my_warehouse');
+		if ($warehouse) $this->rb->set_additional_caption(' - '.Utils_RecordBrowserCommon::get_value('premium_warehouse', $warehouse,'warehouse'));
 		$this->rb->set_header_properties(array('terms'=>array('width'=>1, 'wrapmode'=>'nowrap')));
 		$this->display_module($this->rb);
 	}
@@ -85,6 +87,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 		$cols = array('transaction_id'=>false);
 		$cols['transaction_type'] = false;			
 		$cols['transaction_date'] = false;			
+		$cols['transaction_status'] = false;			
 		$cols['warehouse'] = false;			
 		$header_prop = array(
 			'item_name'=>array('width'=>1, 'wrapmode'=>'nowrap'),
@@ -158,12 +161,13 @@ class Premium_Warehouse_Items_Orders extends Module {
 		$this->display_module($a);
 	}
 	
-	public function revise_items($items) {
+	public function revise_items($items, $trans) {
 		$po_form = $this->init_module('Libs/QuickForm');
 		$po_form->addElement('select', 'payment_type', $this->t('Payment Type'), array(''=>'---')+Utils_CommonDataCommon::get_array('Premium_Items_Orders_Payment_Types'));
 		$po_form->addElement('text', 'payment_no', $this->t('Payment No'));
 		$po_form->addElement('select', 'terms', $this->t('Terms'), array(''=>'---')+Utils_CommonDataCommon::get_array('Premium_Items_Orders_Terms'));
 		$po_form->addElement('select', 'shipment_type', $this->t('Shipment Type'), array(''=>'---')+Utils_CommonDataCommon::get_array('Premium_Items_Orders_Shipment_Types'));
+		$po_form->setDefaults($trans);
 
 		$taxes = Utils_CommonDataCommon::get_array('Premium_Warehouse_Items_Tax');
 		$po_form->addElement('static', 'item_header', '');
@@ -222,7 +226,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 			switch ($status) {			
 				case '':
 					$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$trans['id']));
-					$po_form = $this->revise_items($items);
+					$po_form = $this->revise_items($items, $trans);
 					$lp->add_option('po', $this->t('PO'), null, $po_form);
 
 					$quote_form = $this->init_module('Libs/QuickForm');

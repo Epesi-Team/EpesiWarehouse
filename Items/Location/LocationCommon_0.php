@@ -32,10 +32,15 @@ class Premium_Warehouse_Items_LocationCommon extends ModuleCommon {
 	}
 
 	public function display_rental($r, $nolink = false){
+		if (isset($_REQUEST['warehouse_change_rental_status']) &&
+			$_REQUEST['warehouse_change_rental_status']==$r['id']) {
+			unset($_REQUEST['warehouse_change_rental_status']);
+			$r['rental_item'] = $r['rental_item']?0:1;
+			Utils_RecordBrowserCommon::update_record('premium_warehouse_location', $r['id'], array('rental_item'=>$r['rental_item']));
+		}
 		if (isset($r['rental_item']) && $r['rental_item']) $ret = 'Yes';
 		else $ret = 'No';
-		return Base_LangCommon::ts('Premium_Warehouse_Items_Location',$ret);
-		//Utils_RecordBrowserCommon::update_record('premium_warehouse_location', $r['id'], array('rental_item'=>$state?1:0));
+		return '<a '.Module::create_href(array('warehouse_change_rental_status'=>$r['id'])).'>'.Base_LangCommon::ts('Premium_Warehouse_Items_Location',$ret).'</a>';
 		//return false;
 	}
 
@@ -68,43 +73,62 @@ class Premium_Warehouse_Items_LocationCommon extends ModuleCommon {
 		$my_quantity = 0;
 		$crits = array('item_sku'=>$r['id']);
 		if ($warehouse!==null) $crits['warehouse'] = $warehouse;
-		if ($rental) $crits['rental_item']=1;
-		else $crits['rental_item']=array(0,'');
+//		if ($rental) $crits['rental_item']=1;
+//		else $crits['rental_item']=array(0,'');
 		$recs = Utils_RecordBrowserCommon::get_records('premium_warehouse_location', $crits, array('quantity'));
 		foreach ($recs as $v) {
 			$my_quantity += $v['quantity'];
 		}
 		return $my_quantity;
 	}
+
 	public static function display_item_quantity($r, $nolink) {
 		$my_warehouse = Base_User_SettingsCommon::get('Premium_Warehouse','my_warehouse');
 		return self::display_item_quantity_in_warehouse_and_total($r, $my_warehouse, $nolink);
 	}
 	
-	public static function display_item_quantity_in_warehouse_and_total($r, $warehouse, $nolink=false, $custom_qty=null, $custom_label=null) {
+	public static function display_item_quantity_in_warehouse_and_total($r, $warehouse, $nolink=false, $enroute=null, $custom_label=null) {
 		if ($r['item_type']>=2) return '---';
 		if (!$warehouse) return $r['quantity_on_hand'];
-		if ($custom_qty===null) $custom_qty = self::get_item_quantity_in_warehouse($r, $warehouse);
-		$ret = $custom_qty.' / '.$r['quantity_on_hand'];
 		if ($custom_label===null) $custom_label = array(
 			'main'=>'Quantity on hand',
-			'in_one'=>'In <b>%s</b> warehouse',
+			'in_one'=>'In %s warehouse',
 			'in_all'=>'In all warehouses',
 		);
-		if (!$nolink) $ret = Utils_TooltipCommon::create($ret, 
-			'<b>'.
-			Base_LangCommon::ts('Premium_Warehouse_Items_Location',$custom_label['main'].':').
-			'</b>'.
-			'<table border=0><tr><td style="width:5px;" /><td nowrap="1">'.
-			Base_LangCommon::ts('Premium_Warehouse_Items_Location',$custom_label['in_one'], array(Utils_RecordBrowserCommon::get_value('premium_warehouse',$warehouse,'warehouse'))).
-			'</td><td style="text-align:right;">'.
-			$custom_qty.
-			'</td></tr><tr><td style="width:5px;" /><td>'.
-			Base_LangCommon::ts('Premium_Warehouse_Items_Location',$custom_label['in_all']).
-			'</td><td style="text-align:right;">'.
-			$r['quantity_on_hand'].
-			'</td></tr></table>'
-			,false);
+		if (!$nolink) {
+			$tooltip = '<b>'.
+				Base_LangCommon::ts('Premium_Warehouse_Items_Location',$custom_label['main'].':').
+				'</b>'.
+				'<table border=0>';
+				
+			if (Utils_RecordBrowserCommon::get_records_limit('premium_warehouse')<=10) {
+				$warehouses_records = Utils_RecordBrowserCommon::get_records('premium_warehouse', array(), array(), array('warehouse'=>'ASC'));
+				$warehouses = array();
+				foreach ($warehouses_records as $v) {
+					$warehouses[$v['id']] = $v['warehouse'];
+					if ($v['id']==$warehouse) $warehouses[$v['id']] = '<b>'.$warehouses[$v['id']].'</b>'; 
+				}
+			} else $warehouses = array($warehouse=>'<b>'.Utils_RecordBrowserCommon::get_value('premium_warehouse',$warehouse,'warehouse').'</b>');
+			$quantities = array();
+			foreach ($warehouses as $k=>$v) {
+				if ($enroute!==null) $quantities[$k] = isset($enroute[$k])?$enroute[$k]:0;
+				else $quantities[$k] = self::get_item_quantity_in_warehouse($r, $k);
+				$tooltip .= '<tr><td style="width:5px;" /><td nowrap="1">'.
+					Base_LangCommon::ts('Premium_Warehouse_Items_Location',$custom_label['in_one'], array($v)).
+					'</td><td style="text-align:right;">'.
+					$quantities[$k].
+					'</td></tr>';
+			}
+				
+			$tooltip .= '<tr><td style="width:5px;" /><td>'.
+				Base_LangCommon::ts('Premium_Warehouse_Items_Location',$custom_label['in_all']).
+				'</td><td style="text-align:right;">'.
+				$r['quantity_on_hand'].
+				'</td></tr></table>';
+		}
+		$ret = (isset($quantities[$warehouse])?$quantities[$warehouse]:0).' / '.$r['quantity_on_hand'];
+		if (!$nolink)
+			$ret = Utils_TooltipCommon::create($ret, $tooltip, false);
 		return $ret;
 	}
 	

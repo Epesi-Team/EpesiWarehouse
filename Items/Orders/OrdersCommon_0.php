@@ -146,18 +146,20 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	public static function display_quantity_on_route($r, $nolink){
 		$trans = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders', array('(status'=>3, '|status'=>4, 'transaction_type'=>0), array('id', 'warehouse'));
 		$my_warehouse = Base_User_SettingsCommon::get('Premium_Warehouse','my_warehouse');
-		$my_qty = 0;
 		$qty = 0;
 		$ids = array();
 		foreach ($trans as $t)
 			$ids[] = $t['id'];
 		$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$ids, 'item_name'=>$r['id']), array('quantity','transaction_id'));
+		$en_route_qty = array();
 		foreach ($items as $i) {
-			if (isset($my_warehouse) && is_numeric($my_warehouse) && $trans[$i['transaction_id']]['warehouse']==$my_warehouse) $my_qty+=$i['quantity'];
+			$warehouse = $trans[$i['transaction_id']]['warehouse'];
+			if (!isset($en_route_qty[$warehouse])) $en_route_qty[$warehouse] = 0;
+			$en_route_qty[$warehouse] += $i['quantity'];
 			$qty+=$i['quantity'];
 		}
 		$r['quantity_on_hand']=$qty;
-		if (isset($my_warehouse) && is_numeric($my_warehouse)) return Premium_Warehouse_Items_LocationCommon::display_item_quantity_in_warehouse_and_total($r,$my_warehouse,$nolink,$my_qty,array('main'=>'Quantity En Route', 'in_one'=>'To <b>%s</b> warehouse', 'in_all'=>'To all warehouses'));
+		if (isset($my_warehouse) && is_numeric($my_warehouse)) return Premium_Warehouse_Items_LocationCommon::display_item_quantity_in_warehouse_and_total($r,$my_warehouse,$nolink,$en_route_qty,array('main'=>'Quantity En Route', 'in_one'=>'To %s warehouse', 'in_all'=>'To all warehouses'));
 		return $qty;
 	}
 
@@ -673,6 +675,10 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	public static function submit_order($values, $mode) {
 		switch ($mode) {
 			case 'adding':
+				if ($mode!='view') {
+					load_js('modules\Premium\Warehouse\Items\Orders\contractor_update.js');
+					eval_js('new ContractorUpdate()');
+				}
 			case 'editing':
 				return array('transaction_type'=>$values['transaction_type']);
 			case 'delete':

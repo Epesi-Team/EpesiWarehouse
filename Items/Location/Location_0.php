@@ -20,7 +20,7 @@ class Premium_Warehouse_Items_Location extends Module {
 	public function location_addon($arg){
 		$rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_location');
 		$rb->set_button(false);
-		$order = array(array('item_sku'=>$arg['id'], '!quantity'=>0), array('rental_item'=>($arg['item_type']==1)?true:false, 'item_sku'=>false, 'serial'=>($arg['item_type']==1)?true:false), array());
+		$order = array(array('item_sku'=>$arg['id'], '!quantity'=>0), array('rental_item'=>($arg['item_type']==1)?true:false, 'item_sku'=>false, 'serial'=>($arg['item_type']==1)?true:false, 'quantity'=>($arg['item_type']==1)?false:true), array());
 		$this->display_module($rb,$order,'show_data');
 	}
 
