@@ -456,7 +456,8 @@ class Premium_Warehouse_Items_Orders extends Module {
 					if ($vals!==null) {
 						$vals['form']['status'] = ($vals['option']=='available')?4:5;
 						// TODO: reduce the amount of items
-						if ($items_available) Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $trans['id'], $vals['form']);
+						if (!$items_available && $vals['form']['status']==4) break;
+						Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $trans['id'], $vals['form']);
 						location(array());
 					}
 					break;
@@ -476,7 +477,24 @@ class Premium_Warehouse_Items_Orders extends Module {
 							$items_available = false;
 						}
 					}
-					$lp->add_option('available', $this->t('Items Available'), null, $items_available?null:$items_check);
+
+					$serials = $this->init_module('Libs/QuickForm');
+					$serials->addElement('static', 'item_header', '');
+					$serials->setDefaults(array('item_header'=>$this->t('Please select serial numbers for Serialized Items')));
+					$any_item = false;
+					foreach ($items as $v) {
+						if (Utils_RecordBrowserCommon::get_value('premium_warehouse_items', $v['item_name'], 'item_type')==1) {
+							$any_item = true; 
+							$loc_id = Utils_RecordBrowserCommon::get_id('premium_warehouse_location', array('item_sku', 'warehouse'), array($v['item_name'], $trans['warehouse']));
+							if (!$loc_id) continue; // failsafe
+							$item_serials = array(''=>'---')+DB::GetAssoc('SELECT id, serial FROM premium_warehouse_location_serial WHERE active=1 AND location_id=%d', array($loc_id));
+							for ($i=0;$i<$v['quantity'];$i++)
+								$serials->addElement('select', 'serial__'.$v['id'].'__'.$i, Premium_Warehouse_Items_OrdersCommon::display_item_name($v, true), $item_serials);
+						}
+					}
+					$split = $this->split_items_form($items);
+
+					$lp->add_option('available', $this->t('Items Available'), null, $items_available?($any_item?$serials:null):$items_check);
 					// check items qty
 					$lp->add_option('onhold', $this->t('Put On Hold'), null, null);
 					$this->display_module($lp, array($this->t('Final Inspection: All items available?')));
@@ -484,14 +502,40 @@ class Premium_Warehouse_Items_Orders extends Module {
 					$vals = $lp->export_values();
 					if ($vals!==null) {
 						$vals['form']['status'] = ($vals['option']=='available')?6:5;
-						// TODO: reduce the amount of items
-						if ($items_available) Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $trans['id'], $vals['form']);
+						if (!$items_available && $vals['form']['status']==6) break;
+						Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $trans['id'], $vals['form']);
+						if ($vals['form']['status']==6) {
+							foreach ($items as $v) {
+								if (Utils_RecordBrowserCommon::get_value('premium_warehouse_items', $v['item_name'], 'item_type')==1) {
+									$any_item = true; 
+									$loc_id = Utils_RecordBrowserCommon::get_id('premium_warehouse_location', array('item_sku', 'warehouse'), array($v['item_name'], $trans['warehouse']));
+									if (!$loc_id) continue; // failsafe
+									$item_serials = array(''=>'---')+DB::GetAssoc('SELECT id, serial FROM premium_warehouse_location_serial WHERE active=1 AND location_id=%d', array($loc_id));
+									for ($i=0;$i<$v['quantity'];$i++)
+										$serials->addElement('select', 'serial__'.$v['id'].'__'.$i, Premium_Warehouse_Items_OrdersCommon::display_item_name($v, true), $item_serials);
+								}
+							}
+						}
 						location(array());
 					}
 					break;
 				case 6:
+					$ship_received = $this->init_module('Libs/QuickForm');
+					$emps_ids = CRM_ContactsCommon::get_contacts(Premium_Warehouse_ItemsCommon::employee_crits(), array(), array('last_name'=>'ASC','first_name'=>'ASC'));
+					$emps = array(''=>'---');
+					$my_id = '';
+					foreach ($emps_ids as $v) {
+						if ($v['login']==Acl::get_user()) $my_id = $v['id'];
+						$emps[$v['id']] = CRM_ContactsCommon::contact_format_no_company($v,true);
+					}
+					$ship_received->addElement('datepicker', 'shipment_date', 'Shipment - receive date');
+					$ship_received->addElement('select', 'shipment_employee', 'Shipment - received by', $emps);
+					$ship_received->addElement('datepicker', 'shipment_eta', 'Shipment - ETA');
+					$ship_received->addElement('text', 'tracking_info', 'Shipment - Tracking Info');
+					$ship_received->setDefaults(array('shipment_date'=>date('Y-m-d'), 'shipment_employee'=>$my_id));
+
 					$lp->add_option('pickup', $this->t('Pickup'), null, null);
-					$lp->add_option('ship', $this->t('Ship'), null, null);
+					$lp->add_option('ship', $this->t('Ship'), null, $ship_received);
 					$this->display_module($lp, array($this->t('Select Shipping method.')));
 					$this->href = $lp->get_href();
 					$vals = $lp->export_values();
@@ -503,22 +547,6 @@ class Premium_Warehouse_Items_Orders extends Module {
 							$vals['form']['status'] = 7;
 						}
 						Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $trans['id'], $vals['form']);
-//						if ($vals['option']=='incomplete') {
-//							$this->split_items_process($items, $trans, $vals['form']);
-//						}
-//						if ($any_item && $vals['option']=='received') {
-//							foreach ($items as $v) {
-//								if (Utils_RecordBrowserCommon::get_value('premium_warehouse_items', $v['item_name'], 'item_type')==1) {
-//									$copy = $v;
-//									for ($i=0;$i<$v['quantity'];$i++) {
-//										$copy['quantity'] = 1;
-//										$copy['serial'] = $vals['form']['serial__'.$v['id'].'__'.$i];
-//										Utils_RecordBrowserCommon::new_record('premium_warehouse_items_orders_details', $copy);
-//									}
-//									Utils_RecordBrowserCommon::delete_record('premium_warehouse_items_orders_details', $v['id'], true);
-//								}
-//							}
-//						}
 						location(array());
 					}
 					break;
@@ -545,31 +573,18 @@ class Premium_Warehouse_Items_Orders extends Module {
 						location(array());
 					}
 					break;
-
-//				case 3:
-//					$ship_received = $this->init_module('Libs/QuickForm');
-//					$emps_ids = CRM_ContactsCommon::get_contacts(Premium_Warehouse_ItemsCommon::employee_crits(), array(), array('last_name'=>'ASC','first_name'=>'ASC'));
-//					$emps = array(''=>'---');
-//					$my_id = '';
-//					foreach ($emps_ids as $v) {
-//						if ($v['login']==Acl::get_user()) $my_id = $v['id'];
-//						$emps[$v['id']] = CRM_ContactsCommon::contact_format_no_company($v,true);
-//					}
-//					$ship_received->addElement('datepicker', 'shipment_date', 'Shipment - receive date');
-//					$ship_received->addElement('select', 'shipment_employee', 'Shipment - received by', $emps);
-//					$ship_received->setDefaults(array('shipment_date'=>date('Y-m-d'), 'shipment_employee'=>$my_id));
-//					$lp->add_option('received', $this->t('Items Received'), null, $ship_received);
-//					$lp->add_option('onhold', $this->t('Put On Hold'), null, null);
-//					$this->display_module($lp, array($this->t('Shipment Received?')));
-//					$this->href = $lp->get_href();
-//					$vals = $lp->export_values();
-//					if ($vals!==null) {
-//						if (!isset($vals['form']) || !is_array($vals['form'])) $vals['form'] = array();
-//						$vals['form']['status'] = ($vals['option']=='received')?4:5;
-//						Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $trans['id'], $vals['form']);
-//						location(array());
-//					}
-//					break;
+				case 7:
+					$lp->add_option('delivered', $this->t('Delivered'), null, null);
+					$lp->add_option('missing', $this->t('Missing'), null, null);
+					$this->display_module($lp, array($this->t('Was the shipment delivered?')));
+					$this->href = $lp->get_href();
+					$vals = $lp->export_values();
+					if ($vals!==null) {
+						$vals['form']['status'] = ($vals['option']=='delivered')?20:22;
+						Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $trans['id'], $vals['form']);
+						location(array());
+					}
+					break;
 			}
 		}
 	}

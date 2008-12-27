@@ -530,6 +530,22 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 									}
 									if ($param['status']!=1) $ret['expiration_date'] = 'hide';
 								}
+								if ($tt==1 && isset($param['status'])) {
+									if ($param['status']<7) {
+										$ret['shipment_date'] = 'hide';
+										$ret['shipment_employee'] = 'hide';
+										$ret['shipment_no'] = 'hide';
+									}
+									if ($param['status']<2) {
+										$ret['payment_no'] = 'hide';
+										$ret['payment_type'] = 'hide';
+										$ret['shipment_type'] = 'hide';
+										$ret['terms'] = 'hide';
+										$ret['total_value'] = 'hide';
+										$ret['tax_value'] = 'hide';
+									}
+									if ($param['status']!=1) $ret['expiration_date'] = 'hide';
+								}
 							}
 							return $ret;
 		}
@@ -596,7 +612,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		if ($order['transaction_type']==1 && ($order['status']>20 || $order['status']<6) && $action!='change_delivered' && !$force_change) return;
 
 		if ($order['transaction_type']==0 && $action=='change_delivered') $action=($order['status']!=20?'add':'delete'); 
-		if ($order['transaction_type']==1 && $action=='change_delivered') $action=(in_array($order['status'], array(4,6,7,20))?'delete':'add');			
+		if ($order['transaction_type']==1 && $action=='change_delivered') $action=(in_array($order['status'], array(6,7,20,22))?'delete':'add');			
 		if ($action!=='add') $old_details = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders_details', $details['id']);
 		if ($action!=='add' && $action!=='restore') {
 			$location_id = Utils_RecordBrowserCommon::get_id('premium_warehouse_location',array('item_sku','warehouse'),array($item_id,$order['warehouse']));
@@ -671,7 +687,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 				$values['transaction_id'] = self::generate_id($values['id']);
 				$old_values = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $values['id']);
 				if (($values['status']-$old_values['status']!=0 && (20-$values['status'])*(20-$old_values['status'])==0 && $values['transaction_type']==0) ||
-					(variant_xor(in_array($values['status'], array(4,6,7,20)), in_array($old_values['status'], array(4,6,7,20))) && $values['transaction_type']==1)) {
+					(variant_xor(in_array($values['status'], array(6,7,20,22)), in_array($old_values['status'], array(6,7,20,22))) && $values['transaction_type']==1)) {
 					$det = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$values['id']));
 					foreach ($det as $d)
 						self::change_total_qty($d, 'change_delivered', true);
