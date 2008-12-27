@@ -113,7 +113,7 @@ class Premium_Warehouse_Items_LocationCommon extends ModuleCommon {
 			foreach ($warehouses as $k=>$v) {
 				if ($enroute!==null) $quantities[$k] = isset($enroute[$k])?$enroute[$k]:0;
 				else $quantities[$k] = self::get_item_quantity_in_warehouse($r, $k);
-				$tooltip .= '<tr><td style="width:5px;" /><td nowrap="1">'.
+				if (isset($quantities[$k])) $tooltip .= '<tr><td style="width:5px;" /><td nowrap="1">'.
 					Base_LangCommon::ts('Premium_Warehouse_Items_Location',$custom_label['in_one'], array($v)).
 					'</td><td style="text-align:right;">'.
 					$quantities[$k].
@@ -126,7 +126,7 @@ class Premium_Warehouse_Items_LocationCommon extends ModuleCommon {
 				$r['quantity_on_hand'].
 				'</td></tr></table>';
 		}
-		$ret = (isset($quantities[$warehouse])?$quantities[$warehouse]:0).' / '.$r['quantity_on_hand'];
+		$ret = (isset($enroute[$warehouse])?$enroute[$warehouse]:(isset($quantities[$warehouse])?$quantities[$warehouse]:self::get_item_quantity_in_warehouse($r, $warehouse))).' / '.$r['quantity_on_hand'];
 		if (!$nolink)
 			$ret = Utils_TooltipCommon::create($ret, $tooltip, false);
 		return $ret;

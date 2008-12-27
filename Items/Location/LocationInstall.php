@@ -25,9 +25,6 @@ class Premium_Warehouse_Items_LocationInstall extends ModuleInstall {
 			array('name'=>'Item SKU', 	'type'=>'select', 'required'=>true, 'param'=>'premium_warehouse_items::Item Name;Premium_Warehouse_Items_OrdersCommon::items_crits', 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_item_sku')),
 			array('name'=>'Item Name', 	'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>false, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_item_name')),
 			array('name'=>'Quantity',	'type'=>'integer', 'required'=>true, 'extra'=>false, 'visible'=>true),
-			array('name'=>'Serial',		'type'=>'text', 'required'=>true, 'param'=>'128', 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_LocationCommon', 'display_serial')),
-			array('name'=>'Rental Item','type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>false, 'display_callback'=>array('Premium_Warehouse_Items_LocationCommon', 'display_rental')),
-			array('name'=>'Used',		'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>false),
 			array('name'=>'Warehouse', 	'type'=>'select', 'required'=>true, 'param'=>'premium_warehouse::Warehouse;::', 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_LocationCommon', 'display_warehouse'))
 		);
 
@@ -50,6 +47,13 @@ class Premium_Warehouse_Items_LocationInstall extends ModuleInstall {
 // ************ other ************** //
 		Utils_RecordBrowserCommon::set_access_callback('premium_warehouse_location', 'Premium_Warehouse_Items_LocationCommon', 'access_location');
 		Utils_RecordBrowserCommon::set_display_method('premium_warehouse_items', 'Quantity on Hand', 'Premium_Warehouse_Items_LocationCommon', 'display_item_quantity');
+		
+		DB::CreateTable('premium_warehouse_location_serial',
+					'id I AUTO KEY,'.
+					'location_id I,'.
+					'serial C(128),'.
+					'active I1 DEFAULT 1',
+					array('constraints'=>''));
 
 		$this->add_aco('browse location',array('Employee'));
 		$this->add_aco('view location',array('Employee'));
@@ -65,6 +69,7 @@ class Premium_Warehouse_Items_LocationInstall extends ModuleInstall {
 	}
 	
 	public function uninstall() {
+		DB::DropTable('premium_warehouse_location_serial');
 		Utils_RecordBrowserCommon::delete_addon('premium_warehouse_items', 'Premium/Warehouse/Items/Location', 'location_addon');
 		Utils_RecordBrowserCommon::unset_display_method('premium_warehouse_items', 'Quantity on Hand');
 		Base_ThemeCommon::uninstall_default_theme($this->get_type());

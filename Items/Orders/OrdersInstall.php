@@ -83,7 +83,7 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 			array('name'=>'Description', 		'type'=>'long text', 'required'=>false, 'param'=>'255', 'extra'=>false, 'visible'=>true),
 			array('name'=>'Debit',				'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>false, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_debit')),
 			array('name'=>'Credit',				'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>false, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_credit')),
-			array('name'=>'Serial',				'type'=>'text', 'required'=>false, 'param'=>'128', 'extra'=>false, 'visible'=>true, 'QFfield_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'QFfield_serial'), 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_serial')),
+//			array('name'=>'Serial',				'type'=>'text', 'required'=>false, 'param'=>'128', 'extra'=>false, 'visible'=>true, 'QFfield_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'QFfield_serial'), 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_serial')),
 			array('name'=>'Quantity',			'type'=>'integer', 'required'=>true, 'extra'=>false, 'visible'=>true, 'QFfield_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'QFfield_quantity')),
 
 			array('name'=>'Return Date', 		'type'=>'date', 'required'=>true, 'extra'=>false, 'visible'=>false, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon','display_return_date')),
@@ -128,6 +128,11 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::set_display_method('premium_warehouse_items', 'Quantity En Route', 'Premium_Warehouse_Items_OrdersCommon', 'display_quantity_on_route');
 		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items', 'Last Sale Price', 'currency', false, false, '', 'currency', false, false);
 		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items', 'Last Purchase Price', 'currency', false, false, '', 'currency', false, false);
+
+		DB::CreateTable('premium_warehouse_location_orders_serial',
+					'serial_id I,'.
+					'order_details_id I',
+					array('constraints'=>''));
 	
 		$this->add_aco('browse orders',array('Employee'));
 		$this->add_aco('view orders',array('Employee'));
@@ -143,6 +148,8 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 	}
 	
 	public function uninstall() {
+		DB::DropTable('premium_warehouse_location_orders_serial');
+		
 		Utils_RecordBrowserCommon::set_access_callback('premium_warehouse_items', 'Premium_Warehouse_ItemsCommon', 'access_items');
 
 		Base_ThemeCommon::uninstall_default_theme($this->get_type());
