@@ -21,7 +21,7 @@ class Premium_Warehouse_Items extends Module {
 		// Quickjump jak do ticketow, ale po UPC code
 		// TODO: service/non-inventory: quantity rename to amount sold and set to +X instead -X
 		$this->rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items','premium_warehouse_items_module');
-		$this->rb->set_default_order(array('item_name'=>'ASC'));		
+		$this->rb->set_default_order(array('item_name'=>'ASC'));
 		$this->rb->set_cut_lengths(array('item_name'=>30));
 		$defaults = array('quantity_on_hand'=>'0','reorder_point'=>'0');
 		$this->rb->set_defaults(array(

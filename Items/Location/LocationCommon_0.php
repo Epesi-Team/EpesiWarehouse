@@ -92,13 +92,13 @@ class Premium_Warehouse_Items_LocationCommon extends ModuleCommon {
 		if (!$warehouse) return $r['quantity_on_hand'];
 		if ($custom_label===null) $custom_label = array(
 			'main'=>'Quantity on hand',
-			'in_one'=>'In %s warehouse',
-			'in_all'=>'In all warehouses',
+			'in_one'=>'%s',
+			'in_all'=>'Total',
 		);
 		if (!$nolink) {
 			$tooltip = '<b>'.
 				Base_LangCommon::ts('Premium_Warehouse_Items_Location',$custom_label['main'].':').
-				'</b>'.
+				'</b><HR>'.
 				'<table border=0>';
 				
 			if (Utils_RecordBrowserCommon::get_records_limit('premium_warehouse')<=10) {
@@ -113,18 +113,18 @@ class Premium_Warehouse_Items_LocationCommon extends ModuleCommon {
 			foreach ($warehouses as $k=>$v) {
 				if ($enroute!==null) $quantities[$k] = isset($enroute[$k])?$enroute[$k]:0;
 				else $quantities[$k] = self::get_item_quantity_in_warehouse($r, $k);
-				if (isset($quantities[$k])) $tooltip .= '<tr><td style="width:5px;" /><td nowrap="1">'.
+				if (isset($quantities[$k])) $tooltip .= '<tr><td>'.
 					Base_LangCommon::ts('Premium_Warehouse_Items_Location',$custom_label['in_one'], array($v)).
-					'</td><td style="text-align:right;">'.
+					'</td><td bgcolor="#FFFFFF" WIDTH=50 style="text-align:right;">'.
 					$quantities[$k].
 					'</td></tr>';
 			}
 				
-			$tooltip .= '<tr><td style="width:5px;" /><td>'.
+			$tooltip .= '<tr><td><b>'.
 				Base_LangCommon::ts('Premium_Warehouse_Items_Location',$custom_label['in_all']).
-				'</td><td style="text-align:right;">'.
+				'</b></td><td bgcolor="#FFFFCC" style="text-align:right;"><b>'.
 				$r['quantity_on_hand'].
-				'</td></tr></table>';
+				'</b></td></tr></table>';
 		}
 		$ret = (isset($enroute[$warehouse])?$enroute[$warehouse]:(isset($quantities[$warehouse])?$quantities[$warehouse]:self::get_item_quantity_in_warehouse($r, $warehouse))).' / '.$r['quantity_on_hand'];
 		if (!$nolink)

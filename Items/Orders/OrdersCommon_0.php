@@ -159,7 +159,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			$qty+=$i['quantity'];
 		}
 		$r['quantity_on_hand']=$qty;
-		if (isset($my_warehouse) && is_numeric($my_warehouse)) return Premium_Warehouse_Items_LocationCommon::display_item_quantity_in_warehouse_and_total($r,$my_warehouse,$nolink,$en_route_qty,array('main'=>'Quantity En Route', 'in_one'=>'To %s warehouse', 'in_all'=>'To all warehouses'));
+		if (isset($my_warehouse) && is_numeric($my_warehouse)) return Premium_Warehouse_Items_LocationCommon::display_item_quantity_in_warehouse_and_total($r,$my_warehouse,$nolink,$en_route_qty,array('main'=>'Quantity En Route', 'in_one'=>'to %s', 'in_all'=>'Total'));
 		return $qty;
 	}
 
