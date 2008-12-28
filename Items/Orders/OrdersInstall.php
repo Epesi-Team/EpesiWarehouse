@@ -176,7 +176,8 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 		return array(
 			array('name'=>'Base/Lang','version'=>0),
 			array('name'=>'Premium/Warehouse/Items/Location','version'=>0),
-			array('name'=>'Utils/RecordBrowser', 'version'=>0));
+			array('name'=>'Utils/RecordBrowser', 'version'=>0),
+			array('name'=>'Utils/LeightboxPrompt', 'version'=>0));
 	}
 	
 	public static function info() {

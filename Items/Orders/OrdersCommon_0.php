@@ -623,7 +623,6 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 				$location_id = Utils_RecordBrowserCommon::new_record('premium_warehouse_location', array('item_sku'=>$item_id, 'warehouse'=>$order['warehouse'], 'quantity'=>-$old_details['quantity']*$mult));
 			else {
 				$new_loc_qty = Utils_RecordBrowserCommon::get_value('premium_warehouse_location', $location_id, 'quantity')-$old_details['quantity']*$mult;
-				if ($new_loc_qty===0) Utils_RecordBrowserCommon::delete_record('premium_warehouse_location', $location_id, true);
 				Utils_RecordBrowserCommon::update_record('premium_warehouse_location', $location_id, array('quantity'=>$new_loc_qty));
 			}
 		}
@@ -636,8 +635,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 				Utils_RecordBrowserCommon::new_record('premium_warehouse_location', array('item_sku'=>$item_id, 'warehouse'=>$order['warehouse'], 'quantity'=>+$details['quantity']*$mult));
 			else {
 				$new_loc_qty = Utils_RecordBrowserCommon::get_value('premium_warehouse_location', $location_id, 'quantity')+$details['quantity']*$mult;
-				if ($new_loc_qty===0) Utils_RecordBrowserCommon::delete_record('premium_warehouse_location', $location_id, true);
-				else Utils_RecordBrowserCommon::update_record('premium_warehouse_location', $location_id, array('quantity'=>$new_loc_qty));
+				Utils_RecordBrowserCommon::update_record('premium_warehouse_location', $location_id, array('quantity'=>$new_loc_qty));
 			}
 		}
 		Utils_RecordBrowserCommon::update_record('premium_warehouse_items', $item_id, array('quantity_on_hand'=>$new_qty));

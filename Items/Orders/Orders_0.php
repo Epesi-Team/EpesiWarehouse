@@ -441,7 +441,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 						$loc_id = Utils_RecordBrowserCommon::get_id('premium_warehouse_location', array('item_sku', 'warehouse'), array($v['item_name'], $trans['warehouse']));
 						if (is_numeric($loc_id)) $qty = Utils_RecordBrowserCommon::get_value('premium_warehouse_location', $loc_id, 'quantity');
 						else $qty = 0;
-						if ($qty<$v['quantity']) {
+						if ($qty<$v['quantity'] && Utils_RecordBrowserCommon::get_value('premium_warehouse_items', $v['item_name'], 'item_type')<2) {
 							$items_check->addElement('static', 'item_'.$v['id'], Premium_Warehouse_Items_OrdersCommon::display_item_name($v, true));
 							$items_check->setDefaults(array('item_'.$v['id']=>'<span style="color:red;">'.$qty.' / '.$v['quantity'].'</span>'));
 							$items_available = false;
@@ -471,7 +471,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 						$loc_id = Utils_RecordBrowserCommon::get_id('premium_warehouse_location', array('item_sku', 'warehouse'), array($v['item_name'], $trans['warehouse']));
 						if (is_numeric($loc_id)) $qty = Utils_RecordBrowserCommon::get_value('premium_warehouse_location', $loc_id, 'quantity');
 						else $qty = 0;
-						if ($qty<$v['quantity']) {
+						if ($qty<$v['quantity'] && Utils_RecordBrowserCommon::get_value('premium_warehouse_items', $v['item_name'], 'item_type')<2) {
 							$items_check->addElement('static', 'item_'.$v['id'], Premium_Warehouse_Items_OrdersCommon::display_item_name($v, true));
 							$items_check->setDefaults(array('item_'.$v['id']=>'<span style="color:red;">'.$qty.' / '.$v['quantity'].'</span>'));
 							$items_available = false;
@@ -506,14 +506,11 @@ class Premium_Warehouse_Items_Orders extends Module {
 						Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $trans['id'], $vals['form']);
 						if ($vals['form']['status']==6) {
 							foreach ($items as $v) {
-								if (Utils_RecordBrowserCommon::get_value('premium_warehouse_items', $v['item_name'], 'item_type')==1) {
-									$any_item = true; 
-									$loc_id = Utils_RecordBrowserCommon::get_id('premium_warehouse_location', array('item_sku', 'warehouse'), array($v['item_name'], $trans['warehouse']));
-									if (!$loc_id) continue; // failsafe
-									$item_serials = array(''=>'---')+DB::GetAssoc('SELECT id, serial FROM premium_warehouse_location_serial WHERE active=1 AND location_id=%d', array($loc_id));
-									for ($i=0;$i<$v['quantity'];$i++)
-										$serials->addElement('select', 'serial__'.$v['id'].'__'.$i, Premium_Warehouse_Items_OrdersCommon::display_item_name($v, true), $item_serials);
-								}
+								for ($i=0;$i<$v['quantity'];$i++)
+									if (isset($vals['form']['serial__'.$v['id'].'__'.$i])) {
+										DB::Execute('UPDATE premium_warehouse_location_serial SET active=0 WHERE id=%d', array($vals['form']['serial__'.$v['id'].'__'.$i]));
+										// TODO: sign this transaction for those serials
+									}
 							}
 						}
 						location(array());
