@@ -24,6 +24,8 @@ $tab = trim($_POST['parameters'], '"');
 $id = trim($_POST['rec_id'], '"');
 $rec = Utils_RecordBrowserCommon::get_record($tab,$id);
 $js = '';
+foreach ($rec as $k=>$v)
+	if (is_string($v)) $rec[$k] = htmlspecialchars_decode($v);
 if ($tab=='contact') {
 	$js .= '$("first_name").value="'.$rec['first_name'].'";';
 	$js .= '$("last_name").value="'.$rec['last_name'].'";';

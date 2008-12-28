@@ -69,14 +69,14 @@ class Premium_Warehouse_Items_Orders extends Module {
 	public function transaction_history_addon($arg){
 		// TODO: service?
 		$rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items_orders_details');
-		$order = array(array('item_name'=>$arg['id']), array('quantity_on_hand'=>false,'item_name'=>false,'description'=>false,'item_name'=>false), array('transaction_id'=>'DESC'));
+		$order = array(array('item_name'=>$arg['id']), array('quantity_on_hand'=>false,'item_name'=>false,'description'=>false,'item_name'=>false), array('transaction_date'=>'DESC'));
 		$rb->set_button(false);
 		$rb->set_defaults(array('item_name'=>$arg['id']));
 		$rb->set_header_properties(array(
 			'transaction_id'=>array('name'=>'Trans. ID', 'width'=>1, 'wrapmode'=>'nowrap'),
 			'transaction_date'=>array('name'=>'Trans. Date', 'width'=>1, 'wrapmode'=>'nowrap'),
-			'transaction_type'=>array('name'=>'Trans. Type', 'width'=>1),
-			'transaction_status'=>array('name'=>'Trans. Status', 'width'=>1)
+			'transaction_type'=>array('name'=>'Trans. Type', 'width'=>1, 'wrapmode'=>'nowrap'),
+			'transaction_status'=>array('name'=>'Trans. Status', 'width'=>1, 'wrapmode'=>'nowrap')
 									));
 		$this->display_module($rb,$order,'show_data');
 	}
@@ -249,7 +249,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 					break;
 				case 1:
 					$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$trans['id']));
-					$po_form = $this->revise_items($items);
+					$po_form = $this->revise_items($items, $trans);
 					$lp->add_option('po', $this->t('PO'), null, $po_form);
 
 					$lp->add_option('cancel', $this->t('Cancel'), null, null);
@@ -401,7 +401,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 					break;
 				case 1:
 					$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$trans['id']));
-					$so_form = $this->revise_items($items);
+					$so_form = $this->revise_items($items, $trans);
 					$lp->add_option('so', $this->t('SO'), null, $so_form);
 
 					$lp->add_option('cancel', $this->t('Cancel'), null, null);

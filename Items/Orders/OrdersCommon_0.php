@@ -645,6 +645,13 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	
 	public static function submit_order($values, $mode) {
 		switch ($mode) {
+			case 'cloned':
+				$recs = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details',array('transaction_id'=>$values['original']));
+				foreach ($recs as $r) {
+					$r['transaction_id'] = $values['clone'];
+					Utils_RecordBrowserCommon::new_record('premium_warehouse_items_orders_details',$r);
+				}
+				return;
 			case 'adding':
 				if ($mode!='view') {
 					load_js('modules\Premium\Warehouse\Items\Orders\contractor_update.js');

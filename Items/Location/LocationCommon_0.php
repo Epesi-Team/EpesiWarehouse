@@ -136,5 +136,10 @@ class Premium_Warehouse_Items_LocationCommon extends ModuleCommon {
 		if ($record['item_type']==2 || $record['item_type']==3) return array('show'=>false);
 		return array('show'=>true, 'label'=>'Items Locations');
 	}
+
+	public static function location_serial_addon_parameters($record) {
+		if ($record['item_type']!=1) return array('show'=>false);
+		return array('show'=>true, 'label'=>'Items Serials');
+	}
 }
 ?>
