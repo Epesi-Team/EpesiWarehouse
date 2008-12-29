@@ -118,7 +118,7 @@ class Premium_WarehouseInstall extends ModuleInstall {
 		return array(
 			'Description'=>'Warehouses - Premium Module',
 			'Author'=>'abisaga@telaxus.com',
-			'License'=>'SPL');
+			'License'=>'MIT');
 	}
 	
 	public static function simple_setup() {

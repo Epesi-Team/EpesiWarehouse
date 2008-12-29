@@ -184,7 +184,7 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 		return array(
 			'Description'=>'Items Orders - Premium Module',
 			'Author'=>'abisaga@telaxus.com',
-			'License'=>'SPL');
+			'License'=>'MIT');
 	}
 	
 	public static function simple_setup() {
