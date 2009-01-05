@@ -30,6 +30,11 @@ class Premium_Warehouse_Items extends Module {
 			$this->t('Non-Inv. Items')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'non-inv.png'), 'defaults'=>array_merge($defaults,array('item_type'=>2))),
 			$this->t('Service')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'service.png'), 'defaults'=>array_merge($defaults,array('item_type'=>3)))
 			), true);
+		$this->rb->set_header_properties(array('quantity_on_hand'=>array('name'=>'On Hand', 'width'=>1, 'wrapmode'=>'nowrap'),
+											'quantity_en_route'=>array('name'=>'En Route', 'width'=>1, 'wrapmode'=>'nowrap'),
+											'manufacturer_part_number'=>array('name'=>'Part Number', 'width'=>1, 'wrapmode'=>'nowrap'),
+											'item_type'=>array('width'=>1, 'wrapmode'=>'nowrap'),
+											'sku'=>array('width'=>1, 'wrapmode'=>'nowrap')));
 		$this->display_module($this->rb);
 	}
 

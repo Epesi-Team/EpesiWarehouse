@@ -23,6 +23,7 @@ ModuleManager::load_modules();
 $tab = trim($_POST['parameters'], '"');
 $id = trim($_POST['rec_id'], '"');
 $rec = Utils_RecordBrowserCommon::get_record($tab,$id);
+if (!$rec || empty($rec)) return;
 $js = '';
 foreach ($rec as $k=>$v)
 	if (is_string($v)) $rec[$k] = htmlspecialchars_decode($v);

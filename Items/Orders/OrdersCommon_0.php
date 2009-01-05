@@ -55,8 +55,8 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		return Utils_RecordBrowserCommon::record_link_open_tag('contact', $v['contact'], $nolink).$v[$desc['id']].Utils_RecordBrowserCommon::record_link_close_tag();
 	}
 
-    public static function display_warehouse($v, $nolink=false) {
-		return Utils_RecordBrowserCommon::create_linked_label('premium_warehouse', 'Warehouse', $v['warehouse'], $nolink);
+    public static function display_warehouse($v, $nolink=false, $desc=null) {
+		return Utils_RecordBrowserCommon::create_linked_label('premium_warehouse', 'Warehouse', $v[$desc['id']], $nolink);
 	}
 
     public static function display_item_name($v, $nolink=false) {
@@ -435,7 +435,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 							return false;
 			case 'edit':	if ($param['status']>=20 ||
 								($param['status']>=2 && $param['transaction_type']==0) ||
-								($param['status']>=4 && $param['transaction_type']==1))
+								($param['status']>=2 && $param['transaction_type']==1))
 								return false;
 							return $i->acl_check('edit orders');
 			case 'delete':	return $i->acl_check('delete orders');
