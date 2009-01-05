@@ -109,7 +109,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 				$cols['serial'] = false;
 			}
 		}
-		if ($arg['transaction_type']==2) {
+		if ($arg['transaction_type']==2 || $arg['transaction_type']==4) {
 			$cols['tax_rate'] = false;
 			$cols['net_total'] = false;
 			$cols['net_price'] = false;			
@@ -393,7 +393,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 					if ($vals!==null) {
 						if (!isset($vals['form']) || !is_array($vals['form'])) $vals['form'] = array();
 						$vals['form']['status'] = ($vals['option']=='quote')?1:2; 
-						if ($vals['option']=='po')
+						if ($vals['option']=='so')
 							foreach ($items as $v)
 								Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders_details', $v['id'], $vals['form']['item__'.$v['id']]);
 						Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $trans['id'], $vals['form']);
@@ -412,8 +412,8 @@ class Premium_Warehouse_Items_Orders extends Module {
 					$vals = $lp->export_values();
 					if ($vals!==null) {
 						if (!isset($vals['form']) || !is_array($vals['form'])) $vals['form'] = array();
-						$vals['form']['status'] = ($vals['option']=='po')?2:21; 
-						if ($vals['option']=='po')
+						$vals['form']['status'] = ($vals['option']=='so')?2:21; 
+						if ($vals['option']=='so')
 							foreach ($items as $v)
 								Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders_details', $v['id'], $vals['form']['item__'.$v['id']]);
 						Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $trans['id'], $vals['form']);
@@ -493,7 +493,6 @@ class Premium_Warehouse_Items_Orders extends Module {
 								$serials->addElement('select', 'serial__'.$v['id'].'__'.$i, Premium_Warehouse_Items_OrdersCommon::display_item_name($v, true), $item_serials);
 						}
 					}
-					$split = $this->split_items_form($items);
 
 					$lp->add_option('available', $this->t('Items Available'), null, $items_available?($any_item?$serials:null):$items_check);
 					// check items qty
@@ -572,6 +571,202 @@ class Premium_Warehouse_Items_Orders extends Module {
 					}
 					break;
 				case 7:
+					$lp->add_option('delivered', $this->t('Delivered'), null, null);
+					$lp->add_option('missing', $this->t('Missing'), null, null);
+					$this->display_module($lp, array($this->t('Was the shipment delivered?')));
+					$this->href = $lp->get_href();
+					$vals = $lp->export_values();
+					if ($vals!==null) {
+						$vals['form']['status'] = ($vals['option']=='delivered')?20:22;
+						Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $trans['id'], $vals['form']);
+						location(array());
+					}
+					break;
+			}
+		} elseif ($trans['transaction_type']==4) {
+			switch ($status) {			
+				case '':
+//					$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$trans['id']));
+//					$so_form = $this->revise_items($items, $trans);
+					$lp->add_option('so', $this->t('Transfer pending'), null, null);
+
+					$quote_form = $this->init_module('Libs/QuickForm');
+					$quote_form->addElement('datepicker', 'expiration_date', $this->t('Expiration Date'));
+					$quote_form->setDefaults(array('expiration_date'=>date('Y-m-d', strtotime('+7 days'))));
+					$lp->add_option('quote', $this->t('Quote'), null, $quote_form);
+					
+					$this->display_module($lp, array($this->t('Ready to process?')));
+					$this->href = $lp->get_href();
+					$vals = $lp->export_values();
+					if ($vals!==null) {
+						if (!isset($vals['form']) || !is_array($vals['form'])) $vals['form'] = array();
+						$vals['form']['status'] = ($vals['option']=='quote')?1:2; 
+//						if ($vals['option']=='po')
+//							foreach ($items as $v)
+//								Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders_details', $v['id'], $vals['form']['item__'.$v['id']]);
+						Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $trans['id'], $vals['form']);
+						location(array());
+					}
+					break;
+				case 1:
+//					$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$trans['id']));
+//					$so_form = $this->revise_items($items, $trans);
+					$lp->add_option('so', $this->t('SO'), null, null);
+
+					$lp->add_option('cancel', $this->t('Cancel'), null, null);
+					
+					$this->display_module($lp, array($this->t('Ready to process?')));
+					$this->href = $lp->get_href();
+					$vals = $lp->export_values();
+					if ($vals!==null) {
+						if (!isset($vals['form']) || !is_array($vals['form'])) $vals['form'] = array();
+						$vals['form']['status'] = ($vals['option']=='po')?2:21; 
+//						if ($vals['option']=='so')
+//							foreach ($items as $v)
+//								Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders_details', $v['id'], $vals['form']['item__'.$v['id']]);
+						Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $trans['id'], $vals['form']);
+						location(array());
+					}
+					break;
+				case 2:
+					$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$trans['id']));
+					$items_check = $this->init_module('Libs/QuickForm'); 
+					$items_check->addElement('static', 'item_header', '');
+					$items_check->setDefaults(array('item_header'=>$this->t('The following items are unavailable')));
+					$items_available = true;
+					foreach ($items as $v) {
+						$loc_id = Utils_RecordBrowserCommon::get_id('premium_warehouse_location', array('item_sku', 'warehouse'), array($v['item_name'], $trans['warehouse']));
+						if (is_numeric($loc_id)) $qty = Utils_RecordBrowserCommon::get_value('premium_warehouse_location', $loc_id, 'quantity');
+						else $qty = 0;
+						if ($qty<$v['quantity'] && Utils_RecordBrowserCommon::get_value('premium_warehouse_items', $v['item_name'], 'item_type')<2) {
+							$items_check->addElement('static', 'item_'.$v['id'], Premium_Warehouse_Items_OrdersCommon::display_item_name($v, true));
+							$items_check->setDefaults(array('item_'.$v['id']=>'<span style="color:red;">'.$qty.' / '.$v['quantity'].'</span>'));
+							$items_available = false;
+						}
+					}
+					$lp->add_option('available', $this->t('Items Available'), null, $items_available?null:$items_check);
+					// check items qty
+					$lp->add_option('onhold', $this->t('Put On Hold'), null, null);
+					$this->display_module($lp, array($this->t('Items available?')));
+					$this->href = $lp->get_href();
+					$vals = $lp->export_values();
+					if ($vals!==null) {
+						$vals['form']['status'] = ($vals['option']=='available')?3:4;
+						// TODO: reduce the amount of items
+						if (!$items_available && $vals['form']['status']==4) break;
+						Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $trans['id'], $vals['form']);
+						location(array());
+					}
+					break;
+				case 3:
+					$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$trans['id']));
+					$items_check = $this->init_module('Libs/QuickForm'); 
+					$items_check->addElement('static', 'item_header', '');
+					$items_check->setDefaults(array('item_header'=>$this->t('The following items are unavailable')));
+					$items_available = true;
+					foreach ($items as $v) {
+						$loc_id = Utils_RecordBrowserCommon::get_id('premium_warehouse_location', array('item_sku', 'warehouse'), array($v['item_name'], $trans['warehouse']));
+						if (is_numeric($loc_id)) $qty = Utils_RecordBrowserCommon::get_value('premium_warehouse_location', $loc_id, 'quantity');
+						else $qty = 0;
+						if ($qty<$v['quantity'] && Utils_RecordBrowserCommon::get_value('premium_warehouse_items', $v['item_name'], 'item_type')<2) {
+							$items_check->addElement('static', 'item_'.$v['id'], Premium_Warehouse_Items_OrdersCommon::display_item_name($v, true));
+							$items_check->setDefaults(array('item_'.$v['id']=>'<span style="color:red;">'.$qty.' / '.$v['quantity'].'</span>'));
+							$items_available = false;
+						}
+					}
+
+					$serials = $this->init_module('Libs/QuickForm');
+					$serials->addElement('static', 'item_header', '');
+					$serials->setDefaults(array('item_header'=>$this->t('Please select serial numbers for Serialized Items')));
+					$any_item = false;
+					foreach ($items as $v) {
+						if (Utils_RecordBrowserCommon::get_value('premium_warehouse_items', $v['item_name'], 'item_type')==1) {
+							$any_item = true; 
+							$loc_id = Utils_RecordBrowserCommon::get_id('premium_warehouse_location', array('item_sku', 'warehouse'), array($v['item_name'], $trans['warehouse']));
+							if (!$loc_id) continue; // failsafe
+							$item_serials = array(''=>'---')+DB::GetAssoc('SELECT id, serial FROM premium_warehouse_location_serial WHERE active=1 AND location_id=%d', array($loc_id));
+							for ($i=0;$i<$v['quantity'];$i++)
+								$serials->addElement('select', 'serial__'.$v['id'].'__'.$i, Premium_Warehouse_Items_OrdersCommon::display_item_name($v, true), $item_serials);
+						}
+					}
+
+					$lp->add_option('available', $this->t('Items Available'), null, $items_available?($any_item?$serials:null):$items_check);
+					// check items qty
+					$lp->add_option('onhold', $this->t('Put On Hold'), null, null);
+					$this->display_module($lp, array($this->t('Final Inspection: All items available?')));
+					$this->href = $lp->get_href();
+					$vals = $lp->export_values();
+					if ($vals!==null) {
+						$vals['form']['status'] = ($vals['option']=='available')?5:4;
+						if (!$items_available && $vals['form']['status']==5) break;
+						Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $trans['id'], $vals['form']);
+						if ($vals['form']['status']==5) {
+							foreach ($items as $v) {
+								for ($i=0;$i<$v['quantity'];$i++)
+									if (isset($vals['form']['serial__'.$v['id'].'__'.$i])) {
+										DB::Execute('UPDATE premium_warehouse_location_serial SET active=0 WHERE id=%d', array($vals['form']['serial__'.$v['id'].'__'.$i]));
+										// TODO: sign this transaction for those serials
+									}
+							}
+						}
+						location(array());
+					}
+					break;
+				case 5:
+					$ship_received = $this->init_module('Libs/QuickForm');
+					$emps_ids = CRM_ContactsCommon::get_contacts(Premium_Warehouse_ItemsCommon::employee_crits(), array(), array('last_name'=>'ASC','first_name'=>'ASC'));
+					$emps = array(''=>'---');
+					$my_id = '';
+					foreach ($emps_ids as $v) {
+						if ($v['login']==Acl::get_user()) $my_id = $v['id'];
+						$emps[$v['id']] = CRM_ContactsCommon::contact_format_no_company($v,true);
+					}
+					$ship_received->addElement('datepicker', 'shipment_date', 'Shipment - receive date');
+					$ship_received->addElement('select', 'shipment_employee', 'Shipment - received by', $emps);
+					$ship_received->addElement('datepicker', 'shipment_eta', 'Shipment - ETA');
+					$ship_received->addElement('text', 'tracking_info', 'Shipment - Tracking Info');
+					$ship_received->setDefaults(array('shipment_date'=>date('Y-m-d'), 'shipment_employee'=>$my_id));
+
+					$lp->add_option('pickup', $this->t('Pickup'), null, null);
+					$lp->add_option('ship', $this->t('Ship'), null, $ship_received);
+					$this->display_module($lp, array($this->t('Select Shipping method.')));
+					$this->href = $lp->get_href();
+					$vals = $lp->export_values();
+					if ($vals!==null) {
+						if (!isset($vals['form']) || !is_array($vals['form'])) $vals['form'] = array();
+						if ($vals['option']=='pickup') {
+							$vals['form']['status'] = 20;
+						} else {
+							$vals['form']['status'] = 6;
+						}
+						Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $trans['id'], $vals['form']);
+						location(array());
+					}
+					break;
+				case 4:
+					$lp->add_option('items_available', $this->t('Items Available'), null, null);
+					$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$trans['id']));
+					$split = $this->split_items_form($items);
+					$lp->add_option('partial_order', $this->t('Partial Order'), null, $split);
+					$lp->add_option('cancel', $this->t('Cancel'), null, null);
+					$this->display_module($lp, array($this->t('Items available?')));
+					$this->href = $lp->get_href();
+					$vals = $lp->export_values();
+					if ($vals!==null) {
+						$up_vals = array();
+						if ($vals['option']=='items_available') {
+							$up_vals['status'] = 2;
+						} elseif ($vals['option']=='partial_order') {
+							$this->split_items_process($items, $trans, $vals['form']);
+							break;		
+						} else {
+							$up_vals['status'] = 21;
+						} 
+						Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $trans['id'], $up_vals);
+						location(array());
+					}
+					break;
+				case 6:
 					$lp->add_option('delivered', $this->t('Delivered'), null, null);
 					$lp->add_option('missing', $this->t('Missing'), null, null);
 					$this->display_module($lp, array($this->t('Was the shipment delivered?')));
