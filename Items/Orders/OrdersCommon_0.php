@@ -398,8 +398,9 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 												'quantity'=>$param['single_pieces']?'read-only':'full');*/
 							if (isset($param['transaction_id']) && is_array($param['transaction_id']))
 								$trans_id = $param['transaction_id'];
-							else
+							elseif (isset($action_details['transaction_id']) && is_array($action_details['transaction_id']))
 								$trans_id = $action_details['transaction_id'];
+							if (!isset($trans_id)) return array();
 							$trans = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $trans_id);
 							if (is_array($param)) {
 								if ($trans['transaction_type']==0 && $trans['status']!=20) $sp = false;
