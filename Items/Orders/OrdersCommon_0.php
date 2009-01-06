@@ -274,8 +274,8 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		if (self::$trans['transaction_type']==2) {
 			eval_js('$("'.Utils_RecordBrowserCommon::get_calcualted_id('premium_warehouse_items_orders_details', 'debit', null).'").innerHTML="";');
 			eval_js('$("'.Utils_RecordBrowserCommon::get_calcualted_id('premium_warehouse_items_orders_details', 'credit', null).'").innerHTML="";');
-			eval_js('if(!$("serial_debit")){var b=document.createElement(\'span\');b.innerHTML=\'<select id="serial_debit" name="serial_debit" />\';$("serial").parentNode.appendChild(b);}$("serial").style.display="none";$("serial_debit").style.display="none";');
-			eval_js('$("quantity").style.display="none";');
+//			eval_js('if(!$("serial_debit")){var b=document.createElement(\'span\');b.innerHTML=\'<select id="serial_debit" name="serial_debit" />\';$("serial").parentNode.appendChild(b);}$("serial").style.display="none";$("serial_debit").style.display="none";');
+//			eval_js('$("quantity").style.display="none";');
 			$form->addElement('text','serial_debit','None');
 			$form->addElement('text','order_details_credit_or_debit','None');
 			$form->addElement('text','order_details_debit','None');

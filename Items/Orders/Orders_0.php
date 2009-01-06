@@ -1,6 +1,5 @@
 <?php
 /**
- * WARNING: This is a commercial software
  * Please see the included license.html file for more information
  *
  * Warehouse - Items Orders
@@ -115,8 +114,11 @@ class Premium_Warehouse_Items_Orders extends Module {
 			$cols['net_price'] = false;			
 			$cols['tax_value'] = false;			
 			$cols['gross_total'] = false;			
+			$cols['quantity'] = false;			
 			$cols['debit'] = true;			
 			$cols['credit'] = true;			
+			$header_prop['debit'] = array('width'=>20, 'wrapmode'=>'nowrap', 'name'=>'Debit (-)');
+			$header_prop['credit'] = array('width'=>20, 'wrapmode'=>'nowrap', 'name'=>'Credit (+)');
 		}
 		if ($arg['transaction_type']==3) {
 			if (!$arg['payment']) {

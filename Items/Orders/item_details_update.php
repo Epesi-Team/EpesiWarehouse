@@ -82,11 +82,11 @@ if ($trans['transaction_type']==3) {
 		$js .= '"'.$v['id'].'":"'.Premium_Warehouse_Items_LocationCommon::mark_used($v['used']).$v['serial'].'"';
 	}
 	$js .= '};';
-	$js .= 'var obj=$("serial");';
+/*	$js .= 'var obj=$("serial");';
 	$js .= 'var opts=obj.options;';
 	$js .= 'opts.length=0;';
 	$js .= 'for(y in new_opts) {';
-	$js .= 'opts[opts.length] = new Option(new_opts[y],y);';
+	$js .= 'opts[opts.length] = new Option(new_opts[y],y);';*/
 	$js .= '}';
 }
 
