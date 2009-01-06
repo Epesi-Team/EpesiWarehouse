@@ -791,15 +791,8 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 //					Utils_RecordBrowserCommon::update_record('premium_warehouse_location', $values['serial'], array('used'=>1));
 				}
 				if (self::$trans['transaction_type']==2) {
-					if ($item_type==1) {
-						if ($values['order_details_credit_or_debit']=='debit') {
-							$values['quantity']=-1;
-							$values['serial']=$values['serial_debit'];
-						}
-					} else {
-						if ($values['order_details_debit']) $values['quantity']=-$values['order_details_debit'];
-						else $values['quantity']=$values['order_details_credit'];
-					}
+					if ($values['order_details_debit']) $values['quantity']=-$values['order_details_debit'];
+					else $values['quantity']=$values['order_details_credit'];
 				}
 				if (self::$trans['transaction_type']<2) {
 					Utils_RecordBrowserCommon::update_record('premium_warehouse_items', $values['item_name'], array(self::$trans['transaction_type']==0?'last_purchase_price':'last_sale_price'=>$values['net_price']));
