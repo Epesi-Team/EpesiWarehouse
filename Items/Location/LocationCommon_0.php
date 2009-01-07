@@ -89,7 +89,6 @@ class Premium_Warehouse_Items_LocationCommon extends ModuleCommon {
 	
 	public static function display_item_quantity_in_warehouse_and_total($r, $warehouse, $nolink=false, $enroute=null, $custom_label=null) {
 		if ($r['item_type']>=2) return '---';
-		if (!$warehouse) return $r['quantity_on_hand'];
 		if ($custom_label===null) $custom_label = array(
 			'main'=>'Quantity on hand',
 			'in_one'=>'%s',
@@ -126,7 +125,8 @@ class Premium_Warehouse_Items_LocationCommon extends ModuleCommon {
 				$r['quantity_on_hand'].
 				'</b></td></tr></table>';
 		}
-		$ret = (isset($enroute[$warehouse])?$enroute[$warehouse]:(isset($quantities[$warehouse])?$quantities[$warehouse]:self::get_item_quantity_in_warehouse($r, $warehouse))).' / '.$r['quantity_on_hand'];
+		if (!$warehouse) $ret = $r['quantity_on_hand'];
+		else $ret = (isset($enroute[$warehouse])?$enroute[$warehouse]:(isset($quantities[$warehouse])?$quantities[$warehouse]:self::get_item_quantity_in_warehouse($r, $warehouse))).' / '.$r['quantity_on_hand'];
 		if (!$nolink)
 			$ret = Utils_TooltipCommon::create($ret, $tooltip, false);
 		return $ret;
