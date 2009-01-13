@@ -164,7 +164,6 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		}
 		$r['quantity_on_hand']=$qty;
 		return Premium_Warehouse_Items_LocationCommon::display_item_quantity_in_warehouse_and_total($r,$my_warehouse,$nolink,$en_route_qty,array('main'=>'Quantity En Route', 'in_one'=>'to %s', 'in_all'=>'Total'));
-		return $qty;
 	}
 
 	public static function get_status_array($trans, $payment=null) {
