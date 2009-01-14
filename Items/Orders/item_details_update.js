@@ -3,9 +3,10 @@ ItemDetailsUpdate.prototype = {
 	stop_f:null,
 	trasn_v:null,
 	loads:0,
-	initialize:function(trans) {
+	initialize:function(trans, event_type) {
 		this.trans_v=trans;
-		Event.observe('item_name','change',this.request.bindAsEventListener(this));
+		alert(event_type);
+		Event.observe('item_name', event_type, this.request.bindAsEventListener(this));
 		Event.observe(document,'e:load',this.stop.bindAsEventListener(this));
 		this.request();
 	},

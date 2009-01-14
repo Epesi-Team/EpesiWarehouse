@@ -22,7 +22,16 @@ ModuleManager::load_modules();
 
 $id = trim($_POST['rec_id'], '"');
 $trans_id = trim($_POST['trans'], '"');
-if (!is_numeric($id)) die(json_encode(''));
+if (!is_numeric($id)) {
+	$new_id = Utils_RecordBrowserCommon::get_id('premium_warehouse_items', 'item_name', $id);
+	if (!is_numeric($new_id)) {
+//		if ($id) 
+//			die('alert("'.Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Item \"%s\" not found', array($id)).'");');
+//		else 
+			die('');
+	}
+	$id = $new_id;
+}
 if (!is_numeric($trans_id)) die(json_encode(''));
 $rec = Utils_RecordBrowserCommon::get_record('premium_warehouse_items',$id);
 $trans = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders',$trans_id);

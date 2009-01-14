@@ -90,7 +90,8 @@ class Premium_Warehouse_Items_Orders extends Module {
 		$cols['transaction_status'] = false;			
 		$cols['warehouse'] = false;			
 		$header_prop = array(
-			'item_name'=>array('width'=>1, 'wrapmode'=>'nowrap'),
+			'item_name'=>array('width'=>25, 'wrapmode'=>'nowrap'),
+			'description'=>array('width'=>100, 'wrapmode'=>'nowrap'),
 			'gross_total'=>array('width'=>1, 'wrapmode'=>'nowrap'),
 			'tax_value'=>array('width'=>1, 'wrapmode'=>'nowrap'),
 			'tax_rate'=>array('width'=>1, 'wrapmode'=>'nowrap'),
