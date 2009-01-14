@@ -96,7 +96,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 	public function requires($v) {
 		return array(
 			array('name'=>'Base','version'=>0),
-			array('name'=>'Premium/Warehouse','version'=>0),
+			array('name'=>'Premium/Warehouse/Items/Orders','version'=>0),
 			array('name'=>'Utils/RecordBrowser', 'version'=>0));
 	}
 	
