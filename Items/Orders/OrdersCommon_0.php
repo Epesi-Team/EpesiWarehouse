@@ -311,7 +311,10 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			natcasesort($opts);
 			if ($mode=='add') {
 				$form->addElement('text', $field, $label, array('id'=>$field));
+				/*
 				print('<div id="'.$field.'_suggestbox" style="border: 1px solid #808080; background-color: #FFFFFF;text-align:left;z-index:99;width:200px;">&nbsp;</div>');
+				*/
+				print('<div id="'.$field.'_suggestbox" class="autocomplete">&nbsp;</div>');
 				load_js('modules/Premium/Warehouse/Items/Orders/item_autocomplete.js');
 				eval_js('var item_autocompleter = new warehouse_itemAutocompleter(\''.$field.'\', \''.$field.'_suggestbox\', \'modules/Premium/Warehouse/Items/Orders/item_name_autocomplete.php?cid='.CID.'\', \'\', '.self::$trans['id'].');');
 
