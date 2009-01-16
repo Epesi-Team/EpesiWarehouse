@@ -771,7 +771,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 				$old_values = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $values['id']);
 				self::$new_status = $values['status']; 
 				if (($values['status']-$old_values['status']!=0 && (20-$values['status'])*(20-$old_values['status'])==0 && $values['transaction_type']==0) ||
-					(variant_xor(in_array($values['status'], array(6,7,20,22)), in_array($old_values['status'], array(6,7,20,22))) && $values['transaction_type']==1) ||
+					((in_array($values['status'], array(6,7,20,22)) xor in_array($old_values['status'], array(6,7,20,22))) && $values['transaction_type']==1) ||
 					($values['transaction_type']==4)) {
 					$det = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$values['id']));
 					foreach ($det as $d)
