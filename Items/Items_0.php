@@ -34,6 +34,8 @@ class Premium_Warehouse_Items extends Module {
 											'quantity_en_route'=>array('name'=>'En Route', 'width'=>1, 'wrapmode'=>'nowrap'),
 											'manufacturer_part_number'=>array('name'=>'Part Number', 'width'=>1, 'wrapmode'=>'nowrap'),
 											'item_type'=>array('width'=>1, 'wrapmode'=>'nowrap'),
+											'gross_price'=>array('width'=>1, 'wrapmode'=>'nowrap'),
+											'item_name'=>array('wrapmode'=>'nowrap'),
 											'sku'=>array('width'=>1, 'wrapmode'=>'nowrap')));
 		$this->display_module($this->rb);
 	}
