@@ -7,6 +7,10 @@
  * @package warehouse
  */
 
+
+die();
+
+
 define('CID',false); //i know that i won't access $_SESSION['client']
 require_once('../../../include.php');
 ModuleManager::load_modules();
