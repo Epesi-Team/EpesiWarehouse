@@ -112,6 +112,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_names');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_descriptions');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_parameters');
+		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_parameter_labels');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_products_parameters');
 		return true;
 	}
