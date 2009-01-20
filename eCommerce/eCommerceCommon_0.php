@@ -68,7 +68,15 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 	}
 
     public static function menu() {
-		return array('Warehouse'=>array('__submenu__'=>1,'eCommerce'=>array('__submenu__'=>1, 'Products'=>array('products'=>1), 'Parameters'=>array())));
+		return array('Warehouse'=>array(
+			'__submenu__'=>1,
+			'eCommerce'=>array(
+				'__submenu__'=>1, 
+				'Products'=>array('products'=>1), 
+				'Categories'=>array('categories'=>1), 
+				'Parameters'=>array()
+			)
+		));
 	}
 
 }

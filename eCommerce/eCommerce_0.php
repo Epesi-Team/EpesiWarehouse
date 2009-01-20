@@ -18,10 +18,18 @@ class Premium_Warehouse_eCommerce extends Module {
 	private $rb;
 
 	public function body() {
-		if (isset($_REQUEST['products']) || $this->get_module_variable('products')) {
-			if (isset($_REQUEST['products'])) $this->set_module_variable('products', $_REQUEST['products']);
+		$mod = $this->get_module_variable('recordset');
+		if (isset($_REQUEST['products']) || $mod=='products') {
+			if (isset($_REQUEST['products'])) $this->set_module_variable('recordset', 'products');
 			$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_products');
 			$this->rb->set_defaults(array('publish'=>1,'position'=>0,'status'=>1));
+			$this->display_module($this->rb);
+			return;
+		}
+		if (isset($_REQUEST['categories']) || $mod=='categories') {
+			if (isset($_REQUEST['categories'])) $this->set_module_variable('recordset', 'categories');
+			$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_categories');
+//			$this->rb->set_defaults(array('publish'=>1));
 			$this->display_module($this->rb);
 			return;
 		}
@@ -44,6 +52,17 @@ class Premium_Warehouse_eCommerce extends Module {
 		$rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_descriptions');
 		$order = array(array('item'=>$arg['item_name']), array('item'=>false), array('language'=>'ASC'));
 		$rb->set_defaults(array('item'=>$arg['item_name']));
+		$rb->set_header_properties(array(
+			'language'=>array('width'=>1, 'wrapmode'=>'nowrap'),
+			'description'=>array('width'=>50, 'wrapmode'=>'nowrap')
+									));
+		$this->display_module($rb,$order,'show_data');
+	}
+
+	public function cat_descriptions_addon($arg) {
+		$rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_cat_descriptions');
+		$order = array(array('category'=>$arg['id']), array('category'=>false), array('language'=>'ASC'));
+		$rb->set_defaults(array('category'=>$arg['id']));
 		$rb->set_header_properties(array(
 			'language'=>array('width'=>1, 'wrapmode'=>'nowrap'),
 			'description'=>array('width'=>50, 'wrapmode'=>'nowrap')
