@@ -21,7 +21,7 @@ class Premium_Warehouse_eCommerce extends Module {
 		if (isset($_REQUEST['products']) || $this->get_module_variable('products')) {
 			if (isset($_REQUEST['products'])) $this->set_module_variable('products', $_REQUEST['products']);
 			$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_products');
-			$this->rb->set_defaults(array('publish'=>1));
+			$this->rb->set_defaults(array('publish'=>1,'position'=>0,'status'=>1));
 			$this->display_module($this->rb);
 			return;
 		}
