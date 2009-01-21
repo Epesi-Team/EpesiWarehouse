@@ -182,7 +182,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 			$elements[] = $po_form->createElement('text', 'net_price', $this->t('Price'));
 			$elements[] = $po_form->createElement('select', 'tax_rate', $this->t('Tax'), $taxes);
 			$po_form->addGroup($elements, 'item__'.$v['id'], Premium_Warehouse_Items_OrdersCommon::display_item_name($v, true));
-			$po_form->setDefaults(array('item__'.$v['id']=>array('quantity'=>$v['quantity'], 'net_price'=>number_format($v['net_price'],2), 'tax_rate'=>$v['tax_rate'])));
+			$po_form->setDefaults(array('item__'.$v['id']=>array('quantity'=>$v['quantity'], 'net_price'=>number_format($v['net_price'],2,'.',''), 'tax_rate'=>$v['tax_rate'])));
 		}
 		return $po_form;
 	}
