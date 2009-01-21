@@ -26,7 +26,7 @@ foreach ($words as $w) {
 	$qry[] = 'f_item_name LIKE '.DB::Concat(DB::qstr('%'), '%s', DB::qstr('%'));
 	$vals[] = $w;
 }
-$ret = DB::SelectLimit('SELECT f_item_name FROM premium_warehouse_items_data_1 WHERE '.implode(' AND ',$qry), 10, 0, $vals);
+$ret = DB::SelectLimit('SELECT f_item_name FROM premium_warehouse_items_data_1 WHERE '.implode(' AND ',$qry).' AND active=1 ', 10, 0, $vals);
 print('<ul>');
 while ($row = $ret->FetchRow()) {
 	print('<li>'.$row['f_item_name'].'</li>');
