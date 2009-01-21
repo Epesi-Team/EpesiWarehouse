@@ -114,10 +114,10 @@ class Premium_Warehouse_Items_Orders extends Module {
 			$cols['net_total'] = false;
 			$cols['net_price'] = false;			
 			$cols['tax_value'] = false;			
-			$cols['gross_total'] = false;			
-			$cols['quantity'] = false;			
-			$cols['debit'] = true;			
-			$cols['credit'] = true;			
+			$cols['gross_total'] = false;
+			$cols['quantity'] =  $arg['transaction_type']==4;			
+			$cols['debit'] = $arg['transaction_type']!=4;			
+			$cols['credit'] = $arg['transaction_type']!=4;			
 			$header_prop['debit'] = array('width'=>20, 'wrapmode'=>'nowrap', 'name'=>'Debit (-)');
 			$header_prop['credit'] = array('width'=>20, 'wrapmode'=>'nowrap', 'name'=>'Credit (+)');
 		}
