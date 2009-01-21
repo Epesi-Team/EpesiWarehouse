@@ -27,7 +27,7 @@ class Premium_Warehouse_Items extends Module {
 		}
 		$this->rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items');
 		$this->rb->set_default_order(array('item_name'=>'ASC'));
-		$this->rb->set_cut_lengths(array('item_name'=>30));
+		$this->rb->set_cut_lengths(array('item_name'=>50,'vendor'=>35));
 		$defaults = array('quantity_on_hand'=>'0','reorder_point'=>'0');
 		$this->rb->set_defaults(array(
 			$this->t('Inv. Item')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'inv_item.png'), 'defaults'=>array_merge($defaults,array('item_type'=>0))),
@@ -35,13 +35,15 @@ class Premium_Warehouse_Items extends Module {
 			$this->t('Non-Inv. Items')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'non-inv.png'), 'defaults'=>array_merge($defaults,array('item_type'=>2))),
 			$this->t('Service')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'service.png'), 'defaults'=>array_merge($defaults,array('item_type'=>3)))
 			), true);
-		$this->rb->set_header_properties(array('quantity_on_hand'=>array('name'=>'On Hand', 'width'=>1, 'wrapmode'=>'nowrap'),
-											'quantity_en_route'=>array('name'=>'En Route', 'width'=>1, 'wrapmode'=>'nowrap'),
-											'manufacturer_part_number'=>array('name'=>'Part Number', 'width'=>1, 'wrapmode'=>'nowrap'),
-											'item_type'=>array('width'=>1, 'wrapmode'=>'nowrap'),
-											'gross_price'=>array('width'=>1, 'wrapmode'=>'nowrap'),
-											'item_name'=>array('wrapmode'=>'nowrap'),
-											'sku'=>array('width'=>1, 'wrapmode'=>'nowrap')));
+		$this->rb->set_header_properties(array(
+						'quantity_on_hand'=>array('name'=>'On Hand', 'width'=>1, 'wrapmode'=>'nowrap'),
+						'quantity_en_route'=>array('name'=>'En Route', 'width'=>1, 'wrapmode'=>'nowrap'),
+						'manufacturer_part_number'=>array('name'=>'Part Number', 'width'=>1, 'wrapmode'=>'nowrap'),
+						'item_type'=>array('width'=>1, 'wrapmode'=>'nowrap'),
+						'gross_price'=>array('name'=>'Price','width'=>1, 'wrapmode'=>'nowrap'),
+						'item_name'=>array('wrapmode'=>'nowrap'),
+						'sku'=>array('width'=>1, 'wrapmode'=>'nowrap')
+						));
 		$this->display_module($this->rb);
 	}
 	
