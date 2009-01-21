@@ -18,9 +18,14 @@ class Premium_Warehouse_Items extends Module {
 	private $rb;
 
 	public function body() {
-		// Quickjump jak do ticketow, ale po UPC code
-		// TODO: service/non-inventory: quantity rename to amount sold and set to +X instead -X
-		$this->rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items','premium_warehouse_items_module');
+		$mod = $this->get_module_variable('recordset');
+		if (isset($_REQUEST['recordset']) || $mod=='categories') {
+			if (isset($_REQUEST['recordset'])) $this->set_module_variable('recordset', 'categories');
+			$this->rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items_categories');
+			$this->display_module($this->rb, array(array('category_name'=>'ASC'),array('parent_category'=>'')));
+			return;
+		}
+		$this->rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items');
 		$this->rb->set_default_order(array('item_name'=>'ASC'));
 		$this->rb->set_cut_lengths(array('item_name'=>30));
 		$defaults = array('quantity_on_hand'=>'0','reorder_point'=>'0');
@@ -38,6 +43,17 @@ class Premium_Warehouse_Items extends Module {
 											'item_name'=>array('wrapmode'=>'nowrap'),
 											'sku'=>array('width'=>1, 'wrapmode'=>'nowrap')));
 		$this->display_module($this->rb);
+	}
+	
+	public function subcategories_addon($arg) {
+		$rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items_categories');
+		$order = array(array('parent_category'=>$arg['id']), array(), array('category_name'=>'ASC'));
+		$rb->set_defaults(array('parent_category'=>$arg['id']));
+//		$rb->set_header_properties(array(
+//			'language'=>array('width'=>1, 'wrapmode'=>'nowrap'),
+//			'description'=>array('width'=>50, 'wrapmode'=>'nowrap')
+//									));
+		$this->display_module($rb,$order,'show_data');
 	}
 
 	public function applet($conf,$opts) {

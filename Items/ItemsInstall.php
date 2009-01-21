@@ -36,7 +36,7 @@ class Premium_Warehouse_ItemsInstall extends ModuleInstall {
 			array('name'=>'Tax Rate', 		'type'=>'select', 'required'=>false, 'extra'=>false, 'visible'=>false, 'param'=>'__COMMON__::Premium_Warehouse_Items_Tax', 'style'=>'integer'),
 			array('name'=>'Gross Price', 	'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>true, 'style'=>'currency', 'display_callback'=>array('Premium_Warehouse_ItemsCommon','display_gross_price')),
 			array('name'=>'Cost', 			'type'=>'currency', 'required'=>false, 'extra'=>false, 'visible'=>false),
-			array('name'=>'Category',		'type'=>'multiselect', 'required'=>false, 'visible'=>false, 'extra'=>false, 'filter'=>true, 'param'=>'__COMMON__::Premium_Warehouse_Items_Categories'),
+			array('name'=>'Category',		'type'=>'multiselect', 'required'=>false, 'visible'=>false, 'extra'=>false, 'filter'=>true, 'param'=>'premium_warehouse_items_categories::Category Name', 'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_item_category')),
 			array('name'=>'Description', 	'type'=>'long text', 'required'=>false, 'param'=>'255', 'extra'=>false)
 		);
 
@@ -50,9 +50,22 @@ class Premium_Warehouse_ItemsInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::set_access_callback('premium_warehouse_items', 'Premium_Warehouse_ItemsCommon', 'access_items');
 		Utils_RecordBrowserCommon::enable_watchdog('premium_warehouse_items', array('Premium_Warehouse_ItemsCommon','watchdog_label'));
 		Utils_RecordBrowserCommon::set_processing_method('premium_warehouse_items', array('Premium_Warehouse_ItemsCommon', 'submit_item'));
+
+		$fields = array(
+			array('name'=>'Category Name', 	'type'=>'text', 'param'=>128, 'required'=>true, 'extra'=>false, 'visible'=>true),
+			array('name'=>'Parent Category','type'=>'select', 'param'=>'premium_warehouse_items_categories::Category Name' ,'required'=>false, 'extra'=>false, 'visible'=>false),
+			array('name'=>'Position', 		'type'=>'integer', 'required'=>false, 'extra'=>false, 'visible'=>false)
+		);
+		Utils_RecordBrowserCommon::install_new_recordset('premium_warehouse_items_categories', $fields);
 		
+		Utils_RecordBrowserCommon::set_caption('premium_warehouse_items_categories', 'Items Categories');
+		Utils_RecordBrowserCommon::set_icon('premium_warehouse_items_categories', Base_ThemeCommon::get_template_filename('Premium/Warehouse/Items', 'icon.png'));
+		Utils_RecordBrowserCommon::set_access_callback('premium_warehouse_items_categories', 'Premium_Warehouse_ItemsCommon', 'access_items_categories');
+				
 // ************ addons ************** //
 		Utils_RecordBrowserCommon::new_addon('premium_warehouse_items', 'Premium/Warehouse/Items', 'attachment_addon', 'Notes');
+
+		Utils_RecordBrowserCommon::new_addon('premium_warehouse_items_categories', 'Premium/Warehouse/Items', 'subcategories_addon', 'Subcategories');
 
 // ************ other ************** //	
 		Utils_CommonDataCommon::new_array('Premium_Warehouse_Items_Type',array(0=>'Inventory Item', 1=>'Serialized Item', 2=>'Non-Inventory Item', 3=>'Service')); 
@@ -74,9 +87,10 @@ class Premium_Warehouse_ItemsInstall extends ModuleInstall {
 	
 	public function uninstall() {
 		Base_ThemeCommon::uninstall_default_theme($this->get_type());
-		Utils_RecordBrowserCommon::delete_addon('premium_warehouse', 'Premium/Warehouse/Items', 'warehouse_item_list_addon');
+		Utils_RecordBrowserCommon::delete_addon('premium_warehouse_items_categories', 'Premium/Warehouse/Items', 'subcategories_addon');
 		Utils_RecordBrowserCommon::delete_addon('premium_warehouse_items', 'Premium/Warehouse/Items', 'attachment_addon');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_warehouse_items');
+		Utils_RecordBrowserCommon::uninstall_recordset('premium_warehouse_items_categories');
 
 		Utils_CommonDataCommon::remove('Premium_Warehouse_Items_Type'); 
 		Utils_CommonDataCommon::remove('Premium_Warehouse_Items_Tax');

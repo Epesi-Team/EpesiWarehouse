@@ -72,8 +72,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 			'__submenu__'=>1,
 			'eCommerce'=>array(
 				'__submenu__'=>1, 
-				'Products'=>array('products'=>1), 
-				'Categories'=>array('categories'=>1), 
+				'Products'=>array('recordset'=>'products'), 
 				'Parameters'=>array()
 			)
 		));

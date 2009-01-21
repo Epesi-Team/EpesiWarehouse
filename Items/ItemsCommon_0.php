@@ -61,8 +61,53 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 		return false;
     }
 
+	public static function access_items_categories($action, $param){
+		$i = self::Instance();
+		switch ($action) {
+			case 'add':
+			case 'browse':	return $i->acl_check('browse items');
+			case 'view':	if($i->acl_check('view items')) return true;
+							return false;
+			case 'edit':	return $i->acl_check('edit items');
+			case 'delete':	return $i->acl_check('delete items');
+			case 'fields':	return array('position'=>'hide','parent_category'=>'hide');
+		}
+		return false;
+    }
+    
+    public static function build_category_tree(&$opts, $root='', $prefix='', $count=0) {
+		$cats = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_categories', array('parent_category'=>$root));
+		foreach($cats as $v) {
+			$opts[$prefix.$v['id']] = str_pad('',$count*2,'* ').$v['category_name'];
+			self::build_category_tree($opts, $v['id'], $prefix.$v['id'].'/', $count+1);
+		}
+    }
+    
+    public static function QFfield_item_category(&$form, $field, $label, $mode, $default) {
+		if ($mode=='edit' || $mode=='add') {
+			$opts = array();
+			self::build_category_tree($opts);
+			$form->addElement('multiselect', $field, $label, $opts, array('id'=>$field));
+			$form->setDefaults(array($field=>$default));
+		} else {
+			$form->addElement('static', $field, $label, array('id'=>'status'));
+			$def = array();
+			foreach ($default as $d) {
+				$keys = explode('/',$d);
+				$next = Utils_RecordBrowserCommon::get_value('premium_warehouse_items_categories',$keys[0],'category_name');
+				if (count($keys)>1) {
+					if (count($keys)>2) $next .= '/.../';
+					else $next .= '/';
+					$next .= Utils_RecordBrowserCommon::get_value('premium_warehouse_items_categories',$keys[count($keys)-1],'category_name');
+				}
+				$def[] = $next;
+			}
+			$form->setDefaults(array($field=>implode('<br/>',$def)));
+		}
+    }
+
     public static function menu() {
-		return array('Warehouse'=>array('__submenu__'=>1,'Items'=>array()));
+		return array('Warehouse'=>array('__submenu__'=>1,'Items'=>array(), 'Items: Categories'=>array('recordset'=>'categories')));
 	}
 
 	public static function generate_id($id) {
