@@ -376,9 +376,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 							if (!isset($trans_id)) return array();
 							$trans = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $trans_id);
 							if (is_array($param)) {
-								if ($trans['transaction_type']==0 && $trans['status']!=20) $sp = false;
-								else $sp = (Utils_RecordBrowserCommon::get_value('premium_warehouse_items', $param['item_name'], 'item_type')==1);
-								$ret = array($sp?'quantity':'serial'=>'hide', 'item_name'=>'read-only','transaction_id'=>'read-only');
+								$ret = array('item_name'=>'read-only','transaction_id'=>'read-only');
 							}
 							if ($trans['transaction_type']!=3) {
 								$ret['return_date'] = 'hide';
