@@ -46,7 +46,11 @@ $js .= '$("description").value="'.$rec['description'].'";';
 $js .= 'if($("description"))focus_by_id("description");';
 if ($trans['transaction_type']<2) {
 	$js .= 'if($("tax_rate"))$("tax_rate").value="'.$rec['tax_rate'].'";';
-	$js .= 'if($("net_price"))$("net_price").value="'.($trans['transaction_type']==0?(isset($rec['last_purchase_price'])&&$rec['last_purchase_price']?$rec['last_purchase_price']:$rec['cost']):(isset($rec['last_sale_price'])&&$rec['last_sale_price']?$rec['last_sale_price']:$rec['net_price'])).'";';
+	$price = ($trans['transaction_type']==0?(isset($rec['last_purchase_price'])&&$rec['last_purchase_price']?$rec['last_purchase_price']:$rec['cost']):(isset($rec['last_sale_price'])&&$rec['last_sale_price']?$rec['last_sale_price']:$rec['net_price']));
+	$price = explode('__',$price);
+	if (!isset($price[1])) $price[1] = 1;
+	$js .= 'if($("net_price"))$("net_price").value="'.$price[0].'";';
+	$js .= 'if($("__net_price__currency"))$("__net_price__currency").selectedIndex="'.$price[1].'";';
 //	if ($rec['item_type']==1) {
 //		$js .= '$("quantity").value=1;';
 //		if ($trans['transaction_type']==1) {
