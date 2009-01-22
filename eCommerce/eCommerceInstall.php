@@ -24,9 +24,11 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 			array('name'=>'Item Name', 		'type'=>'select', 'required'=>true, 'param'=>'premium_warehouse_items::SKU|Item Name;Premium_Warehouse_eCommerceCommon::items_crits', 'extra'=>false, 'visible'=>true, 'display_callback'=>array($this->get_type().'Common', 'display_item_name')),
 			array('name'=>'Product Name', 	'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>true, 'display_callback'=>array($this->get_type().'Common', 'display_product_name')),
 			array('name'=>'Publish', 		'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>true),
-			array('name'=>'Status', 		'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>true),
-			array('name'=>'Position', 		'type'=>'integer', 'required'=>true, 'extra'=>false, 'visible'=>true),
+			array('name'=>'Position', 		'type'=>'integer', 'required'=>true, 'extra'=>false, 'visible'=>false),
 			array('name'=>'Description', 	'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>true, 'display_callback'=>array($this->get_type().'Common', 'display_description')),
+			array('name'=>'Page Title', 	'type'=>'text', 'required'=>false, 'extra'=>false, 'param'=>64, 'visible'=>false),
+			array('name'=>'Meta Description', 	'type'=>'text', 'required'=>false, 'extra'=>false, 'param'=>256, 'visible'=>false),
+			array('name'=>'Keywords', 	'type'=>'text', 'required'=>false, 'extra'=>false, 'param'=>128, 'visible'=>false)
 		);
 		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_products', $fields);
 		
@@ -36,12 +38,17 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_products', 'Premium_Warehouse_eCommerceCommon', 'access_products');
 		
 		$fields = array(
-			array('name'=>'Category', 		'type'=>'select', 'required'=>true, 'param'=>'premium_warehouse_items::Category ID', 'extra'=>false, 'visible'=>true),
+			array('name'=>'Category', 		'type'=>'select', 'required'=>true, 'param'=>'premium_warehouse_items_categories::Category Name', 'extra'=>false, 'visible'=>true),
 			array('name'=>'Language', 		'type'=>'commondata', 'required'=>true, 'extra'=>false, 'visible'=>true, 'param'=>array('eCommerce_Languages'), 'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_description_language')),
-			array('name'=>'Category Name',	'type'=>'text', 'param'=>128, 'required'=>true, 'extra'=>false, 'visible'=>true),
-			array('name'=>'Description', 	'type'=>'long text', 'required'=>true, 'extra'=>false, 'visible'=>true)
+			array('name'=>'Display Name',	'type'=>'text', 'param'=>128, 'required'=>true, 'extra'=>false, 'visible'=>true),
+			array('name'=>'Short Description', 	'type'=>'long text', 'required'=>true, 'extra'=>false, 'visible'=>true),
+			array('name'=>'Long Description', 	'type'=>'long text', 'required'=>false, 'extra'=>false, 'visible'=>false)
 		);
 		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_cat_descriptions', $fields);
+
+		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items_categories', 'Page Title', 'text', false, false, 64, '', false, false);
+		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items_categories', 'Meta Description', 'text', false, false, 256, '', false, false);
+		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items_categories', 'Keywords', 'text', false, false, 128, '', false, false);
 
 		Utils_RecordBrowserCommon::set_favorites('premium_ecommerce_cat_descriptions', false);
 		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_cat_descriptions', 'eCommerce - Cat. Descriptions');
@@ -50,8 +57,9 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		$fields = array(
 			array('name'=>'Item', 			'type'=>'select', 'required'=>true, 'param'=>'premium_warehouse_items::Item Name;Premium_Warehouse_Items_OrdersCommon::products_crits', 'extra'=>false, 'visible'=>true, 'display_callback'=>array($this->get_type().'Common', 'display_item_name')),
 			array('name'=>'Language', 		'type'=>'commondata', 'required'=>true, 'extra'=>false, 'visible'=>true, 'param'=>array('eCommerce_Languages'), 'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_description_language')),
-			array('name'=>'Product Name',	'type'=>'text', 'param'=>128, 'required'=>true, 'extra'=>false, 'visible'=>true),
-			array('name'=>'Description', 	'type'=>'long text', 'required'=>true, 'extra'=>false, 'visible'=>true)
+			array('name'=>'Display Name',	'type'=>'text', 'param'=>128, 'required'=>true, 'extra'=>false, 'visible'=>true),
+			array('name'=>'Short Description', 	'type'=>'long text', 'required'=>true, 'extra'=>false, 'visible'=>true),
+			array('name'=>'Long Description', 	'type'=>'long text', 'required'=>false, 'extra'=>false, 'visible'=>false)
 		);
 		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_descriptions', $fields);
 
@@ -115,8 +123,9 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 
 		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_products', 'Premium/Warehouse/eCommerce', 'parameters_addon');
 		
-		// TODO: delete that line after Paul reinstalls eCommerce module
-		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_products', 'Premium/Warehouse/eCommerce', 'names_addon');
+		Utils_RecordBrowserCommon::delete_record_field('premium_warehouse_items_categories', 'Page Title');
+		Utils_RecordBrowserCommon::delete_record_field('premium_warehouse_items_categories', 'Meta Description');
+		Utils_RecordBrowserCommon::delete_record_field('premium_warehouse_items_categories', 'Keywords');
 		
 		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_products', 'Premium/Warehouse/eCommerce', 'descriptions_addon');
 //		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_categories', 'Premium/Warehouse/eCommerce', 'cat_descriptions_addon');
