@@ -706,7 +706,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 						if ($vals['form']['status']==5) {
 							foreach ($items as $v) {
 								for ($i=0;$i<$v['quantity'];$i++)
-									if (isset($vals['form']['serial__'.$v['id'].'__'.$i])) {
+									if (isset($vals['form']['serial__'.$v['id'].'__'.$i]) && is_numeric($vals['form']['serial__'.$v['id'].'__'.$i])) {
 										DB::Execute('UPDATE premium_warehouse_location_serial SET active=0 WHERE id=%d', array($vals['form']['serial__'.$v['id'].'__'.$i]));
 										// TODO: sign this transaction for those serials
 									}
