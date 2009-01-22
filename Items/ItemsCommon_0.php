@@ -163,10 +163,9 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 						$label = Base_LangCommon::ts('Utils_Watchdog','Add to my Trans.');
 						$defaults = array(
 							'transaction_id'=>$my_trans,
-							'item_sku'=>$values['id'],
 							'quantity'=>1,
-							'item_name'=>Utils_RecordBrowserCommon::get_value('premium_warehouse_items', $values['id'], 'item_name'),
-							'net_price'=>Utils_RecordBrowserCommon::get_value('premium_warehouse_items', $values['id'], 'net_price'),
+							'item_name'=>$values['id'],
+							'net_price'=>Utils_RecordBrowserCommon::get_value('premium_warehouse_items', $values['id'], 'last_'.($trans['transaction_type']==0?'purchase':'sale').'_price'),
 							'tax_rate'=>Utils_RecordBrowserCommon::get_value('premium_warehouse_items', $values['id'], 'tax_rate'),
 							'single_pieces'=>Utils_RecordBrowserCommon::get_value('premium_warehouse_items', $values['id'], 'item_type')==1
 						);

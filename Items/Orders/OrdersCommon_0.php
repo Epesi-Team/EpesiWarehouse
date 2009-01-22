@@ -280,53 +280,11 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			$form->addElement('text','order_details_credit','None');
 		}
 		if ($mode=='add' || $mode=='edit') {
-			$crits = array();
-			if (self::$trans['transaction_type']==1) {
-				$crits=array();
-			} elseif (self::$trans['transaction_type']==0) {
-				$crits=array(	'<item_type'=>3);
-			} else {
-				$crits=array(	'<item_type'=>2);
-			}
-			$recs = Utils_RecordBrowserCommon::get_records('premium_warehouse_items', $crits, array(), array('item_name'=>'ASC'));
-			$opts = array(''=>'---');
-			if (is_numeric($default)) {
-				$default_included = false;
-				foreach ($recs as $r) {
-					if ($r['id']==$default) {
-						$default_included = true;
-						break;
-					}
-				}
-				if (!$default_included) $recs[$default] = Utils_RecordBrowserCommon::get_record('premium_warehouse_items', $default);
-			}
-			foreach ($recs as $r) {
-				if ($r['item_type']>=2) {
-					$opts[$r['id']] = $r['item_name'];
-					continue;
-				}
-				$r['quantity_on_hand'] = Premium_Warehouse_Items_LocationCommon::get_item_quantity_in_warehouse($r, null, self::$trans['transaction_type']==3);
-				$qty_in_warehouse = Premium_Warehouse_Items_LocationCommon::get_item_quantity_in_warehouse($r, self::$trans['warehouse'], self::$trans['transaction_type']==3);
-				if (self::$trans['transaction_type']==3 && $qty_in_warehouse==0 && $default!==$r['id']) continue;
-				$opts[$r['id']] = Base_LangCommon::ts('Premium_Warehouse_Items_Orders','%s, qty: %s', array($r['item_name'], Premium_Warehouse_items_LocationCommon::display_item_quantity_in_warehouse_and_total($r, self::$trans['warehouse'], true, array(self::$trans['warehouse']=>$qty_in_warehouse))));
-			}
-			natcasesort($opts);
-			if ($mode=='add') {
-				$form->addElement('text', $field, $label, array('id'=>$field));
-				/*
-				print('<div id="'.$field.'_suggestbox" style="border: 1px solid #808080; background-color: #FFFFFF;text-align:left;z-index:99;width:200px;">&nbsp;</div>');
-				*/
-				print('<div id="'.$field.'_suggestbox" class="autocomplete">&nbsp;</div>');
-				load_js('modules/Premium/Warehouse/Items/Orders/item_autocomplete.js');
-				eval_js('var item_autocompleter = new warehouse_itemAutocompleter(\''.$field.'\', \''.$field.'_suggestbox\', \'modules/Premium/Warehouse/Items/Orders/item_name_autocomplete.php?cid='.CID.'\', \'\', '.self::$trans['id'].');');
-
-//				load_js('modules\Premium\Warehouse\Items\Orders\item_details_update.js');
-//				eval_js('new ItemDetailsUpdate('.self::$trans['id'].', "blur");');
-			} else {
-				$form->addElement('select', $field, $label, $opts, array('id'=>$field));
-				eval_js('new ItemDetailsUpdate('.self::$trans['id'].', "change");');
-			}
-			if ($mode=='edit') $form->setDefaults(array($field=>$default));
+			$form->addElement('text', $field, $label, array('id'=>$field));
+			print('<div id="'.$field.'_suggestbox" class="autocomplete">&nbsp;</div>');
+			load_js('modules/Premium/Warehouse/Items/Orders/item_autocomplete.js');
+			eval_js('var item_autocompleter = new warehouse_itemAutocompleter(\''.$field.'\', \''.$field.'_suggestbox\', \'modules/Premium/Warehouse/Items/Orders/item_name_autocomplete.php?cid='.CID.'\', \'\', '.self::$trans['id'].');');
+			if ($mode=='edit') $form->setDefaults(array($field=>Utils_RecordBrowserCommon::get_value('premium_warehouse_items',$default,'item_name')));
 			$form->addFormRule(array('Premium_Warehouse_Items_OrdersCommon','check_qty_on_hand'));
 			eval_js('focus_by_id(\'item_name\');');
 		} else {
@@ -411,9 +369,9 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 												'gross_total'=>'hide',
 												'quantity_on_hand'=>'hide',
 												'quantity'=>$param['single_pieces']?'read-only':'full');*/
-							if (isset($param['transaction_id']) && is_array($param['transaction_id']))
+							if (isset($param['transaction_id']) && is_numeric($param['transaction_id']))
 								$trans_id = $param['transaction_id'];
-							elseif (isset($action_details['transaction_id']) && is_array($action_details['transaction_id']))
+							elseif (isset($action_details['transaction_id']) && is_numeric($action_details['transaction_id']))
 								$trans_id = $action_details['transaction_id'];
 							if (!isset($trans_id)) return array();
 							$trans = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $trans_id);
@@ -422,11 +380,11 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 								else $sp = (Utils_RecordBrowserCommon::get_value('premium_warehouse_items', $param['item_name'], 'item_type')==1);
 								$ret = array($sp?'quantity':'serial'=>'hide', 'item_name'=>'read-only','transaction_id'=>'read-only');
 							}
-							if ($trans['transaction_type']!=3 && $action_details!='new') {
+							if ($trans['transaction_type']!=3) {
 								$ret['return_date'] = 'hide';
 								$ret['returned'] = 'hide';
 							}
-							if ($trans['transaction_type']==3 && $action_details!='new') {
+							if ($trans['transaction_type']==3) {
 								$ret['transaction_date'] = 'hide';
 								$ret['transaction_type'] = 'hide';
 								$ret['warehouse'] = 'hide';
@@ -457,10 +415,11 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			case 'browse':	return $i->acl_check('browse orders');
 			case 'view':	if($i->acl_check('view orders')) return true;
 							return false;
-			case 'edit':	if ($param['status']>=20
+			case 'edit':	if (!Base_AclCommon::i_am_admin() &&
+								($param['status']>=20
 								|| ($param['status']>=2 && $param['transaction_type']==0)
 								|| ($param['status']>=2 && $param['transaction_type']==1)
-								)
+								))
 								return false;
 							return $i->acl_check('edit orders');
 			case 'delete':	return $i->acl_check('delete orders');
