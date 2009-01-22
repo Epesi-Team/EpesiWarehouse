@@ -83,6 +83,8 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			$res[$r['id']]['tax'] += $tax_value;
 			$res[$r['id']]['total'] += $net_total+$tax_value;
 		}
+		$res[$r['id']]['total'] += $r['shipment_cost'];
+		$res[$r['id']]['total'] += $r['handling_cost'];
 		return $res[$r['id']][$arg];
 	}
 	
@@ -455,9 +457,10 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			case 'browse':	return $i->acl_check('browse orders');
 			case 'view':	if($i->acl_check('view orders')) return true;
 							return false;
-			case 'edit':	if ($param['status']>=20 ||
-								($param['status']>=2 && $param['transaction_type']==0) ||
-								($param['status']>=2 && $param['transaction_type']==1))
+			case 'edit':	if ($param['status']>=20
+								|| ($param['status']>=2 && $param['transaction_type']==0)
+								|| ($param['status']>=2 && $param['transaction_type']==1)
+								)
 								return false;
 							return $i->acl_check('edit orders');
 			case 'delete':	return $i->acl_check('delete orders');
