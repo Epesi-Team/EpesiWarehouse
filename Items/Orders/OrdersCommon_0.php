@@ -130,20 +130,23 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	}
 	
 	public static function display_order_details_total($r, $nolink) {
-		$ret = $r['quantity']*$r['net_price'];
-		return Utils_CurrencyFieldCommon::format($ret);
+		$price = Utils_CurrencyFieldCommon::get_values($r['net_price']);
+		$ret = $r['quantity']*$price[0];
+		return Utils_CurrencyFieldCommon::format($ret, $price[1]);
 	}
 
 	public static function display_order_details_tax_value($r, $nolink) {
-		$ret = $r['tax_rate']*$r['net_price']*$r['quantity'];
+		$price = Utils_CurrencyFieldCommon::get_values($r['net_price']);
+		$ret = $r['tax_rate']*$price[0]*$r['quantity'];
 		$ret /= 100;
-		return Utils_CurrencyFieldCommon::format($ret);
+		return Utils_CurrencyFieldCommon::format($ret, $price[1]);
 	}
 
 	public static function display_order_details_gross_price($r, $nolink) {
-		$ret = (100+$r['tax_rate'])*$r['net_price']*$r['quantity'];
+		$price = Utils_CurrencyFieldCommon::get_values($r['net_price']);
+		$ret = (100+$r['tax_rate'])*$price[0]*$r['quantity'];
 		$ret /= 100;
-		return Utils_CurrencyFieldCommon::format($ret);
+		return Utils_CurrencyFieldCommon::format($ret, $price[1]);
 	}
 	
 	public static function display_quantity_on_route($r, $nolink){
