@@ -54,11 +54,11 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 	
 	public function display_product_name($r, $nolink, $desc) {
 		$lang_code = Base_User_SettingsCommon::get('Base_Lang_Administrator','language');
-		$id = Utils_RecordBrowserCommon::get_id('premium_ecommerce_names', array('item', 'language'), array($r['item_name'], $lang_code));
+		$id = Utils_RecordBrowserCommon::get_id('premium_ecommerce_descriptions', array('item', 'language'), array($r['item_name'], $lang_code));
 		$lan = Utils_commonDataCommon::get_value('eCommerce_Languages/'.$lang_code);
 		if (!is_numeric($id)) return Base_LangCommon::ts('Premium_eCommerce','Product name in <b>%s</b> missing', array($lan?$lan:$lang_code));
 		return 	Utils_RecordBrowserCommon::record_link_open_tag('premium_ecommerce_products',$r['id'],$nolink).
-				Utils_RecordBrowserCommon::get_value('premium_ecommerce_names',$id,'name').
+				Utils_RecordBrowserCommon::get_value('premium_ecommerce_descriptions',$id,'product_name').
 				Utils_RecordBrowserCommon::record_link_close_tag();
 	}
 	
