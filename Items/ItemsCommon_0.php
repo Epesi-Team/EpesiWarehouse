@@ -94,6 +94,7 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 			$def = array();
 			foreach ($default as $d) {
 				$keys = explode('/',$d);
+				if (!is_numeric($keys[0])) return; // TODO: it's just a fail-safe
 				$next = Utils_RecordBrowserCommon::get_value('premium_warehouse_items_categories',$keys[0],'category_name');
 				if (count($keys)>1) {
 					if (count($keys)>2) $next .= '/.../';
