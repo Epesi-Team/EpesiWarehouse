@@ -30,7 +30,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
     }
 
 	public function display_item_name($r, $nolink, $desc) {
-		return Utils_RecordBrowserCommon::create_linked_label('premium_warehouse_items','item_name',$r['id'],$nolink);
+		return Utils_RecordBrowserCommon::create_linked_label('premium_warehouse_items','item_name',$r['item_name'],$nolink);
 	}
 	
 	public function QFfield_description_language(&$form, $field, $label, $mode, $default, $desc, $rb_obj) {
