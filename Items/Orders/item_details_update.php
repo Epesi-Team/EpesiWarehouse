@@ -32,7 +32,7 @@ if (!is_numeric($id)) {
 	}
 	$id = $new_id;
 }
-if (!is_numeric($trans_id)) die(json_encode(''));
+if (!is_numeric($trans_id)) die('');
 $rec = Utils_RecordBrowserCommon::get_record('premium_warehouse_items',$id);
 $trans = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders',$trans_id);
 
@@ -49,7 +49,7 @@ if ($trans['transaction_type']<2) {
 	$price = ($trans['transaction_type']==0?(isset($rec['last_purchase_price'])&&$rec['last_purchase_price']?$rec['last_purchase_price']:$rec['cost']):(isset($rec['last_sale_price'])&&$rec['last_sale_price']?$rec['last_sale_price']:$rec['net_price']));
 	$price = Utils_CurrencyFieldCommon::get_values($price);
 	$js .= 'if($("net_price"))$("net_price").value="'.$price[0].'";';
-	$js .= 'if($("__net_price__currency"))$("__net_price__currency").selectedIndex="'.$price[1].'";';
+	$js .= 'if($("__net_price__currency")){obj=$("__net_price__currency");for(i=0;i<obj.options.length;i++)if(obj.options[i].value=='.$price[1].')obj.selectedIndex=i;}';
 //	if ($rec['item_type']==1) {
 //		$js .= '$("quantity").value=1;';
 //		if ($trans['transaction_type']==1) {
