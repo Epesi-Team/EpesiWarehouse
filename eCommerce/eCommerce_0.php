@@ -18,15 +18,33 @@ class Premium_Warehouse_eCommerce extends Module {
 	private $rb;
 
 	public function body() {
+		if (isset($_REQUEST['recordset'])) 
+			switch($_REQUEST['recordset']) {
+				case 'products':
+				case 'parameters':
+				case 'availability':
+				case 'pages':
+					$this->set_module_variable('recordset', $_REQUEST['recordset']);
+					break;
+			}
 		$mod = $this->get_module_variable('recordset');
-		if (isset($_REQUEST['recordset']) || $mod=='products') {
-			if (isset($_REQUEST['recordset'])) $this->set_module_variable('recordset', 'products');
-			$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_products');
-			$this->rb->set_defaults(array('publish'=>1,'position'=>0,'status'=>1));
-			$this->display_module($this->rb);
-			return;
+		switch($mod) {
+			case 'products':
+				$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_products');
+				$this->rb->set_defaults(array('publish'=>1,'position'=>0,'status'=>1));
+				break;
+			case 'parameters':
+				$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_parameters');
+				break;
+			case 'availability':
+				$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_availability');
+				$this->rb->set_defaults(array('position'=>0));
+				break;
+			case 'pages':
+				$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_pages');
+				$this->rb->set_defaults(array('position'=>0,'publish'=>1));
+				break;
 		}
-		$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_parameters');
 		$this->display_module($this->rb);
 	}
 	
@@ -34,6 +52,17 @@ class Premium_Warehouse_eCommerce extends Module {
 		$rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_parameter_labels');
 		$order = array(array('parameter'=>$arg['id']), array('parameter'=>false,'language'=>true,'label'=>true), array('language'=>'ASC'));
 		$rb->set_defaults(array('parameter'=>$arg['id']));
+		$rb->set_header_properties(array(
+			'language'=>array('width'=>1, 'wrapmode'=>'nowrap'),
+			'label'=>array('width'=>50, 'wrapmode'=>'nowrap')
+									));
+		$this->display_module($rb,$order,'show_data');
+	}
+
+	public function availability_labels_addon($arg) {
+		$rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_availability_labels');
+		$order = array(array('availability'=>$arg['id']), array('availability'=>false,'language'=>true,'label'=>true), array('language'=>'ASC'));
+		$rb->set_defaults(array('availability'=>$arg['id']));
 		$rb->set_header_properties(array(
 			'language'=>array('width'=>1, 'wrapmode'=>'nowrap'),
 			'label'=>array('width'=>50, 'wrapmode'=>'nowrap')
@@ -73,6 +102,29 @@ class Premium_Warehouse_eCommerce extends Module {
 									));
 		$this->display_module($rb,$order,'show_data');
 	}
+	
+	public function subpages_addon($arg) {
+		$rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_pages');
+		$order = array(array('parent_page'=>$arg['id']), array(), array('page_name'=>'ASC'));
+		$rb->set_defaults(array('parent_page'=>$arg['id']));
+//		$rb->set_header_properties(array(
+//			'language'=>array('width'=>1, 'wrapmode'=>'nowrap'),
+//			'description'=>array('width'=>50, 'wrapmode'=>'nowrap')
+//									));
+		$this->display_module($rb,$order,'show_data');
+	}
+
+	public function pages_info_addon($arg) {
+		$rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_pages_data');
+		$order = array(array('page'=>$arg['id']), array('page'=>false), array('language'=>'ASC'));
+		$rb->set_defaults(array('page'=>$arg['id']));
+		$rb->set_header_properties(array(
+			'language'=>array('width'=>1, 'wrapmode'=>'nowrap'),
+			'name'=>array('wrapmode'=>'nowrap')
+									));
+		$this->display_module($rb,$order,'show_data');
+	}
+	
 
 	public function caption(){
 		if (isset($this->rb)) return $this->rb->caption();
