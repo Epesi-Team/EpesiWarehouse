@@ -585,7 +585,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 				Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Orders'),
 				$rid,
 				$events,
-				'item',
+				'transaction_id',
 				$details
 			);
 	}
