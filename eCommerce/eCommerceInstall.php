@@ -109,7 +109,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_availability', $fields);
 
 		Utils_RecordBrowserCommon::set_favorites('premium_ecommerce_availability', false);
-		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_availability', 'eCommerce - Product Availablility');
+		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_availability', 'eCommerce - Product Available');
 		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_availability', 'Premium_Warehouse_eCommerceCommon', 'access_parameters');
 
 		$fields = array(
@@ -120,7 +120,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_availability_labels', $fields);
 
 		Utils_RecordBrowserCommon::set_favorites('premium_ecommerce_availability_labels', false);
-		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_availability_labels', 'eCommerce - Product Availablility');
+		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_availability_labels', 'eCommerce - Product Available');
 		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_availability_labels', 'Premium_Warehouse_eCommerceCommon', 'access_parameters');
 
 		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_availability', 'Premium/Warehouse/eCommerce', 'availability_labels_addon', 'Labels');
