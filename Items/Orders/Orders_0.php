@@ -167,8 +167,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 		$this->display_module($a);
 	}
 	
-	public function revise_items($items, $trans) {
-		$po_form = $this->init_module('Libs/QuickForm');
+	public function revise_items(&$po_form, $items, $trans) {
 		$po_form->addElement('select', 'payment_type', $this->t('Payment Type'), array(''=>'---')+Utils_CommonDataCommon::get_array('Premium_Items_Orders_Payment_Types'));
 		$po_form->addElement('text', 'payment_no', $this->t('Payment No'));
 		$po_form->addElement('select', 'terms', $this->t('Terms'), array(''=>'---')+Utils_CommonDataCommon::get_array('Premium_Items_Orders_Terms'));
@@ -181,10 +180,10 @@ class Premium_Warehouse_Items_Orders extends Module {
 		foreach ($items as $v) {
 			$elements = array();
 			$elements[] = $po_form->createElement('text', 'quantity', $this->t('Price'));
-			$elements[] = $po_form->createElement('text', 'net_price', $this->t('Price'));
+			$elements[] = $po_form->createElement('currency', 'net_price', $this->t('Price'));
 			$elements[] = $po_form->createElement('select', 'tax_rate', $this->t('Tax'), $taxes);
 			$po_form->addGroup($elements, 'item__'.$v['id'], Premium_Warehouse_Items_OrdersCommon::display_item_name($v, true));
-			$po_form->setDefaults(array('item__'.$v['id']=>array('quantity'=>$v['quantity'], 'net_price'=>number_format($v['net_price'],2,'.',''), 'tax_rate'=>$v['tax_rate'])));
+			$po_form->setDefaults(array('item__'.$v['id']=>array('quantity'=>$v['quantity'], 'net_price'=>$v['net_price'], 'tax_rate'=>$v['tax_rate'])));
 		}
 		return $po_form;
 	}
@@ -232,7 +231,8 @@ class Premium_Warehouse_Items_Orders extends Module {
 			switch ($status) {			
 				case '':
 					$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$trans['id']));
-					$po_form = $this->revise_items($items, $trans);
+					$po_form = $this->init_module('Libs_QuickForm'); 
+					$this->revise_items($po_form, $items, $trans);
 					$lp->add_option('po', $this->t('PO'), null, $po_form);
 
 					$quote_form = $this->init_module('Libs/QuickForm');
@@ -255,7 +255,8 @@ class Premium_Warehouse_Items_Orders extends Module {
 					break;
 				case 1:
 					$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$trans['id']));
-					$po_form = $this->revise_items($items, $trans);
+					$po_form = $this->init_module('Libs_QuickForm'); 
+					$this->revise_items($po_form, $items, $trans);
 					$lp->add_option('po', $this->t('PO'), null, $po_form);
 
 					$lp->add_option('cancel', $this->t('Cancel'), null, null);
@@ -384,7 +385,11 @@ class Premium_Warehouse_Items_Orders extends Module {
 			switch ($status) {			
 				case '':
 					$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$trans['id']));
-					$so_form = $this->revise_items($items, $trans);
+					$so_form = $this->init_module('Libs_QuickForm');
+					$so_form->addElement('currency', 'shipment_cost', $this->t('Shipment Cost'));
+					$so_form->addElement('currency', 'handling_cost', $this->t('Handling Cost'));
+					$this->revise_items($so_form, $items, $trans);
+					$so_form->setDefaults(array('handlnig_cost'=>$trans['handling_cost'],'shipment_cost'=>$trans['shipment_cost']));
 					$lp->add_option('so', $this->t('Order received'), null, $so_form);
 
 					$quote_form = $this->init_module('Libs/QuickForm');
@@ -407,7 +412,8 @@ class Premium_Warehouse_Items_Orders extends Module {
 					break;
 				case 1:
 					$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$trans['id']));
-					$so_form = $this->revise_items($items, $trans);
+					$so_form = $this->init_module('Libs_QuickForm'); 
+					$this->revise_items($so_form, $items, $trans);
 					$lp->add_option('so', $this->t('SO'), null, $so_form);
 
 					$lp->add_option('cancel', $this->t('Cancel'), null, null);
@@ -530,10 +536,11 @@ class Premium_Warehouse_Items_Orders extends Module {
 						if ($v['login']==Acl::get_user()) $my_id = $v['id'];
 						$emps[$v['id']] = CRM_ContactsCommon::contact_format_no_company($v,true);
 					}
-					$ship_received->addElement('datepicker', 'shipment_date', 'Shipment - receive date');
-					$ship_received->addElement('select', 'shipment_employee', 'Shipment - received by', $emps);
-					$ship_received->addElement('datepicker', 'shipment_eta', 'Shipment - ETA');
-					$ship_received->addElement('text', 'tracking_info', 'Shipment - Tracking Info');
+					$ship_received->addElement('datepicker', 'shipment_date', $this->t('Shipment - receive date'));
+					$ship_received->addElement('select', 'shipment_employee', $this->t('Shipment - received by'), $emps);
+					$ship_received->addElement('datepicker', 'shipment_eta', $this->t('Shipment - ETA'));
+					$ship_received->addElement('text', 'shipment_no', $this->t('Shipment No.'));
+					$ship_received->addElement('text', 'tracking_info', $this->t('Shipment - Tracking Info'));
 					$ship_received->setDefaults(array('shipment_date'=>date('Y-m-d'), 'shipment_employee'=>$my_id));
 
 					$lp->add_option('pickup', $this->t('Pickup'), null, null);

@@ -176,7 +176,9 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			// PURCHASE
 			case 0: $opts = array(''=>'New', 1=>'Purchase Quote', 2=>'Purchase Order', 3=>'New Shipment', 4=>'Shipment Received', 5=>'On Hold', 20=>'Delivered', 21=>'Canceled'); break;
 			// SALE
-			case 1: $opts = array(''=>'New', 1=>'Sales Quote', 2=>'Order Received', 3=>'Payment Confirmed', 4=>'Order Confirmed', 5=>'On Hold', 6=>'Order Ready to Ship', 7=>'Shipped', 20=>'Delivered', 21=>'Canceled', 22=>'Missing'); break;
+			case 1: $payment_ack = 'Payment Confirmed';
+					if (isset($trans['terms']) && $trans['terms']>0) $payment_ack = 'Payment Approved';
+					$opts = array(''=>'New', 1=>'Sales Quote', 2=>'Order Received', 3=>$payment_ack, 4=>'Order Confirmed', 5=>'On Hold', 6=>'Order Ready to Ship', 7=>'Shipped', 20=>'Delivered', 21=>'Canceled', 22=>'Missing'); break;
 			// INV. ADJUSTMENT
 			case 2: $opts = array(''=>'Active', 20=>'Completed'); break;
 			// RENTAL
@@ -736,6 +738,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 					$r['transaction_id'] = $values['clone'];
 					Utils_RecordBrowserCommon::new_record('premium_warehouse_items_orders_details',$r);
 				}
+				Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders',$values['clone'],array('status'=>''));
 				return;
 			case 'adding':
 				if ($mode!='view') {
