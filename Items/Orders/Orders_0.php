@@ -114,6 +114,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 			$cols['tax_rate'] = false;
 			$cols['net_total'] = false;
 			$cols['net_price'] = false;			
+			$cols['gross_price'] = false;			
 			$cols['tax_value'] = false;			
 			$cols['gross_total'] = false;
 			$cols['quantity'] =  $arg['transaction_type']==4;			
