@@ -48,37 +48,19 @@ if ($trans['transaction_type']<2) {
 	$js .= 'if($("tax_rate"))$("tax_rate").value="'.$rec['tax_rate'].'";';
 	$price = ($trans['transaction_type']==0?(isset($rec['last_purchase_price'])&&$rec['last_purchase_price']?$rec['last_purchase_price']:$rec['cost']):(isset($rec['last_sale_price'])&&$rec['last_sale_price']?$rec['last_sale_price']:$rec['net_price']));
 	$price = Utils_CurrencyFieldCommon::get_values($price);
-	$js .= 'if($("net_price"))$("net_price").value="'.$price[0].'";';
-	$js .= 'if($("__net_price__currency")){obj=$("__net_price__currency");for(i=0;i<obj.options.length;i++)if(obj.options[i].value=='.$price[1].')obj.selectedIndex=i;}';
-//	if ($rec['item_type']==1) {
-//		$js .= '$("quantity").value=1;';
-//		if ($trans['transaction_type']==1) {
-//			$js .= '$("quantity").style.display="none";';
-//			$js .= 'if($("serial"))$("serial").style.display="inline";';
-//			$js .= 'var new_opts={';
-//			$locs = Utils_RecordBrowserCommon::get_records('premium_warehouse_location',array('item_sku'=>$id, '!quantity'=>0, 'warehouse'=>$trans['warehouse'], 'rental_item'=>array('',0)), array(), array('serial'=>'ASC'));
-//			$first = true;
-//			foreach ($locs as $k=>$v) {
-//				if (!$first) $js .= ',';
-//				$first = false;
-//				$js .= '"'.$v['id'].'":"'.Premium_Warehouse_Items_LocationCommon::mark_used($v['used']).$v['serial'].'"';
-//			}
-//			$js .= '};';
-//			$js .= 'var obj=$("serial");';
-//			$js .= 'var opts=obj.options;';
-//			$js .= 'opts.length=0;';
-//			$js .= 'for(y in new_opts) {';
-//			$js .= 'opts[opts.length] = new Option(new_opts[y],y);';
-//			$js .= '}';
-//		}
-//	} else 
+	$js .= 	'if($("net_price")){'.
+				'obj=$("__net_price__currency");for(i=0;i<obj.options.length;i++)if(obj.options[i].value=='.$price[1].'){cur_key=i;break;}'.
+				'$("net_price").value="'.$price[0].'";'.
+				'update_gross();'.
+				'switch_currencies(cur_key);'.
+			'}';
+
 	{
 		$js .= 'if($("quantity"))$("quantity").style.display="inline";';
 		$js .= 'if(!$("quantity").value)$("quantity").value=1;';
 	}
 }
 if ($trans['transaction_type']==2) {
-//	$js .= '$("quantity").value=1;';
 	$js .= '$("'.Utils_RecordBrowserCommon::get_calcualted_id('premium_warehouse_items_orders_details', 'credit', null).'").innerHTML="'.Epesi::escapeJS('<input type="text" name="order_details_credit" id="order_details_credit" value="" onkeyup="if(this.value)$(\'order_details_debit\').style.display=\'none\';else $(\'order_details_debit\').style.display=\'inline\';" />').'";';
 	$js .= '$("'.Utils_RecordBrowserCommon::get_calcualted_id('premium_warehouse_items_orders_details', 'debit', null).'").innerHTML="'.Epesi::escapeJS('<input type="text" name="order_details_debit" id="order_details_debit" value="" onkeyup="if(this.value)$(\'order_details_credit\').style.display=\'none\';else $(\'order_details_credit\').style.display=\'inline\';" />').'";';
 	if ($location_id!==null) $js .= '$("order_details_debit").style.display="inline";';
@@ -94,12 +76,6 @@ if ($trans['transaction_type']==3) {
 		$js .= '"'.$v['id'].'":"'.Premium_Warehouse_Items_LocationCommon::mark_used($v['used']).$v['serial'].'"';
 	}
 	$js .= '};';
-/*	$js .= 'var obj=$("serial");';
-	$js .= 'var opts=obj.options;';
-	$js .= 'opts.length=0;';
-	$js .= 'for(y in new_opts) {';
-	$js .= 'opts[opts.length] = new Option(new_opts[y],y);';*/
-	$js .= '}';
 }
 
 print($js);

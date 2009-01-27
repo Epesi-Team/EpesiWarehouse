@@ -218,6 +218,52 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		}
 	}
 	
+	public static function QFfield_net_price(&$form, $field, $label, $mode, $default, $desc, $rb_obj){
+		if ($mode!=='view') {
+			$decp = Utils_CurrencyFieldCommon::get_decimal_point();
+			eval_js('format_currency=function(val){'.
+						'first=parseInt(val);'.
+						'second=Math.round((val-first)*100).toString(10);'.
+						'if(isNaN(first)||isNaN(second))return"";'.
+						'if(second.length==1)second="0"+second;'.
+						'return first+"'.$decp.'"+second;'.
+					'}');
+			eval_js('update_net=function(){'.
+						'$("use_net_price").value=0;'.
+						'val=$("gross_price").value.split("'.$decp.'").join(".");'.
+						'$("net_price").value=format_currency(100*parseFloat(val)/(100+parseFloat(1*$("tax_rate").value)));'.
+					'}');
+			eval_js('update_gross=function(){'.
+						'$("use_net_price").value=1;'.
+						'val=$("net_price").value.split("'.$decp.'").join(".");'.
+						'$("gross_price").value=format_currency(parseFloat(val)+parseFloat(val*$("tax_rate").value)/100);'.
+					'}');
+			eval_js('switch_currencies=function(val){'.
+						'$("__net_price__currency").selectedIndex=val;'.
+						'$("__gross_price__currency").selectedIndex=val;'.
+					'}');
+			eval_js('Event.observe("tax_rate","change",function(){if($("use_net_price").value==1)update_gross();else update_net();});');
+			eval_js('Event.observe("__gross_price__currency","change",function(){switch_currencies($("__gross_price__currency").selectedIndex);});');
+			eval_js('Event.observe("__net_price__currency","change",function(){switch_currencies($("__net_price__currency").selectedIndex);});');
+			$form->addElement('currency', $field, $label, array('id'=>$field, 'onkeyup'=>'update_gross();'));
+			$form->addElement('hidden', 'use_net_price', '', array('id'=>'use_net_price'));
+			$form->setDefaults(array($field=>$default, 'use_net_price'=>1));
+		} else {
+			$form->addElement('currency', $field, $label, array('id'=>$field));
+			$form->setDefaults(array($field=>'ble'));
+		}
+	}
+	
+	public static function QFfield_gross_price(&$form, $field, $label, $mode, $default, $desc, $rb_obj){
+		if ($mode!=='view') {
+			$form->addElement('currency', $field, $label, array('id'=>$field, 'onkeyup'=>'update_net();'));
+			$form->setDefaults(array($field=>$default));
+		} else {
+			$form->addElement('currency', $field, $label, array('id'=>$field));
+			$form->setDefaults(array($field=>'ble'));
+		}
+	}
+	
 	public static function display_debit($r, $nolink) {
 		return $r['quantity']<0?-$r['quantity']:'';
 	}
