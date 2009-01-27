@@ -396,13 +396,16 @@ class Premium_Warehouse_Items_Orders extends Module {
 					$quote_form->addElement('datepicker', 'expiration_date', $this->t('Expiration Date'));
 					$quote_form->setDefaults(array('expiration_date'=>date('Y-m-d', strtotime('+7 days'))));
 					$lp->add_option('quote', $this->t('Sale Quote'), null, $quote_form);
+
+					if ($trans['payment_type']===0 && $trans['shipment_type']===0) $lp->add_option('all_done', $this->t('Paid & Delievered'), null, null);
 					
 					$this->display_module($lp, array($this->t('Ready to process?')));
 					$this->href = $lp->get_href();
 					$vals = $lp->export_values();
 					if ($vals!==null) {
 						if (!isset($vals['form']) || !is_array($vals['form'])) $vals['form'] = array();
-						$vals['form']['status'] = ($vals['option']=='quote')?1:2; 
+						if ($vals['option']=='all_done') $vals['form']['status'] = 20;
+						else $vals['form']['status'] = ($vals['option']=='quote')?1:2; 
 						if ($vals['option']=='so')
 							foreach ($items as $v)
 								Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders_details', $v['id'], $vals['form']['item__'.$v['id']]);
