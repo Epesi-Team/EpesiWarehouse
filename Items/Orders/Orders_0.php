@@ -82,7 +82,6 @@ class Premium_Warehouse_Items_Orders extends Module {
 	}
 
 	public function order_details_addon($arg){
-		// TODO: leightbox do wybierania przedmiotow do select'a (sic! ^^)
 		$rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items_orders_details');
 		$cols = array('transaction_id'=>false);
 		$cols['transaction_type'] = false;			
@@ -100,7 +99,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 			'gross_price'=>array('width'=>28, 'wrapmode'=>'nowrap'),
 			'debit'=>array('width'=>20, 'wrapmode'=>'nowrap'),
 			'credit'=>array('width'=>20, 'wrapmode'=>'nowrap'),
-			'quantity'=>array('name'=>'Qty', 'width'=>1, 'wrapmode'=>'nowrap'),
+			'quantity'=>array('name'=>'Qty', 'width'=>4, 'wrapmode'=>'nowrap'),
 			'serial'=>array('width'=>40, 'wrapmode'=>'nowrap')
 		);
 		if ($arg['transaction_type']==0) {

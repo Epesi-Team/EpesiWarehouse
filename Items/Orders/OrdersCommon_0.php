@@ -75,16 +75,18 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		if (isset($_REQUEST['__location'])) $res = array();
 		if (isset($res[$r['id']][$arg])) return $res[$r['id']][$arg];
 		$recs = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$r['id']));
+		$res[$r['id']]['tax'] = array();
+		$res[$r['id']]['total'] = array();
 		foreach($recs as $rr){
 			$price = Utils_CurrencyFieldCommon::get_values($rr['net_price']);
-			if (!isset($res[$r['id']]['tax'][$price[1]])) {
-				$res[$r['id']]['tax'][$price[1]] = 0;
-				$res[$r['id']]['total'][$price[1]] = 0;
-			}
 			$net_total = $price[0]*$rr['quantity'];
 			$tax_value = round($rr['tax_rate']*$price[0]/100, Utils_CurrencyFieldCommon::get_precission($price[1]))*$rr['quantity'];
-			$res[$r['id']]['tax'][$price[1]] += $tax_value;
-			$res[$r['id']]['total'][$price[1]] += $net_total+$tax_value;
+			if (!isset($res[$r['id']]['tax'][$price[1]]) && $tax_value)
+				$res[$r['id']]['tax'][$price[1]] = 0;
+			if (!isset($res[$r['id']]['total'][$price[1]]) && $net_total)
+				$res[$r['id']]['total'][$price[1]] = 0;
+			if ($tax_value) $res[$r['id']]['tax'][$price[1]] += $tax_value;
+			if ($net_total) $res[$r['id']]['total'][$price[1]] += $net_total+$tax_value;
 		}
 		$r['shipment_cost'] = Utils_CurrencyFieldCommon::get_values($r['shipment_cost']);
 		$r['handling_cost'] = Utils_CurrencyFieldCommon::get_values($r['handling_cost']);
@@ -104,7 +106,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		$vals = self::calculate_tax_and_total_value($r, 'total');
 		foreach ($vals as $k=>$v)
 			$ret[] = Utils_CurrencyFieldCommon::format($v, $k);
-		return implode(', ',$ret);
+		return implode('; ',$ret);
 	}
 	
 	public static function display_tax_value($r, $nolink=false) {
@@ -114,7 +116,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		$vals = self::calculate_tax_and_total_value($r, 'tax');
 		foreach ($vals as $k=>$v)
 			$ret[] = Utils_CurrencyFieldCommon::format($v, $k);
-		return implode(', ',$ret);
+		return implode('; ',$ret);
 	}
 
 	public static function display_transaction_id($r, $nolink) {
@@ -590,6 +592,9 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 								}
 								if ($tt!=4) {
 									$ret['target_warehouse'] = 'hide';
+								}
+								if ($tt==4) {
+									$ret['tax_value'] = 'hide';
 								}
 								if ($tt==0 && isset($param['status'])) {
 									if ($param['status']<4) {
