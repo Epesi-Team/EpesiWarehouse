@@ -149,7 +149,30 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		return Utils_CurrencyFieldCommon::format($ret, $price[1]);
 	}
 	
-	public static function display_quantity_on_route($r, $nolink){
+	public static function display_reserved_qty($r, $nolink) {
+		$trans = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders', array('status'=>array(2,3,4,5), 'transaction_type'=>1), array('id', 'warehouse'));
+		$trans = $trans+Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders', array('status'=>array(2,3), 'transaction_type'=>4), array('id', 'target_warehouse'));
+		$my_warehouse = Base_User_SettingsCommon::get('Premium_Warehouse','my_warehouse');
+		$qty = 0;
+		$ids = array();
+		foreach ($trans as $k=>$t) {
+			if (!isset($t['warehouse'])) $trans[$k]['warehouse'] = $t['target_warehouse'];
+			$ids[] = $t['id'];
+		}
+		$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$ids, 'item_name'=>$r['id']), array('quantity','transaction_id'));
+		$reserved_qty = array();
+		foreach ($items as $i) {
+			$warehouse = $trans[$i['transaction_id']]['warehouse'];
+			if (!isset($reserved_qty[$warehouse])) $reserved_qty[$warehouse] = 0;
+			$reserved_qty[$warehouse] += $i['quantity'];
+			$qty+=$i['quantity'];
+		}
+		$r['quantity_on_hand']=$qty;
+		$ret = Premium_Warehouse_Items_LocationCommon::display_item_quantity_in_warehouse_and_total($r,$my_warehouse,$nolink,$reserved_qty,array('main'=>'Reserved Qty', 'in_one'=>'In %s', 'in_all'=>'Total'));
+		return $ret;
+	}
+	
+	public static function display_quantity_on_route($r, $nolink) {
 		$trans = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders', array('status'=>array(3,4), 'transaction_type'=>0), array('id', 'warehouse'));
 		$trans = $trans+Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders', array('status'=>array(5,6), 'transaction_type'=>4), array('id', 'target_warehouse'));
 		$my_warehouse = Base_User_SettingsCommon::get('Premium_Warehouse','my_warehouse');
@@ -798,6 +821,8 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	}
 
 	public static function submit_order_details($values, $mode) {
+		static $notice='';
+		if ($notice!=='') print($notice);
 		if (isset($values['item_name']) && !is_numeric($values['item_name']))
 			$values['item_name'] = Utils_RecordBrowserCommon::get_id('premium_warehouse_items', 'item_name', $values['item_name']);
 		switch ($mode) {
@@ -811,6 +836,17 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 				self::change_total_qty($values, 'restore');
 				return;
 			case 'add':
+				$net = Utils_CurrencyFieldCommon::get_values($values['net_price']);
+				$gross = Utils_CurrencyFieldCommon::get_values($values['gross_price']);
+				if (round($net[0]*(100+$values['tax_rate'])/100,2)!=$gross[0]) {
+					$values['gross_price'] = round($net[0]*(100+$values['tax_rate'])/100,2).'__'.$net[1];
+					$new_gross = Utils_CurrencyFieldCommon::get_values($values['gross_price']);
+					$notice = Base_LangCommon::ts('Premium_Warehouse_Items_Orders', '<b>Notice:</b> No gross price is worth %s including %s%% tax.<br />Gross price was adjusted to %s, based on net price', array(
+						Utils_CurrencyFieldCommon::format($gross[0], $gross[1]),
+						$values['tax_rate'],
+						Utils_CurrencyFieldCommon::format($new_gross[0], $new_gross[1]),
+						));
+				}
 				$item_type=Utils_RecordBrowserCommon::get_value('premium_warehouse_items', $values['item_name'], 'item_type');
 				if (self::$trans['transaction_type']==3) {
 //					Utils_RecordBrowserCommon::update_record('premium_warehouse_location', $values['serial'], array('used'=>1));

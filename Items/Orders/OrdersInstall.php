@@ -135,6 +135,9 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items', 'Last Sale Price', 'currency', false, false, '', 'currency', false, false);
 		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items', 'Last Purchase Price', 'currency', false, false, '', 'currency', false, false);
 
+		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items','Reserved Qty','calculated', true, false, '', 'integer', false, false, 11);
+		Utils_RecordBrowserCommon::set_display_method('premium_warehouse_items','Reserved Qty','Premium_Warehouse_Items_OrdersCommon', 'display_reserved_qty');
+
 		DB::CreateTable('premium_warehouse_location_orders_serial',
 					'serial_id I,'.
 					'order_details_id I',

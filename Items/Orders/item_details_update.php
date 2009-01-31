@@ -50,7 +50,7 @@ if ($trans['transaction_type']<2) {
 	$price = Utils_CurrencyFieldCommon::get_values($price);
 	$js .= 	'if($("net_price")){'.
 				'obj=$("__net_price__currency");for(i=0;i<obj.options.length;i++)if(obj.options[i].value=='.$price[1].'){cur_key=i;break;}'.
-				'$("net_price").value="'.$price[0].'";'.
+				'$("net_price").value="'.implode(Utils_currencyFieldCommon::get_decimal_point(),explode('.',$price[0])).'";'.
 				'update_gross();'.
 				'switch_currencies(cur_key);'.
 			'}';
