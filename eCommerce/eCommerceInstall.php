@@ -52,7 +52,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_cat_descriptions', 'Premium_Warehouse_eCommerceCommon', 'access_cat_descriptions');
 
 		$fields = array(
-			array('name'=>'Item', 			'type'=>'select', 'required'=>true, 'param'=>'premium_warehouse_items::Item Name;Premium_Warehouse_Items_OrdersCommon::products_crits', 'extra'=>false, 'visible'=>true, 'display_callback'=>array($this->get_type().'Common', 'display_item_name')),
+			array('name'=>'Item Name', 			'type'=>'select', 'required'=>true, 'param'=>'premium_warehouse_items::Item Name;Premium_Warehouse_Items_OrdersCommon::products_crits', 'extra'=>false, 'visible'=>true, 'display_callback'=>array($this->get_type().'Common', 'display_item_name')),
 			array('name'=>'Language', 		'type'=>'commondata', 'required'=>true, 'extra'=>false, 'visible'=>true, 'param'=>array('Premium/Warehouse/eCommerce/Languages'), 'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_description_language')),
 			array('name'=>'Display Name',	'type'=>'text', 'param'=>128, 'required'=>true, 'extra'=>false, 'visible'=>true),
 			array('name'=>'Short Description', 	'type'=>'long text', 'required'=>true, 'extra'=>false, 'visible'=>true),
@@ -66,6 +66,20 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::set_favorites('premium_ecommerce_descriptions', false);
 		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_descriptions', 'eCommerce - Descriptions');
 		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_descriptions', 'Premium_Warehouse_eCommerceCommon', 'access_descriptions');
+
+		//product prices
+		$fields = array(
+			array('name'=>'Item Name', 			'type'=>'select', 'required'=>true, 'param'=>'premium_warehouse_items::Item Name;Premium_Warehouse_Items_OrdersCommon::products_crits', 'extra'=>false, 'visible'=>true, 'display_callback'=>array($this->get_type().'Common', 'display_item_name')),
+			array('name'=>'Currency', 	'type'=>'integer', 'required'=>true, 'extra'=>false,'visible'=>true, 'display_callback'=>array($this->get_type().'Common', 'display_currency'),'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_currency')),
+			array('name'=>'Price', 		'type'=>'integer', 'required'=>true, 'extra'=>false,'visible'=>true)
+		);
+		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_prices', $fields);
+
+		Utils_RecordBrowserCommon::set_favorites('premium_ecommerce_prices', false);
+		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_prices', 'eCommerce - prices');
+		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_prices', 'Premium_Warehouse_eCommerceCommon', 'access_products');
+
+		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_products', 'Premium/Warehouse/eCommerce', 'prices_addon', 'Prices');
 
 		//product parameters
 		$fields = array(
@@ -91,7 +105,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::set_processing_method('premium_ecommerce_parameter_labels', array('Premium_Warehouse_eCommerceCommon', 'submit_parameter_labels'));
 
 		$fields = array(
-			array('name'=>'Item', 			'type'=>'select', 'required'=>true, 'param'=>'premium_warehouse_items::Item Name;Premium_Warehouse_Items_OrdersCommon::products_crits', 'extra'=>false, 'visible'=>true, 'display_callback'=>array($this->get_type().'Common', 'display_item_name')),
+			array('name'=>'Item Name', 			'type'=>'select', 'required'=>true, 'param'=>'premium_warehouse_items::Item Name;Premium_Warehouse_Items_OrdersCommon::products_crits', 'extra'=>false, 'visible'=>true, 'display_callback'=>array($this->get_type().'Common', 'display_item_name')),
 			array('name'=>'Parameter', 		'type'=>'select', 'required'=>true, 'extra'=>false, 'visible'=>true, 'param'=>'premium_ecommerce_parameters::Parameter Code'),
 			array('name'=>'Value', 			'type'=>'text', 'param'=>128, 'required'=>true, 'extra'=>false, 'visible'=>true)
 		);
@@ -185,10 +199,15 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		$this->add_aco('edit ecommerce',array('Employee'));
 		$this->add_aco('delete ecommerce',array('Employee Manager'));
 
+		Variable::set('ecommerce_start_page','This is start page of quickcart shop with epesi backend. You can edit it in Warehouse - eCommerce settings.');
+		Variable::set('ecommerce_rules','You can edit this page in Warehouse - eCommerce settings.');
+
 		return true;
 	}
 	
 	public function uninstall() {
+		Variable::delete('ecommerce_start_page');
+		Variable::delete('ecommerce_rules');
 		Utils_CommonDataCommon::remove('Premium/Warehouse/eCommerce/Languages');
 		Base_ThemeCommon::uninstall_default_theme($this->get_type());
 
@@ -203,6 +222,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 //		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_categories', 'Premium/Warehouse/eCommerce', 'cat_descriptions_addon');
 		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_parameters', 'Premium/Warehouse/eCommerce', 'parameter_labels_addon');
 		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_pages', 'Premium/Warehouse/eCommerce', 'subpages_addon');
+		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_products', 'Premium/Warehouse/eCommerce', 'prices_addon');
 
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_products');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_cat_descriptions');
@@ -214,6 +234,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_availability_labels');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_pages');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_pages_data');
+		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_prices');
 		return true;
 	}
 	
@@ -225,6 +246,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		return array(
 			array('name'=>'Base','version'=>0),
 			array('name'=>'Premium/Warehouse/Items/Orders','version'=>0),
+			array('name'=>'Utils/CurrencyField','version'=>0),
 			array('name'=>'Utils/RecordBrowser', 'version'=>0));
 	}
 	

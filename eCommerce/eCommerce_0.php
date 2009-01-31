@@ -72,8 +72,8 @@ class Premium_Warehouse_eCommerce extends Module {
 	
 	public function descriptions_addon($arg) {
 		$rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_descriptions');
-		$order = array(array('item'=>$arg['item_name']), array('item'=>false), array('language'=>'ASC'));
-		$rb->set_defaults(array('item'=>$arg['item_name']));
+		$order = array(array('item_name'=>$arg['item_name']), array('item_name'=>false), array('language'=>'ASC'));
+		$rb->set_defaults(array('item_name'=>$arg['item_name']));
 		$rb->set_header_properties(array(
 			'language'=>array('width'=>1, 'wrapmode'=>'nowrap'),
 			'description'=>array('width'=>50, 'wrapmode'=>'nowrap')
@@ -94,8 +94,8 @@ class Premium_Warehouse_eCommerce extends Module {
 
 	public function parameters_addon($arg) {
 		$rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_products_parameters');
-		$order = array(array('item'=>$arg['id']), array('item'=>false), array('parameter'=>'ASC'));
-		$rb->set_defaults(array('item'=>$arg['id']));
+		$order = array(array('item_name'=>$arg['id']), array('item_name'=>false), array('parameter'=>'ASC'));
+		$rb->set_defaults(array('item_name'=>$arg['id']));
 		$rb->set_header_properties(array(
 			'parameter'=>array('wrapmode'=>'nowrap'),
 			'value'=>array('wrapmode'=>'nowrap')
@@ -125,7 +125,46 @@ class Premium_Warehouse_eCommerce extends Module {
 		$this->display_module($rb,$order,'show_data');
 	}
 	
+	public function prices_addon($arg) {
+		$rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_prices');
+		$order = array(array('item_name'=>$arg['id']), array('item_name'=>false), array('currency'=>'ASC'));
+		$rb->set_defaults(array('item_name'=>$arg['id']));
+		$rb->set_header_properties(array(
+			'currency'=>array('width'=>1, 'wrapmode'=>'nowrap'),
+			'price'=>array('wrapmode'=>'nowrap')
+									));
+		$this->display_module($rb,$order,'show_data');
+	}
+	
+	public function start_page() {
+		$this->edit_variable('Start page','ecommerce_start_page');
+	}
+	
+	public function rules_page() {
+		$this->edit_variable('Rules and policies','ecommerce_rules');
+	}
+	
+	private function edit_variable($header, $v) {
+		$f = $this->init_module('Libs/QuickForm');
+		
+		$f->addElement('header',null,$this->t($header));
 
+		$fck = & $f->addElement('fckeditor', 'content', $this->t('Content'));
+		$fck->setFCKProps('800','300',true);
+		
+		$f->setDefaults(array('content'=>Variable::get($v)));
+
+		Base_ActionBarCommon::add('save','Save',$f->get_submit_form_href());
+		
+		if($f->validate()) {
+			$ret = $f->exportValues();
+			$content = str_replace("\n",'',$ret['content']);
+			Variable::set($v,$content);
+			Base_StatusBarCommon::message($this->t('Page saved'));
+		}
+		$f->display();	
+	}
+	
 	public function caption(){
 		if (isset($this->rb)) return $this->rb->caption();
 	}

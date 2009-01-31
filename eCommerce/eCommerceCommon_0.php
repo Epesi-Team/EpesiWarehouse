@@ -15,6 +15,8 @@
 defined("_VALID_ACCESS") || die('Direct access forbidden');
 
 class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
+	private static $curr_opts;
+
 	public static function access_parameters($action, $param){
 		$i = self::Instance();
 		switch ($action) {
@@ -46,7 +48,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 	
 	public function display_description($r, $nolink, $desc) {
 		$lang_code = Base_User_SettingsCommon::get('Base_Lang_Administrator','language');
-		$id = Utils_RecordBrowserCommon::get_id('premium_ecommerce_descriptions', array('item', 'language'), array($r['item_name'], $lang_code));
+		$id = Utils_RecordBrowserCommon::get_id('premium_ecommerce_descriptions', array('item_name', 'language'), array($r['item_name'], $lang_code));
 		$lan = Utils_CommonDataCommon::get_value('Premium/Warehouse/eCommerce/Languages/'.$lang_code);
 		if (!is_numeric($id)) return Base_LangCommon::ts('Premium_eCommerce','Description in <b>%s</b> missing', array($lan?$lan:$lang_code));
 		return Utils_RecordBrowserCommon::get_value('premium_ecommerce_descriptions',$id,'short_description');
@@ -54,7 +56,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 	
 	public function display_product_name($r, $nolink, $desc) {
 		$lang_code = Base_User_SettingsCommon::get('Base_Lang_Administrator','language');
-		$id = Utils_RecordBrowserCommon::get_id('premium_ecommerce_descriptions', array('item', 'language'), array($r['item_name'], $lang_code));
+		$id = Utils_RecordBrowserCommon::get_id('premium_ecommerce_descriptions', array('item_name', 'language'), array($r['item_name'], $lang_code));
 		$lan = Utils_CommonDataCommon::get_value('Premium/Warehouse/eCommerce/Languages/'.$lang_code);
 		if (!is_numeric($id)) return Base_LangCommon::ts('Premium_eCommerce','Product name in <b>%s</b> missing', array($lan?$lan:$lang_code));
 		return 	Utils_RecordBrowserCommon::record_link_open_tag('premium_ecommerce_products',$r['id'],$nolink).
@@ -83,6 +85,27 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 		return $opts[$r['type']];
 	}
 
+  	public static function QFfield_currency(&$form, $field, $label, $mode, $default) {
+		self::init_currency();
+		if ($mode=='add' || $mode=='edit') {
+			$form->addElement('select', $field, $label, self::$curr_opts, array('id'=>$field));
+			if ($mode=='edit') $form->setDefaults(array($field=>$default));
+		} else {
+			$form->addElement('static', $field, $label);
+			$form->setDefaults(array($field=>self::$curr_opts[$default]));
+		}
+	}
+
+  	public static function display_currency($r, $nolink=false) {
+		self::init_currency();
+		return self::$curr_opts[$r['currency']];
+	}
+
+	public static function init_currency() {
+		if(!isset(self::$curr_opts))
+			self::$curr_opts = DB::GetAssoc('SELECT id, code FROM utils_currency');
+	}
+
     public static function menu() {
 		return array('Warehouse'=>array(
 			'__submenu__'=>1,
@@ -93,6 +116,8 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 					'Parameters'=>array('recordset'=>'parameters'),
 					'Availability'=>array('recordset'=>'availability'),
 					'Pages'=>array('recordset'=>'pages'),
+					'Start page'=>array('__function__'=>'start_page'),
+					'Rules and policies'=>array('__function__'=>'rules_page')
 				)
 			)
 		));
