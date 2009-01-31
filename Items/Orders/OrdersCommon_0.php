@@ -78,8 +78,9 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		$res[$r['id']]['tax'] = 0;
 		$res[$r['id']]['total'] = 0;
 		foreach($recs as $rr){
-			$net_total = $rr['net_price']*$rr['quantity'];
-			$tax_value = $rr['tax_rate']*$net_total/100;
+			$price = Utils_CurrencyFieldCommon::get_values($rr['net_price']);
+			$net_total = $price[0]*$rr['quantity'];
+			$tax_value = round($rr['tax_rate']*$price[0]/100, Utils_CurrencyFieldCommon::get_precission($price[1]))*$rr['quantity'];
 			$res[$r['id']]['tax'] += $tax_value;
 			$res[$r['id']]['total'] += $net_total+$tax_value;
 		}
@@ -137,15 +138,13 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 
 	public static function display_order_details_tax_value($r, $nolink) {
 		$price = Utils_CurrencyFieldCommon::get_values($r['net_price']);
-		$ret = $r['tax_rate']*$price[0]*$r['quantity'];
-		$ret /= 100;
+		$ret = round($r['tax_rate']*$price[0]/100, Utils_CurrencyFieldCommon::get_precission($price[1]))*$r['quantity'];
 		return Utils_CurrencyFieldCommon::format($ret, $price[1]);
 	}
 
 	public static function display_order_details_gross_price($r, $nolink) {
 		$price = Utils_CurrencyFieldCommon::get_values($r['net_price']);
-		$ret = (100+$r['tax_rate'])*$price[0]*$r['quantity'];
-		$ret /= 100;
+		$ret = round((100+$r['tax_rate'])*$price[0]/100, Utils_CurrencyFieldCommon::get_precission($price[1]))*$r['quantity'];
 		return Utils_CurrencyFieldCommon::format($ret, $price[1]);
 	}
 	
@@ -831,6 +830,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 				return;
 			case 'delete':
 				self::change_total_qty($values, 'delete');
+				location(array());
 				return;
 			case 'restore':
 				self::change_total_qty($values, 'restore');
