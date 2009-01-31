@@ -75,30 +75,46 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		if (isset($_REQUEST['__location'])) $res = array();
 		if (isset($res[$r['id']][$arg])) return $res[$r['id']][$arg];
 		$recs = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$r['id']));
-		$res[$r['id']]['tax'] = 0;
-		$res[$r['id']]['total'] = 0;
 		foreach($recs as $rr){
 			$price = Utils_CurrencyFieldCommon::get_values($rr['net_price']);
+			if (!isset($res[$r['id']]['tax'][$price[1]])) {
+				$res[$r['id']]['tax'][$price[1]] = 0;
+				$res[$r['id']]['total'][$price[1]] = 0;
+			}
 			$net_total = $price[0]*$rr['quantity'];
 			$tax_value = round($rr['tax_rate']*$price[0]/100, Utils_CurrencyFieldCommon::get_precission($price[1]))*$rr['quantity'];
-			$res[$r['id']]['tax'] += $tax_value;
-			$res[$r['id']]['total'] += $net_total+$tax_value;
+			$res[$r['id']]['tax'][$price[1]] += $tax_value;
+			$res[$r['id']]['total'][$price[1]] += $net_total+$tax_value;
 		}
-		$res[$r['id']]['total'] += $r['shipment_cost'];
-		$res[$r['id']]['total'] += $r['handling_cost'];
+		$r['shipment_cost'] = Utils_CurrencyFieldCommon::get_values($r['shipment_cost']);
+		$r['handling_cost'] = Utils_CurrencyFieldCommon::get_values($r['handling_cost']);
+		if (!isset($res[$r['id']]['total'][$r['shipment_cost'][1]]))
+			$res[$r['id']]['total'][$r['shipment_cost'][1]] = 0;
+		if (!isset($res[$r['id']]['total'][$r['handling_cost'][1]]))
+			$res[$r['id']]['total'][$r['handling_cost'][1]] = 0;
+		$res[$r['id']]['total'][$r['shipment_cost'][1]] += $r['shipment_cost'][0];
+		$res[$r['id']]['total'][$r['handling_cost'][1]] += $r['handling_cost'][0];
 		return $res[$r['id']][$arg];
 	}
 	
 	public static function display_total_value($r, $nolink=false) {
 		if ($r['transaction_type']==2 || ($r['transaction_type']==3 && !$r['payment']))
 			return '---';
-		return Utils_CurrencyFieldCommon::format(self::calculate_tax_and_total_value($r, 'total'));
+		$ret = array();
+		$vals = self::calculate_tax_and_total_value($r, 'total');
+		foreach ($vals as $k=>$v)
+			$ret[] = Utils_CurrencyFieldCommon::format($v, $k);
+		return implode(', ',$ret);
 	}
 	
 	public static function display_tax_value($r, $nolink=false) {
 		if ($r['transaction_type']==2 || ($r['transaction_type']==3 && !$r['payment']))
 			return '---';
-		return Utils_CurrencyFieldCommon::format(self::calculate_tax_and_total_value($r, 'tax'));
+		$ret = array();
+		$vals = self::calculate_tax_and_total_value($r, 'tax');
+		foreach ($vals as $k=>$v)
+			$ret[] = Utils_CurrencyFieldCommon::format($v, $k);
+		return implode(', ',$ret);
 	}
 
 	public static function display_transaction_id($r, $nolink) {
@@ -389,10 +405,14 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	public static function check_qty_on_hand($data){
 		self::get_trans();
 		if (isset($data['quantity']) && intval($data['quantity'])!=$data['quantity']) return array('item_name'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders', 'Invallid amount.'));
-		if (self::$trans['transaction_type']==0) return true; 
-		if (isset($data['item_name']) && !is_numeric($data['item_name']))
-			$data['item_name'] = Utils_RecordBrowserCommon::get_id('premium_warehouse_items', 'item_name', $data['item_name']);
-		if (!is_numeric($data['item_name'])) return array('item_name'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders', 'Item not found'));
+		if (self::$trans['transaction_type']==0) return true;
+		if (!isset($data['item_name'])) {
+			$data['item_name'] = Utils_RecordBrowser::$last_record['item_name'];
+		} else { 
+			if (!is_numeric($data['item_name']))
+				$data['item_name'] = Utils_RecordBrowserCommon::get_id('premium_warehouse_items', 'item_name', $data['item_name']);
+			if (!is_numeric($data['item_name'])) return array('item_name'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders', 'Item not found'));
+		}
 		$item_type = Utils_RecordBrowserCommon::get_value('premium_warehouse_items',$data['item_name'],'item_type');
 		if ($item_type>=2) return true;
 //		if (self::$trans['transaction_type']==1) {
