@@ -85,6 +85,12 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 		return $opts[$r['type']];
 	}
 
+  	public static function parent_page_crits($v, $rec) {
+		if(!$rec)
+			return array();
+		return array('!id'=>$rec['id']);
+	}
+
   	public static function QFfield_currency(&$form, $field, $label, $mode, $default) {
 		self::init_currency();
 		if ($mode=='add' || $mode=='edit') {
@@ -105,7 +111,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 		if(!isset(self::$curr_opts))
 			self::$curr_opts = DB::GetAssoc('SELECT id, code FROM utils_currency');
 	}
-
+	
     public static function menu() {
 		return array('Warehouse'=>array(
 			'__submenu__'=>1,

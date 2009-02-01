@@ -42,7 +42,7 @@ class Premium_Warehouse_eCommerce extends Module {
 				break;
 			case 'pages':
 				$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_pages');
-				$this->rb->set_defaults(array('position'=>0,'publish'=>1));
+				$this->rb->set_defaults(array('position'=>0,'publish'=>1,'type'=>2));
 				break;
 		}
 		$this->display_module($this->rb);
@@ -106,7 +106,7 @@ class Premium_Warehouse_eCommerce extends Module {
 	public function subpages_addon($arg) {
 		$rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_pages');
 		$order = array(array('parent_page'=>$arg['id']), array(), array('page_name'=>'ASC'));
-		$rb->set_defaults(array('parent_page'=>$arg['id']));
+		$rb->set_defaults(array('parent_page'=>$arg['id'],'publish'=>1,'type'=>2));
 //		$rb->set_header_properties(array(
 //			'language'=>array('width'=>1, 'wrapmode'=>'nowrap'),
 //			'description'=>array('width'=>50, 'wrapmode'=>'nowrap')
