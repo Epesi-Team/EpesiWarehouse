@@ -55,8 +55,8 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 			array('name'=>'Item Name', 			'type'=>'select', 'required'=>true, 'param'=>'premium_warehouse_items::Item Name;Premium_Warehouse_Items_OrdersCommon::products_crits', 'extra'=>false, 'visible'=>true, 'display_callback'=>array($this->get_type().'Common', 'display_item_name')),
 			array('name'=>'Language', 		'type'=>'commondata', 'required'=>true, 'extra'=>false, 'visible'=>true, 'param'=>array('Premium/Warehouse/eCommerce/Languages'), 'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_description_language')),
 			array('name'=>'Display Name',	'type'=>'text', 'param'=>128, 'required'=>true, 'extra'=>false, 'visible'=>true),
-			array('name'=>'Short Description', 	'type'=>'long text', 'required'=>true, 'extra'=>false, 'visible'=>true),
-			array('name'=>'Long Description', 	'type'=>'long text', 'required'=>false, 'extra'=>false, 'visible'=>false),
+			array('name'=>'Short Description', 	'type'=>'long text', 'required'=>true, 'extra'=>false, 'visible'=>true, 'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_fckeditor')),
+			array('name'=>'Long Description', 	'type'=>'long text', 'required'=>false, 'extra'=>false, 'visible'=>false, 'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_fckeditor')),
 			array('name'=>'Page Title', 	'type'=>'text', 'required'=>false, 'extra'=>false, 'param'=>64, 'visible'=>false),
 			array('name'=>'Meta Description', 	'type'=>'text', 'required'=>false, 'extra'=>false, 'param'=>256, 'visible'=>false),
 			array('name'=>'Keywords', 	'type'=>'text', 'required'=>false, 'extra'=>false, 'param'=>128, 'visible'=>false)
@@ -158,15 +158,14 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 			array('name'=>'Page', 	'type'=>'select', 'param'=>'premium_ecommerce_pages::Page Name', 'required'=>true, 'extra'=>false),
 			array('name'=>'Language', 	'type'=>'commondata', 'required'=>true, 'extra'=>false, 'param'=>array('Premium/Warehouse/eCommerce/Languages'), 'visible'=>true),
 			array('name'=>'Name', 		'type'=>'text', 'param'=>'128', 'required'=>true, 'extra'=>false, 'visible'=>true),
-			array('name'=>'Short Description', 	'type'=>'long text', 'required'=>true, 'extra'=>false, 'visible'=>true),
-			array('name'=>'Long Description', 	'type'=>'long text', 'required'=>false, 'extra'=>false, 'visible'=>false),
+			array('name'=>'Short Description', 	'type'=>'long text', 'required'=>true, 'extra'=>false, 'visible'=>true, 'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_fckeditor')),
+			array('name'=>'Long Description', 	'type'=>'long text', 'required'=>false, 'extra'=>false, 'visible'=>false, 'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_fckeditor')),
 			array('name'=>'Page Title', 	'type'=>'text', 'required'=>false, 'extra'=>false, 'param'=>64, 'visible'=>false),
 			array('name'=>'Meta Description', 	'type'=>'text', 'required'=>false, 'extra'=>false, 'param'=>256, 'visible'=>false),
 			array('name'=>'Keywords', 	'type'=>'text', 'required'=>false, 'extra'=>false, 'param'=>128, 'visible'=>false)
 		);
 
-//sTemplate' => 4, 'sTheme' => 5, 'sUrl' => 6, 'sBanner' => 7
-
+		//sTemplate' => 4, 'sTheme' => 5, 'sUrl' => 6, 'sBanner' => 7
 
 		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_pages_data', $fields);
 
@@ -175,6 +174,20 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_pages_data', 'Premium_Warehouse_eCommerceCommon', 'access_parameters');
 		
 		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_pages', 'Premium/Warehouse/eCommerce', 'pages_info_addon', 'Info');
+		
+		//orders
+		$ret = DB::CreateTable('premium_ecommerce_orders_temp','
+			customer C(32) NOTNULL,
+			product I4 NOTNULL,
+			quantity I2 NOTNULL,
+			price C(128) NOTNULL,
+			name C(128) NOTNULL,
+			created_on T DEFTIMESTAMP',
+			array('constraints'=>' ,PRIMARY KEY(customer,product)'));
+		if(!$ret){
+			print('Unable to create table premium_ecommerce_orders_temp.<br>');
+			return false;
+		}
 
 // ************* addons ************ //
 		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_products', 'Premium/Warehouse/eCommerce', 'parameters_addon', 'Parameters');
@@ -206,6 +219,8 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 	}
 	
 	public function uninstall() {
+		DB::DropTable('premium_ecommerce_orders_temp');
+	
 		Variable::delete('ecommerce_start_page');
 		Variable::delete('ecommerce_rules');
 		Utils_CommonDataCommon::remove('Premium/Warehouse/eCommerce/Languages');

@@ -112,6 +112,17 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 			self::$curr_opts = DB::GetAssoc('SELECT id, code FROM utils_currency');
 	}
 	
+	public static function QFfield_fckeditor(&$form, $field, $label, $mode, $default) {
+		if ($mode=='add' || $mode=='edit') {
+			$fck = $form->addElement('fckeditor', $field, $label);
+			$fck->setFCKProps('800','300',true);
+			if ($mode=='edit') $form->setDefaults(array($field=>$default));
+		} else {
+			$form->addElement('static', $field, $label);
+			$form->setDefaults(array($field=>$default));
+		}	
+	}
+	
     public static function menu() {
 		return array('Warehouse'=>array(
 			'__submenu__'=>1,
