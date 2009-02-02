@@ -870,7 +870,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 				if (round($net[0]*(100+$values['tax_rate'])/100,2)!=$gross[0]) {
 					$values['gross_price'] = round($net[0]*(100+$values['tax_rate'])/100,2).'__'.$net[1];
 					$new_gross = Utils_CurrencyFieldCommon::get_values($values['gross_price']);
-					$notice = Base_LangCommon::ts('Premium_Warehouse_Items_Orders', '<b>Notice:</b> No gross price is worth %s including %s%% tax.<br />Gross price was adjusted to %s, based on net price', array(
+					$notice = Base_LangCommon::ts('Premium_Warehouse_Items_Orders', '<font color="red"><b>Notice:</b></font> No gross price is worth %s including %s%% tax.<br />Gross price was adjusted to %s, based on net price', array(
 						Utils_CurrencyFieldCommon::format($gross[0], $gross[1]),
 						$values['tax_rate'],
 						Utils_CurrencyFieldCommon::format($new_gross[0], $new_gross[1]),
