@@ -292,7 +292,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			$form->setDefaults(array($field=>$default, 'use_net_price'=>1));
 		} else {
 			$form->addElement('currency', $field, $label, array('id'=>$field));
-			$form->setDefaults(array($field=>'ble'));
+			$form->setDefaults(array($field=>$default));
 		}
 	}
 	
@@ -302,7 +302,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			$form->setDefaults(array($field=>$default));
 		} else {
 			$form->addElement('currency', $field, $label, array('id'=>$field));
-			$form->setDefaults(array($field=>'ble'));
+			$form->setDefaults(array($field=>$default));
 		}
 	}
 	
