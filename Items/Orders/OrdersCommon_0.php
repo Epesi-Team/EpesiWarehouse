@@ -62,7 +62,11 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 
     public static function display_item_name($v, $nolink=false) {
     	if (!$v['item_name'] && isset($v['item_sku'])) $v['item_name'] = $v['item_sku'];
-		return Utils_RecordBrowserCommon::create_linked_label('premium_warehouse_items', 'item_name', $v['item_name'], $nolink);
+    	$r = Utils_RecordBrowserCommon::get_record('premium_warehouse_items', $v['item_name']);
+		$ret = 	Utils_RecordBrowserCommon::record_link_open_tag('premium_warehouse_items', $v['item_name'], $nolink).
+				$r['sku'].': '.$r['item_name'].
+				Utils_RecordBrowserCommon::record_link_close_tag();
+		return $ret;
 	}
 	
     public static function display_item_sku($v, $nolink=false) {
