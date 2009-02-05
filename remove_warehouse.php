@@ -24,6 +24,7 @@ DB::Execute('DELETE FROM utils_watchdog_category WHERE callback LIKE '.DB::Conca
 @DB::DropTable('premium_warehouse_location_orders_serial');
 
 foreach (array('premium_warehouse_items',
+	'premium_warehouse_items_categories',
 	'premium_warehouse_location',
 	'premium_warehouse_items_orders',
 	'premium_warehouse_items_orders_details',
