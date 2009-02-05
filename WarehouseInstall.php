@@ -27,6 +27,10 @@ class Premium_WarehouseInstall extends ModuleInstall {
 			array('name'=>'City', 			'type'=>'text', 'required'=>true, 'param'=>'64', 'extra'=>false, 'visible'=>true, 'display_callback'=>array('CRM_ContactsCommon','maplink')),
 			array('name'=>'Country', 		'type'=>'commondata', 'required'=>true, 'param'=>array('Countries'), 'extra'=>false, 'visible'=>false, 'QFfield_callback'=>array('Data_CountriesCommon', 'QFfield_country')),
 			array('name'=>'Zone', 			'type'=>'commondata', 'required'=>false, 'param'=>array('Countries','Country'), 'extra'=>false, 'visible'=>true, 'QFfield_callback'=>array('Data_CountriesCommon', 'QFfield_zone')),
+			array('name'=>'Phone', 			'type'=>'text', 'required'=>false, 'param'=>'64', 'extra'=>false, 'visible'=>true),
+			array('name'=>'Fax', 			'type'=>'text', 'required'=>false, 'param'=>'64', 'extra'=>false, 'visible'=>false),
+			array('name'=>'SSN', 			'type'=>'text', 'required'=>false, 'param'=>'64', 'extra'=>false, 'visible'=>false),
+			array('name'=>'Bank account', 	'type'=>'text', 'required'=>false, 'param'=>'255', 'extra'=>false, 'visible'=>false),
 			array('name'=>'Postal Code', 	'type'=>'text', 'required'=>false, 'param'=>'64', 'extra'=>false)
 		);
 

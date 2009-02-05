@@ -12,6 +12,8 @@ define('CID',false); //i know that i won't access $_SESSION['client']
 require_once('../../../include.php');
 ModuleManager::load_modules();
 
+$correct_errors = isset($_GET['correct']);
+
 $count = 0;
 $locs = array();
 $recs = Utils_RecordBrowserCommon::get_records('premium_warehouse_location');
@@ -29,16 +31,16 @@ foreach($locs as $w=>$data)
 			foreach ($ids as $id=>$qty) {
 				if ($first===null) $first=$id;
 				else {
-					Utils_RecordBrowserCommon::delete_record('premium_warehouse_location', $id, true);
+					if ($correct_errors) Utils_RecordBrowserCommon::delete_record('premium_warehouse_location', $id, true);
 					$count++;
 				}
 				$total += $qty;
 			}
-			Utils_RecordBrowserCommon::update_record('premium_warehouse_location', $first, array('quantity'=>$total));
+			if ($correct_errors) Utils_RecordBrowserCommon::update_record('premium_warehouse_location', $first, array('quantity'=>$total));
 		}
 	}
 
 
-print('Script run successfully, found '.$count.' duplicates');
+print('Script run successfully, found '.$count.' duplicates.<br>');
 
 ?>
