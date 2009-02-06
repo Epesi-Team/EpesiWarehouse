@@ -119,8 +119,12 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 			if ($mode=='edit') $form->setDefaults(array($field=>$default));
 		} else {
 			$form->addElement('static', $field, $label);
-			$form->setDefaults(array($field=>$default));
+			$form->setDefaults(array($field=>html_entity_decode($default)));
 		}	
+	}
+
+  	public static function display_fckeditor($r, $nolink=false, $desc=null) {
+		return html_entity_decode(html_entity_decode($r[$desc['id']]));
 	}
 	
     public static function menu() {

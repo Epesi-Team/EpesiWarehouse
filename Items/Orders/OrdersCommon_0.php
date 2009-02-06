@@ -222,7 +222,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			// SALE
 			case 1: $payment_ack = 'Payment Confirmed';
 					if (isset($trans['terms']) && $trans['terms']>0) $payment_ack = 'Payment Approved';
-					$opts = array(''=>'New', 1=>'Sales Quote', 2=>'Order Received', 3=>$payment_ack, 4=>'Order Confirmed', 5=>'On Hold', 6=>'Order Ready to Ship', 7=>'Shipped', 20=>'Delivered', 21=>'Canceled', 22=>'Missing'); break;
+					$opts = array(''=>'New', -1=>'New Online Order', 1=>'Sales Quote', 2=>'Order Received', 3=>$payment_ack, 4=>'Order Confirmed', 5=>'On Hold', 6=>'Order Ready to Ship', 7=>'Shipped', 20=>'Delivered', 21=>'Canceled', 22=>'Missing'); break;
 			// INV. ADJUSTMENT
 			case 2: $opts = array(''=>'Active', 20=>'Completed'); break;
 			// RENTAL
