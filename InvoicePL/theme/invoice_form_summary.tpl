@@ -7,22 +7,22 @@
 				{foreach item=v key=k from=$gross_total}
 					<tr>
 						<td width="32px" align="center">
-							<font size="6">
+							<font size="7">
 								X
 							</font>
 						</td>
 						<td width="45px" align="right">
-							<font size="6">
+							<font size="7">
 								{$gross_total.$k}&nbsp;
 							</font>
 						</td>
 						<td width="45px" align="right">
-							<font size="6">
+							<font size="7">
 								{$net_total.$k}&nbsp;
 							</font>
 						</td>
 						<td width="45px" align="right">
-							<font size="6">
+							<font size="7">
 								{$tax_total.$k}&nbsp;
 							</font>
 						</td>
