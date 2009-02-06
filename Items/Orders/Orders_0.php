@@ -37,7 +37,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 			), true);
 		$warehouse = Base_User_SettingsCommon::get('Premium_Warehouse', 'my_warehouse');
 		if ($warehouse) $this->rb->set_additional_caption(' - '.Utils_RecordBrowserCommon::get_value('premium_warehouse', $warehouse,'warehouse'));
-		$this->rb->set_header_properties(array('terms'=>array('width'=>1, 'wrapmode'=>'nowrap')));
+		$this->rb->set_header_properties(array('terms'=>array('width'=>1, 'wrapmode'=>'nowrap'),'status'=>array('width'=>1, 'wrapmode'=>'nowrap')));
 		$this->display_module($this->rb);
 	}
 

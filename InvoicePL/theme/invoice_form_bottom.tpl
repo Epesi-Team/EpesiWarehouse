@@ -1,35 +1,24 @@
+<br/>
+<font size=11><b><u><i>DO ZAP?ATY: {$total}.</i></u></b></font>
+<br/>
+<br/>
+<br/>
+<br/>
 <table>
 	<tr>
-		<td width="357px">
+		<td align="center">
+			<font size=8>
+				___________________________<br/>
+				Podpis osoby upowaznionej<br/>
+				do odbioru faktury VAT
+			</font>
 		</td>
-		<td>
-			<table border="1">
-				<tr>
-					<td width="32px" align="center">
-						<font size="6">
-							X
-						</font>
-					</td>
-					<td width="45px" align="right">
-						<font size="6">
-							{$gross_total}&nbsp;
-						</font>
-					</td>
-					<td width="45px" align="right">
-						<font size="6">
-							{$net_total}&nbsp;
-						</font>
-					</td>
-					<td width="45px" align="right">
-						<font size="6">
-							{$tax_total}&nbsp;
-						</font>
-					</td>
-				</tr>
-			</table>
+		<td align="center">
+			<font size=8>
+				___________________________<br/>
+				Podpis osoby upowaznionej<br/>
+				do wystawienia faktury VAT
+			</font>
 		</td>
 	</tr>
 </table>
-
-<br>
-<font size=11><b><u><i>DO ZAP?ATY: {$order.total_value}.</i></u></b></font>

@@ -1,29 +1,23 @@
 <table>
 	<tr>
 		<td>
-			<table>
-				<tr>
-					<td>
-						<font size=8>
-							UMT&stuff
-						</font>
-					</td>
-				</tr>
-			</table>
+			<font size=8>
+				{$company.company_name}<br/>
+				{$warehouse.address_1}<br/>
+				{$warehouse.postal_code} {$warehouse.city}<br/>
+				{if $warehouse.phone}tel. {$warehouse.phone}<br/>{/if}
+				{if $warehouse.fax}fax. {$warehouse.fax}<br/>{/if}
+				{$company.web_address}
+			</font>
 		</td>
-		<td>
-			<table>
-				<tr>
-					<td align="right">
-						Wa-wa, rok
-					</td>
-				</tr>
-			</table>
+		<td align="right">
+			{$warehouse.city}, {$date}<br/>
+			Data sprzedazy: {$order.transaction_date}
 		</td>
 	</tr>
 </table>
 <div width="100%" align="center">
-	<font size=12><b>Faktura nr tutaj</b></font><br>
+	<font size=12><b>Faktura VAT nr. {$order.invoice_id}</b></font><br>
 	ORYGINA? | KOPIA | DUPLIKAT
 </div>
 <table>
@@ -36,7 +30,7 @@
 		<td width="10px">
 		</td>
 		<td align="left">
-			Imie, nazwisko...
+			{$company.company_name}
 		</td>
 	</tr>
 	<tr>
@@ -46,7 +40,7 @@
 		<td width="10px">
 		</td>
 		<td align="left">
-			Adres...
+			{$warehouse.postal_code} {$warehouse.city}, {$warehouse.address_1}
 		</td>
 	</tr>
 	<tr>
@@ -56,7 +50,7 @@
 		<td width="10px">
 		</td>
 		<td align="left">
-			<b>NIP</b>
+			<b>{$warehouse.ssn}</b>
 		</td>
 	</tr>
 </table>
@@ -71,7 +65,7 @@
 		<td width="10px">
 		</td>
 		<td align="left">
-			Imie, nazwisko...
+			{$order.company_name}
 		</td>
 	</tr>
 	<tr>
@@ -81,7 +75,7 @@
 		<td width="10px">
 		</td>
 		<td align="left">
-			Adres...
+			{$order.postal_code} {$order.city}, {$order.address_1}
 		</td>
 	</tr>
 	<tr>
@@ -91,7 +85,7 @@
 		<td width="10px">
 		</td>
 		<td align="left">
-			<b>NIP</b>
+			<b>{if isset($order.ssn)}{$order.ssn}{/if}</b>
 		</td>
 	</tr>
 </table>
@@ -105,7 +99,7 @@
 		<td width="10px">
 		</td>
 		<td width="80px" align="left">
-			sposob...
+			{$order.payment_type_label}
 		</td>
 		<td width="80px" align="right">
 			termin zaplaty:
@@ -113,7 +107,7 @@
 		<td width="5px">
 		</td>
 		<td align="left">
-			termin
+			{$order.terms_label}
 		</td>
 	</tr>
 	<tr>
@@ -123,7 +117,7 @@
 		<td width="10px">
 		</td>
 		<td align="left">
-			numer & stuff
+			{$warehouse.bank_account}
 		</td>
 	</tr>
 </table>

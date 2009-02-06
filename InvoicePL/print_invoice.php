@@ -11,9 +11,9 @@
  */
 if(!isset($_REQUEST['cid']) || !isset($_REQUEST['record_id'])) die('Invalid usage - missing param');
 $cid = $_REQUEST['cid'];
-$record_id = $_REQUEST['record_id'];
+$order_id = $_REQUEST['record_id'];
 
-if (!is_numeric($record_id)) die('Invalid usage');
+if (!is_numeric($order_id)) die('Invalid usage');
 define('CID', $cid);
 require_once('../../../../include.php');
 ModuleManager::load_modules();
@@ -26,15 +26,25 @@ Base_ThemeCommon::install_default_theme('Premium/Warehouse/InvoicePL');
 
 $tcpdf = Libs_TCPDFCommon::new_pdf();
 
-Libs_TCPDFCommon::prepare_header($tcpdf,'something', 'and another');
-Libs_TCPDFCommon::add_page($tcpdf);
+$order = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $order_id);
+$warehouse = Utils_RecordBrowserCommon::get_record('premium_warehouse', $order['warehouse']);
+$company = CRM_ContactsCommon::get_company(CRM_ContactsCommon::get_main_company());
 
-$record = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $record_id);
+$order['invoice_id'] = Premium_Warehouse_Items_OrdersCommon::generate_id($order['id']).'/'.date('Y',strtotime($order['transaction_date']));
+$order['employee_name'] = CRM_ContactsCommon::contact_format_no_company(CRM_ContactsCommon::get_contact($order['employee']));
+$order['payment_type_label'] = Utils_CommonDataCommon::get_value('Premium_Items_Orders_Payment_Types/'.$order['payment_type'],true);
+$order['terms_label'] = Utils_CommonDataCommon::get_value('Premium_Items_Orders_Terms/'.$order['terms'],true);
+
+Libs_TCPDFCommon::prepare_header($tcpdf,'Faktura VAT nr. '.$order['invoice_id'], '', false);
+Libs_TCPDFCommon::add_page($tcpdf);
 
 $buffer = '';
 
 $theme = Base_ThemeCommon::init_smarty();
-$theme->assign('order', $record);
+$theme->assign('order', $order);
+$theme->assign('warehouse', $warehouse);
+$theme->assign('company', $company);
+$theme->assign('date', date('Y-m-d'));
 ob_start();
 Base_ThemeCommon::display_smarty($theme,'Premium_Warehouse_InvoicePL','invoice_form_top');
 $html = ob_get_clean();
@@ -42,12 +52,12 @@ $html = ob_get_clean();
 $html = Libs_TCPDFCommon::stripHTML($html);
 Libs_TCPDFCommon::writeHTML($tcpdf, $html);
 
-$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$record_id));
+$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$order_id));
 $lp = 1;
 
-$gross_total_sum = 0;
-$net_total_sum = 0;
-$tax_total_sum = 0;
+$gross_total_sum = array();
+$net_total_sum = array();
+$tax_total_sum = array();
 
 foreach ($items as $k=>$v) {
 	$items[$k]['item_details'] = Utils_RecordBrowserCommon::get_record('premium_warehouse_items', $v['item_name']);
@@ -58,18 +68,23 @@ foreach ($items as $k=>$v) {
 	$net_total = $items[$k]['net_price'][0]*$items[$k]['quantity'];
 	$tax_total = $gross_total - $net_total;
 
-	$gross_total_sum += $gross_total;
-	$net_total_sum += $net_total;
-	$tax_total_sum += $tax_total;
-	
-	$items[$k]['gross_total'] = Utils_CurrencyFieldCommon::format($gross_total, $items[$k]['gross_price'][1], false);
-	$items[$k]['net_total'] = Utils_CurrencyFieldCommon::format($net_total, $items[$k]['gross_price'][1], false);
-	$items[$k]['tax_total'] = Utils_CurrencyFieldCommon::format($tax_total, $items[$k]['gross_price'][1], false);
+	$items[$k]['gross_total'] = Utils_CurrencyFieldCommon::format($gross_total, $items[$k]['gross_price'][1]);
+	$items[$k]['net_total'] = Utils_CurrencyFieldCommon::format($net_total, $items[$k]['gross_price'][1]);
+	$items[$k]['tax_total'] = Utils_CurrencyFieldCommon::format($tax_total, $items[$k]['gross_price'][1]);
 
 	$currency = $items[$k]['gross_price'][1];
 
-	$items[$k]['gross_price'] = Utils_CurrencyFieldCommon::format($items[$k]['gross_price'][0], $items[$k]['gross_price'][1], false);
-	$items[$k]['net_price'] = Utils_CurrencyFieldCommon::format($items[$k]['net_price'][0], $items[$k]['net_price'][1], false);
+	if (!isset($gross_total_sum[$currency])) {
+		$gross_total_sum[$currency] = 0;
+		$net_total_sum[$currency] = 0;
+		$tax_total_sum[$currency] = 0;
+	}
+	$gross_total_sum[$currency] += $gross_total;
+	$net_total_sum[$currency] += $net_total;
+	$tax_total_sum[$currency] += $tax_total;
+	
+	$items[$k]['gross_price'] = Utils_CurrencyFieldCommon::format($items[$k]['gross_price'][0], $items[$k]['gross_price'][1]);
+	$items[$k]['net_price'] = Utils_CurrencyFieldCommon::format($items[$k]['net_price'][0], $items[$k]['net_price'][1]);
 
 	$theme = Base_ThemeCommon::init_smarty();
 	$theme->assign('details', $items[$k]);
@@ -83,12 +98,30 @@ foreach ($items as $k=>$v) {
 	$lp++;
 }
 
-$theme = Base_ThemeCommon::init_smarty();
-$theme->assign('order', $record);
-$theme->assign('gross_total', Utils_CurrencyFieldCommon::format($gross_total_sum, $currency, false));
-$theme->assign('net_total', Utils_CurrencyFieldCommon::format($net_total_sum, $currency, false));
-$theme->assign('tax_total', Utils_CurrencyFieldCommon::format($tax_total_sum, $currency, false));
+/************************ summary **************************/
 
+foreach ($gross_total_sum as $k=>$v) {
+	$gross_total_sum[$k] = Utils_CurrencyFieldCommon::format($gross_total_sum[$k], $k);
+	$net_total_sum[$k] = Utils_CurrencyFieldCommon::format($net_total_sum[$k], $k);
+	$tax_total_sum[$k] = Utils_CurrencyFieldCommon::format($tax_total_sum[$k], $k);
+}
+
+$theme = Base_ThemeCommon::init_smarty();
+$theme->assign('gross_total', $gross_total_sum);
+$theme->assign('net_total', $net_total_sum);
+$theme->assign('tax_total', $tax_total_sum);
+ob_start();
+Base_ThemeCommon::display_smarty($theme,'Premium_Warehouse_InvoicePL','invoice_form_summary');
+$html = ob_get_clean();
+
+$html = Libs_TCPDFCommon::stripHTML($html);
+Libs_TCPDFCommon::writeHTML($tcpdf, $html);
+
+/******************** bottom *************************/
+
+$theme = Base_ThemeCommon::init_smarty();
+$theme->assign('order', $order);
+$theme->assign('total', implode(', ',$gross_total_sum));
 ob_start();
 Base_ThemeCommon::display_smarty($theme,'Premium_Warehouse_InvoicePL','invoice_form_bottom');
 $html = ob_get_clean();
@@ -102,7 +135,7 @@ session_commit();
 
 header('Content-Type: application/pdf');
 header('Content-Length: '.strlen($buffer));
-header('Content-disposition: attachement; filename="faktura_'.$record['id'].'.pdf"');
+header('Content-disposition: attachement; filename="faktura_'.$order['id'].'.pdf"');
 
 print($buffer);
 ?>
