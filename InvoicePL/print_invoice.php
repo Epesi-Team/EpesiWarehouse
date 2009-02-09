@@ -18,8 +18,6 @@ define('CID', $cid);
 require_once('../../../../include.php');
 ModuleManager::load_modules();
 
-if (!Base_AclCommon::i_am_admin()) die('Invalid usage - access denied');
-
 //
 Base_ThemeCommon::install_default_theme('Premium/Warehouse/InvoicePL');
 //

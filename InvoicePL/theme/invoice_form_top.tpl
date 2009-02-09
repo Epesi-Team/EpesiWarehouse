@@ -18,7 +18,7 @@
 </table>
 <div width="100%" align="center">
 	<font size=12><b>Faktura VAT nr. {$order.invoice_id}</b></font><br>
-	ORYGINA? | KOPIA | DUPLIKAT
+	ORYGINAŁ | KOPIA | DUPLIKAT
 </div>
 <table>
 	<tr>
@@ -94,7 +94,7 @@
 <table>
 	<tr>
 		<td align="right" width="80px">
-			<b>Sposob zaplaty:</b>
+			<b>Sposób zapłaty:</b>
 		</td>
 		<td width="10px">
 		</td>
@@ -102,7 +102,7 @@
 			{$order.payment_type_label}
 		</td>
 		<td width="80px" align="right">
-			termin zaplaty:
+			termin zapłaty:
 		</td>
 		<td width="5px">
 		</td>
@@ -133,7 +133,7 @@
 			</td>
 			<td width="192px">
 				<font size="7"><b>
-					Nazwa towaru/uslugi
+					Nazwa towaru/usługi
 				</b></font>
 			</td>
 			<td width="45px">
@@ -143,7 +143,7 @@
 			</td>
 			<td width="35px">
 				<font size="7"><b>
-					Ilosc
+					Ilość
 				</b></font>
 			</td>
 			<td width="20px">
@@ -163,17 +163,17 @@
 			</td>
 			<td width="45px">
 				<font size="7"><b>
-					Wartosc brutto
+					Wartość brutto
 				</b></font>
 			</td>
 			<td width="45px">
 				<font size="7"><b>
-					Wartosc netto
+					Wartość netto
 				</b></font>
 			</td>
 			<td width="45px">
 				<font size="7"><b>
-					Wartosc &nbsp;VAT&nbsp;
+					Wartość &nbsp;VAT&nbsp;
 				</b></font>
 			</td>
 		</tr>

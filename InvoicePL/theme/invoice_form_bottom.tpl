@@ -1,5 +1,5 @@
 <br/>
-<font size=11><b><u><i>DO ZAP?ATY: {$total}.</i></u></b></font>
+<font size=11><b><u><i>DO ZAPŁATY: {$total}.</i></u></b></font>
 <br/>
 <br/>
 <br/>
@@ -9,14 +9,14 @@
 		<td align="center">
 			<font size=8>
 				___________________________<br/>
-				Podpis osoby upowaznionej<br/>
+				Podpis osoby upoważnionej<br/>
 				do odbioru faktury VAT
 			</font>
 		</td>
 		<td align="center">
 			<font size=8>
 				___________________________<br/>
-				Podpis osoby upowaznionej<br/>
+				Podpis osoby upoważnionej<br/>
 				do wystawienia faktury VAT
 			</font>
 		</td>
