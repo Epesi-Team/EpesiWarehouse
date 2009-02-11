@@ -84,6 +84,22 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 		}
     }
     
+    public static function get_category_name($c_id) {
+    	static $ecommerce_on;
+    	static $lang;
+		if (!isset($ecommerce_on)) {
+			$ecommerce_on = ModuleManager::is_installed('Premium_Warehouse_eCommerce')!=-1;
+			if ($ecommerce_on) $lang = Base_User_SettingsCommon::get('Base_Lang_Administrator','language');
+		}
+		$next = false;
+		if ($ecommerce_on) {
+			$id = Utils_RecordBrowserCommon::get_id('premium_ecommerce_cat_descriptions', array('language','category'), array($lang,$c_id));
+			if ($id) $next = Utils_RecordBrowserCommon::get_value('premium_ecommerce_cat_descriptions',$id,'display_name');
+		}
+		if (!$ecommerce_on || !$next) $next = Utils_RecordBrowserCommon::get_value('premium_warehouse_items_categories',$c_id,'category_name');
+		return $next;
+    }
+    
     public static function QFfield_item_category(&$form, $field, $label, $mode, $default) {
 		if ($mode=='edit' || $mode=='add') {
 			$opts = array();
@@ -96,11 +112,11 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 			foreach ($default as $d) {
 				$keys = explode('/',$d);
 				if (!is_numeric($keys[0])) return; // TODO: it's just a fail-safe
-				$next = Utils_RecordBrowserCommon::get_value('premium_warehouse_items_categories',$keys[0],'category_name');
+				$next = self::get_category_name($keys[0]);
 				if (count($keys)>1) {
 					if (count($keys)>2) $next .= '/.../';
 					else $next .= '/';
-					$next .= Utils_RecordBrowserCommon::get_value('premium_warehouse_items_categories',$keys[count($keys)-1],'category_name');
+					$next .= self::get_category_name($keys[count($keys)-1]);
 				}
 				$def[] = $next;
 			}
