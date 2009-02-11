@@ -12,10 +12,13 @@ define('CID',false); //i know that i won't access $_SESSION['client']
 require_once('../../../include.php');
 ModuleManager::load_modules();
 
-$correct_errors = isset($_GET['correct']);
+$correct_errors = isset($_GET['correct']) && $_GET['correct'];
 
 $count = 0;
 $locs = array();
+
+$items_w_dupli = array();
+
 $recs = Utils_RecordBrowserCommon::get_records('premium_warehouse_location');
 foreach ($recs as $v) {
 	if (!isset($locs[$v['warehouse']])) $locs[$v['warehouse']] = array();
@@ -27,9 +30,12 @@ foreach($locs as $w=>$data)
 	foreach($data as $in=>$ids) {
 		if (count($ids)>1) {
 			$total = 0;
-			$first=null;
+			$first = null;
 			foreach ($ids as $id=>$qty) {
-				if ($first===null) $first=$id;
+				if ($first===null) {
+					$first=$id;
+					$items_w_dupli[] = Utils_RecordBrowserCommon::get_value('premium_warehouse_location', $id, 'item_sku');
+				}
 				else {
 					if ($correct_errors) Utils_RecordBrowserCommon::delete_record('premium_warehouse_location', $id, true);
 					$count++;
@@ -41,6 +47,6 @@ foreach($locs as $w=>$data)
 	}
 
 
-print('Script run successfully, found '.$count.' duplicates.<br>');
+print('Script run successfully, found '.$count.' duplicates - items '.implode(', ',$items_w_dupli).'.<br>');
 
 ?>
