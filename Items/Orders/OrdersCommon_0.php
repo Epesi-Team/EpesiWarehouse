@@ -170,17 +170,16 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		return Utils_CurrencyFieldCommon::format($ret, $price[1]);
 	}
 	
-	public static function display_reserved_qty($r, $nolink) {
+	public static function get_reserved_qty($item_id) {
 		$trans = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders', array('status'=>array(2,3,4,5), 'transaction_type'=>1), array('id', 'warehouse'));
 		$trans = $trans+Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders', array('status'=>array(2,3), 'transaction_type'=>4), array('id', 'target_warehouse'));
-		$my_warehouse = Base_User_SettingsCommon::get('Premium_Warehouse','my_warehouse');
 		$qty = 0;
 		$ids = array();
 		foreach ($trans as $k=>$t) {
 			if (!isset($t['warehouse'])) $trans[$k]['warehouse'] = $t['target_warehouse'];
 			$ids[] = $t['id'];
 		}
-		$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$ids, 'item_name'=>$r['id']), array('quantity','transaction_id'));
+		$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$ids, 'item_name'=>$item_id), array('quantity','transaction_id'));
 		$reserved_qty = array();
 		foreach ($items as $i) {
 			$warehouse = $trans[$i['transaction_id']]['warehouse'];
@@ -188,8 +187,26 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			$reserved_qty[$warehouse] += $i['quantity'];
 			$qty+=$i['quantity'];
 		}
-		$r['quantity_on_hand']=$qty;
-		$ret = Premium_Warehouse_Items_LocationCommon::display_item_quantity_in_warehouse_and_total($r,$my_warehouse,$nolink,$reserved_qty,array('main'=>'Reserved Qty', 'in_one'=>'In %s', 'in_all'=>'Total'));
+		return array('per_warehouse'=>$reserved_qty, 'total'=>$qty);
+	}
+	
+	public static function display_reserved_qty($r, $nolink) {
+		$qty = self::get_reserved_qty($r['id']);
+		$r['quantity_on_hand'] = $qty['total'];
+		$my_warehouse = Base_User_SettingsCommon::get('Premium_Warehouse','my_warehouse');
+		$ret = Premium_Warehouse_Items_LocationCommon::display_item_quantity_in_warehouse_and_total($r,$my_warehouse,$nolink,$qty['per_warehouse'],array('main'=>'Reserved Qty', 'in_one'=>'In %s', 'in_all'=>'Total'));
+		return $ret;
+	}
+	
+	public static function display_available_qty($r, $nolink) {
+		$qty = self::get_reserved_qty($r['id']);
+		$r['quantity_on_hand'] = $r['quantity_on_hand'] - $qty['total'];
+		foreach ($qty['per_warehouse'] as $k=>$v) {
+			$l_id = Utils_RecordBrowserCommon::get_id('premium_warehouse_location', array('warehouse','item_sku'), array($k, $r['id']));
+			$qty['per_warehouse'][$k] = Utils_RecordBrowserCommon::get_value('premium_warehouse_location', $l_id, 'quantity') - $v;
+		}
+		$my_warehouse = Base_User_SettingsCommon::get('Premium_Warehouse','my_warehouse');
+		$ret = Premium_Warehouse_Items_LocationCommon::display_item_quantity_in_warehouse_and_total($r,$my_warehouse,$nolink,$qty['per_warehouse'],array('main'=>'Available Qty', 'in_one'=>'In %s', 'in_all'=>'Total'));
 		return $ret;
 	}
 	
@@ -268,8 +285,9 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		if ($mode!=='view') {
 			$decp = Utils_CurrencyFieldCommon::get_decimal_point();
 			eval_js('format_currency=function(val){'.
-						'first=parseInt(val);'.
-						'second=Math.round((val-first)*100).toString(10);'.
+						'all=Math.round(val*100);'.
+						'first=parseInt(all/100);'.
+						'second=Math.round(all-first*100).toString(10);'.
 						'if(isNaN(first)||isNaN(second))return"";'.
 						'if(second.length==1)second="0"+second;'.
 						'return first+"'.$decp.'"+second;'.
