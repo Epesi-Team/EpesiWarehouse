@@ -19,8 +19,11 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	private static $new_status = null;
 	
 	public static function user_settings() {
-		return array('Transaction'=>array(
-			array('name'=>'my_transaction','label'=>'None','type'=>'hidden','default'=>'')
+		return array(	'Transaction'=>array(
+				array('name'=>'my_transaction','label'=>'None','type'=>'hidden','default'=>'')
+			),
+						'Warehouse'=>array(
+				array('name'=>'display_qty','label'=>'Quantity Display','type'=>'select','values'=>array(0=>'Availble', 1=>'On Hand', 2=>'Both'),'default'=>2)
 			));
 	}
 	

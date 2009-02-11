@@ -35,9 +35,17 @@ class Premium_Warehouse_Items extends Module {
 			$this->t('Non-Inv. Items')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'non-inv.png'), 'defaults'=>array_merge($defaults,array('item_type'=>2))),
 			$this->t('Service')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'service.png'), 'defaults'=>array_merge($defaults,array('item_type'=>3)))
 			), true);
+		$cols = array();
+		if (ModuleManager::is_installed('Premium_Warehouse_Items_Orders')!=-1) {
+			$display = Base_User_SettingsCommon::get('Premium_Warehouse_Items_Orders', 'display_qty');
+			$cols['available_quantity'] = $display==0||$display==2;
+			$cols['quantity_on_hand'] = $display==1||$display==2;
+		}
+			
 		$this->rb->set_header_properties(array(
 						'quantity_on_hand'=>array('name'=>'On Hand', 'width'=>1, 'wrapmode'=>'nowrap'),
 						'quantity_en_route'=>array('name'=>'En Route', 'width'=>1, 'wrapmode'=>'nowrap'),
+						'available_qty'=>array('name'=>'Avail. Qty', 'width'=>1, 'wrapmode'=>'nowrap'),
 						'reserved_qty'=>array('name'=>'Res. Qty', 'width'=>1, 'wrapmode'=>'nowrap'),
 						'manufacturer_part_number'=>array('name'=>'Part Number', 'width'=>1, 'wrapmode'=>'nowrap'),
 						'item_type'=>array('width'=>1, 'wrapmode'=>'nowrap'),
@@ -45,7 +53,7 @@ class Premium_Warehouse_Items extends Module {
 						'item_name'=>array('wrapmode'=>'nowrap'),
 						'sku'=>array('width'=>1, 'wrapmode'=>'nowrap')
 						));
-		$this->display_module($this->rb);
+		$this->display_module($this->rb, array(array(),array(),$cols));
 	}
 	
 	public function subcategories_addon($arg) {
