@@ -196,6 +196,9 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_parameters', 'Premium/Warehouse/eCommerce', 'parameter_labels_addon', 'Labels');
 
 // ************ other ************** //
+		Utils_RecordBrowserCommon::new_record_field('company','eCommerce Category','multiselect', false, false, 'premium_warehouse_items_categories::Category Name', '', false, false, 16);
+		Utils_RecordBrowserCommon::set_QFfield_method('company','eCommerce Category','Premium_Warehouse_ItemsCommon', 'QFfield_item_category');
+
 		Utils_CommonDataCommon::new_array('Premium/Warehouse/eCommerce/Languages',array('en'=>'English','pl'=>'Polish'));
 		Utils_RecordBrowserCommon::new_record('premium_ecommerce_availability',
 				array('availability_code'=>'24h',
@@ -220,6 +223,8 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 	
 	public function uninstall() {
 		DB::DropTable('premium_ecommerce_orders_temp');
+
+		Utils_RecordBrowserCommon::delete_record_field('company','eCommerce Category');
 	
 		Variable::delete('ecommerce_start_page');
 		Variable::delete('ecommerce_rules');

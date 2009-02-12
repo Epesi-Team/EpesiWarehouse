@@ -164,6 +164,9 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 		
 		Utils_RecordBrowserCommon::set_access_callback('premium_warehouse_items', 'Premium_Warehouse_ItemsCommon', 'access_items');
 
+		Utils_RecordBrowserCommon::delete_record_field('premium_warehouse_items','Reserved Qty');
+		Utils_RecordBrowserCommon::delete_record_field('premium_warehouse_items','Available Qty');
+
 		Base_ThemeCommon::uninstall_default_theme($this->get_type());
 		Utils_RecordBrowserCommon::delete_addon('premium_warehouse_items_orders', 'Premium/Warehouse/Items/Orders', 'order_details_addon');
 		Utils_RecordBrowserCommon::delete_addon('premium_warehouse_items_orders', 'Premium/Warehouse/Items/Orders', 'attachment_addon');
