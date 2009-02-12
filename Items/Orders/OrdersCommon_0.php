@@ -399,7 +399,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			$form->addElement('text', $field, $label, array('id'=>$field));
 			print('<div id="'.$field.'_suggestbox" class="autocomplete">&nbsp;</div>');
 			load_js('modules/Premium/Warehouse/Items/Orders/item_autocomplete.js');
-			eval_js('var item_autocompleter = new warehouse_itemAutocompleter(\''.$field.'\', \''.$field.'_suggestbox\', \'modules/Premium/Warehouse/Items/Orders/item_name_autocomplete.php?cid='.CID.'\', \'\', '.self::$trans['id'].');');
+			eval_js('var item_autocompleter = new warehouse_itemAutocompleter(\''.$field.'\', \''.$field.'_suggestbox\', \'modules/Premium/Warehouse/Items/Orders/item_name_autocomplete.php?'.http_build_query(array('cid'=>CID, 'transaction_type'=>self::$trans['transaction_type'])).'\', \'\', '.self::$trans['id'].');');
 			if (isset($default) && is_numeric($default)) $form->setDefaults(array($field=>Utils_RecordBrowserCommon::get_value('premium_warehouse_items',$default,'item_name')));
 			$form->addFormRule(array('Premium_Warehouse_Items_OrdersCommon','check_qty_on_hand'));
 			eval_js('focus_by_id(\'item_name\');');

@@ -18,10 +18,6 @@ define('CID', $cid);
 require_once('../../../../include.php');
 ModuleManager::load_modules();
 
-//
-Base_ThemeCommon::install_default_theme('Premium/Warehouse/InvoicePL');
-//
-
 $tcpdf = Libs_TCPDFCommon::new_pdf();
 
 $order = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $order_id);

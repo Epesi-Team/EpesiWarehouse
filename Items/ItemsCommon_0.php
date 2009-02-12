@@ -160,6 +160,9 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 	
 	public static function submit_item($values, $mode) {
 		switch ($mode) {
+			case 'cloned':
+				Utils_RecordBrowserCommon::update_record('premium_warehouse_items',$values['clone'],array('quantity_on_hand'=>0));
+				return;
 			case 'delete':
 				return;
 			case 'restore':
