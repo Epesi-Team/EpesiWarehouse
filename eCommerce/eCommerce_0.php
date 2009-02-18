@@ -24,6 +24,7 @@ class Premium_Warehouse_eCommerce extends Module {
 				case 'parameters':
 				case 'availability':
 				case 'pages':
+				case 'payments_carriers':
 					$this->set_module_variable('recordset', $_REQUEST['recordset']);
 					break;
 			}
@@ -43,6 +44,9 @@ class Premium_Warehouse_eCommerce extends Module {
 			case 'pages':
 				$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_pages');
 				$this->rb->set_defaults(array('position'=>0,'publish'=>1,'type'=>2));
+				break;
+			case 'payments_carriers':
+				$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_payments_carriers');
 				break;
 		}
 		$this->display_module($this->rb);

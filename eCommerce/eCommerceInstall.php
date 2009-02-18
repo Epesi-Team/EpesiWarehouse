@@ -67,6 +67,19 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_descriptions', 'eCommerce - Descriptions');
 		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_descriptions', 'Premium_Warehouse_eCommerceCommon', 'access_descriptions');
 
+		//payments and carriers
+		$fields = array(
+			array('name'=>'Payment', 	'type'=>'select', 'required'=>true, 'extra'=>false, 'visible'=>true, 'param'=>'__COMMON__::Premium_Items_Orders_Payment_Types'),
+			array('name'=>'Shipment', 	'type'=>'select', 'required'=>true, 'extra'=>false, 'visible'=>true, 'param'=>'__COMMON__::Premium_Items_Orders_Shipment_Types'),
+			array('name'=>'Currency', 	'type'=>'integer', 'required'=>true, 'extra'=>false,'visible'=>true, 'display_callback'=>array($this->get_type().'Common', 'display_currency'),'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_currency')),
+			array('name'=>'Price', 		'type'=>'integer', 'required'=>true, 'extra'=>false,'visible'=>true)
+		);
+		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_payments_carriers', $fields);
+
+		Utils_RecordBrowserCommon::set_favorites('premium_ecommerce_payments_carriers', false);
+		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_payments_carriers', 'eCommerce - payments');
+		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_payments_carriers', 'Premium_Warehouse_eCommerceCommon', 'access_parameters');
+
 		//product prices
 		$fields = array(
 			array('name'=>'Item Name', 	'type'=>'select', 'required'=>true, 'param'=>'premium_warehouse_items::Item Name;Premium_Warehouse_Items_OrdersCommon::products_crits', 'extra'=>false, 'visible'=>true, 'display_callback'=>array($this->get_type().'Common', 'display_item_name')),

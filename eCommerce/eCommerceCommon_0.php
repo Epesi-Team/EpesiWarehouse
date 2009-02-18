@@ -136,6 +136,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 				'Settings'=>array('__submenu__'=>1,
 					'Parameters'=>array('recordset'=>'parameters'),
 					'Availability'=>array('recordset'=>'availability'),
+					'Payments & Carriers'=>array('recordset'=>'payments_carriers'),
 					'Pages'=>array('recordset'=>'pages'),
 					'Start page'=>array('__function__'=>'start_page'),
 					'Rules and policies'=>array('__function__'=>'rules_page')
