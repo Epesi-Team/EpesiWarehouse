@@ -28,6 +28,7 @@ foreach ($words as $w) {
 	$vals[] = $w;
 }
 $ret = DB::SelectLimit('SELECT * FROM premium_warehouse_items_data_1 WHERE '.implode(' AND ',$qry).' AND active=1 ', 10, 0, $vals);
+
 print('<ul>');
 $my_warehouse = Base_User_SettingsCommon::get('Premium_Warehouse','my_warehouse');
 
@@ -50,7 +51,7 @@ while ($row = $ret->FetchRow()) {
 				'</td>';
 	if ($trans_type==0 || $trans_type==1)
 		$l .= 		'<td width="90px;" align="right">'.
-						'<span class="informal">'.Utils_CurrencyFieldCommon::format($trans_type==0?$row['f_net_cost']:$row['f_net_price']).'</span>'.
+						'<span class="informal">'.Utils_CurrencyFieldCommon::format($trans_type==0?$row['f_cost']:$row['f_net_price']).'</span>'.
 					'</td>';
 	$l .= 	'</tr>'.
 		'</table></li>';

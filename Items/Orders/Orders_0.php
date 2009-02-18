@@ -103,11 +103,11 @@ class Premium_Warehouse_Items_Orders extends Module {
 			'serial'=>array('width'=>40, 'wrapmode'=>'nowrap')
 		);
 		if ($arg['transaction_type']==0) {
-			$header_prop['net_price'] = array('name'=>'Net Cost', 'width'=>14, 'wrapmode'=>'nowrap');
-			$header_prop['gross_price'] = array('name'=>'Gross Cost', 'width'=>1, 'wrapmode'=>'nowrap');
-			if ($arg['status']!=20) {
-				$cols['serial'] = false;
-			}
+			$header_prop['net_price'] = array('name'=>'Net Cost', 'width'=>28, 'wrapmode'=>'nowrap');
+			$header_prop['gross_price'] = array('name'=>'Gross Cost', 'width'=>28, 'wrapmode'=>'nowrap');
+//			if ($arg['status']!=20) {
+//				$cols['serial'] = false;
+//			}
 		}
 		if ($arg['transaction_type']==2 || $arg['transaction_type']==4) {
 			$cols['tax_rate'] = false;
