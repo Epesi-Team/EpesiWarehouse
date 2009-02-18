@@ -69,9 +69,10 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 
 		//product prices
 		$fields = array(
-			array('name'=>'Item Name', 			'type'=>'select', 'required'=>true, 'param'=>'premium_warehouse_items::Item Name;Premium_Warehouse_Items_OrdersCommon::products_crits', 'extra'=>false, 'visible'=>true, 'display_callback'=>array($this->get_type().'Common', 'display_item_name')),
+			array('name'=>'Item Name', 	'type'=>'select', 'required'=>true, 'param'=>'premium_warehouse_items::Item Name;Premium_Warehouse_Items_OrdersCommon::products_crits', 'extra'=>false, 'visible'=>true, 'display_callback'=>array($this->get_type().'Common', 'display_item_name')),
 			array('name'=>'Currency', 	'type'=>'integer', 'required'=>true, 'extra'=>false,'visible'=>true, 'display_callback'=>array($this->get_type().'Common', 'display_currency'),'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_currency')),
-			array('name'=>'Price', 		'type'=>'integer', 'required'=>true, 'extra'=>false,'visible'=>true)
+			array('name'=>'Gross Price', 		'type'=>'integer', 'required'=>true, 'extra'=>false,'visible'=>true),
+			array('name'=>'Tax Rate', 	'type'=>'select', 'required'=>false, 'extra'=>false, 'visible'=>true, 'param'=>'__COMMON__::Premium_Warehouse_Items_Tax', 'style'=>'integer')
 		);
 		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_prices', $fields);
 
@@ -181,6 +182,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 			product I4 NOTNULL,
 			quantity I2 NOTNULL,
 			price C(128) NOTNULL,
+			tax C(64) NOTNULL,
 			name C(128) NOTNULL,
 			created_on T DEFTIMESTAMP',
 			array('constraints'=>' ,PRIMARY KEY(customer,product)'));
