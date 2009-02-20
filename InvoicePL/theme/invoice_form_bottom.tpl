@@ -1,5 +1,5 @@
 <br/>
-<font size=11><b><u><i>DO ZAPŁATY: {$total}.</i></u></b></font>
+<font size=11><b><u>DO ZAPŁATY: {$total}.</u></b></font>
 <br/>
 <br/>
 <br/>
