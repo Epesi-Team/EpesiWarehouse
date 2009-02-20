@@ -256,7 +256,13 @@ class Products
         return array_merge( $this->aProducts[$iProduct], $aData );
       }*/
 	  //epesi {
-	  return $this->aProducts[$iProduct];
+	  $aData = $this->aProducts[$iProduct];
+          if( isset( $aData ) ){
+            $aData['aCategories'] = $this->aProductsPages[$iProduct];
+	    $aData['sPrice'] = is_numeric( $this->aProducts[$iProduct]['fPrice'] ) ? displayPrice( $this->aProducts[$iProduct]['fPrice'] ) : $this->aProducts[$iProduct]['fPrice'];
+            return array_merge( $this->aProducts[$iProduct], $aData );
+	  }
+	  return $aData;
 	  //} epesi
     }
     else

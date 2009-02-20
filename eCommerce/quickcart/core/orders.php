@@ -107,7 +107,7 @@ class Orders
   * @param int  $iOrder
   */
   function generateProducts( $iOrder ){
-    $aFile  = file( DB_ORDERS_PRODUCTS );
+/*    $aFile  = file( DB_ORDERS_PRODUCTS );
     $iCount = count( $aFile );
     $this->fProductsSummary = null;
     for( $i = 1; $i < $iCount; $i++ ){
@@ -118,7 +118,15 @@ class Orders
         $this->fProductsSummary += $this->aProducts[$aExp[0]]['fPrice'] * $this->aProducts[$aExp[0]]['iQuantity'];
       }
     } // end for
-
+*/
+    // { epesi
+    $ret = DB::Execute('SELECT * FROM premium_warehouse_items_orders_details_data_1 WHERE f_transaction_id=%d',array($iOrder));
+    while($row = $ret->FetchRow()) {
+	$this->aProducts[$row['id']] = array('iElement' => $row['id'], 'iOrder' => $iOrder, 'iProduct' => $row['f_item_name'], 'iQuantity' => $row['f_quantity'], 'fPrice' => $row['f_gross_price'], 'sName' => $row['f_description']);
+        $this->aProducts[$row['id']]['fSummary'] = normalizePrice( $this->aProducts[$row['id']]['fPrice'] * $this->aProducts[$row['id']]['iQuantity'] );
+        $this->fProductsSummary += $this->aProducts[$row['id']]['fPrice'] * $this->aProducts[$row['id']]['iQuantity'];
+    }
+    // } epesi
     if( isset( $this->fProductsSummary ) ){
       $this->fProductsSummary = normalizePrice( $this->fProductsSummary );
     }
@@ -379,20 +387,21 @@ class Orders
 	//'sLanguage' => 1, 
 	//'sEmail' => 17, 
 	//'sIp' => 18 )*/
-	global $config;
-	$t = time();
-	$memo = "Language: ".LANGUAGE."\ne-mail: ".$aForm['sEmail']."\nIp: ".$_SERVER['REMOTE_ADDR']."\nComment:\n".$aForm['sComment'];
-	DB::Execute('INSERT INTO premium_warehouse_items_orders_data_1(f_transaction_type,f_transaction_date,f_status,
-						f_company_name,f_last_name,f_first_name,f_address_1,f_city,f_postal_code,f_phone,f_country,f_zone,f_memo,created_on) VALUES 
-						(1,%D,"-1",%s,%s,%s,%s,%s,%s,%s,"","",%s,%T)',array($t,$aForm['sCompanyName'],$aForm['sLastName'],$aForm['sFirstName'],$aForm['sStreet'],$aForm['sCity'],$aForm['sZipCode'],$aForm['sPhone'],$memo,$t));
-	$id = DB::Insert_ID('premium_warehouse_items_orders_data_1','id');
-	$trans_id = '#'.str_pad($id, 6, '0', STR_PAD_LEFT);
-	DB::Execute('UPDATE premium_warehouse_items_orders_data_1 SET f_transaction_id=%s WHERE id=%d',array($trans_id,$id));
-
-
-	$currency = DB::GetOne('SELECT id FROM utils_currency WHERE code=%s',array($config['currency_symbol']));
-	if($currency===false) 
-		die('Currency not defined in Epesi: '.$config['currency_symbol']);
+    list($carrier,$payment) = explode( ';', $aForm['sPaymentCarrier'] );
+    $price = $this->throwPaymentCarrierPrice($carrier,$payment);
+    $currency = $this->getCurrencyId();
+	
+    $t = time();
+    $memo = "Language: ".LANGUAGE."\ne-mail: ".$aForm['sEmail']."\nIp: ".$_SERVER['REMOTE_ADDR']."\nComment:\n".$aForm['sComment'];
+    DB::Execute('INSERT INTO premium_warehouse_items_orders_data_1(f_transaction_type,f_transaction_date,f_status,
+						f_company_name,f_last_name,f_first_name,f_address_1,f_city,f_postal_code,f_phone,f_country,f_zone,f_memo,created_on,
+						f_shipment_type,f_shipment_cost,f_payment,f_payment_type) VALUES 
+						(1,%D,"-1",%s,%s,%s,%s,%s,%s,%s,"","",%s,%T,%s,%s,1,%s)',
+					array($t,$aForm['sCompanyName'],$aForm['sLastName'],$aForm['sFirstName'],$aForm['sStreet'],$aForm['sCity'],
+					$aForm['sZipCode'],$aForm['sPhone'],$memo,$t,$carrier,$price.'_'.$currency,$payment));
+    $id = DB::Insert_ID('premium_warehouse_items_orders_data_1','id');
+    $trans_id = '#'.str_pad($id, 6, '0', STR_PAD_LEFT);
+    DB::Execute('UPDATE premium_warehouse_items_orders_data_1 SET f_transaction_id=%s WHERE id=%d',array($trans_id,$id));
 
     if( isset( $this->aProducts ) ){
       foreach( $this->aProducts as $aData ){
@@ -441,11 +450,10 @@ class Orders
 	$aData = DB::GetRow('SELECT id as iOrder, 
 				    1 as iStatus, 
 				    created_on as iTime,
-				    "" as iCarrier,
-				    "" as iPayment,
-				    "" as sCarrierName,
-				    "" as sPaymentName,
-				    "" as sPaymentPrice,
+				    f_shipment_type as iCarrier,
+				    1 as iPayment,
+				    f_shipment_type,
+				    f_payment_type,
 				    f_first_name as sFirstName,
 				    f_last_name as sLastName,
 				    f_company_name as sCompanyName,
@@ -456,6 +464,11 @@ class Orders
 				    f_memo as memo
 				    FROM premium_warehouse_items_orders_data_1 WHERE id=%d',array($iOrder));
         if($aData) {
+	        $aPayments = $this->getPayments();
+	        $aShipments = $this->getShipments();
+		$aData['sCarrierName'] = $aShipments[$aData['f_shipment_type']];
+		$aData['sPaymentName'] = $aPayments[$aData['f_payment_type']];
+		$aData['sPaymentPrice'] = $this->throwPaymentCarrierPrice( $aData['f_shipment_type'], $aData['f_payment_type'] );
         	$aData['iTime'] = strtotime($aData['iTime']);
 		if(ereg("^Language: ([a-zA-Z0-9]+)\ne-mail: ([a-zA-Z0-9@\.]+)\nIp: ([0-9\.]+)\nComment:\n([^$]*)",$aData['memo'],$reqs)) {
 		    $aData['sLanguage'] = $reqs[1];
@@ -509,7 +522,7 @@ class Orders
   * @param string $sFile
   * @param int    $iOrder
   */
-  function listOrderStatuses( $sFile, $iOrder ){
+/*  function listOrderStatuses( $sFile, $iOrder ){
     $aFile      = file( DB_ORDERS_STATUS );
     $iCount     = count( $aFile );
     $oTpl       =& TplParser::getInstance( );
@@ -531,6 +544,7 @@ class Orders
       return $oTpl->tbHtml( $sFile, 'STATUS_HEAD' ).$content.$oTpl->tbHtml( $sFile, 'STATUS_FOOT' );
     }
   } // end function listOrderStatuses
+  */
 
   /**
   * Return payment and carrier price
@@ -548,11 +562,8 @@ class Orders
       }
     }    */
     // { epesi
-    $currency = DB::GetOne('SELECT id FROM utils_currency WHERE code=%s',array($config['currency_symbol']));
-    if($currency===false) 
-	die('Currency not defined in Epesi: '.$config['currency_symbol']);
-
-    return DB::GetOne('SELECT f_price FROM premium_ecommerce_payments_carriers WHERE f_payment=%d AND f_shipment=%d AND f_currency=%d',array($iPayment,$iCarrier,$currency));
+    $currency = $this->getCurrencyId();
+    return DB::GetOne('SELECT f_price FROM premium_ecommerce_payments_carriers_data_1 WHERE f_payment=%d AND f_shipment=%d AND f_currency=%d',array($iPayment,$iCarrier,$currency));
     // } epesi
   } // end function throwPaymentCarrierPrice
 
@@ -565,7 +576,7 @@ class Orders
     $oTpl       =& TplParser::getInstance( );
     $content    = null;
     $sPaymentList= null;
-    $oFF        =& FlatFiles::getInstance( );
+/*    $oFF        =& FlatFiles::getInstance( );
 
     $aPayments = $oFF->throwFileArraySmall( DB_PAYMENTS, 'iPayment', 'sName' );
     if( isset( $aPayments ) ){
@@ -607,6 +618,37 @@ class Orders
         $oTpl->setVariables( 'aData', $aData );
         $content .= $oTpl->tbHtml( $sFile, 'ORDER_CARRIERS' );
       } // end foreach
+      */
+      // { epesi
+    $aPayments = $this->getPayments();
+    $aShipments = $this->getShipments();
+    if( $aPayments && $aShipments ){
+      $currency = $this->getCurrencyId();
+      //get possible configurations
+      $ret = DB::Execute('SELECT f_payment,f_shipment,f_price FROM premium_ecommerce_payments_carriers_data_1 WHERE active=1 AND f_currency=%s',array($currency));
+      while($aExp = $ret->FetchRow()) {
+        $aPaymentsCarriers[$aExp['f_shipment']][$aExp['f_payment']] = $aExp['f_price'];
+      }
+      foreach( $aShipments as $iCarrier => $carrier_name ) {
+        if(!isset($aPaymentsCarriers[$iCarrier])) continue;
+        $aData = array('sName'=>$carrier_name, 'iCarrier'=>$iCarrier, 'sPayments'=>null, 'fPrice'=>0);
+        foreach( $aPayments as $iPayment => $sName ){
+          if( isset( $aPaymentsCarriers[$iCarrier][$iPayment] ) ){
+            $aData['fPaymentCarrierPrice'] = normalizePrice( $aPaymentsCarriers[$iCarrier][$iPayment] );
+            $aData['sPaymentCarrierPrice'] = displayPrice( $aData['fPaymentCarrierPrice'] );
+            $aData['iPayment'] = $iPayment;
+            $oTpl->setVariables( 'aData', $aData );
+            $aData['sPayments'] .= $oTpl->tbHtml( $sFile, 'ORDER_PAYMENT_CARRIERS_LIST' );
+          }
+          else{
+            $aData['sPayments'] .= $oTpl->tbHtml( $sFile, 'ORDER_PAYMENT_CARRIERS_EMPTY' );
+          }
+        } // end foreach
+        $oTpl->setVariables( 'aData', $aData );
+        $content .= $oTpl->tbHtml( $sFile, 'ORDER_CARRIERS' );
+      } // end foreach
+     // } epesi
+
 
       foreach( $aPayments as $aData['iPayment'] => $aData['sName'] ){
         $oTpl->setVariables( 'aData', $aData );
@@ -620,6 +662,39 @@ class Orders
     }
   } // end function listCarriersPayments
 
+  // { epesi
+  /**
+  * Return currency id
+  * @return array
+  * @param int  $iCarrier
+  */
+  function getCurrencyId( ){
+    global $config;
+
+    $currency = DB::GetOne('SELECT id FROM utils_currency WHERE code=%s',array($config['currency_symbol']));
+    if($currency===false) 
+    	die('Currency not defined in Epesi: '.$config['currency_symbol']);
+    return $currency;
+  } // end function getCurrencyId
+  
+  function getPayments(){
+     //get possible payments
+    $payments_id = DB::GetOne('SELECT id FROM utils_commondata_tree WHERE akey="Premium_Items_Orders_Payment_Types"');
+    if($payments_id===false)
+	die('Common data key "Premium_Items_Orders_Payment_Types" not defined.');
+    return DB::GetAssoc('SELECT akey, value FROM utils_commondata_tree WHERE parent_id=%d ORDER BY akey',array($payments_id));
+  }
+
+  function getShipments(){
+    //get possible shipments
+    $shipments_id = DB::GetOne('SELECT id FROM utils_commondata_tree WHERE akey="Premium_Items_Orders_Shipment_Types"');
+    if($shipments_id===false)
+	die('Common data key "Premium_Items_Orders_Shipment_Types" not defined.');
+    return DB::GetAssoc('SELECT akey, value FROM utils_commondata_tree WHERE parent_id=%d ORDER BY akey',array($shipments_id));
+  }
+  
+  // } epesi
+  
   /**
   * Return carrier data
   * @return array

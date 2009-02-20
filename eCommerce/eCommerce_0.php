@@ -168,6 +168,34 @@ class Premium_Warehouse_eCommerce extends Module {
 		}
 		$f->display();	
 	}
+
+	public function attachment_product_addon($arg){
+		$a = $this->init_module('Utils/Attachment',array('Premium/Warehouse/eCommerce/Products/'.$arg['id']));
+		$a->allow_protected($this->acl_check('view protected notes'),$this->acl_check('edit protected notes'));
+		$a->allow_public($this->acl_check('view public notes'),$this->acl_check('edit public notes'));
+		$this->display_module($a);
+	}
+
+	public function attachment_product_desc_addon($arg){
+		$a = $this->init_module('Utils/Attachment',array('Premium/Warehouse/eCommerce/Products/'.$arg['id']));
+		$a->allow_protected($this->acl_check('view protected notes'),$this->acl_check('edit protected notes'));
+		$a->allow_public($this->acl_check('view public notes'),$this->acl_check('edit public notes'));
+		$this->display_module($a);
+	}
+
+	public function attachment_page_addon($arg){
+		$a = $this->init_module('Utils/Attachment',array('Premium/Warehouse/eCommerce/Pages/'.$arg['id']));
+		$a->allow_protected($this->acl_check('view protected notes'),$this->acl_check('edit protected notes'));
+		$a->allow_public($this->acl_check('view public notes'),$this->acl_check('edit public notes'));
+		$this->display_module($a);
+	}
+	
+	public function attachment_page_desc_addon($arg){
+		$a = $this->init_module('Utils/Attachment',array('Premium/Warehouse/eCommerce/Pages/'.$arg['id']));
+		$a->allow_protected($this->acl_check('view protected notes'),$this->acl_check('edit protected notes'));
+		$a->allow_public($this->acl_check('view public notes'),$this->acl_check('edit public notes'));
+		$this->display_module($a);
+	}
 	
 	public function caption(){
 		if (isset($this->rb)) return $this->rb->caption();

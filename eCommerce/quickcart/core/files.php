@@ -30,7 +30,7 @@ class Files
   * @return mixed
   * @param int  $iDbType
   */
-  function throwDbNames( $iDbType = null ){
+/*  function throwDbNames( $iDbType = null ){
     $aFiles[1] = DB_PAGES_FILES;
     $aFiles[2] = DB_PRODUCTS_FILES;
 
@@ -39,7 +39,7 @@ class Files
     else
       return $aFiles;
   } // end function throwDbNames
-
+*/
   /**
   * List all images by types
   * @return array
@@ -92,7 +92,7 @@ class Files
     $content = null;
     if( isset( $this->aFiles[$iLinkType][$iLink] ) ){
       $oTpl   =& TplParser::getInstance( );
-      $oFF    =& FlatFiles::getInstance( );
+      $oFF    = new FileJobs(); //epesi - was: $oFF =& FlatFiles::getInstance( );
       $iCount = count( $this->aFiles[$iLinkType][$iLink] );
       $aExt   = throwIconsFromExt( );
 
@@ -140,7 +140,7 @@ class Files
   function generateCache( ){
     global $config;
 
-    $oFF    =& FlatFiles::getInstance( );
+/*    $oFF    =& FlatFiles::getInstance( );
     $aFiles = $this->throwDbNames( );
 
     foreach( $aFiles as $iKey => $sValue ){
@@ -185,7 +185,19 @@ class Files
           
         }
       }
-    }
+    }*/
+    // { epesi
+    //pages
+    $this->aImages[0]     = null;
+    $this->aFiles[0]      = null;
+    $this->aImagesTypes[0]= null;
+    
+    //products
+    $this->aImages[1]     = null;
+    $this->aFiles[1]      = null;
+    $this->aImagesTypes[1]= null;
+    
+    // } epesi
   } // end function generateCache
 };
 ?>
