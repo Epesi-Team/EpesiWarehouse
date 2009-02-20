@@ -1,0 +1,6 @@
+Options +Indexes
+IndexIgnore *.tpl
+<files *.tpl>
+order allow,deny
+deny from all
+</files>
