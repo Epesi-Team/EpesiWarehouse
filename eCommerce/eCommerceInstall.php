@@ -271,6 +271,10 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_parameters', 'Premium/Warehouse/eCommerce', 'parameter_labels_addon');
 		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_pages', 'Premium/Warehouse/eCommerce', 'subpages_addon');
 		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_products', 'Premium/Warehouse/eCommerce', 'prices_addon');
+		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_pages_data', 'Premium/Warehouse/eCommerce', 'attachment_page_addon');
+		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_pages_data', 'Premium/Warehouse/eCommerce', 'attachment_page_desc_addon');
+		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_products', 'Premium/Warehouse/eCommerce', 'attachment_product_addon');
+		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_descriptions', 'Premium/Warehouse/eCommerce', 'attachment_product_desc_addon');
 
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_products');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_cat_descriptions');
@@ -283,6 +287,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_pages');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_pages_data');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_prices');
+		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_payments_carriers');
 		return true;
 	}
 	
@@ -320,7 +325,8 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 				Utils_RecordBrowserCommon::get_tables('premium_ecommerce_availability'),
 				Utils_RecordBrowserCommon::get_tables('premium_ecommerce_availability_labels'),
 				Utils_RecordBrowserCommon::get_tables('premium_ecommerce_pages'),
-				Utils_RecordBrowserCommon::get_tables('premium_ecommerce_pages_data')
+				Utils_RecordBrowserCommon::get_tables('premium_ecommerce_pages_data'),
+				Utils_RecordBrowserCommon::get_tables('premium_ecommerce_payments_carriers')
 			);
 	}
 }

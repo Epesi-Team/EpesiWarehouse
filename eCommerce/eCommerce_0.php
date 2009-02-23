@@ -177,7 +177,7 @@ class Premium_Warehouse_eCommerce extends Module {
 	}
 
 	public function attachment_product_desc_addon($arg){
-		$a = $this->init_module('Utils/Attachment',array('Premium/Warehouse/eCommerce/Products/'.$arg['id']));
+		$a = $this->init_module('Utils/Attachment',array('Premium/Warehouse/eCommerce/ProductsDesc/'.$arg['id']));
 		$a->allow_protected($this->acl_check('view protected notes'),$this->acl_check('edit protected notes'));
 		$a->allow_public($this->acl_check('view public notes'),$this->acl_check('edit public notes'));
 		$this->display_module($a);
@@ -191,7 +191,7 @@ class Premium_Warehouse_eCommerce extends Module {
 	}
 	
 	public function attachment_page_desc_addon($arg){
-		$a = $this->init_module('Utils/Attachment',array('Premium/Warehouse/eCommerce/Pages/'.$arg['id']));
+		$a = $this->init_module('Utils/Attachment',array('Premium/Warehouse/eCommerce/PagesDesc/'.$arg['id']));
 		$a->allow_protected($this->acl_check('view protected notes'),$this->acl_check('edit protected notes'));
 		$a->allow_public($this->acl_check('view public notes'),$this->acl_check('edit public notes'));
 		$this->display_module($a);
