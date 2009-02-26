@@ -78,6 +78,26 @@ class Products
 					 WHERE pr.f_publish>=%d AND pr.active=1',array($iStatus));
 
 	while($aExp = $ret->FetchRow()) {
+		$ret2 = DB::Execute('SELECT pp.f_value,
+									p.f_parameter_code,
+									pl.f_label
+						FROM premium_ecommerce_products_parameters_data_1 pp
+						LEFT JOIN premium_ecommerce_parameters_data_1 p ON p.id=pp.f_parameter
+						LEFT JOIN premium_ecommerce_parameter_labels_data_1 pl ON (pl.f_parameter=pp.f_parameter AND pl.f_language="'.LANGUAGE.'")
+						WHERE pp.f_item_name=%d ORDER BY p.f_position',array($aExp['iProduct']));
+		$paramteres = array();
+		while($bExp = $ret2->FetchRow()) {
+			$paramteres[] = '<td>'.($bExp['f_label']?$bExp['f_label']:$bExp['f_parameter_code']).'</td><td>'.$bExp['f_value'].'</td>'; 
+		}
+		if (!empty($paramteres)) {
+			$aExp['sDescriptionFull'] = $aExp['sDescriptionFull'].
+				'<br>'.
+				'<table>'.
+					'<tr>'.
+						implode('</tr><tr>',$paramteres).
+					'</tr>'.
+				'</table>';
+		}
 		if($aExp['sName']=='') 
 			$aExp['sName'] = $aExp['sName2'];
 		if($aExp['sAvailable']=='') 
