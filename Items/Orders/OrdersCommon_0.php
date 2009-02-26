@@ -204,9 +204,12 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	public static function display_available_qty($r, $nolink) {
 		$qty = self::get_reserved_qty($r['id']);
 		$r['quantity_on_hand'] = $r['quantity_on_hand'] - $qty['total'];
-		foreach ($qty['per_warehouse'] as $k=>$v) {
-			$l_id = Utils_RecordBrowserCommon::get_id('premium_warehouse_location', array('warehouse','item_sku'), array($k, $r['id']));
-			$qty['per_warehouse'][$k] = $l_id?(Utils_RecordBrowserCommon::get_value('premium_warehouse_location', $l_id, 'quantity') - $v):-$v;
+		$warehouses = Utils_RecordBrowserCommon::get_records('premium_warehouse');
+		foreach ($warehouses as $w) {
+			$l_id = Utils_RecordBrowserCommon::get_id('premium_warehouse_location', array('warehouse','item_sku'), array($w['id'], $r['id']));
+			if (isset($qty['per_warehouse'][$w['id']])) $minus = $qty['per_warehouse'][$w['id']];
+			else $minus = 0;  
+			$qty['per_warehouse'][$w['id']] = $l_id?(Utils_RecordBrowserCommon::get_value('premium_warehouse_location', $l_id, 'quantity') - $minus):-$minus;
 		}
 		$my_warehouse = Base_User_SettingsCommon::get('Premium_Warehouse','my_warehouse');
 		$ret = Premium_Warehouse_Items_LocationCommon::display_item_quantity_in_warehouse_and_total($r,$my_warehouse,$nolink,$qty['per_warehouse'],array('main'=>'Available Qty', 'in_one'=>'In %s', 'in_all'=>'Total'));
