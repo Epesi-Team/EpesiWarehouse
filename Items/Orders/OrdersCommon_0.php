@@ -77,6 +77,13 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		return Utils_RecordBrowserCommon::create_linked_label('premium_warehouse_items', 'sku', $v['item_name'], $nolink);
 	}
 	
+	/**
+	 * Calculates total value and tax value for given transaction, including Shipment and Handling cost
+	 * 
+	 * @param array transaction record, result of get_record() expected
+	 * @param string either 'total' or 'tax' - selection of desired value
+	 * @return array array where keys are currency IDs and values are result numbers 
+	 */
 	public static function calculate_tax_and_total_value($r, $arg) {
 		static $res=array();
 		if (isset($_REQUEST['__location'])) $res = array();
