@@ -29,7 +29,7 @@ class Premium_Warehouse_SalesReportInstall extends ModuleInstall {
 	public function requires($v) {
 		return array(
 			array('name'=>'Utils/RecordBrowser/Reports','version'=>0),
-			array('name'=>'Premium/Warehouse','version'=>0));
+			array('name'=>'Premium/Warehouse','version'=>0),
 			array('name'=>'Libs/OpenFlashChart','version'=>0));
 	}
 	
