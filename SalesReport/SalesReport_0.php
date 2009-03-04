@@ -25,6 +25,12 @@ class Premium_Warehouse_SalesReport extends Module {
 
 /************************************************************************************/
 	public function body() {
+
+		if (!Base_AclCommon::i_am_admin() || !Base_AclCommon::i_am_sa()) {
+		print($this->t('You don\'t have permission to access this module'));
+		return;
+		}
+
 		$recs = Utils_RecordBrowserCommon::get_records('premium_warehouse',array(),array(),array('warehouse'=>'ASC'));
 		$this->rbr->set_reference_records($recs);
 		$this->rbr->set_reference_record_display_callback(array('Premium_WarehouseCommon','display_warehouse'));
@@ -76,7 +82,9 @@ class Premium_Warehouse_SalesReport extends Module {
 			$hash[date($this->format, $v)] = $i;
 			$i++;
 		}
-
+		
+		// TODO: transaction status filter
+		// TODO: warehouse transfer
 		// transactions types: 0=>'Purchase',1=>'Sale',2=>'Inventory Adjustment',3=>'Rental',4=>'Warehouse Transfer
 		foreach ($records[0] as $v) {
 			$d = date($this->format,strtotime($v['transaction_date']));
@@ -85,23 +93,56 @@ class Premium_Warehouse_SalesReport extends Module {
 				// and sales/purchase volume
 				// Premium_Warehouse_Items_OrdersCommon::calculate_tax_and_total_value()
 				// returns array where keys are currency IDs and values are result numbers
-	
+		
+				// Epesi::debug(print_r(Premium_Warehouse_Items_OrdersCommon::get_status_array($v)));
 				switch ($v['transaction_type']) {
-					case '0': // Purchase
-						$result[$hash[$d]][self::$cats[2]]++;
-						$purchase_amount=Premium_Warehouse_Items_OrdersCommon::calculate_tax_and_total_value($v,'total');
-						// Epesi::debug(($purchase_amount[1]));
-						$result[$hash[$d]][self::$cats[3]]+=$purchase_amount[1];
-						// Net loss/profit - Decrease - note -=
-						$result[$hash[$d]][self::$cats[4]] -= $purchase_amount[1];
+					/********************** Purchase *******************/
+					case '0':
+						// Include only Completed transactions - status=20
+						if ($v['status']==20) {
+							$result[$hash[$d]][self::$cats[2]]++;
+							$purchase_amount=Premium_Warehouse_Items_OrdersCommon::calculate_tax_and_total_value($v,'total');
+							$result[$hash[$d]][self::$cats[3]]+=$purchase_amount[1];
+							// Net loss/profit - Decrease - note -=
+							$result[$hash[$d]][self::$cats[4]] -= $purchase_amount[1];
+							}
 						break;
-					case '1': // Sale
-						$result[$hash[$d]][self::$cats[0]]++;
-						$sale_amount=Premium_Warehouse_Items_OrdersCommon::calculate_tax_and_total_value($v,'total');
-						$result[$hash[$d]][self::$cats[1]]+=$sale_amount[1];
-						// Net loss/profit - Increase - note +=
-						$result[$hash[$d]][self::$cats[4]] += $sale_amount[1];
+					/********************** Sale *******************/
+					case '1':
+						// Include only 7=>'Shipped', 20=>'Delivered'
+						if ($v['status']==7 || $v['status']==20) {
+							$result[$hash[$d]][self::$cats[0]]++;
+							$sale_amount=Premium_Warehouse_Items_OrdersCommon::calculate_tax_and_total_value($v,'total');
+							$result[$hash[$d]][self::$cats[1]]+=$sale_amount[1];
+							// Net loss/profit - Increase - note +=
+							$result[$hash[$d]][self::$cats[4]] += $sale_amount[1];
+						}
 						break;
+						/********************** Inventory Adjustment *******************/
+					case '2':
+						// 20=>'Completed'
+						if ($v['status']==20) {
+							$result[$hash[$d]][self::$cats[2]]++;
+							$purchase_amount=Premium_Warehouse_Items_OrdersCommon::calculate_tax_and_total_value($v,'total');
+							$result[$hash[$d]][self::$cats[3]]+=$purchase_amount[1];
+							// Net loss/profit - Decrease - note -=
+							$result[$hash[$d]][self::$cats[4]] -= $purchase_amount[1];
+							}
+						break;
+						/********************** WAREHOUSE TRANSFER *******************/
+						/* Ignore - Sales/Purchase Volume = 0
+					case 4:
+						// ''=>'New', 1=>'Transfer Quote', 2=>'Pending', 3=>'Order Fullfilment', 4=>'On Hold', 5=>'Ready to Ship', 6=>'Shipped', 20=>'Delivered', 21=>'Canceled', 22=>'Missing'
+						if ($v['status']==20) {
+							$result[$hash[$d]][self::$cats[2]]++;
+							$purchase_amount=Premium_Warehouse_Items_OrdersCommon::calculate_tax_and_total_value($v,'total');
+							Epesi::debug($v['warehouse']);
+							$result[$hash[$d]][self::$cats[3]]+=$purchase_amount[1];
+							// Net loss/profit - Decrease - note -=
+							$result[$hash[$d]][self::$cats[4]] -= $purchase_amount[1];
+							}
+						break;
+						*/
 				} // end of switch
 				
 			}
@@ -126,55 +167,44 @@ class Premium_Warehouse_SalesReport extends Module {
 			}
 			$end = date('Y-m-d',strtotime($end)+1);
 			
-			/* drill-in report link
+			// drill-in report links
+			// Sales transactions link
 			if ($result[$i][self::$cats[0]]<>0) {
-				$date_type = 'transaction_date';
-				$result[$i][self::$cats[0]] = '<a '.$this->create_callback_href(array($this,'display_sales'), array($ref_rec['id'], $date_type, $start, $end)).'>'.$result[$i][self::$cats[0]].'</a>';
+				$result[$i][self::$cats[0]] = '<a '.$this->create_callback_href(array($this,'display_sales'), array($ref_rec['id'], $start, $end)).'>'.$result[$i][self::$cats[0]].'</a>';
 			}
-			*/
+			// Purchases transactions link
+			if ($result[$i][self::$cats[2]]<>0) {
+				$result[$i][self::$cats[2]] = '<a '.$this->create_callback_href(array($this,'display_purchases'), array($ref_rec['id'], $start, $end)).'>'.$result[$i][self::$cats[2]].'</a>';
+			}
 			$i++;
 		}
-		// Epesi::debug(print_r($result));
 		return $result;
 	}
 	
 	
 /************************************************************************************/
-	public function display_sales($contact_id, $date_type, $start, $end) {
+	public function display_sales($warehouse_id, $start, $end) {
 		if ($this->is_back()) return false;
-		$rb = $this->init_module('Utils/RecordBrowser','custom_projects','projects_module');
-		$rb->set_cut_lengths(array('project_name'=>30,'company_name'=>30));
-		$type = ($date_type=='award_date'); 
-		$cols = array('award_date'=>$type,'contract_amount'=>$type,'proposal_submitted'=>!$type,'proposal_price'=>!$type);
-		$cols['company_name'] = false;
-		$cols['outside_job'] = false;
-		$cols['tm'] = false;
-		$cols['bid_due_date'] = false;
-		$rb->set_table_column_order(array('custom_projects'=>array('project_name','zsi_estimator','percent_complete','status','award_date','contract_amount','proposal_submitted','proposal_price')));
-		$rb->set_header_properties(array('percent_complete'=>array('name'=>'% Complete','width'=>1),'proposal_price'=>array('width'=>1),'proposal_submitted'=>array('name'=>'Submitted','width'=>1),'contract_amount'=>array('name'=>'Contract','width'=>1)));
-		$proj = array(array('zsi_estimator'=>$contact_id, '>='.$date_type=>$start, '<='.$date_type=>$end), $cols, array($date_type=>'ASC'));
-		$this->display_module($rb,$proj,'show_data');
+		$rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items_orders','orders_module');
+		$order_date='transaction_date';
+		$cols='';
+		// sales status can be 7 or 20
+		$orders = array(array('warehouse'=>$warehouse_id,'transaction_type'=>'1','status'=>array(20,7),'>='.$order_date=>$start, '<='.$order_date=>$end), $cols, array($order_date=>'DESC'));
+		$rb->set_header_properties(array('terms'=>array('width'=>1, 'wrapmode'=>'nowrap'),'status'=>array('width'=>1, 'wrapmode'=>'nowrap')));
+		$this->display_module($rb,$orders,'show_data');
 		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
 		return true;
 	}
 	
 /************************************************************************************/
-	public function display_change_orders($contact_id, $date_type, $start, $end) {
+	public function display_purchases($warehouse_id, $start, $end) {
 		if ($this->is_back()) return false;
-		$rb = $this->init_module('Utils/RecordBrowser','custom_changeorders','custom_changeorders');
-		$cols = array();
-		$cols[$date_type] = true;
-//		$rb->set_cut_lengths(array('project_name'=>30,'company_name'=>30));
-//		$type = ($date_type=='award_date'); 
-//		$cols = array('award_date'=>$type,'contract_amount'=>$type,'proposal_submitted'=>!$type,'proposal_price'=>!$type);
-//		$cols['company_name'] = false;
-//		$cols['outside_job'] = false;
-//		$cols['tm'] = false;
-//		$cols['bid_due_date'] = false;
-//		$rb->set_table_column_order(array('custom_projects'=>array('project_name','zsi_estimator','percent_complete','status','award_date','contract_amount','proposal_submitted','proposal_price')));
-//		$rb->set_header_properties(array('percent_complete'=>array('name'=>'% Complete','width'=>1),'proposal_price'=>array('width'=>1),'proposal_submitted'=>array('name'=>'Submitted','width'=>1),'contract_amount'=>array('name'=>'Contract','width'=>1)));
-		$proj = array(array('zsi_estimator'=>$contact_id, '>='.$date_type=>$start, '<='.$date_type=>$end), $cols, array($date_type=>'ASC'));
-		$this->display_module($rb,$proj,'show_data');
+		$rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items_orders','orders_module');
+		$order_date='transaction_date';
+		$cols='';
+		$orders = array(array('warehouse'=>$warehouse_id,'transaction_type'=>'0','status'=>'20', '>='.$order_date=>$start, '<='.$order_date=>$end), $cols, array($order_date=>'DESC'));
+		$rb->set_header_properties(array('terms'=>array('width'=>1, 'wrapmode'=>'nowrap'),'status'=>array('width'=>1, 'wrapmode'=>'nowrap')));
+		$this->display_module($rb,$orders,'show_data');
 		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
 		return true;
 	}
