@@ -13,7 +13,7 @@
 defined("_VALID_ACCESS") || die('Direct access forbidden');
 
 class Premium_Warehouse_SalesReport extends Module {
-	private static $cats = array('No. of sales', 'Sales Volume');
+	private static $cats = array('Sales Trans.','Sales Volume','Purchase Trans.','Purchase Volume','Net Profit');
 	private static $format = '';
 	private static $dates = array();
 	private static $range_type = '';
@@ -23,6 +23,7 @@ class Premium_Warehouse_SalesReport extends Module {
 		$this->rbr = $this->init_module('Utils/RecordBrowser/Reports');
 	}
 
+/************************************************************************************/
 	public function body() {
 		$recs = Utils_RecordBrowserCommon::get_records('premium_warehouse',array(),array(),array('warehouse'=>'ASC'));
 		$this->rbr->set_reference_records($recs);
@@ -32,11 +33,12 @@ class Premium_Warehouse_SalesReport extends Module {
 		$this->rbr->set_summary('col', array('label'=>'Total'));
 		$this->rbr->set_summary('row', array('label'=>'Total'));
 		$this->rbr->set_format(array(	self::$cats[0]=>'numeric', 
-										self::$cats[1]=>'currency'
+										self::$cats[1]=>'currency',
+										self::$cats[2]=>'numeric',
+										self::$cats[3]=>'currency',
+										self::$cats[4]=>'currency'
 									));
-		// TODO: Limit to Sale transactions only (transaction_type=1) - how?
-		$this->rbr->set_data_records('premium_warehouse_items_orders',array('transaction_type'=>'1'));
-	
+		$this->rbr->set_data_records('premium_warehouse_items_orders');
 		$this->rbr->set_data_record_relation('premium_warehouse_items_orders', array('warehouse'=>':id'));
 		$header = array('Warehouse');
 		$this->dates = $date_range['dates'];
@@ -57,24 +59,51 @@ class Premium_Warehouse_SalesReport extends Module {
 		$this->display_module($this->rbr);
 	}
 
+	
+/************************************************************************************/
 	public function display_cells($ref_rec, $records){
 		
 		$result = array();
 		$hash = array();
 		$i = 0;
 		foreach ($this->dates as $v) {
+		// all $cats must be initialized here individually to avoid: "Message: Undefined index: Purchase Volume" error - see private static $cats = array(... above
 			$result[$i] = array(	self::$cats[0]=>0,
-									self::$cats[1]=>0);
+									self::$cats[1]=>0,
+									self::$cats[2]=>0,
+									self::$cats[3]=>0,
+									self::$cats[4]=>0);
 			$hash[date($this->format, $v)] = $i;
 			$i++;
 		}
+
+		// transactions types: 0=>'Purchase',1=>'Sale',2=>'Inventory Adjustment',3=>'Rental',4=>'Warehouse Transfer
 		foreach ($records[0] as $v) {
 			$d = date($this->format,strtotime($v['transaction_date']));
 			if (isset($hash[$d])) {
-				// count no. of transactions
-				$result[$hash[$d]][self::$cats[0]]++;
-				// Calculate sales volume
-				$result[$hash[$d]][self::$cats[1]] += $v['payment'];
+				// count no. of Sales/Purchase Transactions
+				// and sales/purchase volume
+				// Premium_Warehouse_Items_OrdersCommon::calculate_tax_and_total_value()
+				// returns array where keys are currency IDs and values are result numbers
+	
+				switch ($v['transaction_type']) {
+					case '0': // Purchase
+						$result[$hash[$d]][self::$cats[2]]++;
+						$purchase_amount=Premium_Warehouse_Items_OrdersCommon::calculate_tax_and_total_value($v,'total');
+						// Epesi::debug(($purchase_amount[1]));
+						$result[$hash[$d]][self::$cats[3]]+=$purchase_amount[1];
+						// Net loss/profit - Decrease - note -=
+						$result[$hash[$d]][self::$cats[4]] -= $purchase_amount[1];
+						break;
+					case '1': // Sale
+						$result[$hash[$d]][self::$cats[0]]++;
+						$sale_amount=Premium_Warehouse_Items_OrdersCommon::calculate_tax_and_total_value($v,'total');
+						$result[$hash[$d]][self::$cats[1]]+=$sale_amount[1];
+						// Net loss/profit - Increase - note +=
+						$result[$hash[$d]][self::$cats[4]] += $sale_amount[1];
+						break;
+				} // end of switch
+				
 			}
 		}
 		
@@ -96,15 +125,21 @@ class Premium_Warehouse_SalesReport extends Module {
 								break;
 			}
 			$end = date('Y-m-d',strtotime($end)+1);
+			
+			/* drill-in report link
 			if ($result[$i][self::$cats[0]]<>0) {
 				$date_type = 'transaction_date';
 				$result[$i][self::$cats[0]] = '<a '.$this->create_callback_href(array($this,'display_sales'), array($ref_rec['id'], $date_type, $start, $end)).'>'.$result[$i][self::$cats[0]].'</a>';
 			}
+			*/
 			$i++;
 		}
+		// Epesi::debug(print_r($result));
 		return $result;
 	}
 	
+	
+/************************************************************************************/
 	public function display_sales($contact_id, $date_type, $start, $end) {
 		if ($this->is_back()) return false;
 		$rb = $this->init_module('Utils/RecordBrowser','custom_projects','projects_module');
@@ -123,6 +158,7 @@ class Premium_Warehouse_SalesReport extends Module {
 		return true;
 	}
 	
+/************************************************************************************/
 	public function display_change_orders($contact_id, $date_type, $start, $end) {
 		if ($this->is_back()) return false;
 		$rb = $this->init_module('Utils/RecordBrowser','custom_changeorders','custom_changeorders');
@@ -143,6 +179,7 @@ class Premium_Warehouse_SalesReport extends Module {
 		return true;
 	}
 	
+/************************************************************************************/
 	public function caption() {
 		return 'Sales Report';
 	}
