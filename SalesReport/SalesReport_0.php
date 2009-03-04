@@ -59,9 +59,9 @@ class Premium_Warehouse_SalesReport extends Module {
 			$header[] = date($this->format, $v);
 		$this->rbr->set_table_header($header);
 		$this->rbr->set_display_cell_callback(array($this, 'display_cells'));
-//		$this->rbr->set_pdf_title($this->t('Projects - Report, %s',array(date('Y-m-d H:i:s'))));
-//		$this->rbr->set_pdf_subject($this->rbr->pdf_subject_date_range());
-//		$this->rbr->set_pdf_filename($this->t('Projects_Report_%s',array(date('Y_m_d__H_i_s'))));
+		$this->rbr->set_pdf_title($this->t('Sales Report, %s',array(date('Y-m-d H:i:s'))));
+		$this->rbr->set_pdf_subject($this->rbr->pdf_subject_date_range());
+		$this->rbr->set_pdf_filename($this->t('Sales_Report_%s',array(date('Y_m_d__H_i_s'))));
 		$this->display_module($this->rbr);
 	}
 
