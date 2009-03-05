@@ -17,6 +17,7 @@ class Premium_Warehouse_SalesReport extends Module {
 	private static $format = '';
 	private static $dates = array();
 	private static $range_type = '';
+	private $currency = 1;
 	private $rbr = null;
 
 	public function construct() {
@@ -49,6 +50,7 @@ class Premium_Warehouse_SalesReport extends Module {
 		$header = array('Warehouse');
 		$this->dates = $date_range['dates'];
 		$this->range_type = $date_range['type'];
+		$this->rbr->set_currency($this->currency);
 		switch ($date_range['type']) {
 			case 'day': $this->format ='d M Y'; break;
 			case 'week': $this->format ='W Y'; break;
@@ -102,9 +104,10 @@ class Premium_Warehouse_SalesReport extends Module {
 						if ($v['status']==20) {
 							$result[$hash[$d]][self::$cats[2]]++;
 							$purchase_amount=Premium_Warehouse_Items_OrdersCommon::calculate_tax_and_total_value($v,'total');
-							$result[$hash[$d]][self::$cats[3]]+=$purchase_amount[1];
+							if (!isset($purchase_amount[$this->currency])) break;
+							$result[$hash[$d]][self::$cats[3]]+=$purchase_amount[$this->currency];
 							// Net loss/profit - Decrease - note -=
-							$result[$hash[$d]][self::$cats[4]] -= $purchase_amount[1];
+							$result[$hash[$d]][self::$cats[4]] -= $purchase_amount[$this->currency];
 							}
 						break;
 					/********************** Sale *******************/
@@ -113,9 +116,10 @@ class Premium_Warehouse_SalesReport extends Module {
 						if ($v['status']==7 || $v['status']==20) {
 							$result[$hash[$d]][self::$cats[0]]++;
 							$sale_amount=Premium_Warehouse_Items_OrdersCommon::calculate_tax_and_total_value($v,'total');
-							$result[$hash[$d]][self::$cats[1]]+=$sale_amount[1];
+							if (!isset($sale_amount[$this->currency])) break;
+							$result[$hash[$d]][self::$cats[1]]+=$sale_amount[$this->currency];
 							// Net loss/profit - Increase - note +=
-							$result[$hash[$d]][self::$cats[4]] += $sale_amount[1];
+							$result[$hash[$d]][self::$cats[4]] += $sale_amount[$this->currency];
 						}
 						break;
 						/********************** Inventory Adjustment *******************/
@@ -124,9 +128,10 @@ class Premium_Warehouse_SalesReport extends Module {
 						if ($v['status']==20) {
 							$result[$hash[$d]][self::$cats[2]]++;
 							$purchase_amount=Premium_Warehouse_Items_OrdersCommon::calculate_tax_and_total_value($v,'total');
-							$result[$hash[$d]][self::$cats[3]]+=$purchase_amount[1];
+							if (!isset($purchase_amount[$this->currency])) break;
+							$result[$hash[$d]][self::$cats[3]]+=$purchase_amount[$this->currency];
 							// Net loss/profit - Decrease - note -=
-							$result[$hash[$d]][self::$cats[4]] -= $purchase_amount[1];
+							$result[$hash[$d]][self::$cats[4]] -= $purchase_amount[$this->currency];
 							}
 						break;
 						/********************** WAREHOUSE TRANSFER *******************/
@@ -144,7 +149,6 @@ class Premium_Warehouse_SalesReport extends Module {
 						break;
 						*/
 				} // end of switch
-				
 			}
 		}
 		
