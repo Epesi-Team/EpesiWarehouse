@@ -188,15 +188,52 @@ class Files
     }*/
     // { epesi
     //pages
-    $this->aImages[0]     = null;
-    $this->aFiles[0]      = null;
-    $this->aImagesTypes[0]= null;
-    
-    //products
     $this->aImages[1]     = null;
     $this->aFiles[1]      = null;
     $this->aImagesTypes[1]= null;
     
+    //products
+    $this->aImages[2]     = null;
+    $this->aFiles[2]      = null;
+    $this->aImagesTypes[2]= null;
+    
+    $ret = DB::Execute('SELECT ual.id,ual.local, f.original, ual.sticky, f.revision, d.text
+			FROM utils_attachment_link ual 
+			INNER JOIN utils_attachment_file f ON (f.attach_id=ual.id AND f.revision=(SELECT max(revision) FROM utils_attachment_file WHERE attach_id=ual.id)) 
+			INNER JOIN utils_attachment_note d ON (d.attach_id=ual.id AND d.revision=(SELECT max(revision) FROM utils_attachment_note WHERE attach_id=ual.id)) 
+			WHERE ual.deleted=0 AND ual.local LIKE \'Premium/Warehouse/eCommerce/%\'');
+    $th_size = unserialize(DB::GetOne('SELECT value FROM variables WHERE name=%s',array('quickcart_thumbnail_size')));
+    
+    while($row = $ret->FetchRow()) {
+	$ext = strrchr($row['original'],'.');
+	if(!file_exists('files/epesi/'.$row['id'].'_'.$row['revision'].$ext)) continue;
+	$photo = eregi('^\.(jpg|jpeg|gif|png|bmp)$',$ext);
+	$product = basename($row['local']);
+	if(ereg('^Premium/Warehouse/eCommerce/Products',$row['local'])) {
+	    $iKey = 2;
+	} else {
+	    $iKey = 1;
+	    $product = $product*4+2;
+	}	    
+	$type = 1; // ??????????
+	$this->aFilesImages[$iKey][$row['id']] = array( 'iFile' => $row['id'], 'iProduct' => $product, 'sFileName' => 'epesi/'.$row['id'].'_'.$row['revision'].$ext, 'sDescription' => $row['text'], 'iPhoto' => $photo, 'iPosition' => 0, 'iType' =>$type, 'iSize1' => $th_size, 'iSize2' => $th_size );
+
+	if( $photo ){
+	    //sticky image is default one
+            if( !isset( $this->aImagesDefault[$iKey][$product] ) && $row['sticky'] )
+        	$this->aImagesDefault[$iKey][$product] = $row['id'];
+
+            $this->aImages[$iKey][$product][] = $row['id'];
+
+            $this->aFilesImages[$iKey][$row['id']]['iSizeValue1'] = $config['pages_images_sizes'][$this->aFilesImages[$iKey][$row['id']]['iSize1']];
+            $this->aFilesImages[$iKey][$row['id']]['iSizeValue2'] = $config['pages_images_sizes'][$this->aFilesImages[$iKey][$row['id']]['iSize2']];
+
+            $this->aImagesTypes[$iKey][$product][$type][] = $row['id'];
+          }
+          else{
+            $this->aFiles[$iKey][$product][] = $row['id'];
+          }
+    }
     // } epesi
   } // end function generateCache
 };

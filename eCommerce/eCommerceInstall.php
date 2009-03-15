@@ -212,6 +212,15 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 			return false;
 		}
 
+		//quickcarts
+		$ret = DB::CreateTable('premium_ecommerce_quickcart','
+			path C(255) KEY NOTNULL',
+			array('constraints'=>''));
+		if(!$ret){
+			print('Unable to create table premium_ecommerce_quickcart.<br>');
+			return false;
+		}
+
 // ************* addons ************ //
 		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_products', 'Premium/Warehouse/eCommerce', 'parameters_addon', 'Parameters');
 		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_products', 'Premium/Warehouse/eCommerce', 'descriptions_addon', 'Descriptions');
@@ -245,17 +254,20 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 
 		Variable::set('ecommerce_start_page','This is start page of quickcart shop with epesi backend. You can edit it in Warehouse - eCommerce settings.');
 		Variable::set('ecommerce_rules','You can edit this page in Warehouse - eCommerce settings.');
+		Variable::set('quickcart_thumbnail_size',0);
 
 		return true;
 	}
 	
 	public function uninstall() {
 		DB::DropTable('premium_ecommerce_orders_temp');
+		DB::DropTable('premium_ecommerce_quickcart');
 
 		Utils_RecordBrowserCommon::delete_record_field('company','eCommerce Category');
 	
 		Variable::delete('ecommerce_start_page');
 		Variable::delete('ecommerce_rules');
+		Variable::delete('quickcart_thumbnail_size');
 		Utils_CommonDataCommon::remove('Premium/Warehouse/eCommerce/Languages');
 		Base_ThemeCommon::uninstall_default_theme($this->get_type());
 
@@ -300,6 +312,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 			array('name'=>'Base','version'=>0),
 			array('name'=>'Premium/Warehouse/Items/Orders','version'=>0),
 			array('name'=>'Utils/CurrencyField','version'=>0),
+			array('name'=>'Utils/Image','version'=>0),
 			array('name'=>'Utils/RecordBrowser', 'version'=>0));
 	}
 	

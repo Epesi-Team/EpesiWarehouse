@@ -147,6 +147,80 @@ class Premium_Warehouse_eCommerce extends Module {
 	public function rules_page() {
 		$this->edit_variable('Rules and policies','ecommerce_rules');
 	}
+
+	public function QC_dirs() {
+		$gb = & $this->init_module('Utils/GenericBrowser',null,'qc_list');
+
+		$gb->set_table_columns(array(array('name'=>$this->t('Path'), 'order'=>'path')));
+
+		$query = 'SELECT path FROM premium_ecommerce_quickcart';
+		$query_qty = 'SELECT count(*) FROM premium_ecommerce_quickcart';
+
+		$ret = $gb->query_order_limit($query, $query_qty);
+		
+		if($ret)
+			while(($row=$ret->FetchRow())) {
+			    $r = $gb->get_new_row();
+			    $r->add_data($row['path']);
+			    $r->add_action($this->create_confirm_callback_href($this->ht('Are you sure you want to delete this record?'),array($this,'delete_quickcart'),$row['path']),'delete');
+			}
+
+		$this->display_module($gb);
+
+		$qf = $this->init_module('Libs/QuickForm',null,'th_size');
+		$qf->addElement('select','quickcart_thumbnail_size',$this->t('Thumbnails size'),array(0=>$this->ht('100 x 100'),1=>$this->ht('200 x 200')),array('onChange'=>$qf->get_submit_form_js()));
+		$qf->setDefaults(array('quickcart_thumbnail_size'=>Variable::get('quickcart_thumbnail_size')));
+		if($qf->validate()) {
+			Variable::set('quickcart_thumbnail_size',$qf->exportValue('quickcart_thumbnail_size'));
+		}
+		$qf->display();
+
+		Base_ActionBarCommon::add('add','Add',$this->create_callback_href(array($this,'add_quickcart')));
+	}
+	
+	public function add_quickcart() {
+		if($this->is_back()) return false;
+	
+		$form = & $this->init_module('Libs/QuickForm');
+
+		//create new user
+		$form->addElement('header', null, $this->t('Add quickcart binding'));
+
+		$form->addElement('text', 'path', $this->t('Path'));
+		// require a username
+		$form->addRule('path', $this->t('A path must be between 3 and 255 chars'), 'rangelength', array(3,255));
+		$form->registerRule('check_path','callback','check_path','Premium_Warehouse_eCommerce');
+		$form->addRule('path', $this->t('Invalid path'), 'check_path');
+		$form->addRule('path', $this->t('Field required'), 'required');
+
+		if($form->validate()) {
+		    $p = rtrim($form->exportValue('path'),'/');
+		    DB::Execute('INSERT INTO premium_ecommerce_quickcart(path) VALUES(%s)',array($p));
+		    @set_time_limit(0);
+		    @mkdir($p.'/files/epesi');
+		    @mkdir($p.'/files/100/epesi');
+		    @mkdir($p.'/files/200/epesi');
+		    Utils_AttachmentCommon::call_user_func_on_file('Premium/Warehouse/eCommerce',array('Premium_Warehouse_eCommerceCommon','copy_attachment'));
+		    return false;
+		} else $form->display();
+
+		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
+		Base_ActionBarCommon::add('save', 'Save', $form->get_submit_form_href(true,$this->t('creating thumbnails, please wait')));
+		
+    		return true;
+	}
+	
+	public function check_path($p) {
+	    if(!is_dir($p) || !is_dir(rtrim($p,'/').'/files') || !is_writable(rtrim($p,'/').'/files')) return false;
+	    return true;
+	}
+	
+	public function delete_quickcart($path) {
+	    DB::Execute('DELETE FROM premium_ecommerce_quickcart WHERE path=%s',array($path));
+	    @recursive_rmdir($path.'/files/epesi/');
+	    @recursive_rmdir($path.'/files/100/epesi/');
+	    @recursive_rmdir($path.'/files/200/epesi/');
+	}
 	
 	private function edit_variable($header, $v) {
 		$f = $this->init_module('Libs/QuickForm');
@@ -173,6 +247,7 @@ class Premium_Warehouse_eCommerce extends Module {
 		$a = $this->init_module('Utils/Attachment',array('Premium/Warehouse/eCommerce/Products/'.$arg['id']));
 		$a->allow_protected($this->acl_check('view protected notes'),$this->acl_check('edit protected notes'));
 		$a->allow_public($this->acl_check('view public notes'),$this->acl_check('edit public notes'));
+		$a->set_add_func(array('Premium_Warehouse_eCommerceCommon','copy_attachment'));
 		$this->display_module($a);
 	}
 
@@ -180,6 +255,7 @@ class Premium_Warehouse_eCommerce extends Module {
 		$a = $this->init_module('Utils/Attachment',array('Premium/Warehouse/eCommerce/ProductsDesc/'.$arg['id']));
 		$a->allow_protected($this->acl_check('view protected notes'),$this->acl_check('edit protected notes'));
 		$a->allow_public($this->acl_check('view public notes'),$this->acl_check('edit public notes'));
+		$a->set_add_func(array('Premium_Warehouse_eCommerceCommon','copy_attachment'));
 		$this->display_module($a);
 	}
 
@@ -187,6 +263,7 @@ class Premium_Warehouse_eCommerce extends Module {
 		$a = $this->init_module('Utils/Attachment',array('Premium/Warehouse/eCommerce/Pages/'.$arg['id']));
 		$a->allow_protected($this->acl_check('view protected notes'),$this->acl_check('edit protected notes'));
 		$a->allow_public($this->acl_check('view public notes'),$this->acl_check('edit public notes'));
+		$a->set_add_func(array('Premium_Warehouse_eCommerceCommon','copy_attachment'));
 		$this->display_module($a);
 	}
 	
@@ -194,6 +271,7 @@ class Premium_Warehouse_eCommerce extends Module {
 		$a = $this->init_module('Utils/Attachment',array('Premium/Warehouse/eCommerce/PagesDesc/'.$arg['id']));
 		$a->allow_protected($this->acl_check('view protected notes'),$this->acl_check('edit protected notes'));
 		$a->allow_public($this->acl_check('view public notes'),$this->acl_check('edit public notes'));
+		$a->set_add_func(array('Premium_Warehouse_eCommerceCommon','copy_attachment'));
 		$this->display_module($a);
 	}
 	

@@ -139,11 +139,31 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 					'Payments & Carriers'=>array('recordset'=>'payments_carriers'),
 					'Pages'=>array('recordset'=>'pages'),
 					'Start page'=>array('__function__'=>'start_page'),
-					'Rules and policies'=>array('__function__'=>'rules_page')
+					'Rules and policies'=>array('__function__'=>'rules_page'),
+					'QuickCart settings'=>array('__function__'=>'QC_dirs')
 				)
 			)
 		));
 	}
+	
+	public static function copy_attachment($id,$rev,$file,$original) {
+		static $qcs;
+		if(!isset($qcs))
+    		    $qcs = DB::GetRow('SELECT path FROM premium_ecommerce_quickcart');
+		$ext = strrchr($original,'.');
+		if(eregi('^\.(jpg|jpeg|gif|png|bmp)$',$ext)) {
+    		    $th1 = Utils_ImageCommon::create_thumb($file,100,100);
+		    $th2 = Utils_ImageCommon::create_thumb($file,200,200);
+		}
+		foreach($qcs as $q) {
+		    copy($file,$q.'/files/epesi/'.$id.'_'.$rev.$ext);
+		    if(isset($th1)) {
+    			copy($th1['thumb'],$q.'/files/100/epesi/'.$id.'_'.$rev.$ext);
+    			copy($th2['thumb'],$q.'/files/200/epesi/'.$id.'_'.$rev.$ext);
+		    }
+		}
+	}
+
 
 }
 ?>
