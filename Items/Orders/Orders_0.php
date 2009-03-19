@@ -382,6 +382,29 @@ class Premium_Warehouse_Items_Orders extends Module {
 			}
 		} elseif ($trans['transaction_type']==1) {
 			switch ($status) {			
+				case -1:
+					$new_form = $this->init_module('Libs_QuickForm');
+					$me = CRM_ContactsCommon::get_my_record();
+					$table_rows = Utils_RecordBrowserCommon::init('premium_warehouse_items_orders');
+					CRM_ContactsCommon::QFfield_contact($new_form, 'employee', 'Employee', 'add', $me['id'], $table_rows['Employee']);
+					$warehouses = array(''=>'---');
+					$records = Utils_RecordBrowserCommon::get_records('premium_warehouse');
+					foreach ($records as $v) $warehouses[$v['id']] = $v['warehouse'];
+					$new_form->addElement('select', 'warehouse', $this->t('Warehouse'), $warehouses);
+					$new_form->setDefaults(array('employee'=>$me['id'],'warehouse'=>Base_User_SettingsCommon::get('Premium_Warehouse','my_warehouse')));
+					$lp->add_option('new', $this->t('Order received'), null, $new_form);
+
+					$this->display_module($lp, array($this->t('Recieve Online Order')));
+					$this->href = $lp->get_href();
+					$vals = $lp->export_values();
+					if ($vals!==null) {
+						if (!isset($vals['form']) || !is_array($vals['form'])) $vals['form'] = array();
+						else $vals['form']['status'] = 2;
+						if (is_numeric($vals['form']['employee']) && is_numeric($vals['form']['warehouse'])) 
+							Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $trans['id'], $vals['form']);
+						location(array());
+					}
+					break;
 				case '':
 					$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$trans['id']));
 					$so_form = $this->init_module('Libs_QuickForm');
