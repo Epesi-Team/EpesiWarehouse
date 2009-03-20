@@ -24,7 +24,13 @@ $order = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders',
 $warehouse = Utils_RecordBrowserCommon::get_record('premium_warehouse', $order['warehouse']);
 $company = CRM_ContactsCommon::get_company(CRM_ContactsCommon::get_main_company());
 
-$order['invoice_id'] = Premium_Warehouse_Items_OrdersCommon::generate_id($order['id']).'/'.date('Y',strtotime($order['transaction_date']));
+if (!$order['invoice_number']) {
+	$order['invoice_number'] = DB::GetOne('SELECT MAX(f_invoice_number) FROM premium_warehouse_items_orders_data_1 WHERE f_warehouse=%d AND f_transaction_type=%d', array($order['warehouse'], $order['transaction_type']));
+	$order['invoice_number']++;
+	Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $order_id, array('invoice_number'=>$order['invoice_number']));
+}
+
+$order['invoice_id'] = str_pad($order['invoice_number'], 4, '0', STR_PAD_LEFT).'/'.date('Y',strtotime($order['transaction_date']));
 $order['employee_name'] = CRM_ContactsCommon::contact_format_no_company(CRM_ContactsCommon::get_contact($order['employee']));
 $order['payment_type_label'] = Utils_CommonDataCommon::get_value('Premium_Items_Orders_Payment_Types/'.$order['payment_type'],true);
 $order['terms_label'] = Utils_CommonDataCommon::get_value('Premium_Items_Orders_Terms/'.$order['terms'],true);

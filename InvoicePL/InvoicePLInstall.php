@@ -20,6 +20,7 @@ class Premium_Warehouse_InvoicePLInstall extends ModuleInstall {
 		Base_ThemeCommon::install_default_theme($this->get_type());
 
 		Utils_RecordBrowserCommon::new_addon('premium_warehouse_items_orders', 'Premium_Warehouse_InvoicePL', 'invoicepl', 'Premium_Warehouse_InvoicePLCommon::invoice_pl_addon_parameters');
+		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items_orders','Invoice Number','integer', false, false, '', '', false, false);
 
 		return true;
 	}
@@ -27,6 +28,7 @@ class Premium_Warehouse_InvoicePLInstall extends ModuleInstall {
 	public function uninstall() {
 
 		Utils_RecordBrowserCommon::delete_addon('premium_warehouse_items_orders', 'Premium_Warehouse_InvoicePL', 'invoicepl');
+		Utils_RecordBrowserCommon::delete_record_field('premium_warehouse_items_orders','Invoice Number');
 
 		return true;
 	}
