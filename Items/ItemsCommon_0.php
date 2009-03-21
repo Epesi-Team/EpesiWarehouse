@@ -41,7 +41,7 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 	
 	public static function display_gross_price($r, $nolink) {
 		$price = Utils_CurrencyFieldCommon::get_values($r['net_price']);
-		return Utils_CurrencyFieldCommon::format(($price[0]*(100+$r['tax_rate']))/100, $price[1]);
+		return Utils_CurrencyFieldCommon::format(($price[0]*(100+Data_TaxRatesCommon::get_tax_rate($r['tax_rate'])))/100, $price[1]);
 	}
 	
 	public static function display_quantity_sold($r, $nolink) {

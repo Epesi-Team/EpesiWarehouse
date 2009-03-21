@@ -173,7 +173,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 		$po_form->addElement('select', 'shipment_type', $this->t('Shipment Type'), array(''=>'---')+Utils_CommonDataCommon::get_array('Premium_Items_Orders_Shipment_Types'));
 		$po_form->setDefaults($trans);
 
-		$taxes = Utils_CommonDataCommon::get_array('Premium_Warehouse_Items_Tax');
+		$taxes = Data_TaxRatesCommon::get_tax_rates();
 		$po_form->addElement('static', 'item_header', '');
 		$po_form->setDefaults(array('item_header'=>$this->t('Please revise items quantity, price and tax rate')));
 		foreach ($items as $v) {

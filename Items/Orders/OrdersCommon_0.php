@@ -94,7 +94,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		foreach($recs as $rr){
 			$price = Utils_CurrencyFieldCommon::get_values($rr['net_price']);
 			$net_total = $price[0]*$rr['quantity'];
-			$tax_value = round($rr['tax_rate']*$price[0]/100, Utils_CurrencyFieldCommon::get_precission($price[1]))*$rr['quantity'];
+			$tax_value = round(Data_TaxRatesCommon::get_tax_rate($rr['tax_rate'])*$price[0]/100, Utils_CurrencyFieldCommon::get_precission($price[1]))*$rr['quantity'];
 			if (!isset($res[$r['id']]['tax'][$price[1]]) && $tax_value)
 				$res[$r['id']]['tax'][$price[1]] = 0;
 			if (!isset($res[$r['id']]['total'][$price[1]]) && $net_total)
@@ -158,10 +158,6 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		return Utils_RecordBrowserCommon::create_linked_label('premium_warehouse_items_orders', 'transaction_id', $r['transaction_id'], $nolink);	
 	}
 
-	public static function display_order_details_tax($r, $nolink) {
-		return Utils_CommonDataCommon::get_value('Premium_Warehouse_Items_Tax/'.Utils_RecordBrowserCommon::get_value('premium_warehouse_items',$r['item_sku'],'tax_rate'),true);
-	}
-	
 	public static function display_order_details_total($r, $nolink) {
 		$price = Utils_CurrencyFieldCommon::get_values($r['net_price']);
 		$ret = $r['quantity']*$price[0];
@@ -170,13 +166,13 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 
 	public static function display_order_details_tax_value($r, $nolink) {
 		$price = Utils_CurrencyFieldCommon::get_values($r['net_price']);
-		$ret = round($r['tax_rate']*$price[0]/100, Utils_CurrencyFieldCommon::get_precission($price[1]))*$r['quantity'];
+		$ret = round(Data_TaxRatesCommon::get_tax_rate($r['tax_rate'])*$price[0]/100, Utils_CurrencyFieldCommon::get_precission($price[1]))*$r['quantity'];
 		return Utils_CurrencyFieldCommon::format($ret, $price[1]);
 	}
 
 	public static function display_order_details_gross_price($r, $nolink) {
 		$price = Utils_CurrencyFieldCommon::get_values($r['net_price']);
-		$ret = round((100+$r['tax_rate'])*$price[0]/100, Utils_CurrencyFieldCommon::get_precission($price[1]))*$r['quantity'];
+		$ret = round((100+Data_TaxRatesCommon::get_tax_rate($r['tax_rate']))*$price[0]/100, Utils_CurrencyFieldCommon::get_precission($price[1]))*$r['quantity'];
 		return Utils_CurrencyFieldCommon::format($ret, $price[1]);
 	}
 	
@@ -305,15 +301,20 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 						'if(second.length==1)second="0"+second;'.
 						'return first+"'.$decp.'"+second;'.
 					'}');
+			$tax_rates = Data_TaxRatesCommon::get_tax_details();
+			$js = 'var tax_values=new Array();';
+			foreach ($tax_rates as $k=>$v)
+				$js .= 'tax_values['.$k.']='.$v['percentage'].';';
+			eval_js($js);
 			eval_js('update_net=function(){'.
 						'$("use_net_price").value=0;'.
 						'val=$("gross_price").value.split("'.$decp.'").join(".");'.
-						'$("net_price").value=format_currency(100*parseFloat(val)/(100+parseFloat(1*$("tax_rate").value)));'.
+						'$("net_price").value=format_currency(100*parseFloat(val)/(100+parseFloat(1*tax_values[$("tax_rate").value])));'.
 					'}');
 			eval_js('update_gross=function(){'.
 						'$("use_net_price").value=1;'.
 						'val=$("net_price").value.split("'.$decp.'").join(".");'.
-						'$("gross_price").value=format_currency(parseFloat(val)+parseFloat(val*$("tax_rate").value)/100);'.
+						'$("gross_price").value=format_currency(parseFloat(val)+parseFloat(val*tax_values[$("tax_rate").value])/100);'.
 					'}');
 			eval_js('switch_currencies=function(val){'.
 						'$("__net_price__currency").selectedIndex=val;'.
@@ -387,12 +388,12 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	
 	public static function QFfield_details_tax_rate(&$form, $field, $label, $mode, $default){
 		if ($mode=='add' || $mode=='edit') {
-			$tax_rates = array(''=>'---')+Utils_CommonDataCommon::get_translated_array('Premium_Warehouse_Items_Tax');
+			$tax_rates = array(''=>'---')+Data_TaxRatesCommon::get_tax_rates();
 			$form->addElement('select', $field, $label, $tax_rates, array('onkeypress'=>'var key=event.which || event.keyCode;if(key==13){'.$form->get_submit_form_js().'};', 'id'=>'tax_rate'));
 			if ($mode=='edit') $form->setDefaults(array($field=>$default));
 		} else {
 			$form->addElement('static', $field, $label);
-			$form->setDefaults(array($field=>Utils_CommonDataCommon::get_value('Premium_Warehouse_Items_Tax/'.$default,true)));
+			$form->setDefaults(array($field=>Data_TaxRatesCommon::get_tax_name($default)));
 		}
 	} 
 	
@@ -898,12 +899,13 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			case 'add':
 				$net = Utils_CurrencyFieldCommon::get_values($values['net_price']);
 				$gross = Utils_CurrencyFieldCommon::get_values($values['gross_price']);
-				if (round($net[0]*(100+$values['tax_rate'])/100,2)!=$gross[0]) {
-					$values['gross_price'] = round($net[0]*(100+$values['tax_rate'])/100,2).'__'.$net[1];
+				$tax_rate = Data_TaxRatesCommon::get_tax_rate($values['tax_rate']);
+				if (round($net[0]*(100+$tax_rate)/100,2)!=$gross[0]) {
+					$values['gross_price'] = round($net[0]*(100+$tax_rate)/100,2).'__'.$net[1];
 					$new_gross = Utils_CurrencyFieldCommon::get_values($values['gross_price']);
 					$notice = Base_LangCommon::ts('Premium_Warehouse_Items_Orders', '<font color="red"><b>Notice:</b></font> No gross price is worth %s including %s%% tax.<br />Gross price was adjusted to %s, based on net price', array(
 						Utils_CurrencyFieldCommon::format($gross[0], $gross[1]),
-						$values['tax_rate'],
+						$tax_rate,
 						Utils_CurrencyFieldCommon::format($new_gross[0], $new_gross[1]),
 						));
 				}

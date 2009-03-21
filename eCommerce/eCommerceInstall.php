@@ -88,8 +88,8 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		$fields = array(
 			array('name'=>'Item Name', 	'type'=>'select', 'required'=>true, 'param'=>'premium_warehouse_items::Item Name;Premium_Warehouse_Items_OrdersCommon::products_crits', 'extra'=>false, 'visible'=>true, 'display_callback'=>array($this->get_type().'Common', 'display_item_name')),
 			array('name'=>'Currency', 	'type'=>'integer', 'required'=>true, 'extra'=>false,'visible'=>true, 'display_callback'=>array($this->get_type().'Common', 'display_currency'),'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_currency')),
-			array('name'=>'Gross Price', 		'type'=>'integer', 'required'=>true, 'extra'=>false,'visible'=>true),
-			array('name'=>'Tax Rate', 	'type'=>'select', 'required'=>true, 'extra'=>false, 'visible'=>true, 'param'=>'__COMMON__::Premium_Warehouse_Items_Tax', 'style'=>'integer')
+			array('name'=>'Gross Price','type'=>'integer', 'required'=>true, 'extra'=>false,'visible'=>true),
+			array('name'=>'Tax Rate', 	'type'=>'select', 'required'=>true, 'extra'=>false, 'visible'=>true, 'param'=>'data_tax_rates::Name', 'style'=>'integer')
 		);
 		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_prices', $fields);
 
