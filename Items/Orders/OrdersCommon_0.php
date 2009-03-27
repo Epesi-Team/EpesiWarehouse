@@ -403,8 +403,8 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	public static function QFfield_item_name(&$form, $field, $label, $mode, $default){
 		self::get_trans();
 		if (self::$trans['transaction_type']==2) {
-			eval_js('$("'.Utils_RecordBrowserCommon::get_calcualted_id('premium_warehouse_items_orders_details', 'debit', null).'").innerHTML="";');
-			eval_js('$("'.Utils_RecordBrowserCommon::get_calcualted_id('premium_warehouse_items_orders_details', 'credit', null).'").innerHTML="";');
+			eval_js('$("'.Utils_RecordBrowserCommon::get_calculated_id('premium_warehouse_items_orders_details', 'debit', null).'").innerHTML="";');
+			eval_js('$("'.Utils_RecordBrowserCommon::get_calculated_id('premium_warehouse_items_orders_details', 'credit', null).'").innerHTML="";');
 			$form->addElement('text','order_details_credit_or_debit','None');
 			$form->addElement('text','order_details_debit','None');
 			$form->addElement('text','order_details_credit','None');
