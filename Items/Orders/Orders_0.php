@@ -36,7 +36,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 			$this->t('Warehouse Transfer')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'warehouse_transfer.png'), 'defaults'=>array_merge($defaults,array('transaction_type'=>4)))
 			), true);
 //		$warehouse = Base_User_SettingsCommon::get('Premium_Warehouse', 'my_warehouse');
-//		if ($warehouse) $this->rb->set_additional_caption(' - '.Utils_RecordBrowserCommon::get_value('premium_warehouse', $warehouse,'warehouse'));
+//		if ($warehouse) $this->rb->set_additional_caption(Utils_RecordBrowserCommon::get_value('premium_warehouse', $warehouse,'warehouse'));
 		$this->rb->set_header_properties(array('terms'=>array('width'=>1, 'wrapmode'=>'nowrap'),'status'=>array('width'=>1, 'wrapmode'=>'nowrap')));
 		$this->display_module($this->rb);
 	}
