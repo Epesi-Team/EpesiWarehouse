@@ -139,6 +139,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 					'Payments & Carriers'=>array('recordset'=>'payments_carriers'),
 					'Pages'=>array('recordset'=>'pages'),
 					'Start page'=>array('__function__'=>'start_page'),
+					'Icecat'=>array('__function__'=>'icecat'),
 					'Rules and policies'=>array('__function__'=>'rules_page'),
 					'QuickCart settings'=>array('__function__'=>'QC_dirs')
 				)
@@ -162,6 +163,47 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
     			copy($th2['thumb'],$q.'/files/200/epesi/'.$id.'_'.$rev.$ext);
 		    }
 		}
+	}
+	
+	public static function icecat_addon_parameters($r) {
+	    $user = Variable::get('icecat_user');
+	    $pass = Variable::get('icecat_pass');
+	    if($user && $pass)
+        	    Base_ActionBarCommon::add('add','Icecat',Module::create_href(array('icecat_sync'=>1),'Getting data from icecat - please wait.'));
+	    if(isset($_REQUEST['icecat_sync'])) {
+		$item = Utils_RecordBrowserCommon::get_record('premium_warehouse_items',$r['item_name']);
+		$prod_id = $item['manufacturer_part_number'];
+		if(!$prod_id)
+    		    $prod_id = $item['product_code'];
+		if(!$prod_id) {
+		    Epesi::alert("Missing product code or manufacturer part number.");
+		    return false;		
+		}
+		if(!$item['vendor']) {
+		    Epesi::alert("Missing product vendor.");
+		    return false;		
+		}
+		$vendor = CRM_ContactsCommon::get_company($item['vendor']);
+		$langs = Utils_CommonDataCommon::get_array('Premium/Warehouse/eCommerce/Languages');
+		foreach($langs as $code=>$name) {
+		    $url = 'http://data.icecat.biz/xml_s3/xml_server3.cgi?'.http_build_query(array('prod_id'=>$prod_id,'vendor'=>$vendor['company_name'],'lang'=>$code,'output'=>'productxml'));
+		    $c = curl_init();
+		    curl_setopt($c, CURLOPT_URL, $url);
+		    curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
+		    curl_setopt($c, CURLOPT_USERPWD,$user.':'.$pass);
+		    $output = curl_exec($c);
+		    $response_code = curl_getinfo($c, CURLINFO_HTTP_CODE);
+	    	    if($response_code==401) {
+			Epesi::alert("Invalid user or password");
+			return false;
+		    }
+		    if($output) {
+			$obj = simplexml_load_string($output);
+			print_r($obj); //TODO: parsing
+		    }
+		}
+	    }
+	    return false;
 	}
 
 

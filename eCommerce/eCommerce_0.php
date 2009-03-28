@@ -183,11 +183,9 @@ class Premium_Warehouse_eCommerce extends Module {
 	
 		$form = & $this->init_module('Libs/QuickForm');
 
-		//create new user
 		$form->addElement('header', null, $this->t('Add quickcart binding'));
 
 		$form->addElement('text', 'path', $this->t('Path'));
-		// require a username
 		$form->addRule('path', $this->t('A path must be between 3 and 255 chars'), 'rangelength', array(3,255));
 		$form->registerRule('check_path','callback','check_path','Premium_Warehouse_eCommerce');
 		$form->addRule('path', $this->t('Invalid path'), 'check_path');
@@ -220,6 +218,64 @@ class Premium_Warehouse_eCommerce extends Module {
 	    @recursive_rmdir($path.'/files/epesi/');
 	    @recursive_rmdir($path.'/files/100/epesi/');
 	    @recursive_rmdir($path.'/files/200/epesi/');
+	}
+	
+	public function icecat() {
+		$form = & $this->init_module('Libs/QuickForm');
+
+		$form->addElement('header', null, $this->t('Ice cat settings'));
+		
+		eval_js_once('icecat_enabled = function(v) {'.
+			    'if(v==1){$("icecat_user").enable();$("icecat_pass").enable();}'.
+			    'else{$("icecat_user").disable();$("icecat_pass").disable();}'.
+			    '};');
+		
+		$form->addElement('select', 'enabled', $this->t('Enabled'), array($this->ht('No'),$this->ht('Yes')), array('onChange'=>'icecat_enabled(this.value)'));
+		// require a username and password
+		$form->addElement('text', 'user', $this->t('Username'), array('id'=>'icecat_user'));
+		$form->addElement('password', 'pass', $this->t('Password'), array('id'=>'icecat_pass'));
+
+		$user = Variable::get('icecat_user');
+		$pass = Variable::get('icecat_pass');
+		if($user && $pass)
+		    $enabled = 1;
+		else
+		    $enabled = 0;
+		$form->setDefaults(array('enabled'=>$enabled,'user'=>$user,'pass'=>$pass));
+
+		$enabled = $form->exportValue('enabled');
+		eval_js('icecat_enabled('.$enabled.')');
+		if($enabled) {
+		    $form->addRule('user',$this->t('Field required'),'required');
+		    $form->addRule('pass',$this->t('Field required'),'required');
+    		    $form->registerRule('check_icecat','callback','check_icecat_pass','Premium_Warehouse_eCommerce');
+		    $form->addRule(array('user','pass'), $this->t('Invalid username or password.'), 'check_icecat');
+		}
+
+		if($form->validate()) {
+		    $vals = $form->exportValues();
+		    if(!$vals['enabled']) {
+			$vals['user'] = '';
+			$vals['pass'] = '';
+		    }
+		    Variable::set('icecat_user',$vals['user']);
+		    Variable::set('icecat_pass',$vals['pass']);
+    		    Base_StatusBarCommon::message($this->t('Settings saved'));
+		}
+		$form->display();
+
+		Base_ActionBarCommon::add('save', 'Save', $form->get_submit_form_href(true));
+	}
+	
+	public function check_icecat_pass($user) {
+	    $url = 'http://data.icecat.biz/xml_s3/xml_server3.cgi?prod_id=RJ459AV;vendor=hp;lang=pl;output=productxml';
+	    $c = curl_init();
+	    curl_setopt($c, CURLOPT_URL, $url);
+	    curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
+	    curl_setopt($c, CURLOPT_USERPWD,$user[0].':'.$user[1]);
+	    $output = curl_exec($c);
+	    $response_code = curl_getinfo($c, CURLINFO_HTTP_CODE);
+	    return $response_code!=401;
 	}
 	
 	private function edit_variable($header, $v) {
@@ -273,6 +329,9 @@ class Premium_Warehouse_eCommerce extends Module {
 		$a->allow_public($this->acl_check('view public notes'),$this->acl_check('edit public notes'));
 		$a->set_add_func(array('Premium_Warehouse_eCommerceCommon','copy_attachment'));
 		$this->display_module($a);
+	}
+
+	public function icecat_addon($arg){
 	}
 	
 	public function caption(){

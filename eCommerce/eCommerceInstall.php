@@ -256,6 +256,11 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Variable::set('ecommerce_rules','You can edit this page in Warehouse - eCommerce settings.');
 		Variable::set('quickcart_thumbnail_size',0);
 
+		//icecat
+		Variable::set('icecat_user','');
+		Variable::set('icecat_pass','');
+		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_products', 'Premium_Warehouse_eCommerce', 'icecat_addon', 'Premium_Warehouse_eCommerceCommon::icecat_addon_parameters');
+
 		return true;
 	}
 	
@@ -268,6 +273,11 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Variable::delete('ecommerce_start_page');
 		Variable::delete('ecommerce_rules');
 		Variable::delete('quickcart_thumbnail_size');
+
+		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_products', 'Premium_Warehouse_eCommerce', 'icecat_addon');
+		Variable::delete('icecat_user');
+		Variable::delete('icecat_pass');
+
 		Utils_CommonDataCommon::remove('Premium/Warehouse/eCommerce/Languages');
 		Base_ThemeCommon::uninstall_default_theme($this->get_type());
 
