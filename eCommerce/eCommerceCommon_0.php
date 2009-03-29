@@ -185,6 +185,13 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 		}
 		$vendor = CRM_ContactsCommon::get_company($item['vendor']);
 		$langs = Utils_CommonDataCommon::get_array('Premium/Warehouse/eCommerce/Languages');
+		
+		$descriptions_tmp = Utils_RecordBrowserCommon::get_records('premium_ecommerce_descriptions',array('item_name'=>$r['item_name']),array('id','language'));
+		$descriptions = array();
+		foreach($descriptions_tmp as $rr)
+		    $descriptions[$rr['language']] = $rr['id'];
+		
+		set_time_limit(count($langs)*60);
 		foreach($langs as $code=>$name) {
 		    $url = 'http://data.icecat.biz/xml_s3/xml_server3.cgi?'.http_build_query(array('prod_id'=>$prod_id,'vendor'=>$vendor['company_name'],'lang'=>$code,'output'=>'productxml'));
 		    $c = curl_init();
@@ -199,7 +206,13 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 		    }
 		    if($output) {
 			$obj = simplexml_load_string($output);
-			print_r($obj); //TODO: parsing
+			$product_desc = array('item_name'=>$r['id'],'language'=>$code,
+						'display_name'=>$obj->Product[0]['Name'],
+						'short_description'=>$obj->Product[0]->ProductDescription);
+			if(isset($descriptions[$code]))
+			    Utils_RecordBrowserCommon::update_record('premium_ecommerce_descriptions',$descriptions[$code],$product_desc);
+			else
+			    Utils_RecordBrowserCommon::new_record('premium_ecommerce_descriptions',$product_desc);
 		    }
 		}
 	    }
