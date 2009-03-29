@@ -208,6 +208,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 		    curl_setopt($c, CURLOPT_USERPWD,$user.':'.$pass);
 		    $output = curl_exec($c);
 		    $response_code = curl_getinfo($c, CURLINFO_HTTP_CODE);
+		    curl_close($c);
 	    	    if($response_code==401) {
 			Epesi::alert("Invalid user or password");
 			return false;
@@ -216,11 +217,38 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 			$obj = simplexml_load_string($output);
 			$product_desc = array('item_name'=>$r['id'],'language'=>$code,
 						'display_name'=>$obj->Product[0]['Name'],
-						'short_description'=>$obj->Product[0]->ProductDescription);
+						'short_description'=>$obj->Product[0]->ProductDescription[0]);
 			if(isset($descriptions[$code]))
 			    Utils_RecordBrowserCommon::update_record('premium_ecommerce_descriptions',$descriptions[$code],$product_desc);
 			else
-			    Utils_RecordBrowserCommon::new_record('premium_ecommerce_descriptions',$product_desc);
+			    $descriptions[$code] = Utils_RecordBrowserCommon::new_record('premium_ecommerce_descriptions',$product_desc);
+			
+			
+			$pic = null;
+			if(isset($obj->Product[0]['HighPic']))
+			    $pic = $obj->Product[0]['HighPic'];
+			elseif(isset($obj->Product[0]['LowPic']))
+			    $pic = $obj->Product[0]['LowPic'];
+			if($pic) {
+			    $num_of_pics = Utils_AttachmentCommon::count('Premium/Warehouse/eCommerce/ProductsDesc/'.$code.'/'.$r['item_name']);
+			    if(!$num_of_pics) {
+				$ch = curl_init();
+				curl_setopt($ch, CURLOPT_URL,$pic);
+				$temp_file = tempnam(sys_get_temp_dir(), 'icecatpic');
+				$fp = fopen($temp_file, 'w');
+    				curl_setopt($ch, CURLOPT_FILE, $fp);
+				curl_exec ($ch);
+		    		$response_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+				curl_close ($ch);
+				fclose($fp);
+
+				if($response_code==200)
+				    Utils_AttachmentCommon::add('Premium/Warehouse/eCommerce/ProductsDesc/'.$code.'/'.$r['item_name'],
+							    0,Acl::get_user(),'Icecat product picture',basename($pic),$temp_file,null,null,array('Premium_Warehouse_eCommerceCommon','copy_attachment'));
+
+				@unlink($temp_file);
+			    }
+			}
 		    }
 		}
 	    }

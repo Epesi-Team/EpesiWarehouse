@@ -211,6 +211,10 @@ class Files
 	$product = basename($row['local']);
 	if(ereg('^Premium/Warehouse/eCommerce/Products',$row['local'])) {
 	    $iKey = 2;
+	    if(ereg('^Premium/Warehouse/eCommerce/ProductsDesc',$row['local'])) {
+		$lang = basename(dirname($row['local']));
+		if($lang!=LANGUAGE) continue;
+	    }
 	} else {
 	    $iKey = 1;
 	    $product = $product*4+2;
