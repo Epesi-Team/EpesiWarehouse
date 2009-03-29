@@ -172,18 +172,26 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
         	    Base_ActionBarCommon::add('add','Icecat',Module::create_href(array('icecat_sync'=>1),'Getting data from icecat - please wait.'));
 	    if(isset($_REQUEST['icecat_sync'])) {
 		$item = Utils_RecordBrowserCommon::get_record('premium_warehouse_items',$r['item_name']);
-		$prod_id = $item['manufacturer_part_number'];
-		if(!$prod_id)
-    		    $prod_id = $item['product_code'];
-		if(!$prod_id) {
-		    Epesi::alert("Missing product code or manufacturer part number.");
-		    return false;		
+		$query_arr = array();
+		if($item['upc']) {
+		    $query_arr['ean_upc'] = $item['upc'];
+		} else {
+    		    $prod_id = $item['manufacturer_part_number'];
+		    if(!$prod_id)
+    			$prod_id = $item['product_code'];
+		    if(!$prod_id) {
+			Epesi::alert("Missing product code or manufacturer part number.");
+			return false;		
+		    }
+		    if(!$item['vendor']) {
+			Epesi::alert("Missing product vendor.");
+			return false;		
+		    }
+		    $vendor = CRM_ContactsCommon::get_company($item['vendor']);
+		    $query_arr['prod_id'] = $prod_id;
+		    $query_arr['vendor'] = $vendor['company_name'];
 		}
-		if(!$item['vendor']) {
-		    Epesi::alert("Missing product vendor.");
-		    return false;		
-		}
-		$vendor = CRM_ContactsCommon::get_company($item['vendor']);
+		
 		$langs = Utils_CommonDataCommon::get_array('Premium/Warehouse/eCommerce/Languages');
 		
 		$descriptions_tmp = Utils_RecordBrowserCommon::get_records('premium_ecommerce_descriptions',array('item_name'=>$r['item_name']),array('id','language'));
@@ -193,7 +201,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 		
 		set_time_limit(count($langs)*60);
 		foreach($langs as $code=>$name) {
-		    $url = 'http://data.icecat.biz/xml_s3/xml_server3.cgi?'.http_build_query(array('prod_id'=>$prod_id,'vendor'=>$vendor['company_name'],'lang'=>$code,'output'=>'productxml'));
+		    $url = 'http://data.icecat.biz/xml_s3/xml_server3.cgi?'.http_build_query($query_arr+array('lang'=>$code,'output'=>'productxml'));
 		    $c = curl_init();
 		    curl_setopt($c, CURLOPT_URL, $url);
 		    curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
