@@ -193,12 +193,28 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 		}
 		
 		$langs = Utils_CommonDataCommon::get_array('Premium/Warehouse/eCommerce/Languages');
-		
+
+		//descriptions in all langs		
 		$descriptions_tmp = Utils_RecordBrowserCommon::get_records('premium_ecommerce_descriptions',array('item_name'=>$r['item_name']),array('id','language'));
 		$descriptions = array();
 		foreach($descriptions_tmp as $rr)
 		    $descriptions[$rr['language']] = $rr['id'];
+		unset($descriptions_tmp);
 		
+		//parameters codes
+		$parameters_tmp = Utils_RecordBrowserCommon::get_records('premium_ecommerce_parameters',array('~parameter_code'=>'icecat_%'),array('id','parameter_code'));
+		$parameters = array();
+		foreach($parameters_tmp as $rr)
+		    $parameters[$rr['parameter_code']] = $rr['id'];
+		unset($parameters_tmp);
+
+		//parameters
+		$item_parameters_tmp = Utils_RecordBrowserCommon::get_records('premium_ecommerce_products_parameters',array('item_name'=>$r['item_name']),array('id','parameter'));
+		$item_parameters = array();
+		foreach($item_parameters_tmp as $rr)
+		    $item_parameters[$rr['parameter']] = $rr['id'];
+		unset($item_parameters_tmp);
+
 		set_time_limit(count($langs)*60);
 		foreach($langs as $code=>$name) {
 		    $url = 'http://data.icecat.biz/xml_s3/xml_server3.cgi?'.http_build_query($query_arr+array('lang'=>$code,'output'=>'productxml'));
@@ -215,7 +231,10 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 		    }
 		    if($output) {
 			$obj = simplexml_load_string($output);
-			$product_desc = array('item_name'=>$r['id'],'language'=>$code,
+			
+			//description
+			$product_desc = array('item_name'=>$r['item_name'],
+						'language'=>$code,
 						'display_name'=>$obj->Product[0]['Name'],
 						'short_description'=>$obj->Product[0]->ProductDescription[0]);
 			if(isset($descriptions[$code]))
@@ -223,7 +242,53 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 			else
 			    $descriptions[$code] = Utils_RecordBrowserCommon::new_record('premium_ecommerce_descriptions',$product_desc);
 			
+			//parameters categories
+/*			//ten kod trzeba przerobic z parametrow na kategorie
+			$parameter_labels_tmp = Utils_RecordBrowserCommon::get_records('premium_ecommerce_parameter_labels',array('language'=>$code),array('id','parameter'));
+			$parameter_labels = array();
+			foreach($parameter_labels_tmp as $rr)
+			    $parameter_labels[$rr['parameter']] = $rr['id'];
+			foreach($obj->Product[0]->CategoryFeatureGroup as $cg) {
+				$key = 'icecat_'.$cg['ID'];
+				if(!isset($parameters[$key]))
+				    $parameters[$key] = Utils_RecordBrowserCommon::new_record('premium_ecommerce_parameters',array('parameter_code'=>$key));
+				elseif(isset($parameter_labels[$parameters[$key]])) 
+				    continue;
+				$parameter_label = array('parameter'=>$parameters[$key],
+							'language'=>$code,
+							'label'=>$cg->FeatureGroup[0]->Name[0]['Value']);
+				Utils_RecordBrowserCommon::new_record('premium_ecommerce_parameter_labels',$parameter_label);
+			}
+			*/
 			
+			//parameters
+			$parameter_labels_tmp = Utils_RecordBrowserCommon::get_records('premium_ecommerce_parameter_labels',array('language'=>$code),array('id','parameter'));
+			$parameter_labels = array();
+			foreach($parameter_labels_tmp as $rr)
+			    $parameter_labels[$rr['parameter']] = $rr['id'];
+			
+			foreach($obj->Product[0]->ProductFeature as $pf) {
+			    //print($params['icecat_fg_'.$pf['CategoryFeatureGroup_ID']]."/");
+
+			    $key = 'icecat_'.$pf->Feature[0]['ID'];
+			    if(!isset($parameters[$key]))
+			        $parameters[$key] = Utils_RecordBrowserCommon::new_record('premium_ecommerce_parameters',array('parameter_code'=>$key));
+			    if(!isset($parameter_labels[$parameters[$key]])) {
+				$parameter_label = array('parameter'=>$parameters[$key],
+							'language'=>$code,
+							'label'=>$pf->Feature[0]->Name[0]['Value']);
+				$parameter_labels[$parameters[$key]] = Utils_RecordBrowserCommon::new_record('premium_ecommerce_parameter_labels',$parameter_label);
+			    }
+			    $item_params = array('item_name'=>$r['item_name'],
+						'parameter'=>$parameters[$key],
+						'value'=>$pf['Presentation_Value']);
+			    if(isset($item_parameters[$parameters[$key]]))
+				Utils_RecordBrowserCommon::update_record('premium_ecommerce_products_parameters',$item_parameters[$parameters[$key]],$item_params);
+			    else
+				$item_parameters[$parameters[$key]] = Utils_RecordBrowserCommon::new_record('premium_ecommerce_products_parameters',$item_params);
+			}
+
+			//picture
 			$pic = null;
 			if(isset($obj->Product[0]['HighPic']))
 			    $pic = $obj->Product[0]['HighPic'];

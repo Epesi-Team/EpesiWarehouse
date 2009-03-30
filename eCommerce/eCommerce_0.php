@@ -98,8 +98,8 @@ class Premium_Warehouse_eCommerce extends Module {
 
 	public function parameters_addon($arg) {
 		$rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_products_parameters');
-		$order = array(array('item_name'=>$arg['id']), array('item_name'=>false), array('parameter'=>'ASC'));
-		$rb->set_defaults(array('item_name'=>$arg['id']));
+		$order = array(array('item_name'=>$arg['item_name']), array('item_name'=>false), array('parameter'=>'ASC'));
+		$rb->set_defaults(array('item_name'=>$arg['item_name']));
 		$rb->set_header_properties(array(
 			'parameter'=>array('wrapmode'=>'nowrap'),
 			'value'=>array('wrapmode'=>'nowrap')
