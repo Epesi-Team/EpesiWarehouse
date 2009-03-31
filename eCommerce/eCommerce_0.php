@@ -30,30 +30,53 @@ class Premium_Warehouse_eCommerce extends Module {
 					break;
 			}
 		$mod = $this->get_module_variable('recordset');
+		$order = array();
 		switch($mod) {
 			case 'products':
 				$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_products');
 				$this->rb->set_defaults(array('publish'=>1,'position'=>0,'status'=>1));
+				$this->rb->set_additional_actions_method($this, 'actions_for_position');
 				break;
 			case 'parameters':
 				$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_parameters');
+				$this->rb->set_additional_actions_method($this, 'actions_for_position');
+//				$order['position'] = 'ASC';
+//				$order['parameter_code'] = 'ASC';
 				break;
 			case 'parameter_groups':
 				$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_parameter_groups');
+				$this->rb->set_additional_actions_method($this, 'actions_for_position');
 				break;
 			case 'availability':
 				$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_availability');
 				$this->rb->set_defaults(array('position'=>0));
+				$this->rb->set_additional_actions_method($this, 'actions_for_position');
 				break;
 			case 'pages':
 				$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_pages');
 				$this->rb->set_defaults(array('position'=>0,'publish'=>1,'type'=>2));
+				$this->rb->set_additional_actions_method($this, 'actions_for_position');
 				break;
 			case 'payments_carriers':
 				$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_payments_carriers');
 				break;
 		}
-		$this->display_module($this->rb);
+		$this->display_module($this->rb,array($order));
+	}
+
+	public function actions_for_position($r, & $gb_row) {
+		$tab = 'premium_ecommerce_'.$this->get_module_variable('recordset');
+		if(isset($_REQUEST['pos_action']) && $r['id']==$_REQUEST['pos_action'] && is_numeric($_REQUEST['old']) && is_numeric($_REQUEST['new'])) {
+		    $recs = Utils_RecordBrowserCommon::get_records($tab,array('position'=>$_REQUEST['new']), array('id'));
+		    foreach($recs as $rr)
+			Utils_RecordBrowserCommon::update_record($tab,$rr['id'],array('position'=>$_REQUEST['old']));
+    		    Utils_RecordBrowserCommon::update_record($tab,$r['id'],array('position'=>$_REQUEST['new']));
+		    location(array());
+		}
+		if($r['position']=='')
+		    $r['position'] = 0;
+		$gb_row->add_action(Module::create_href(array('pos_action'=>$r['id'],'old'=>$r['position'],'new'=>$r['position']-1)),'move-up');
+		$gb_row->add_action(Module::create_href(array('pos_action'=>$r['id'],'old'=>$r['position'],'new'=>$r['position']+1)),'move-down');
 	}
 	
 	public function parameter_labels_addon($arg) {

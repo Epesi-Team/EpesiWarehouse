@@ -102,7 +102,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		//product parameters
 		$fields = array(
 			array('name'=>'Parameter Code', 'type'=>'text', 'param'=>128, 'required'=>true, 'extra'=>false, 'visible'=>true),
-			array('name'=>'Position', 		'type'=>'integer', 'required'=>true, 'extra'=>false)
+			array('name'=>'Position', 		'type'=>'integer', 'required'=>true, 'extra'=>false,'visible'=>false)
 		);
 		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_parameters', $fields);
 
@@ -125,7 +125,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		//parameter groups
 		$fields = array(
 			array('name'=>'Group Code', 'type'=>'text', 'param'=>128, 'required'=>true, 'extra'=>false, 'visible'=>true),
-			array('name'=>'Position', 		'type'=>'integer', 'required'=>true, 'extra'=>false)
+			array('name'=>'Position', 		'type'=>'integer', 'required'=>true, 'extra'=>false,'visible'=>false)
 		);
 		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_parameter_groups', $fields);
 
@@ -162,7 +162,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		//product availability
 		$fields = array(
 			array('name'=>'Availability Code', 'type'=>'text', 'param'=>128, 'required'=>true, 'extra'=>false, 'visible'=>true),
-			array('name'=>'Position', 		'type'=>'integer', 'required'=>true, 'extra'=>false)
+			array('name'=>'Position', 		'type'=>'integer', 'required'=>true, 'extra'=>false,'visible'=>false)
 		);
 		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_availability', $fields);
 
@@ -189,7 +189,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 			array('name'=>'Parent Page',	'type'=>'select', 'param'=>'premium_ecommerce_pages::Page Name;Premium_Warehouse_eCommerceCommon::parent_page_crits' ,'required'=>false, 'extra'=>false, 'visible'=>false),
 			array('name'=>'Type',			'type'=>'integer',	'required'=>true, 'extra'=>false, 'visible'=>true,'display_callback'=>array($this->get_type().'Common', 'display_page_type'),'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_page_type')),
 			array('name'=>'Publish', 		'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>true),
-			array('name'=>'Position', 		'type'=>'integer', 'required'=>true, 'extra'=>false)
+			array('name'=>'Position', 		'type'=>'integer', 'required'=>true, 'extra'=>false,'visible'=>false)
 		);
 		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_pages', $fields);
 
