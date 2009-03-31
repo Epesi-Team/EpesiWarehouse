@@ -22,6 +22,7 @@ class Premium_Warehouse_eCommerce extends Module {
 			switch($_REQUEST['recordset']) {
 				case 'products':
 				case 'parameters':
+				case 'parameter_groups':
 				case 'availability':
 				case 'pages':
 				case 'payments_carriers':
@@ -36,6 +37,9 @@ class Premium_Warehouse_eCommerce extends Module {
 				break;
 			case 'parameters':
 				$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_parameters');
+				break;
+			case 'parameter_groups':
+				$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_parameter_groups');
 				break;
 			case 'availability':
 				$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_availability');
@@ -56,6 +60,17 @@ class Premium_Warehouse_eCommerce extends Module {
 		$rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_parameter_labels');
 		$order = array(array('parameter'=>$arg['id']), array('parameter'=>false,'language'=>true,'label'=>true), array('language'=>'ASC'));
 		$rb->set_defaults(array('parameter'=>$arg['id']));
+		$rb->set_header_properties(array(
+			'language'=>array('width'=>1, 'wrapmode'=>'nowrap'),
+			'label'=>array('width'=>50, 'wrapmode'=>'nowrap')
+									));
+		$this->display_module($rb,$order,'show_data');
+	}
+
+	public function parameter_group_labels_addon($arg) {
+		$rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_parameter_group_labels');
+		$order = array(array('group'=>$arg['id']), array('group'=>false,'language'=>true,'label'=>true), array('language'=>'ASC'));
+		$rb->set_defaults(array('group'=>$arg['id']));
 		$rb->set_header_properties(array(
 			'language'=>array('width'=>1, 'wrapmode'=>'nowrap'),
 			'label'=>array('width'=>50, 'wrapmode'=>'nowrap')

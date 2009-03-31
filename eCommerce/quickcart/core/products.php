@@ -58,7 +58,7 @@ class Products
 								it.f_item_name as sName2, 
 								pri.f_gross_price as fPrice, 
 								pri.f_tax_rate as tax,
-								(pr.f_publish AND it.f_quantity_on_hand>0) as iStatus, 
+								pr.f_publish as iStatus, 
 								pr.f_position as iPosition, 
 								it.f_category,
 								av.f_availability_code as sAvailable2, 
@@ -75,19 +75,25 @@ class Products
 					LEFT JOIN premium_ecommerce_prices_data_1 pri ON (pri.f_item_name=it.id AND pri.active=1 AND pri.f_currency='.$currency.')
 					LEFT JOIN premium_ecommerce_descriptions_data_1 d ON (d.f_item_name=it.id AND d.f_language="'.LANGUAGE.'")
 					LEFT JOIN premium_ecommerce_availability_labels_data_1 avl ON (pr.f_available=avl.f_availability AND avl.f_language="'.LANGUAGE.'") 
-					 WHERE pr.f_publish>=%d AND pr.active=1',array($iStatus));
+					LEFT JOIN premium_warehouse_location_data_1 loc ON (loc.f_item_sku=it.id AND loc.f_quantity>0)
+					 WHERE pr.f_publish>=%d AND pr.active=1 AND loc.f_quantity is not null',array($iStatus));
 
 	while($aExp = $ret->FetchRow()) {
 		$ret2 = DB::Execute('SELECT pp.f_value,
-									p.f_parameter_code,
-									pl.f_label
+									p.f_parameter_code as parameter_code,
+									pl.f_label as parameter_label,
+									g.f_group_code as group_code,
+									gl.f_label as group_label
 						FROM premium_ecommerce_products_parameters_data_1 pp
-						LEFT JOIN premium_ecommerce_parameters_data_1 p ON p.id=pp.f_parameter
-						LEFT JOIN premium_ecommerce_parameter_labels_data_1 pl ON (pl.f_parameter=pp.f_parameter AND pl.f_language="'.LANGUAGE.'")
-						WHERE pp.f_item_name=%d ORDER BY p.f_position',array($aExp['iProduct']));
+						INNER JOIN (premium_ecommerce_parameters_data_1 p,premium_ecommerce_parameter_groups_data_1 g) ON (p.id=pp.f_parameter AND g.id=pp.f_group)
+						LEFT JOIN premium_ecommerce_parameter_labels_data_1 pl ON (pl.f_parameter=p.id AND pl.f_language="'.LANGUAGE.'")
+						LEFT JOIN premium_ecommerce_parameter_group_labels_data_1 gl ON (gl.f_group=g.id AND gl.f_language="'.LANGUAGE.'")
+						WHERE pp.f_item_name=%d AND pp.f_language="'.LANGUAGE.'" ORDER BY g.f_position,gl.f_label,g.f_group_code,p.f_position,pl.f_label,p.f_parameter_code',array($aExp['iProduct']));
 		$paramteres = array();
+		$last_group = null;
 		while($bExp = $ret2->FetchRow()) {
-			$paramteres[] = '<td>'.($bExp['f_label']?$bExp['f_label']:$bExp['f_parameter_code']).'</td><td>'.$bExp['f_value'].'</td>'; 
+			$paramteres[] = '<td>'.($last_group!=$bExp['group_code']?($bExp['group_label']?$bExp['group_label']:$bExp['group_code']):'').'</td><td>'.($bExp['parameter_label']?$bExp['parameter_label']:$bExp['parameter_code']).'</td><td>'.$bExp['f_value'].'</td>'; 
+			$last_group = $bExp['group_code'];
 		}
 		if (!empty($paramteres)) {
 			$aExp['sDescriptionFull'] = $aExp['sDescriptionFull'].

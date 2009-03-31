@@ -21,8 +21,8 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 //		Base_ThemeCommon::install_default_theme($this->get_type());
 
 		$fields = array(
-			array('name'=>'Item Name', 		'type'=>'select', 'required'=>true, 'param'=>'premium_warehouse_items::SKU|Item Name;Premium_Warehouse_eCommerceCommon::items_crits', 'extra'=>false, 'visible'=>true, 'display_callback'=>array($this->get_type().'Common', 'display_item_name')),
 			array('name'=>'Product Name', 	'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>true, 'display_callback'=>array($this->get_type().'Common', 'display_product_name')),
+			array('name'=>'Item Name', 		'type'=>'select', 'required'=>true, 'param'=>'premium_warehouse_items::SKU|Item Name;Premium_Warehouse_eCommerceCommon::items_crits', 'extra'=>false, 'visible'=>true, 'display_callback'=>array($this->get_type().'Common', 'display_item_name')),
 			array('name'=>'Publish', 		'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>true),
 			array('name'=>'Position', 		'type'=>'integer', 'required'=>true, 'extra'=>false, 'visible'=>false),
 			array('name'=>'Available',	 	'type'=>'select', 'required'=>true, 'extra'=>false, 'visible'=>false, 'param'=>'premium_ecommerce_availability::Availability Code'),
@@ -122,9 +122,35 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_parameter_labels', 'Premium_Warehouse_eCommerceCommon', 'access_parameter_labels');
 		Utils_RecordBrowserCommon::set_processing_method('premium_ecommerce_parameter_labels', array('Premium_Warehouse_eCommerceCommon', 'submit_parameter_labels'));
 
+		//parameter groups
+		$fields = array(
+			array('name'=>'Group Code', 'type'=>'text', 'param'=>128, 'required'=>true, 'extra'=>false, 'visible'=>true),
+			array('name'=>'Position', 		'type'=>'integer', 'required'=>true, 'extra'=>false)
+		);
+		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_parameter_groups', $fields);
+
+		Utils_RecordBrowserCommon::set_favorites('premium_ecommerce_parameter_groups', false);
+		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_parameter_groups', 'eCommerce - Parameter Groups');
+		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_parameter_groups', 'Premium_Warehouse_eCommerceCommon', 'access_parameters');
+
+		$fields = array(
+			array('name'=>'Group', 		'type'=>'select', 'param'=>'premium_ecommerce_parameter_groups::Group Code', 'required'=>true, 'extra'=>false),
+			array('name'=>'Language', 	'type'=>'commondata', 'required'=>true, 'extra'=>false, 'param'=>array('Premium/Warehouse/eCommerce/Languages')),
+			array('name'=>'Label', 		'type'=>'text', 'param'=>'128', 'required'=>true, 'extra'=>false)
+		);
+		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_parameter_group_labels', $fields);
+
+		Utils_RecordBrowserCommon::set_favorites('premium_ecommerce_parameter_group_labels', false);
+		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_parameter_group_labels', 'eCommerce - Parameters');
+		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_parameter_group_labels', 'Premium_Warehouse_eCommerceCommon', 'access_parameter_labels');
+		Utils_RecordBrowserCommon::set_processing_method('premium_ecommerce_parameter_group_labels', array('Premium_Warehouse_eCommerceCommon', 'submit_parameter_labels'));
+		
+		//product-group-parameter-value
 		$fields = array(
 			array('name'=>'Item Name', 			'type'=>'select', 'required'=>true, 'param'=>'premium_warehouse_items::Item Name;Premium_Warehouse_Items_OrdersCommon::products_crits', 'extra'=>false, 'visible'=>true, 'display_callback'=>array($this->get_type().'Common', 'display_item_name')),
+			array('name'=>'Language', 		'type'=>'commondata', 'required'=>true, 'extra'=>false, 'visible'=>true, 'param'=>array('Premium/Warehouse/eCommerce/Languages')),
 			array('name'=>'Parameter', 		'type'=>'select', 'required'=>true, 'extra'=>false, 'visible'=>true, 'param'=>'premium_ecommerce_parameters::Parameter Code'),
+			array('name'=>'Group', 		'type'=>'select', 'required'=>true, 'extra'=>false, 'visible'=>true, 'param'=>'premium_ecommerce_parameter_groups::Group Code'),
 			array('name'=>'Value', 			'type'=>'text', 'param'=>128, 'required'=>true, 'extra'=>false, 'visible'=>true)
 		);
 		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_products_parameters', $fields);
@@ -226,6 +252,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_products', 'Premium/Warehouse/eCommerce', 'descriptions_addon', 'Descriptions');
 		Utils_RecordBrowserCommon::new_addon('premium_warehouse_items_categories', 'Premium/Warehouse/eCommerce', 'cat_descriptions_addon', 'Descriptions');
 		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_parameters', 'Premium/Warehouse/eCommerce', 'parameter_labels_addon', 'Labels');
+		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_parameter_groups', 'Premium/Warehouse/eCommerce', 'parameter_group_labels_addon', 'Labels');
 
 // ************ other ************** //
 		Utils_RecordBrowserCommon::new_record_field('company','eCommerce Category','multiselect', false, false, 'premium_warehouse_items_categories::Category Name', '', false, false, 16);
@@ -291,6 +318,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_products', 'Premium/Warehouse/eCommerce', 'descriptions_addon');
 //		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_categories', 'Premium/Warehouse/eCommerce', 'cat_descriptions_addon');
 		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_parameters', 'Premium/Warehouse/eCommerce', 'parameter_labels_addon');
+		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_parameter_groups', 'Premium/Warehouse/eCommerce', 'parameter_group_labels_addon');
 		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_pages', 'Premium/Warehouse/eCommerce', 'subpages_addon');
 		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_products', 'Premium/Warehouse/eCommerce', 'prices_addon');
 		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_pages_data', 'Premium/Warehouse/eCommerce', 'attachment_page_addon');
@@ -303,6 +331,8 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_descriptions');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_parameters');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_parameter_labels');
+		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_parameter_groups');
+		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_parameter_group_labels');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_products_parameters');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_availability');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_availability_labels');
