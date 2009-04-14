@@ -273,6 +273,11 @@ class Premium_Warehouse_Items_Orders extends Module {
 					}
 					break;
 				case 2:
+					$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$trans['id']));
+					if (empty($items)) {
+						$this->href = Utils_TooltipCommon::open_tag_attrs(Base_LangCommon::ts('Premium_Warehouse_Items_Orders','No items were saved in this transaction, cannot proceed with processing.'),false);
+						break;
+					}
 					$lp->add_option('ship', $this->t('Accepted'), null, null);
 					$lp->add_option('onhold', $this->t('On Hold'), null, null);
 					$this->display_module($lp, array($this->t('Purchase Order accepted?')));
@@ -456,6 +461,11 @@ class Premium_Warehouse_Items_Orders extends Module {
 					}
 					break;
 				case 2:
+					$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$trans['id']));
+					if (empty($items)) {
+						$this->href = Utils_TooltipCommon::open_tag_attrs(Base_LangCommon::ts('Premium_Warehouse_Items_Orders','No items were saved in this transaction, cannot proceed with processing.'),false);
+						break;
+					}
 					$lp->add_option('accepted', $this->t('Accepted'), null, null);
 					$lp->add_option('onhold', $this->t('Put On Hold'), null, null);
 					$this->display_module($lp, array($this->t('Funds available?')));
@@ -690,7 +700,6 @@ class Premium_Warehouse_Items_Orders extends Module {
 					$vals = $lp->export_values();
 					if ($vals!==null) {
 						$vals['form']['status'] = ($vals['option']=='available')?3:4;
-						// TODO: reduce the amount of items
 						if (!$items_available && $vals['form']['status']==4) break;
 						Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $trans['id'], $vals['form']);
 						location(array());
