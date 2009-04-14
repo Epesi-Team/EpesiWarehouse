@@ -35,6 +35,16 @@ class Premium_Warehouse_Items extends Module {
 			$this->t('Non-Inv. Items')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'non-inv.png'), 'defaults'=>array_merge($defaults,array('item_type'=>2))),
 			$this->t('Service')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'service.png'), 'defaults'=>array_merge($defaults,array('item_type'=>3)))
 			), true);
+			
+		$warehouses = Utils_RecordBrowserCommon::get_records('premium_warehouse');
+		$opts = array('__NULL__'=>'---');
+		$trans = array();
+		$my_warehouse = Base_User_SettingsCommon::get('Premium_Warehouse','my_warehouse');
+		foreach ($warehouses as $v)
+			$opts[$v['id']] = $v['warehouse'];
+		$this->rb->set_custom_filter('sku',array('type'=>'select','label'=>$this->t('Warehouse'),'args'=>$opts,'trans_callback'=>array($this, 'trans_filter')));
+		$this->rb->set_filters_defaults(array('sku'=>$my_warehouse));
+		
 		$cols = array();
 		if (ModuleManager::is_installed('Premium_Warehouse_Items_Orders')!=-1) {
 			$display = Base_User_SettingsCommon::get('Premium_Warehouse_Items_Orders', 'display_qty');
@@ -54,6 +64,14 @@ class Premium_Warehouse_Items extends Module {
 						'sku'=>array('width'=>1, 'wrapmode'=>'nowrap')
 						));
 		$this->display_module($this->rb, array(array(),array(),$cols));
+	}
+	
+	public function trans_filter($choice) {
+		if ($choice=='__NULL__') return array();
+		$locations = Utils_RecordBrowserCommon::get_records('premium_warehouse_location', array('!quantity'=>0, 'warehouse'=>$choice));
+		$ids = array();
+		foreach ($locations as $v) $ids[] = $v['item_sku']; 
+		return array('id'=>$ids);
 	}
 	
 	public function subcategories_addon($arg) {

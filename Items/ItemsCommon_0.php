@@ -32,7 +32,11 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 	}
 
     public static function display_item_name($v, $nolink=false) {
-		return Utils_RecordBrowserCommon::create_linked_label_r('premium_warehouse_items', 'Item Name', $v, $nolink);
+		$ret = Utils_RecordBrowserCommon::create_linked_label_r('premium_warehouse_items', 'Item Name', $v, $nolink);
+		if (!$nolink) {
+			$ret = Utils_TooltipCommon::create($ret, $v['description'],false);
+		}
+		return $ret;
 	}
 	
 	public static function display_sku($r, $nolink) {

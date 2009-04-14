@@ -69,6 +69,9 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		$ret = 	Utils_RecordBrowserCommon::record_link_open_tag('premium_warehouse_items', $v['item_name'], $nolink).
 				$r['sku'].': '.$r['item_name'].
 				Utils_RecordBrowserCommon::record_link_close_tag();
+		if (!$nolink) {
+			$ret = Utils_TooltipCommon::create($ret, $r['description'],false);
+		}
 		return $ret;
 	}
 	
