@@ -45,7 +45,17 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 	
 	public static function display_gross_price($r, $nolink) {
 		$price = Utils_CurrencyFieldCommon::get_values($r['net_price']);
-		return Utils_CurrencyFieldCommon::format(($price[0]*(100+Data_TaxRatesCommon::get_tax_rate($r['tax_rate'])))/100, $price[1]);
+		$ret = Utils_CurrencyFieldCommon::format(($price[0]*(100+Data_TaxRatesCommon::get_tax_rate($r['tax_rate'])))/100, $price[1]);
+		if (!$nolink) {
+			$htmlinfo = array();
+			$htmlinfo['Net Price'] = Utils_CurrencyFieldCommon::format($r['net_price']);
+			$htmlinfo['Tax'] = Data_TaxRatesCommon::get_tax_name($r['tax_rate']);
+			$htmlinfo['Tax Rate'] = Data_TaxRatesCommon::get_tax_rate($r['tax_rate']).'%';
+			$htmlinfo['Tax Value'] = Utils_CurrencyFieldCommon::format(($price[0]*Data_TaxRatesCommon::get_tax_rate($r['tax_rate']))/100, $price[1]);;
+			$htmlinfo['Gross Price'] = $ret;
+			$ret = Utils_TooltipCommon::create($ret, Utils_TooltipCommon::format_info_tooltip($htmlinfo,'Utils_RecordBrowser'), false);
+		}
+		return $ret;
 	}
 	
 	public static function display_quantity_sold($r, $nolink) {
