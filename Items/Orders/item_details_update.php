@@ -42,9 +42,10 @@ if (!isset($location_id) || !$location_id)
 	$location_id = null;
 
 $js = '';
-$js .= '$("description").value="'.$rec['description'].'";';
+$js .= '$("description").value="'.Epesi::escapeJS($rec['description']).'";';
 $js .= 'if($("description"))focus_by_id("description");';
 if ($trans['transaction_type']<2) {
+	$js .= 'if($("last_item_price"))$("last_item_price").value="'.$rec['last_purchase_price'].'";';
 	$js .= 'if($("tax_rate"))$("tax_rate").value="'.$rec['tax_rate'].'";';
 	$price = ($trans['transaction_type']==0?(isset($rec['last_purchase_price'])&&$rec['last_purchase_price']?$rec['last_purchase_price']:$rec['cost']):(isset($rec['last_sale_price'])&&$rec['last_sale_price']?$rec['last_sale_price']:$rec['net_price']));
 	$price = Utils_CurrencyFieldCommon::get_values($price);

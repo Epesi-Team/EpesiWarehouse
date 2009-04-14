@@ -410,6 +410,13 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			$form->addElement('text','order_details_credit','None');
 		}
 		if ($mode=='add' || $mode=='edit') {
+			if (self::$trans['transaction_type']==1) {
+				$decp = Utils_CurrencyFieldCommon::get_decimal_point();
+				load_js('modules/Premium/Warehouse/Items/Orders/check_item_price_cost.js');
+				$warning = Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Warning: Sale price is lower than the last purchase price!');
+				$form->addElement('button', 'submit', Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Submit'), array('onclick'=>'if(check_item_price_cost_difference("'.$decp.'","'.$warning.'")){'.$form->get_submit_form_js().'};'));
+				$form->addElement('hidden', 'last_item_price', '', array('id'=>'last_item_price'));
+			}
 			$form->addElement('text', $field, $label, array('id'=>$field));
 			print('<div id="'.$field.'_suggestbox" class="autocomplete">&nbsp;</div>');
 			load_js('modules/Premium/Warehouse/Items/Orders/item_autocomplete.js');
