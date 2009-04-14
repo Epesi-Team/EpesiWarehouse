@@ -45,7 +45,7 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 	}
 	
 	public static function display_quantity_sold($r, $nolink) {
-		return -$r['quantity_on_hand'];
+		return '--';
 	}
 	
 	public static function access_items($action, $param){
@@ -143,7 +143,6 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 	public static function applet_info_format($r){
 		return
 			'Item Name: '.$r['item_name'].'<HR>'.
-			'Quantity: '.$r['quantity_on_hand'].'<br>'.
 			'Description: '.$r['description'];
 	}
 

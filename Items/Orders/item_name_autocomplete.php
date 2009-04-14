@@ -12,14 +12,15 @@
  * @package epesi-premium
  * @subpackage warehouse-items-orders
  */
-if(!isset($_POST['item_name']) || !isset($_GET['cid'])  || !isset($_GET['transaction_type']) || !is_numeric($_GET['cid']))
+if(!isset($_POST['item_name']) || !isset($_GET['cid'])  || !isset($_GET['transaction_id']) || !is_numeric($_GET['cid']))
 	die('alert(\'Invalid request\')');
 
 define('CID',$_GET['cid']); 
 require_once('../../../../../include.php');
 ModuleManager::load_modules();
 
-$trans_type = $_GET['transaction_type'];
+$trans = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $_GET['transaction_id']);
+$trans_type = $trans['transaction_type'];
 $qry = array();
 $vals = array();
 $words = explode(' ', $_POST['item_name']);
@@ -29,8 +30,43 @@ foreach ($words as $w) {
 }
 $ret = DB::SelectLimit('SELECT * FROM premium_warehouse_items_data_1 WHERE '.implode(' AND ',$qry).' AND active=1 ', 10, 0, $vals);
 
+$my_warehouse = $trans['warehouse'];
+if (!$my_warehouse) $my_warehouse = Base_User_SettingsCommon::get('Premium_Warehouse','my_warehouse');
+
 print('<ul>');
-$my_warehouse = Base_User_SettingsCommon::get('Premium_Warehouse','my_warehouse');
+
+$l = '<li><table>'.
+		'<tr>'.
+			'<th width="200px;" align="center">'.
+				'<span class="informal">'.
+					Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Item Name').
+				'</span>'.
+			'</th>'.
+			'<th align="center">'.
+				'<span class="informal">'.
+					Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Item SKU').
+				'</span>'.
+			'</th>'.
+			'<th width="60px;" align="center">'.
+				'<span class="informal">'.
+					Base_LangCommon::ts('Premium_Warehouse_Items_Orders','QoH').
+	 			'</span>'.
+			'</th>'.
+			'<th width="60px;" align="center">'.
+				'<span class="informal">'.
+					Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Qty. Res.').
+	 			'</span>'.
+			'</th>';
+			
+if ($trans_type==0 || $trans_type==1)
+	$l .= 	'<th width="90px;" align="center">'.
+				'<span class="informal">'.
+					Base_LangCommon::ts('Premium_Warehouse_Items_Orders',$trans_type==0?'Cost':'Net price').
+	 			'</span>'.
+			'</th>';
+$l .= 	'</tr>'.
+	'</table></li>';
+print($l);
 
 while ($row = $ret->FetchRow()) {
 	$l = '<li><table>'.
@@ -42,13 +78,16 @@ while ($row = $ret->FetchRow()) {
 					'<span class="informal">'.$row['f_sku'].'</span>'.
 				'</td>'.
 				'<td width="60px;" align="right">'.
-					'<span class="informal">';
-	if ($my_warehouse) {
-		$l .= Premium_Warehouse_Items_LocationCommon::get_item_quantity_in_warehouse(array('id'=>$row['id']), $my_warehouse).' / ';
-	}
-	$l .=				$row['f_quantity_on_hand'];
-	$l .= 			'</span>'.
+					'<span class="informal">'.
+						Premium_Warehouse_Items_LocationCommon::display_item_quantity_in_warehouse_and_total(array('id'=>$row['id'], 'item_type'=>$row['f_item_type']), $my_warehouse, true).
+		 			'</span>'.
+				'</td>'.
+				'<td width="60px;" align="right">'.
+					'<span class="informal">'.
+						Premium_Warehouse_Items_OrdersCommon::display_reserved_qty(array('id'=>$row['id'], 'item_type'=>$row['f_item_type']), true).
+		 			'</span>'.
 				'</td>';
+				
 	if ($trans_type==0 || $trans_type==1)
 		$l .= 		'<td width="90px;" align="right">'.
 						'<span class="informal">'.Utils_CurrencyFieldCommon::format($trans_type==0?$row['f_cost']:$row['f_net_price']).'</span>'.

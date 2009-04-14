@@ -94,39 +94,84 @@ class Premium_Warehouse_Items_LocationCommon extends ModuleCommon {
 			'in_one'=>'%s',
 			'in_all'=>'Total',
 		);
-		if (!$nolink) {
+		if (!$nolink)
 			$tooltip = '<b>'.
 				Base_LangCommon::ts('Premium_Warehouse_Items_Location',$custom_label['main'].':').
 				'</b><HR>'.
 				'<table border=0>';
 				
-			if (Utils_RecordBrowserCommon::get_records_limit('premium_warehouse')<=10) {
-				$warehouses_records = Utils_RecordBrowserCommon::get_records('premium_warehouse', array(), array(), array('warehouse'=>'ASC'));
-				$warehouses = array();
-				foreach ($warehouses_records as $v) {
-					$warehouses[$v['id']] = $v['warehouse'];
-					if ($v['id']==$warehouse) $warehouses[$v['id']] = '<b>'.$warehouses[$v['id']].'</b>'; 
-				}
-			} else $warehouses = array($warehouse=>'<b>'.Utils_RecordBrowserCommon::get_value('premium_warehouse',$warehouse,'warehouse').'</b>');
+		static $warehouses = array();
+		if (empty($warehouses)) {
+			$warehouses_records = Utils_RecordBrowserCommon::get_records('premium_warehouse', array(), array(), array('warehouse'=>'ASC'));
+			foreach ($warehouses_records as $v)
+				$warehouses[$v['id']] = $v['warehouse'];
+		}
+		$total = 0;
+		if ($enroute===null) {
+			$locations = Utils_RecordBrowserCommon::get_records('premium_warehouse_location', array('item_sku'=>$r['id']), array(), array('quantity'=>'DESC'));
+			$max_shown = 5;
 			$quantities = array();
-			foreach ($warehouses as $k=>$v) {
-				if ($enroute!==null) $quantities[$k] = isset($enroute[$k])?$enroute[$k]:0;
-				else $quantities[$k] = self::get_item_quantity_in_warehouse($r, $k);
-				if (isset($quantities[$k])) $tooltip .= '<tr><td>'.
-					Base_LangCommon::ts('Premium_Warehouse_Items_Location',$custom_label['in_one'], array($v)).
+			foreach ($locations as $v) {
+				$total += $v['quantity'];
+				if ($nolink) {
+					$quantities[$v['warehouse']] = $v['quantity'];
+					continue;
+				}
+				if ($max_shown<0) continue;
+				if ($max_shown==0) {
+					$tooltip .= '<tr><td></td><td>...</td></tr>';
+					if (isset($quantities[$warehouse])) continue;
+					$v['warehouse'] = $warehouse;
+					$v['quantity'] = self::get_item_quantity_in_warehouse($r, $warehouse);
+					if ($v['quantity']==0) continue;
+				}
+				$max_shown--;
+				$quantities[$v['warehouse']] = $v['quantity'];
+				$warehouse_label = $warehouses[$v['warehouse']];
+				if ($v['warehouse']==$warehouse) $warehouse_label = '<b>'.$warehouse_label.'</b>';
+				$tooltip .= '<tr><td>'.
+					Base_LangCommon::ts('Premium_Warehouse_Items_Location',$custom_label['in_one'], array($warehouse_label)).
+					'</td><td bgcolor="#FFFFFF" WIDTH=50 style="text-align:right;">'.
+					$quantities[$v['warehouse']].
+					'</td></tr>';
+				if ($max_shown<=0) {
+					$tooltip .= '<tr><td></td><td>...</td></tr>';
+					continue;
+				}
+			}
+			if (!$nolink)
+				$tooltip .= '<tr><td><b>'.
+					Base_LangCommon::ts('Premium_Warehouse_Items_Location',$custom_label['in_all']).
+					'</b></td><td bgcolor="#FFFFCC" style="text-align:right;"><b>'.
+					$total.
+					'</b></td></tr></table>';
+		} else {
+			arsort($enroute);
+			$quantities = array();
+			foreach ($enroute as $k=>$v) {
+				if (!$v) continue;
+				$total += $v;
+				$quantities[$k] = $v;
+				if ($nolink) continue;
+				$warehouse_label = $warehouses[$k];
+				if ($k==$warehouse) $warehouse_label = '<b>'.$warehouse_label.'</b>';
+				$tooltip .= '<tr><td>'.
+					Base_LangCommon::ts('Premium_Warehouse_Items_Location',$custom_label['in_one'], array($warehouse_label)).
 					'</td><td bgcolor="#FFFFFF" WIDTH=50 style="text-align:right;">'.
 					$quantities[$k].
 					'</td></tr>';
 			}
-				
-			$tooltip .= '<tr><td><b>'.
-				Base_LangCommon::ts('Premium_Warehouse_Items_Location',$custom_label['in_all']).
-				'</b></td><td bgcolor="#FFFFCC" style="text-align:right;"><b>'.
-				$r['quantity_on_hand'].
-				'</b></td></tr></table>';
+			if (!$nolink)
+				$tooltip .= '<tr><td><b>'.
+					Base_LangCommon::ts('Premium_Warehouse_Items_Location',$custom_label['in_all']).
+					'</b></td><td bgcolor="#FFFFCC" style="text-align:right;"><b>'.
+					$total.
+					'</b></td></tr></table>';
 		}
-		if (!$warehouse) $ret = $r['quantity_on_hand'];
-		else $ret = (isset($enroute[$warehouse])?$enroute[$warehouse]:(isset($quantities[$warehouse])?$quantities[$warehouse]:self::get_item_quantity_in_warehouse($r, $warehouse))).' / '.$r['quantity_on_hand'];
+		if (!isset($quantities[$warehouse])) $quantities[$warehouse] = 0;
+		
+		if (!$warehouse) $ret = $total;
+		else $ret = $quantities[$warehouse].' / '.$total;
 		if (!$nolink)
 			$ret = Utils_TooltipCommon::create($ret, $tooltip, false);
 		return $ret;
