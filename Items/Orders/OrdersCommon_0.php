@@ -121,8 +121,13 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			return '---';
 		$ret = array();
 		$vals = self::calculate_tax_and_total_value($r, 'total');
-		foreach ($vals as $k=>$v)
+		$failsafe = false;
+		foreach ($vals as $k=>$v) {
+			if (!$failsafe) $failsafe = Utils_CurrencyFieldCommon::format($v, $k);
+			if (!$v) continue;
 			$ret[] = Utils_CurrencyFieldCommon::format($v, $k);
+		}
+		if (empty($ret)) return $failsafe;
 		return implode('; ',$ret);
 	}
 	
