@@ -617,7 +617,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 									$ret['total_value'] = 'hide';
 									$ret['tax_value'] = 'hide';
 								}
-								if ($tt==2) {
+								if ($tt==2 || $tt==4) {
 									$ret['company'] = 'hide';
 									$ret['contact'] = 'hide';
 									$ret['company_name'] = 'hide';
