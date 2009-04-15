@@ -102,6 +102,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		//product parameters
 		$fields = array(
 			array('name'=>'Parameter Code', 'type'=>'text', 'param'=>128, 'required'=>true, 'extra'=>false, 'visible'=>true),
+			array('name'=>'Label', 			'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_eCommerceCommon','display_parameter_label')),
 			array('name'=>'Position', 		'type'=>'integer', 'required'=>true, 'extra'=>false,'visible'=>false)
 		);
 		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_parameters', $fields);
