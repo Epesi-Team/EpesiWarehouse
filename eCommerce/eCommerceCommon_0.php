@@ -251,8 +251,8 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 			//description
 			$product_desc = array('item_name'=>$r['item_name'],
 						'language'=>$code,
-						'display_name'=>$obj->Product[0]['Name'],
-						'short_description'=>$obj->Product[0]->ProductDescription[0]);
+						'display_name'=>(string)$obj->Product[0]['Name'],
+						'short_description'=>(string)$obj->Product[0]->ProductDescription[0]);
 			if(isset($descriptions[$code]))
 			    Utils_RecordBrowserCommon::update_record('premium_ecommerce_descriptions',$descriptions[$code],$product_desc);
 			else
@@ -278,7 +278,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 				    continue;
 				$parameter_group_label = array('group'=>$parameter_groups[$key],
 							'language'=>$code,
-							'label'=>$cg->FeatureGroup[0]->Name[0]['Value']);
+							'label'=>(string)$cg->FeatureGroup[0]->Name[0]['Value']);
 				Utils_RecordBrowserCommon::new_record('premium_ecommerce_parameter_group_labels',$parameter_group_label);
 			}
 			
@@ -296,14 +296,14 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 			    if(!isset($parameter_labels[$parameters[$key]])) {
 				$parameter_label = array('parameter'=>$parameters[$key],
 							'language'=>$code,
-							'label'=>$pf->Feature[0]->Name[0]['Value']);
+							'label'=>(string)$pf->Feature[0]->Name[0]['Value']);
 				$parameter_labels[$parameters[$key]] = Utils_RecordBrowserCommon::new_record('premium_ecommerce_parameter_labels',$parameter_label);
 			    }
 			    $item_params = array('item_name'=>$r['item_name'],
 						'parameter'=>$parameters[$key],
 						'group'=>$parameter_groups['icecat_'.$pf['CategoryFeatureGroup_ID']],
 						'language'=>$code,
-						'value'=>$pf['Presentation_Value']);
+						'value'=>(string)$pf['Presentation_Value']);
 			    if(isset($item_parameters[$parameters[$key]]))
 				Utils_RecordBrowserCommon::update_record('premium_ecommerce_products_parameters',$item_parameters[$parameters[$key]],$item_params);
 			    else
