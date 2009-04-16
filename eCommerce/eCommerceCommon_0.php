@@ -343,5 +343,15 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 	}
 
 
+	public static function submit_position($values, $mode) {
+		switch ($mode) {
+			case 'add':
+			    $values['position'] = 0;
+			    break;
+		}
+		return $values;
+	}
+
+
 }
 ?>

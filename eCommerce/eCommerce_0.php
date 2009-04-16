@@ -30,7 +30,6 @@ class Premium_Warehouse_eCommerce extends Module {
 					break;
 			}
 		$mod = $this->get_module_variable('recordset');
-		$order = array();
 		switch($mod) {
 			case 'products':
 				$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_products');
@@ -40,8 +39,7 @@ class Premium_Warehouse_eCommerce extends Module {
 			case 'parameters':
 				$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_parameters');
 				$this->rb->set_additional_actions_method($this, 'actions_for_position');
-//				$order['position'] = 'ASC';
-//				$order['parameter_code'] = 'ASC';
+				$this->rb->force_order(array('position'=>'ASC','parameter_code'=>'ASC'));
 				break;
 			case 'parameter_groups':
 				$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_parameter_groups');
@@ -61,7 +59,7 @@ class Premium_Warehouse_eCommerce extends Module {
 				$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_payments_carriers');
 				break;
 		}
-		$this->display_module($this->rb,array($order));
+		$this->display_module($this->rb);
 	}
 
 	public function actions_for_position($r, & $gb_row) {
