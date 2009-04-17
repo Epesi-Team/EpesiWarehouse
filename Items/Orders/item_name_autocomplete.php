@@ -24,18 +24,22 @@ $trans_type = $trans['transaction_type'];
 $qry = array();
 $vals = array();
 $words = explode(' ', $_POST['item_name']);
+if ($trans_type==1 && $trans['status']==2) {
+	$qry[] = 'EXISTS (SELECT id FROM premium_warehouse_location_data_1 AS pwl WHERE pwl.f_quantity!=0 AND pwl.f_item_sku=pwi.id AND pwl.f_warehouse=%s)';
+	$vals[] = $trans['warehouse'];
+}
 foreach ($words as $w) {
 	$qry[] = 'f_item_name LIKE '.DB::Concat(DB::qstr('%'), '%s', DB::qstr('%'));
 	$vals[] = $w;
 }
-$ret = DB::SelectLimit('SELECT * FROM premium_warehouse_items_data_1 WHERE '.implode(' AND ',$qry).' AND active=1 ', 10, 0, $vals);
+$ret = DB::SelectLimit('SELECT * FROM premium_warehouse_items_data_1 AS pwi WHERE '.implode(' AND ',$qry).' AND active=1', 10, 0, $vals);
 
 $my_warehouse = $trans['warehouse'];
 if (!$my_warehouse) $my_warehouse = Base_User_SettingsCommon::get('Premium_Warehouse','my_warehouse');
 
 print('<ul>');
 
-$l = '<li><table>'.
+$header = '<li><table>'.
 		'<tr>'.
 			'<th width="200px;" align="center">'.
 				'<span class="informal">'.
@@ -59,16 +63,17 @@ $l = '<li><table>'.
 			'</th>';
 			
 if ($trans_type==0 || $trans_type==1)
-	$l .= 	'<th width="90px;" align="center">'.
+	$header .= 	'<th width="90px;" align="center">'.
 				'<span class="informal">'.
 					Base_LangCommon::ts('Premium_Warehouse_Items_Orders',$trans_type==0?'Cost':'Net price').
 	 			'</span>'.
 			'</th>';
-$l .= 	'</tr>'.
+$header .= 	'</tr>'.
 	'</table></li>';
-print($l);
-
+$empty = true;
 while ($row = $ret->FetchRow()) {
+	if ($empty) print($header);
+	$empty = false;
 	$l = '<li><table>'.
 			'<tr>'.
 				'<td width="200px;">'.
@@ -96,6 +101,7 @@ while ($row = $ret->FetchRow()) {
 		'</table></li>';
 	print($l);
 }
+if ($empty) print('<li><center><span class="informal"><b>'.Base_LangCommon::ts('Premium_Warehouse_Items_Orders','No records found').'</b></span></center></li>');
 print('</ul>');
 return;
 ?>

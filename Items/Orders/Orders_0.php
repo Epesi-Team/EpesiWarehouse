@@ -30,6 +30,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 		$this->rb->set_defaults(array(
 			$this->t('Purchase')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'purchase.png'), 'defaults'=>array_merge($defaults,array('transaction_type'=>0))),
 			$this->t('Sale')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'sale.png'), 'defaults'=>array_merge($defaults,array('transaction_type'=>1))),
+			$this->t('Quick Sale')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'quick_sale.png'), 'defaults'=>array_merge($defaults,array('transaction_type'=>1, 'status'=>2))),
 			$this->t('Inv. Adjustment')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'inv_adj.png'), 'defaults'=>array_merge($defaults,array('transaction_type'=>2))),
 //			$this->t('Rental')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'rental.png'), 'defaults'=>array_merge($defaults,array('transaction_type'=>3))),
 			$this->t('Warehouse Transfer')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'warehouse_transfer.png'), 'defaults'=>array_merge($defaults,array('transaction_type'=>4)))
@@ -230,7 +231,27 @@ class Premium_Warehouse_Items_Orders extends Module {
 				case '':
 					$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$trans['id']));
 					$po_form = $this->init_module('Libs_QuickForm'); 
+
+					$table_rows = Utils_RecordBrowserCommon::init('premium_warehouse_items_orders');
+					CRM_ContactsCommon::QFfield_contact($po_form, 'employee', 'Employee', 'add', null, $table_rows['Employee']);
+					$warehouses = array(''=>'---');
+					$records = Utils_RecordBrowserCommon::get_records('premium_warehouse');
+					foreach ($records as $v) $warehouses[$v['id']] = $v['warehouse'];
+					$po_form->addElement('select', 'warehouse', $this->t('Warehouse'), $warehouses);
+
 					$this->revise_items($po_form, $items, $trans);
+
+					$po_form->setDefaults(array('handlnig_cost'=>$trans['handling_cost'],'shipment_cost'=>$trans['shipment_cost']));
+					if ($trans['warehouse']) $def_warehouse = $trans['warehouse']; 
+					else $def_warehouse = Base_User_SettingsCommon::get('Premium_Warehouse','my_warehouse');
+					if ($trans['employee']) {
+						$def_employee = $trans['employee']; 
+					} else {
+						$me = CRM_ContactsCommon::get_my_record();
+						$def_employee = $me['id'];
+					}
+					$po_form->setDefaults(array('employee'=>$def_employee,'warehouse'=>$def_warehouse));
+
 					$lp->add_option('po', $this->t('PO'), null, $po_form);
 
 					$quote_form = $this->init_module('Libs/QuickForm');
@@ -254,7 +275,27 @@ class Premium_Warehouse_Items_Orders extends Module {
 				case 1:
 					$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$trans['id']));
 					$po_form = $this->init_module('Libs_QuickForm'); 
+
+					$table_rows = Utils_RecordBrowserCommon::init('premium_warehouse_items_orders');
+					CRM_ContactsCommon::QFfield_contact($po_form, 'employee', 'Employee', 'add', null, $table_rows['Employee']);
+					$warehouses = array(''=>'---');
+					$records = Utils_RecordBrowserCommon::get_records('premium_warehouse');
+					foreach ($records as $v) $warehouses[$v['id']] = $v['warehouse'];
+					$po_form->addElement('select', 'warehouse', $this->t('Warehouse'), $warehouses);
+
 					$this->revise_items($po_form, $items, $trans);
+
+					$po_form->setDefaults(array('handlnig_cost'=>$trans['handling_cost'],'shipment_cost'=>$trans['shipment_cost']));
+					if ($trans['warehouse']) $def_warehouse = $trans['warehouse']; 
+					else $def_warehouse = Base_User_SettingsCommon::get('Premium_Warehouse','my_warehouse');
+					if ($trans['employee']) {
+						$def_employee = $trans['employee']; 
+					} else {
+						$me = CRM_ContactsCommon::get_my_record();
+						$def_employee = $me['id'];
+					}
+					$po_form->setDefaults(array('employee'=>$def_employee,'warehouse'=>$def_warehouse));
+
 					$lp->add_option('po', $this->t('PO'), null, $po_form);
 
 					$lp->add_option('cancel', $this->t('Cancel'), null, null);
@@ -412,10 +453,30 @@ class Premium_Warehouse_Items_Orders extends Module {
 				case '':
 					$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$trans['id']));
 					$so_form = $this->init_module('Libs_QuickForm');
+
 					$so_form->addElement('currency', 'shipment_cost', $this->t('Shipment Cost'));
 					$so_form->addElement('currency', 'handling_cost', $this->t('Handling Cost'));
+
+					$table_rows = Utils_RecordBrowserCommon::init('premium_warehouse_items_orders');
+					CRM_ContactsCommon::QFfield_contact($so_form, 'employee', 'Employee', 'add', null, $table_rows['Employee']);
+					$warehouses = array(''=>'---');
+					$records = Utils_RecordBrowserCommon::get_records('premium_warehouse');
+					foreach ($records as $v) $warehouses[$v['id']] = $v['warehouse'];
+					$so_form->addElement('select', 'warehouse', $this->t('Warehouse'), $warehouses);
+
 					$this->revise_items($so_form, $items, $trans);
+
 					$so_form->setDefaults(array('handlnig_cost'=>$trans['handling_cost'],'shipment_cost'=>$trans['shipment_cost']));
+					if ($trans['warehouse']) $def_warehouse = $trans['warehouse']; 
+					else $def_warehouse = Base_User_SettingsCommon::get('Premium_Warehouse','my_warehouse');
+					if ($trans['employee']) {
+						$def_employee = $trans['employee']; 
+					} else {
+						$me = CRM_ContactsCommon::get_my_record();
+						$def_employee = $me['id'];
+					}
+					$so_form->setDefaults(array('employee'=>$def_employee,'warehouse'=>$def_warehouse));
+
 					$lp->add_option('so', $this->t('Order received'), null, $so_form);
 
 					$quote_form = $this->init_module('Libs/QuickForm');
@@ -442,7 +503,27 @@ class Premium_Warehouse_Items_Orders extends Module {
 				case 1:
 					$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$trans['id']));
 					$so_form = $this->init_module('Libs_QuickForm'); 
+
+					$table_rows = Utils_RecordBrowserCommon::init('premium_warehouse_items_orders');
+					CRM_ContactsCommon::QFfield_contact($so_form, 'employee', 'Employee', 'add', null, $table_rows['Employee']);
+					$warehouses = array(''=>'---');
+					$records = Utils_RecordBrowserCommon::get_records('premium_warehouse');
+					foreach ($records as $v) $warehouses[$v['id']] = $v['warehouse'];
+					$so_form->addElement('select', 'warehouse', $this->t('Warehouse'), $warehouses);
+
 					$this->revise_items($so_form, $items, $trans);
+
+					$so_form->setDefaults(array('handlnig_cost'=>$trans['handling_cost'],'shipment_cost'=>$trans['shipment_cost']));
+					if ($trans['warehouse']) $def_warehouse = $trans['warehouse']; 
+					else $def_warehouse = Base_User_SettingsCommon::get('Premium_Warehouse','my_warehouse');
+					if ($trans['employee']) {
+						$def_employee = $trans['employee']; 
+					} else {
+						$me = CRM_ContactsCommon::get_my_record();
+						$def_employee = $me['id'];
+					}
+					$so_form->setDefaults(array('employee'=>$def_employee,'warehouse'=>$def_warehouse));
+
 					$lp->add_option('so', $this->t('SO'), null, $so_form);
 
 					$lp->add_option('cancel', $this->t('Cancel'), null, null);

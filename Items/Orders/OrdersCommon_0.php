@@ -572,7 +572,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 							$ret['status'] = 'read-only';
 							$tt = $param['transaction_type'];
 							if (is_array($param)) {
-								$ret = array('warehouse'=>'read-only');
+								if (($tt!=0 && $tt!=1) || (isset($param['status']) && $param['status']>=2)) $ret = array('warehouse'=>'read-only');
 								if ($action_details=='view') {
 									$ret['company'] = 'hide';
 									$ret['contact'] = 'hide';
@@ -878,6 +878,8 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			case 'add':
 				return $values;
 			case 'edit':
+				$access = self::access_orders('fields', $values);
+				if (isset($access['warehouse']) && $access['warehouse']=='read-only' && !$values['warehouse']) $values['status'] = Utils_RecordBrowserCommon::get_value('premium_warehouse_items_orders', $values['id'], 'status');
 				$values['transaction_id'] = self::generate_id($values['id']);
 				$old_values = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $values['id']);
 				self::$new_status = $values['status']; 
