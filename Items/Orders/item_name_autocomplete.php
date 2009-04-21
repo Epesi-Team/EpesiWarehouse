@@ -24,7 +24,7 @@ $trans_type = $trans['transaction_type'];
 $qry = array();
 $vals = array();
 $words = explode(' ', $_POST['item_name']);
-if ($trans_type==1 && $trans['status']==2) {
+if ($trans_type==1 && $trans['status']==2 && $trans['warehouse']) {
 	$qry[] = 'EXISTS (SELECT id FROM premium_warehouse_location_data_1 AS pwl WHERE pwl.f_quantity!=0 AND pwl.f_item_sku=pwi.id AND pwl.f_warehouse=%d)';
 	$vals[] = $trans['warehouse'];
 }
