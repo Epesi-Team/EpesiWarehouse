@@ -370,6 +370,45 @@ class Premium_Warehouse_eCommerce extends Module {
 	public function icecat_addon($arg){
 	}
 	
+	public function warehouse_item_addon($arg) {
+		$recs = Utils_RecordBrowserCommon::get_records('premium_ecommerce_products',array('item_name'=>$arg['id']));
+		if(empty($recs)) {
+		    print('<h1><a '.$this->create_callback_href(array($this,'publish_warehouse_item'),$arg['id']).'>'.$this->t('Publish').'</a></h1>');
+		    return;
+		}
+		$rec = array_pop($recs);
+		$on = '<span class="checkbox_on" />';
+		$off = '<span class="checkbox_off" />';
+		
+		print(Utils_RecordBrowserCommon::record_link_open_tag('premium_ecommerce_products',$rec['id']).$this->t('Go to item').Utils_RecordBrowserCommon::record_link_close_tag());
+		print('<table><tr><td>'.$this->t('Published').'</td><td><a '.$this->create_callback_href(array($this,'toggle_publish'),array($rec['id'],!$rec['publish'])).'>'.($rec['publish']?$on:$off).'</a></td></tr>');
+		print('<tr><td>'.$this->t('Assigned category (required)').'</td><td>'.($arg['category']?$on:$off).'</td></tr></table>');
+
+ 		$m = & $this->init_module('Utils/GenericBrowser',null,'t1');
+ 		$m->set_table_columns(array(
+				array('name'=>$this->t('Language')),
+				array('name'=>$this->t('Name')),
+				array('name'=>$this->t('Description')),
+				array('name'=>$this->t('Parameters')),
+					    ));
+		$langs = Utils_CommonDataCommon::get_array('Premium/Warehouse/eCommerce/Languages');
+		foreach($langs as $code=>$name) {
+		    $descs = Utils_RecordBrowserCommon::get_records('premium_ecommerce_descriptions',array('item_name'=>$rec['id'],'language'=>$code),array('display_name','short_description'));
+	//	    print
+ 		    $m->add_row($name,($descs && isset($descs['display_name']) && $descs['display_name'])?$on:$off,($descs && isset($descs['short_description']) && $descs['short_description'])?$on:$off,"not impl");
+		}
+ 		$this->display_module($m,array(true),'automatic_display');
+	}
+	
+	public function publish_warehouse_item($id) {
+		Utils_RecordBrowserCommon::new_record('premium_ecommerce_products',array('item_name'=>$id,'publish'=>1,'available'=>0));
+    		Premium_Warehouse_eCommerceCommon::icecat_sync($id);
+	}
+	
+	public function toggle_publish($id,$v) {
+		Utils_RecordBrowserCommon::update_record('premium_ecommerce_products',$id,array('publish'=>$v?1:0));
+	}
+	
 	public function caption(){
 		if (isset($this->rb)) return $this->rb->caption();
 	}

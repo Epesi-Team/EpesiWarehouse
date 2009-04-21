@@ -180,13 +180,13 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 		}
 	}
 	
-	public static function icecat_addon_parameters($r) {
-	    $user = Variable::get('icecat_user');
-	    $pass = Variable::get('icecat_pass');
-	    if($user && $pass)
-        	    Base_ActionBarCommon::add('add','Icecat',Module::create_href(array('icecat_sync'=>1),'Getting data from icecat - please wait.'));
-	    if(isset($_REQUEST['icecat_sync'])) {
-		$item = Utils_RecordBrowserCommon::get_record('premium_warehouse_items',$r['item_name']);
+	public static function icecat_sync($item_id) {
+    		$user = Variable::get('icecat_user');
+    		$pass = Variable::get('icecat_pass');
+		if(!$user || !$pass)
+			return;
+			
+		$item = Utils_RecordBrowserCommon::get_record('premium_warehouse_items',$item_id);
 		$query_arr = array();
 		if($item['upc']) {
 		    $query_arr['ean_upc'] = $item['upc'];
@@ -210,7 +210,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 		$langs = Utils_CommonDataCommon::get_array('Premium/Warehouse/eCommerce/Languages');
 
 		//descriptions in all langs		
-		$descriptions_tmp = Utils_RecordBrowserCommon::get_records('premium_ecommerce_descriptions',array('item_name'=>$r['item_name']),array('id','language'));
+		$descriptions_tmp = Utils_RecordBrowserCommon::get_records('premium_ecommerce_descriptions',array('item_name'=>$item_id),array('id','language'));
 		$descriptions = array();
 		foreach($descriptions_tmp as $rr)
 		    $descriptions[$rr['language']] = $rr['id'];
@@ -249,7 +249,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 			$obj = simplexml_load_string($output);
 			
 			//description
-			$product_desc = array('item_name'=>$r['item_name'],
+			$product_desc = array('item_name'=>$item_id,
 						'language'=>$code,
 						'display_name'=>(string)$obj->Product[0]['Name'],
 						'short_description'=>(string)$obj->Product[0]->ProductDescription[0]);
@@ -259,7 +259,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 			    $descriptions[$code] = Utils_RecordBrowserCommon::new_record('premium_ecommerce_descriptions',$product_desc);
 
 			//parameters
-			$item_parameters_tmp = Utils_RecordBrowserCommon::get_records('premium_ecommerce_products_parameters',array('item_name'=>$r['item_name'],'language'=>$code),array('id','parameter'));
+			$item_parameters_tmp = Utils_RecordBrowserCommon::get_records('premium_ecommerce_products_parameters',array('item_name'=>$item_id,'language'=>$code),array('id','parameter'));
 			$item_parameters = array();
 			foreach($item_parameters_tmp as $rr)
 			    $item_parameters[$rr['parameter']] = $rr['id'];
@@ -299,7 +299,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 							'label'=>(string)$pf->Feature[0]->Name[0]['Value']);
 				$parameter_labels[$parameters[$key]] = Utils_RecordBrowserCommon::new_record('premium_ecommerce_parameter_labels',$parameter_label);
 			    }
-			    $item_params = array('item_name'=>$r['item_name'],
+			    $item_params = array('item_name'=>$item_id,
 						'parameter'=>$parameters[$key],
 						'group'=>$parameter_groups['icecat_'.$pf['CategoryFeatureGroup_ID']],
 						'language'=>$code,
@@ -317,7 +317,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 			elseif(isset($obj->Product[0]['LowPic']))
 			    $pic = $obj->Product[0]['LowPic'];
 			if($pic) {
-			    $num_of_pics = Utils_AttachmentCommon::count('Premium/Warehouse/eCommerce/ProductsDesc/'.$code.'/'.$r['item_name']);
+			    $num_of_pics = Utils_AttachmentCommon::count('Premium/Warehouse/eCommerce/ProductsDesc/'.$code.'/'.$item_id);
 			    if(!$num_of_pics) {
 				$ch = curl_init();
 				curl_setopt($ch, CURLOPT_URL,$pic);
@@ -330,7 +330,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 				fclose($fp);
 
 				if($response_code==200)
-				    Utils_AttachmentCommon::add('Premium/Warehouse/eCommerce/ProductsDesc/'.$code.'/'.$r['item_name'],
+				    Utils_AttachmentCommon::add('Premium/Warehouse/eCommerce/ProductsDesc/'.$code.'/'.$item_id,
 							    0,Acl::get_user(),'Icecat product picture',basename($pic),$temp_file,null,null,array('Premium_Warehouse_eCommerceCommon','copy_attachment'));
 
 				@unlink($temp_file);
@@ -338,6 +338,15 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 			}
 		    }
 		}
+	}
+	
+	public static function icecat_addon_parameters($r) {
+	    $user = Variable::get('icecat_user');
+	    $pass = Variable::get('icecat_pass');
+	    if($user && $pass)
+        	    Base_ActionBarCommon::add('add','Icecat',Module::create_href(array('icecat_sync'=>1),'Getting data from icecat - please wait.'));
+	    if(isset($_REQUEST['icecat_sync'])) {
+		self::icecat_sync($r['item_name']);
 	    }
 	    return false;
 	}

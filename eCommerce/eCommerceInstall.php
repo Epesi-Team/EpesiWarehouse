@@ -252,6 +252,8 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 			print('Unable to create table premium_ecommerce_quickcart.<br>');
 			return false;
 		}
+		
+
 
 // ************* addons ************ //
 		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_products', 'Premium/Warehouse/eCommerce', 'parameters_addon', 'Parameters');
@@ -259,6 +261,9 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::new_addon('premium_warehouse_items_categories', 'Premium/Warehouse/eCommerce', 'cat_descriptions_addon', 'Descriptions');
 		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_parameters', 'Premium/Warehouse/eCommerce', 'parameter_labels_addon', 'Labels');
 		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_parameter_groups', 'Premium/Warehouse/eCommerce', 'parameter_group_labels_addon', 'Labels');
+
+		//addon for warehouse items
+		Utils_RecordBrowserCommon::new_addon('premium_warehouse_items', 'Premium/Warehouse/eCommerce', 'warehouse_item_addon', 'eCommerce');
 
 // ************ other ************** //
 		Utils_RecordBrowserCommon::new_record_field('company','eCommerce Category','multiselect', false, false, 'premium_warehouse_items_categories::Category Name', '', false, false, 16);
@@ -311,6 +316,8 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Variable::delete('icecat_user');
 		Variable::delete('icecat_pass');
 
+		Utils_RecordBrowserCommon::delete_addon('premium_warehouse_items', 'Premium_Warehouse_eCommerce', 'warehouse_item_addon');
+
 		Utils_CommonDataCommon::remove('Premium/Warehouse/eCommerce/Languages');
 		Base_ThemeCommon::uninstall_default_theme($this->get_type());
 
@@ -356,6 +363,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 	public function requires($v) {
 		return array(
 			array('name'=>'Base','version'=>0),
+			array('name'=>'Premium/Warehouse/Items','version'=>0),
 			array('name'=>'Premium/Warehouse/Items/Orders','version'=>0),
 			array('name'=>'Utils/CurrencyField','version'=>0),
 			array('name'=>'Utils/Image','version'=>0),
