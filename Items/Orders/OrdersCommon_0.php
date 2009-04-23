@@ -289,13 +289,12 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			$form->addElement('select', $field, $label, $opts, array('id'=>'status'));
 			$form->setDefaults(array($field=>$default));
 		} else {
-			$form->addElement('static', $field, $label, array('id'=>'status'));
 			$obj = $rb_obj->init_module('Premium/Warehouse/Items/Orders');
 			$rb_obj->display_module($obj, array(Utils_RecordBrowser::$last_record, $default), 'change_status_leightbox');
 			$href = $obj->get_href();
-			if ($href) $label = '<a '.$href.'>'.$opts[$default].'</a>';
-			else $label = $opts[$default];
-			$form->setDefaults(array($field=>$label));
+			if ($href) $label2 = '<a '.$href.'>'.$opts[$default].'</a>';
+			else $label2 = $opts[$default];
+			$form->addElement('static', $field, $label, $label2);
 		}
 	}
 	

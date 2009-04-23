@@ -41,8 +41,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 			$form->addElement('select', $field, $label, $opts, array('id'=>$field));
 			$form->setDefaults(array($field=>$default));
 		} else {
-			$form->addElement('static', $field, $label, array('id'=>'status'));
-			$form->setDefaults(array($field=>$opts[$default]));
+			$form->addElement('static', $field, $label, $opts[$default]);
 		}
 	}
 	

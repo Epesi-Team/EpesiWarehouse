@@ -85,7 +85,7 @@
 		<td width="10px">
 		</td>
 		<td align="left">
-			<b>{if isset($order.ssn)}{$order.tax_id}{/if}</b>
+			<b>{if isset($order.tax_id)}{$order.tax_id}{/if}</b>
 		</td>
 	</tr>
 </table>

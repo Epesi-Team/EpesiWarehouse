@@ -121,7 +121,6 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 			$form->addElement('multiselect', $field, $label, $opts, array('id'=>$field));
 			$form->setDefaults(array($field=>$default));
 		} else {
-			$form->addElement('static', $field, $label, array('id'=>'status'));
 			$def = array();
 			foreach ($default as $d) {
 				$keys = explode('/',$d);
@@ -134,7 +133,7 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 				}
 				$def[] = $next;
 			}
-			$form->setDefaults(array($field=>implode('<br/>',$def)));
+			$form->addElement('static', $field, $label, implode('<br/>',$def));
 		}
     }
 

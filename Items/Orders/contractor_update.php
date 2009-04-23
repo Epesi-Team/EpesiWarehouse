@@ -35,11 +35,13 @@ if ($tab=='contact') {
 	$js .= '$("company_name").value="'.$rec['company_name'].'";';
 	$js .= '$("phone").value="'.$rec['phone'].'";';
 }
+if (isset($rec['tax_id'])) $js .= '$("tax_id").value="'.$rec['tax_id'].'";';
 $js .= '$("address_1").value="'.$rec['address_1'].'";';
 $js .= '$("address_2").value="'.$rec['address_2'].'";';
 $js .= '$("city").value="'.$rec['city'].'";';
 $js .= '$("postal_code").value="'.$rec['postal_code'].'";';
 $js .= '$("country").value="'.$rec['country'].'";';
+$js .= '$("zone").value="'.$rec['zone'].'";';
 // TODO: copy zone
 print($js);
 ?>
