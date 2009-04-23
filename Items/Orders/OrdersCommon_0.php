@@ -144,7 +144,34 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	}
 
 	public static function display_transaction_id($r, $nolink) {
-		return Utils_RecordBrowserCommon::create_linked_label_r('premium_warehouse_items_orders', 'transaction_id', $r, $nolink);	
+		$ret = Utils_RecordBrowserCommon::create_linked_label_r('premium_warehouse_items_orders', 'transaction_id', $r, $nolink);
+		if (!$nolink)	
+			$ret = '<span '.Utils_TooltipCommon::ajax_open_tag_attrs(array('Premium_Warehouse_Items_OrdersCommon','item_list_tooltip'), $r).'>'.$ret.'</span>';
+		return $ret;
+	}
+	
+	public static function item_list_tooltip($r) {
+		$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$r['id']));
+		if (empty($items)) return Base_LangCommon::ts('Premium_Warehouse_Items_Orders','There are no items saved in this transaction');
+		$theme = Base_ThemeCommon::init_smarty();
+		foreach ($items as $k=>$v) {
+			$item = Utils_RecordBrowserCommon::get_record('premium_warehouse_items', $v['item_name']);
+			$items[$k]['sku'] = $item['sku'];
+			$items[$k]['item_name'] = $item['item_name'];
+			$items[$k]['net_price'] = Utils_CurrencyFieldCommon::format($v['net_price']);
+			$items[$k]['gross_price'] = Utils_CurrencyFieldCommon::format($v['gross_price']);
+			$items[$k]['tax'] = Data_TaxRatesCommon::get_tax_name($v['tax_rate']);
+		}
+		$theme->assign('header', array(
+			'sku'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders','SKU'),
+			'item_name'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Item Name'),
+			'quantity'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Qty'),
+			'net_price'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Net Price'),
+			'tax'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Tax'),
+			'gross_price'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Gross Price')
+			));
+		$theme->assign('items', $items);
+		Base_ThemeCommon::display_smarty($theme,'Premium_Warehouse_Items_Orders','item_list_tooltip');
 	}
 	
 	public static function display_transaction_type($r, $nolink) {
