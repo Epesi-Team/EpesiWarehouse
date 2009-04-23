@@ -17,6 +17,7 @@ defined("_VALID_ACCESS") || die('Direct access forbidden');
 class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	public static $trans = null;
 	private static $new_status = null;
+	public static $key = null;
 	
 	public static function user_settings() {
 		return array(	'Transaction'=>array(
@@ -300,39 +301,8 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	
 	public static function QFfield_net_price(&$form, $field, $label, $mode, $default, $desc, $rb_obj){
 		if ($mode!=='view') {
-			$decp = Utils_CurrencyFieldCommon::get_decimal_point();
-			eval_js('format_currency=function(val){'.
-						'all=Math.round(val*100);'.
-						'first=parseInt(all/100);'.
-						'second=Math.round(all-first*100).toString(10);'.
-						'if(isNaN(first)||isNaN(second))return"";'.
-						'if(second.length==1)second="0"+second;'.
-						'return first+"'.$decp.'"+second;'.
-					'}');
-			$tax_rates = Data_TaxRatesCommon::get_tax_details();
-			$js = 'var tax_values=new Array();';
-			foreach ($tax_rates as $k=>$v)
-				$js .= 'tax_values['.$k.']='.$v['percentage'].';';
-			eval_js($js);
-			eval_js('update_net=function(){'.
-						'$("use_net_price").value=0;'.
-						'val=$("gross_price").value.split("'.$decp.'").join(".");'.
-						'$("net_price").value=format_currency(100*parseFloat(val)/(100+parseFloat(1*tax_values[$("tax_rate").value])));'.
-					'}');
-			eval_js('update_gross=function(){'.
-						'$("use_net_price").value=1;'.
-						'val=$("net_price").value.split("'.$decp.'").join(".");'.
-						'$("gross_price").value=format_currency(parseFloat(val)+parseFloat(val*tax_values[$("tax_rate").value])/100);'.
-					'}');
-			eval_js('switch_currencies=function(val){'.
-						'$("__net_price__currency").selectedIndex=val;'.
-						'$("__gross_price__currency").selectedIndex=val;'.
-					'}');
-			eval_js('Event.observe("tax_rate","change",function(){if($("use_net_price").value==1)update_gross();else update_net();});');
-			eval_js('Event.observe("__gross_price__currency","change",function(){switch_currencies($("__gross_price__currency").selectedIndex);});');
-			eval_js('Event.observe("__net_price__currency","change",function(){switch_currencies($("__net_price__currency").selectedIndex);});');
-			$form->addElement('currency', $field, $label, array('id'=>$field, 'onkeyup'=>'update_gross();'));
-			$form->addElement('hidden', 'use_net_price', '', array('id'=>'use_net_price'));
+			Premium_Warehouse_ItemsCommon::init_net_gross_js_calculation($form, 'tax_rate', 'net_price', 'gross_price');
+			$form->addElement('currency', $field, $label, array('id'=>$field));
 			$form->setDefaults(array($field=>$default, 'use_net_price'=>1));
 		} else {
 			$form->addElement('currency', $field, $label, array('id'=>$field));
@@ -342,7 +312,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	
 	public static function QFfield_gross_price(&$form, $field, $label, $mode, $default, $desc, $rb_obj){
 		if ($mode!=='view') {
-			$form->addElement('currency', $field, $label, array('id'=>$field, 'onkeyup'=>'update_net();'));
+			$form->addElement('currency', $field, $label, array('id'=>$field));
 			$form->setDefaults(array($field=>$default));
 		} else {
 			$form->addElement('currency', $field, $label, array('id'=>$field));

@@ -114,6 +114,37 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 		return $next;
     }
     
+    public static function QFfield_gross_price(&$form, $field, $label, $mode, $default) {
+		if ($mode=='edit' || $mode=='add') {
+			$form->addElement('currency', $field, $label, array('id'=>$field));
+			$r=Utils_RecordBrowser::$last_record;
+			$net_price=Utils_CurrencyFieldCommon::get_values($r['net_price']);
+			Premium_Warehouse_ItemsCommon::init_net_gross_js_calculation($form, 'tax_rate', 'net_price', 'gross_price');
+			$form->setDefaults(array($field=>Utils_CurrencyFieldCommon::format_default($net_price[0]*(100+Data_TaxRatesCommon::get_tax_rate($r['tax_rate']))/100, $net_price[1])));
+		} else {
+			$form->addElement('static', $field, $label, self::display_gross_price(Utils_RecordBrowser::$last_record, false));
+		}
+    }
+    
+    public static function init_net_gross_js_calculation(&$form, $tax_rate_field, $net_field, $gross_field) {
+		$tax_rates = Data_TaxRatesCommon::get_tax_details();
+		$js = 'var tax_values=new Array();';
+		foreach ($tax_rates as $k=>$v)
+			$js .= 'tax_values['.$k.']='.$v['percentage'].';';
+		eval_js($js);
+		// TODO: call only once
+		$decp = Utils_CurrencyFieldCommon::get_decimal_point();
+		$switch_field = 'switch_net_gross_'.md5($form->getAttribute('name').$tax_rate_field.$net_field.$gross_field);
+		load_js('modules/Premium/Warehouse/Items/net_gross.js');
+		eval_js('Event.observe("'.$net_field.'","keyup",function(){update_gross("'.$decp.'","'.$net_field.'","'.$gross_field.'","'.$tax_rate_field.'","'.$switch_field.'");});');
+		eval_js('Event.observe("'.$gross_field.'","keyup",function(){update_net("'.$decp.'","'.$net_field.'","'.$gross_field.'","'.$tax_rate_field.'","'.$switch_field.'");});');
+		eval_js('Event.observe("'.$tax_rate_field.'","change",function(){if($("'.$switch_field.'").value==1)update_gross("'.$decp.'","'.$net_field.'","'.$gross_field.'","'.$tax_rate_field.'","'.$switch_field.'");else update_net("'.$decp.'","'.$net_field.'","'.$gross_field.'","'.$tax_rate_field.'","'.$switch_field.'");});');
+		eval_js('Event.observe("__'.$gross_field.'__currency","change",function(){switch_currencies($("__'.$gross_field.'__currency").selectedIndex,"'.$net_field.'","'.$gross_field.'");});');
+		eval_js('Event.observe("__'.$net_field.'__currency","change",function(){switch_currencies($("__'.$net_field.'__currency").selectedIndex,"'.$net_field.'","'.$gross_field.'");});');
+		$form->addElement('hidden', $switch_field, '', array('id'=>$switch_field));
+		$form->setDefaults(array($switch_field=>1));
+    }
+    
     public static function QFfield_item_category(&$form, $field, $label, $mode, $default) {
 		if ($mode=='edit' || $mode=='add') {
 			$opts = array();
@@ -171,6 +202,7 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 	}
 	
 	public static function submit_item($values, $mode) {
+		if(isset($values['gross_price']))unset($values['gross_price']);
 		switch ($mode) {
 			case 'cloned':
 				Utils_RecordBrowserCommon::update_record('premium_warehouse_items',$values['clone'],array('quantity_on_hand'=>0));

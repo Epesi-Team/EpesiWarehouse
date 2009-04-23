@@ -34,7 +34,7 @@ class Premium_Warehouse_ItemsInstall extends ModuleInstall {
 			array('name'=>'Vendor',		 	'type'=>'crm_company', 'required'=>false, 'extra'=>false, 'filter'=>true, 'visible'=>true, 'param'=>array('field_type'=>'select','crits'=>array('Premium_Warehouse_ItemsCommon','vendors_crits'))),
 			array('name'=>'Net Price', 		'type'=>'currency', 'required'=>false, 'extra'=>false, 'visible'=>false),
 			array('name'=>'Tax Rate', 		'type'=>'select', 'required'=>false, 'extra'=>false, 'visible'=>false, 'param'=>'data_tax_rates::Name', 'style'=>'integer'),
-			array('name'=>'Gross Price', 	'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>true, 'style'=>'currency', 'display_callback'=>array('Premium_Warehouse_ItemsCommon','display_gross_price')),
+			array('name'=>'Gross Price', 	'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>true, 'style'=>'currency', 'display_callback'=>array('Premium_Warehouse_ItemsCommon','display_gross_price'), 'QFfield_callback'=>array('Premium_Warehouse_ItemsCommon','QFfield_gross_price')),
 			array('name'=>'Cost', 			'type'=>'currency', 'required'=>false, 'extra'=>false, 'visible'=>false),
 			array('name'=>'Category',		'type'=>'multiselect', 'required'=>false, 'visible'=>false, 'extra'=>false, 'filter'=>true, 'param'=>'premium_warehouse_items_categories::Category Name', 'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_item_category')),
 			array('name'=>'Description', 	'type'=>'long text', 'required'=>false, 'param'=>'255', 'extra'=>false)
