@@ -152,6 +152,8 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 		$this->add_aco('edit orders',array('Employee'));
 		$this->add_aco('delete orders',array('Employee Manager'));
 
+		$this->add_aco('sell with loss',array('Employee Manager'));
+
 		$this->add_aco('view protected notes','Employee');
 		$this->add_aco('view public notes','Employee');
 		$this->add_aco('edit protected notes','Employee Administrator');

@@ -402,6 +402,18 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		}
 	} 
 	
+	public static function check_sale_price($data) {
+		$item_id = Utils_RecordBrowserCommon::get_id('premium_warehouse_items', 'item_name', $data['item_name']);
+		if (!is_numeric($item_id)) return array('item_name'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders', 'Item not found'));
+		$item = Utils_RecordBrowserCommon::get_record('premium_warehouse_items', $item_id);
+		$item['last_purchase_price'] = Utils_CurrencyFieldCommon::get_values($item['last_purchase_price']);
+		$sale_price = implode('.',explode(Utils_CurrencyFieldCommon::get_decimal_point(), $data['net_price']));
+		if (!$item['last_purchase_price'][0]) return true;
+		if ($item['last_purchase_price'][1]!=$data['__net_price__currency']) return true;
+		if ($sale_price<$item['last_purchase_price'][0]) return array('net_price'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Error! Price too low.'));
+		return true;
+	}
+	
 	public static function QFfield_item_name(&$form, $field, $label, $mode, $default){
 		self::get_trans();
 		if (self::$trans['transaction_type']==2) {
@@ -415,8 +427,14 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			if (self::$trans['transaction_type']==1) {
 				$decp = Utils_CurrencyFieldCommon::get_decimal_point();
 				load_js('modules/Premium/Warehouse/Items/Orders/check_item_price_cost.js');
-				$warning = Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Warning: Sale price is lower than the last purchase price!');
-				$form->addElement('button', 'submit', Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Submit'), array('onclick'=>'if(check_item_price_cost_difference("'.$decp.'","'.$warning.'")){'.$form->get_submit_form_js().'};'));
+				$msg = 'Warning';
+				$sell_with_loss = self::Instance()->acl_check('sell with loss');
+				if (!$sell_with_loss) {
+					$msg = 'Error';
+					$form->addFormRule(array('Premium_Warehouse_Items_OrdersCommon','check_sale_price'));
+				}
+				$warning = Base_LangCommon::ts('Premium_Warehouse_Items_Orders',$msg.': Sale price is lower than the last purchase price!');
+				$form->addElement('button', 'submit', Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Submit'), array('onclick'=>'if(check_item_price_cost_difference("'.$decp.'","'.$warning.'","'.((int)(!$sell_with_loss)).'")){'.$form->get_submit_form_js().'};'));
 				$form->addElement('hidden', 'last_item_price', '', array('id'=>'last_item_price'));
 			}
 			$form->addElement('text', $field, $label, array('id'=>$field));
@@ -425,7 +443,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			eval_js('var item_autocompleter = new warehouse_itemAutocompleter(\''.$field.'\', \''.$field.'_suggestbox\', \'modules/Premium/Warehouse/Items/Orders/item_name_autocomplete.php?'.http_build_query(array('cid'=>CID, 'transaction_id'=>self::$trans['id'])).'\', \'\', '.self::$trans['id'].');');
 			if (isset($default) && is_numeric($default)) $form->setDefaults(array($field=>Utils_RecordBrowserCommon::get_value('premium_warehouse_items',$default,'item_name')));
 			$form->addFormRule(array('Premium_Warehouse_Items_OrdersCommon','check_qty_on_hand'));
-			eval_js('focus_by_id(\'item_name\');');
+			eval_js('if($("item_name").value=="")focus_by_id("item_name");');
 		} else {
 			$form->addElement('static', $field, $label);
 			$form->setDefaults(array($field=>self::display_item_name(array('item_name'=>$default), null, array('id'=>'item_name'))));
