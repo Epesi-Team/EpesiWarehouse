@@ -380,10 +380,22 @@ class Premium_Warehouse_eCommerce extends Module {
 		$on = '<span class="checkbox_on" />';
 		$off = '<span class="checkbox_off" />';
 		
-		print(Utils_RecordBrowserCommon::record_link_open_tag('premium_ecommerce_products',$rec['id']).$this->t('Go to item').Utils_RecordBrowserCommon::record_link_close_tag());
-		print('<table><tr><td>'.$this->t('Published').'</td><td><a '.$this->create_callback_href(array($this,'toggle_publish'),array($rec['id'],!$rec['publish'])).'>'.($rec['publish']?$on:$off).'</a></td></tr>');
-		print('<tr><td>'.$this->t('Assigned category (required)').'</td><td>'.($arg['category']?$on:$off).'</td></tr></table>');
+		print('<h1>'.Utils_RecordBrowserCommon::record_link_open_tag('premium_ecommerce_products',$rec['id']).$this->t('Go to item').Utils_RecordBrowserCommon::record_link_close_tag().'</h1>');
 
+		//opts
+ 		$m = & $this->init_module('Utils/GenericBrowser',null,'t0');
+ 		$m->set_table_columns(array(
+				array('name'=>$this->t('Option')),
+				array('name'=>$this->t('Value')),
+					    ));
+ 		$m->add_row($this->t('Published'),'<a '.$this->create_callback_href(array($this,'toggle_publish'),array($rec['id'],!$rec['publish'])).'>'.($rec['publish']?$on:$off).'</a>');
+ 		$m->add_row($this->t('Assigned category'),($arg['category']?$on:$off));
+		$item = Utils_RecordBrowserCommon::get_record('premium_warehouse_items',$rec['item_name']);
+		$quantity = Utils_RecordBrowserCommon::get_records('premium_warehouse_location',array('item_sku'=>$item['sku'],'>quantity'=>0));
+ 		$m->add_row($this->t('Available in warehouse'),(empty($quantity)?$off:$on));
+ 		$this->display_module($m);
+
+		//langs
  		$m = & $this->init_module('Utils/GenericBrowser',null,'t1');
  		$m->set_table_columns(array(
 				array('name'=>$this->t('Language')),
@@ -393,11 +405,32 @@ class Premium_Warehouse_eCommerce extends Module {
 					    ));
 		$langs = Utils_CommonDataCommon::get_array('Premium/Warehouse/eCommerce/Languages');
 		foreach($langs as $code=>$name) {
-		    $descs = Utils_RecordBrowserCommon::get_records('premium_ecommerce_descriptions',array('item_name'=>$rec['id'],'language'=>$code),array('display_name','short_description'));
-	//	    print
- 		    $m->add_row($name,($descs && isset($descs['display_name']) && $descs['display_name'])?$on:$off,($descs && isset($descs['short_description']) && $descs['short_description'])?$on:$off,"not impl");
+		    $descs = Utils_RecordBrowserCommon::get_records('premium_ecommerce_descriptions',array('item_name'=>$rec['item_name'],'language'=>$code),array('display_name','short_description'));
+		    $descs = array_pop($descs);
+		    $params = Utils_RecordBrowserCommon::get_records('premium_ecommerce_products_parameters',array('item_name'=>$rec['item_name'],'language'=>$code));
+ 		    $m->add_row($name,($descs && isset($descs['display_name']) && $descs['display_name'])?$on:$off,($descs && isset($descs['short_description']) && $descs['short_description'])?$on:$off,empty($params)?$off:$on);
 		}
- 		$this->display_module($m,array(true),'automatic_display');
+ 		$this->display_module($m);
+
+		//currencies
+ 		$m = & $this->init_module('Utils/GenericBrowser',null,'t2');
+ 		$m->set_table_columns(array(
+				array('name'=>$this->t('Currency')),
+				array('name'=>$this->t('Gross Price')),
+				array('name'=>$this->t('Tax Rate')),
+					    ));
+		$curr_opts = Premium_Warehouse_eCommerceCommon::get_currencies();
+		foreach($curr_opts as $id=>$code) {
+		    $prices = Utils_RecordBrowserCommon::get_records('premium_ecommerce_prices',array('item_name'=>$rec['item_name'],'currency'=>$id),array('gross_price','tax_rate'));
+		    $prices = array_pop($prices);
+		    if($prices && isset($prices['gross_price'])) {
+    			    $tax = Utils_RecordBrowserCommon::get_record('data_tax_rates',$prices['tax_rate']);
+    			    $m->add_row($code,$prices['gross_price'],$tax['name']);
+		    } else {
+         		    $m->add_row($code,$off,$off);
+		    }
+		}
+ 		$this->display_module($m);
 	}
 	
 	public function publish_warehouse_item($id) {

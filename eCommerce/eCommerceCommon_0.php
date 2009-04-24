@@ -125,6 +125,11 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 			self::$curr_opts = DB::GetAssoc('SELECT id, code FROM utils_currency');
 	}
 	
+	public static function get_currencies() {
+		self::init_currency();
+		return self::$curr_opts;
+	}
+	
 	public static function QFfield_fckeditor(&$form, $field, $label, $mode, $default) {
 		if ($mode=='add' || $mode=='edit') {
 			$fck = $form->addElement('fckeditor', $field, $label);
