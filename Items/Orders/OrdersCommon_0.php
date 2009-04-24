@@ -576,8 +576,8 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 							return false;
 			case 'edit':	if (!Base_AclCommon::i_am_admin() &&
 								($param['status']>=20
-								|| ($param['status']>=3 && $param['transaction_type']==0)
-								|| ($param['status']>=2 && $param['transaction_type']==1)
+								|| ($param['status']>=2 && $param['transaction_type']==0)
+								|| ($param['status']>=3 && $param['transaction_type']==1)
 								))
 								return false;
 							return $i->acl_check('edit orders');
