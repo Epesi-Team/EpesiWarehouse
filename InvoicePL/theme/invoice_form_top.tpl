@@ -17,7 +17,8 @@
 	</tr>
 </table>
 <div width="100%" align="center">
-	<font size=12><b>Faktura VAT nr. {$order.invoice_id}</b></font><br>
+	{if isset($order.invoice_id)}<font size=12><b>Faktura VAT nr. {$order.invoice_id}</b></font><br>{/if}
+	{if isset($order.po_id)}<font size=11><b>Zamówienie {$order.po_id}</b></font><br>{/if}
 	ORYGINAŁ | KOPIA | DUPLIKAT
 </div>
 <table>

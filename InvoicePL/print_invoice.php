@@ -24,15 +24,23 @@ $order = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders',
 $warehouse = Utils_RecordBrowserCommon::get_record('premium_warehouse', $order['warehouse']);
 $company = CRM_ContactsCommon::get_company(CRM_ContactsCommon::get_main_company());
 
-if (!$order['invoice_number'])
+if (!$order['invoice_number'] && $order['transaction_type']==1) {
 	$order['invoice_number'] = Premium_Warehouse_InvoicePLCommon::generate_invoice_number($order);
+	$order['invoice_id'] = str_pad($order['invoice_number'], 4, '0', STR_PAD_LEFT).'/'.date('Y',strtotime($order['transaction_date']));
+	$header = 'Faktura VAT nr. '.$order['invoice_id'];
+}
 
-$order['invoice_id'] = str_pad($order['invoice_number'], 4, '0', STR_PAD_LEFT).'/'.date('Y',strtotime($order['transaction_date']));
+if ($order['transaction_type']==0) {
+	$order['po_id'] = str_pad($order['id'], 4, '0', STR_PAD_LEFT).'/'.date('Y',strtotime($order['transaction_date']));
+	$order['invoice_id'] = $order['invoice_number'];
+	$header = 'Zamówienie '.$order['po_id'];
+}
+
 $order['employee_name'] = CRM_ContactsCommon::contact_format_no_company(CRM_ContactsCommon::get_contact($order['employee']));
 $order['payment_type_label'] = Utils_CommonDataCommon::get_value('Premium_Items_Orders_Payment_Types/'.$order['payment_type'],true);
 $order['terms_label'] = Utils_CommonDataCommon::get_value('Premium_Items_Orders_Terms/'.$order['terms'],true);
 
-Libs_TCPDFCommon::prepare_header($tcpdf,'Faktura VAT nr. '.$order['invoice_id'], '', false);
+Libs_TCPDFCommon::prepare_header($tcpdf,$header, '', false);
 Libs_TCPDFCommon::add_page($tcpdf);
 
 $buffer = '';
