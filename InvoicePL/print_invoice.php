@@ -25,7 +25,7 @@ $warehouse = Utils_RecordBrowserCommon::get_record('premium_warehouse', $order['
 $company = CRM_ContactsCommon::get_company(CRM_ContactsCommon::get_main_company());
 
 if (!$order['invoice_number'])
-	Premium_Warehouse_InvoicePLCommon::generate_invoice_number($order);
+	$order['invoice_number'] = Premium_Warehouse_InvoicePLCommon::generate_invoice_number($order);
 
 $order['invoice_id'] = str_pad($order['invoice_number'], 4, '0', STR_PAD_LEFT).'/'.date('Y',strtotime($order['transaction_date']));
 $order['employee_name'] = CRM_ContactsCommon::contact_format_no_company(CRM_ContactsCommon::get_contact($order['employee']));

@@ -126,7 +126,7 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 // ************ other ************** //
 		Utils_RecordBrowserCommon::set_access_callback('premium_warehouse_items', 'Premium_Warehouse_Items_OrdersCommon', 'access_items');
 
-		Utils_CommonDataCommon::new_array('Premium_Items_Orders_Trans_Types',array(0=>'Purchase',1=>'Sale',2=>'Inventory Adjustment',3=>'Rental',4=>'Warehouse Transfer'));
+		Utils_CommonDataCommon::new_array('Premium_Items_Orders_Trans_Types',array(0=>'Purchase',1=>'Sale',2=>'Inventory Adjustment',3=>'Rental',4=>'Transfer'));
 		Utils_CommonDataCommon::new_array('Premium_Items_Orders_Payment_Types',array(0=>'Cash',1=>'Check'));
 		Utils_CommonDataCommon::new_array('Premium_Items_Orders_Shipment_Types',array(0=>'Pickup',1=>'USPS',2=>'UPS',3=>'DHL',4=>'FedEx',5=>'Courier',6=>'Other'));
 		Utils_CommonDataCommon::new_array('Premium_Items_Orders_Terms',array(0=>'Due on Receipt',15=>'Net 15',30=>'Net 30'));
