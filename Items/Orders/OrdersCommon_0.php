@@ -640,6 +640,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 								if ($tt==2 || $tt==4) {
 									$ret['company'] = 'hide';
 									$ret['contact'] = 'hide';
+									$ret['tax_id'] = 'hide';
 									$ret['company_name'] = 'hide';
 									$ret['first_name'] = 'hide';
 									$ret['last_name'] = 'hide';
@@ -854,7 +855,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 				Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders',$values['clone'],array('status'=>''));
 				return;
 			case 'adding':
-				if ($mode!='view') {
+				if ($mode!='view' && ($values['transaction_type']==0 || $values['transaction_type']==1)) {
 					load_js('modules/Premium/Warehouse/Items/Orders/contractor_update.js');
 					eval_js('new ContractorUpdate()');
 				}

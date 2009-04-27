@@ -24,8 +24,10 @@ $order = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders',
 $warehouse = Utils_RecordBrowserCommon::get_record('premium_warehouse', $order['warehouse']);
 $company = CRM_ContactsCommon::get_company(CRM_ContactsCommon::get_main_company());
 
-if (!$order['invoice_number'] && $order['transaction_type']==1) {
-	$order['invoice_number'] = Premium_Warehouse_InvoicePLCommon::generate_invoice_number($order);
+if ($order['transaction_type']==1) {
+	if (!$order['invoice_number']) {
+		$order['invoice_number'] = Premium_Warehouse_InvoicePLCommon::generate_invoice_number($order);
+	}
 	$order['invoice_id'] = str_pad($order['invoice_number'], 4, '0', STR_PAD_LEFT).'/'.date('Y',strtotime($order['transaction_date']));
 	$header = 'Faktura VAT nr. '.$order['invoice_id'];
 }
