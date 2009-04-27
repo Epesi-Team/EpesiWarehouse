@@ -309,7 +309,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 
 	public static function QFfield_status(&$form, $field, $label, $mode, $default, $desc, $rb_obj){
 		if ($mode!='view') {
-			load_js('modules\Premium\Warehouse\Items\Orders\contractor_update.js');
+			load_js('modules/Premium/Warehouse/Items/Orders/contractor_update.js');
 			eval_js('new ContractorUpdate()');
 		}
 		$opts = self::get_status_array($rb_obj->record);
@@ -855,7 +855,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 				return;
 			case 'adding':
 				if ($mode!='view') {
-					load_js('modules\Premium\Warehouse\Items\Orders\contractor_update.js');
+					load_js('modules/Premium/Warehouse/Items/Orders/contractor_update.js');
 					eval_js('new ContractorUpdate()');
 				}
 			case 'editing':
