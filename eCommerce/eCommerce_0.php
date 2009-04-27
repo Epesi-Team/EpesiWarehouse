@@ -391,7 +391,7 @@ class Premium_Warehouse_eCommerce extends Module {
  		$m->add_row($this->t('Published'),'<a '.$this->create_callback_href(array($this,'toggle_publish'),array($rec['id'],!$rec['publish'])).'>'.($rec['publish']?$on:$off).'</a>');
  		$m->add_row($this->t('Assigned category'),($arg['category']?$on:$off));
 		$item = Utils_RecordBrowserCommon::get_record('premium_warehouse_items',$rec['item_name']);
-		$quantity = Utils_RecordBrowserCommon::get_records('premium_warehouse_location',array('item_sku'=>$item['sku'],'>quantity'=>0));
+		$quantity = Utils_RecordBrowserCommon::get_records('premium_warehouse_location',array('item_sku'=>$item['id'],'>quantity'=>0));
  		$m->add_row($this->t('Available in warehouse'),(empty($quantity)?$off:$on));
  		$this->display_module($m);
 
@@ -434,7 +434,7 @@ class Premium_Warehouse_eCommerce extends Module {
 	}
 	
 	public function publish_warehouse_item($id) {
-		Utils_RecordBrowserCommon::new_record('premium_ecommerce_products',array('item_name'=>$id,'publish'=>1,'available'=>0));
+		Utils_RecordBrowserCommon::new_record('premium_ecommerce_products',array('item_name'=>$id,'publish'=>1,'available'=>1));
     		Premium_Warehouse_eCommerceCommon::icecat_sync($id);
 	}
 	
