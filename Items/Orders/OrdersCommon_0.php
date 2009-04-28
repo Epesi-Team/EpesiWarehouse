@@ -226,6 +226,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		$reserved_qty = array();
 		foreach ($items as $i) {
 			$warehouse = $trans[$i['transaction_id']]['warehouse'];
+			if (!$warehouse) continue;
 			if (!isset($reserved_qty[$warehouse])) $reserved_qty[$warehouse] = 0;
 			$reserved_qty[$warehouse] += $i['quantity'];
 			$qty+=$i['quantity'];
