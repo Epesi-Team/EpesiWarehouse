@@ -63,6 +63,10 @@ class Premium_Warehouse_Items extends Module {
 						'item_name'=>array('wrapmode'=>'nowrap'),
 						'sku'=>array('width'=>1, 'wrapmode'=>'nowrap')
 						));
+
+		if(ModuleManager::is_installed('Premium_Warehouse_eCommerce')>=0)
+    			$this->rb->set_additional_actions_method('Premium_Warehouse_eCommerceCommon', 'warehouse_item_actions');
+
 		$this->display_module($this->rb, array(array(),array(),$cols));
 	}
 	

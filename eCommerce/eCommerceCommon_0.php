@@ -184,7 +184,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 		}
 	}
 	
-	public static function icecat_sync($item_id) {
+	public static function icecat_sync($item_id,$verbose=true) {
     		$user = Variable::get('icecat_user');
     		$pass = Variable::get('icecat_pass');
 		if(!$user || !$pass)
@@ -199,11 +199,13 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 		    if(!$prod_id)
     			$prod_id = $item['product_code'];
 		    if(!$prod_id) {
-			Epesi::alert("Missing product code or manufacturer part number.");
+			if($verbose)
+    				Epesi::alert("Missing product code or manufacturer part number.");
 			return false;		
 		    }
 		    if(!$item['vendor']) {
-			Epesi::alert("Missing product vendor.");
+			if($verbose)
+				Epesi::alert("Missing product vendor.");
 			return false;		
 		    }
 		    $vendor = CRM_ContactsCommon::get_company($item['vendor']);
@@ -246,7 +248,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 		    $response_code = curl_getinfo($c, CURLINFO_HTTP_CODE);
 		    curl_close($c);
 	    	    if($response_code==401) {
-			Epesi::alert("Invalid user or password");
+			Epesi::alert("Invalid icecat user or password");
 			return false;
 		    }
 		    if($output) {
@@ -364,6 +366,59 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 		}
 		return $values;
 	}
+
+	public static function toggle_publish($id,$v) {
+		Utils_RecordBrowserCommon::update_record('premium_ecommerce_products',$id,array('publish'=>$v?1:0));
+	}
+	
+	public static function publish_warehouse_item($id) {
+		Utils_RecordBrowserCommon::new_record('premium_ecommerce_products',array('item_name'=>$id,'publish'=>1,'available'=>1));
+    		Premium_Warehouse_eCommerceCommon::icecat_sync($id,false);
+	}
+	
+
+	public static function warehouse_item_actions($r, & $gb_row) {
+		if(isset($_REQUEST['publish_warehouse_item']) && $r['id']==$_REQUEST['publish_warehouse_item']) {
+		    self::publish_warehouse_item($r['id']);
+		} 
+
+		$tip = '<table>';
+		$icon = 'available.png';
+		$action = '';
+
+		$on = '<span class="checkbox_on" />';
+		$off = '<span class="checkbox_off" />';
+
+		$recs = Utils_RecordBrowserCommon::get_records('premium_ecommerce_products',array('item_name'=>$r['id']));
+		$quantity = Utils_RecordBrowserCommon::get_records('premium_warehouse_location',array('item_sku'=>$r['id'],'>quantity'=>0));
+		if(empty($recs)) {
+		    $icon = 'notavailable.png';
+    		    $tip .= '<tr><td colspan=2>'.Base_LangCommon::ts('Premium_Warehouse_eCommerce','eCommerce item doesn\'t exist.').'</td></tr>';
+		    $action = Module::create_href(array('publish_warehouse_item'=>$r['id']));
+		} else {
+		    $rec = array_pop($recs);
+    		    
+		    if(isset($_REQUEST['toggle_publish']) && $rec['id']==$_REQUEST['toggle_publish'] && ($_REQUEST['publish_value']==0 || $_REQUEST['publish_value']==1)) {
+			$rec['publish'] = $_REQUEST['publish_value'];
+			self::toggle_publish($rec['id'],$rec['publish']);
+		    }
+		    
+		    if(!$rec['publish']) {
+    			$icon = 'notpublished.png';
+		    } elseif(empty($quantity) || !$r['category'])
+			$icon = 'published.png';
+		    $action = Module::create_href(array('toggle_publish'=>$rec['id'],'publish_value'=>$rec['publish']?0:1));
+    		    $tip .= '<tr><td>'.Base_LangCommon::ts('Premium_Warehouse_eCommerce','Published').'</td><td>'.($rec['publish']?$on:$off).'</td></tr>';
+		}
+		
+		$tip .= '<tr><td>'.Base_LangCommon::ts('Premium_Warehouse_eCommerce','Assigned category').'</td><td>'.($r['category']?$on:$off).'</td></tr>';
+		$tip .= '<tr><td>'.Base_LangCommon::ts('Premium_Warehouse_eCommerce','Available in warehouse').'</td><td>'.(empty($quantity)?$off:$on).'</td></tr>';
+		$tip .= '</table>';
+		
+
+		$gb_row->add_action($action,'',$tip,Base_ThemeCommon::get_template_file('Premium_Warehouse_eCommerce',$icon));
+	}
+	
 
 
 }
