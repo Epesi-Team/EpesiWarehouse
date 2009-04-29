@@ -148,21 +148,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
     public static function menu() {
 		return array('Warehouse'=>array(
 			'__submenu__'=>1,
-			'eCommerce'=>array(
-				'__submenu__'=>1, 
-				'Products'=>array('recordset'=>'products'), 
-				'Settings'=>array('__submenu__'=>1,
-					'Parameters'=>array('recordset'=>'parameters'),
-					'Parameter Groups'=>array('recordset'=>'parameter_groups'),
-					'Availability'=>array('recordset'=>'availability'),
-					'Payments & Carriers'=>array('recordset'=>'payments_carriers'),
-					'Pages'=>array('recordset'=>'pages'),
-					'Start page'=>array('__function__'=>'start_page'),
-					'Icecat'=>array('__function__'=>'icecat'),
-					'Rules and policies'=>array('__function__'=>'rules_page'),
-					'QuickCart settings'=>array('__function__'=>'QC_dirs')
-				)
-			)
+			'eCommerce products'=>array()
 		));
 	}
 	
@@ -420,6 +406,10 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 	}
 	
 
+	public static function admin_caption() {
+		return 'eCommerce';
+	}
+	
 
 }
 ?>

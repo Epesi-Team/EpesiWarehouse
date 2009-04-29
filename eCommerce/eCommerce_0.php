@@ -16,54 +16,113 @@ defined("_VALID_ACCESS") || die('Direct access forbidden');
 
 class Premium_Warehouse_eCommerce extends Module {
 	private $rb;
+	private $recordset;
+	
+	public function admin() {
+		$buttons = array();
+//		$icon = Base_ThemeCommon::get_template_file($name,'icon.png');
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'availability')).'>'.$this->ht('Availability').'</a>',
+						'icon'=>null);
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'icecat')).'>'.$this->ht('Icecat').'</a>',
+						'icon'=>null);
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'pages')).'>'.$this->ht('Pages').'</a>',
+						'icon'=>null);
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'parameters')).'>'.$this->ht('Parameters').'</a>',
+						'icon'=>null);
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'parameter_groups')).'>'.$this->ht('Parameter Groups').'</a>',
+						'icon'=>null);
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'payments_carriers')).'>'.$this->ht('Payments & Carriers').'</a>',
+						'icon'=>null);
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'QC_dirs')).'>'.$this->ht('Quickcart settings').'</a>',
+						'icon'=>null);
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'rules_page')).'>'.$this->ht('Rules & Policies').'</a>',
+						'icon'=>null);
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'start_page')).'>'.$this->ht('Start Page').'</a>',
+						'icon'=>null);
+		$theme =  & $this->pack_module('Base/Theme');
+		$theme->assign('header', $this->t('eCommerce settings'));
+		$theme->assign('buttons', $buttons);
+		$theme->display();
+	}
+	
 
 	public function body() {
-		if (isset($_REQUEST['recordset'])) 
-			switch($_REQUEST['recordset']) {
-				case 'products':
-				case 'parameters':
-				case 'parameter_groups':
-				case 'availability':
-				case 'pages':
-				case 'payments_carriers':
-					$this->set_module_variable('recordset', $_REQUEST['recordset']);
-					break;
-			}
-		$mod = $this->get_module_variable('recordset');
-		switch($mod) {
-			case 'products':
-				$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_products');
-				$this->rb->set_defaults(array('publish'=>1,'position'=>0,'status'=>1));
-				$this->rb->set_additional_actions_method($this, 'actions_for_position');
-				break;
-			case 'parameters':
-				$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_parameters');
-				$this->rb->set_additional_actions_method($this, 'actions_for_position');
-				$this->rb->force_order(array('position'=>'ASC','parameter_code'=>'ASC'));
-				break;
-			case 'parameter_groups':
-				$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_parameter_groups');
-				$this->rb->set_additional_actions_method($this, 'actions_for_position');
-				break;
-			case 'availability':
-				$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_availability');
-				$this->rb->set_defaults(array('position'=>0));
-				$this->rb->set_additional_actions_method($this, 'actions_for_position');
-				break;
-			case 'pages':
-				$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_pages');
-				$this->rb->set_defaults(array('position'=>0,'publish'=>1,'type'=>2));
-				$this->rb->set_additional_actions_method($this, 'actions_for_position');
-				break;
-			case 'payments_carriers':
-				$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_payments_carriers');
-				break;
-		}
+		$this->recordset = 'products';
+		$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_products');
+		$this->rb->set_defaults(array('publish'=>1,'position'=>0,'status'=>1));
+		$this->rb->set_additional_actions_method($this, 'actions_for_position');
+		$this->rb->force_order(array('position'=>'ASC','item_name'=>'ASC'));
 		$this->display_module($this->rb);
 	}
 
+	public function parameters() {
+		if($this->is_back()) return false;
+		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
+	
+		$this->recordset = 'parameters';
+		$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_parameters');
+		$this->rb->set_defaults(array('position'=>0));
+		$this->rb->set_additional_actions_method($this, 'actions_for_position');
+		$this->rb->force_order(array('position'=>'ASC','parameter_code'=>'ASC'));
+		$this->display_module($this->rb);
+
+		return true;
+	}
+
+	public function parameter_groups() {
+		if($this->is_back()) return false;
+		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
+
+		$this->recordset = 'parameter_groups';
+		$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_parameter_groups');
+		$this->rb->set_defaults(array('position'=>0));
+		$this->rb->set_additional_actions_method($this, 'actions_for_position');
+		$this->rb->force_order(array('position'=>'ASC','group_code'=>'ASC'));
+		$this->display_module($this->rb);
+
+		return true;
+	}
+
+	public function availability() {
+		if($this->is_back()) return false;
+		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
+	
+		$this->recordset = 'availability';
+		$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_availability');
+		$this->rb->set_defaults(array('position'=>0));
+		$this->rb->set_additional_actions_method($this, 'actions_for_position');
+		$this->rb->force_order(array('position'=>'ASC','availability_code'=>'ASC'));
+		$this->display_module($this->rb);
+
+		return true;
+	}
+
+	public function pages() {
+		if($this->is_back()) return false;
+		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
+	
+		$this->recordset = 'pages';
+		$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_pages');
+		$this->rb->set_defaults(array('position'=>0,'publish'=>1,'type'=>2));
+		$this->rb->set_additional_actions_method($this, 'actions_for_position');
+		$this->rb->force_order(array('position'=>'ASC','page_name'=>'ASC'));
+		$this->display_module($this->rb);
+
+		return true;
+	}
+
+	public function payments_carriers() {
+		if($this->is_back()) return false;
+		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
+	
+		$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_payments_carriers');
+		$this->display_module($this->rb);
+
+		return true;
+	}
+
 	public function actions_for_position($r, & $gb_row) {
-		$tab = 'premium_ecommerce_'.$this->get_module_variable('recordset');
+		$tab = 'premium_ecommerce_'.$this->recordset;
 		if(isset($_REQUEST['pos_action']) && $r['id']==$_REQUEST['pos_action'] && is_numeric($_REQUEST['old']) && is_numeric($_REQUEST['new'])) {
 		    $recs = Utils_RecordBrowserCommon::get_records($tab,array('position'=>$_REQUEST['new']), array('id'));
 		    foreach($recs as $rr)
@@ -177,14 +236,17 @@ class Premium_Warehouse_eCommerce extends Module {
 	}
 	
 	public function start_page() {
-		$this->edit_variable('Start page','ecommerce_start_page');
+		return $this->edit_variable('Start page','ecommerce_start_page');
 	}
 	
 	public function rules_page() {
-		$this->edit_variable('Rules and policies','ecommerce_rules');
+		return $this->edit_variable('Rules and policies','ecommerce_rules');
 	}
 
 	public function QC_dirs() {
+		if($this->is_back()) return false;
+		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
+	
 		$gb = & $this->init_module('Utils/GenericBrowser',null,'qc_list');
 
 		$gb->set_table_columns(array(array('name'=>$this->t('Path'), 'order'=>'path')));
@@ -212,6 +274,8 @@ class Premium_Warehouse_eCommerce extends Module {
 		$qf->display();
 
 		Base_ActionBarCommon::add('add','Add',$this->create_callback_href(array($this,'add_quickcart')));
+		
+		return true;
 	}
 	
 	public function add_quickcart() {
@@ -257,6 +321,9 @@ class Premium_Warehouse_eCommerce extends Module {
 	}
 	
 	public function icecat() {
+		if($this->is_back()) return false;
+		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
+	
 		$form = & $this->init_module('Libs/QuickForm');
 
 		$form->addElement('header', null, $this->t('Ice cat settings'));
@@ -297,10 +364,13 @@ class Premium_Warehouse_eCommerce extends Module {
 		    Variable::set('icecat_user',$vals['user']);
 		    Variable::set('icecat_pass',$vals['pass']);
     		    Base_StatusBarCommon::message($this->t('Settings saved'));
+		    return false;
 		}
 		$form->display();
 
 		Base_ActionBarCommon::add('save', 'Save', $form->get_submit_form_href(true));
+		
+		return true;
 	}
 	
 	public function check_icecat_pass($user) {
@@ -315,6 +385,9 @@ class Premium_Warehouse_eCommerce extends Module {
 	}
 	
 	private function edit_variable($header, $v) {
+		if($this->is_back()) return false;
+		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
+	
 		$f = $this->init_module('Libs/QuickForm');
 		
 		$f->addElement('header',null,$this->t($header));
@@ -331,8 +404,10 @@ class Premium_Warehouse_eCommerce extends Module {
 			$content = str_replace("\n",'',$ret['content']);
 			Variable::set($v,$content);
 			Base_StatusBarCommon::message($this->t('Page saved'));
+			return false;
 		}
 		$f->display();	
+		return true;
 	}
 
 	public function attachment_product_addon($arg){
@@ -434,6 +509,7 @@ class Premium_Warehouse_eCommerce extends Module {
 	
 	public function caption(){
 		if (isset($this->rb)) return $this->rb->caption();
+		return 'eCommerce administration';
 	}
 }
 
