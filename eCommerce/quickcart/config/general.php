@@ -49,7 +49,7 @@ $config['inherit_themes'] = false;
 /*
 * Default language
 */
-$config['default_lang'] = "en";
+$config['default_lang'] = "pl";
 
 /*
 * If should be use wysiwyg editor or default
