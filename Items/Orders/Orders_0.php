@@ -915,6 +915,24 @@ class Premium_Warehouse_Items_Orders extends Module {
 					}
 					break;
 			}
+		} elseif ($trans['transaction_type']==2) {
+			switch ($status) {			
+				case '':
+					$lp->add_option('yes', $this->t('Yes'), null, null);
+
+					$lp->add_option('no', $this->t('No'), null, null);
+					
+					$this->display_module($lp, array($this->t('Close Inv. Adjustment. Are you sure?')));
+					$this->href = $lp->get_href();
+					$vals = $lp->export_values();
+					if ($vals!==null) {
+						if (!isset($vals['form']) || !is_array($vals['form'])) $vals['form'] = array();
+						if ($vals['option']=='yes')
+							Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $trans['id'], array('status'=>20));
+						location(array());
+					}
+					break;
+			}
 		}
 	}
 	
