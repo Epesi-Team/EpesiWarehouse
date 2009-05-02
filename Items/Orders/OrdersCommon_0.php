@@ -309,7 +309,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	}
 
 	public static function QFfield_status(&$form, $field, $label, $mode, $default, $desc, $rb_obj){
-		if ($mode!='view') {
+		if ($mode!='view' && (Utils_RecordBrowser::$last_record['transaction_type']==0 || Utils_RecordBrowser::$last_record['transaction_type']==1)) {
 			load_js('modules/Premium/Warehouse/Items/Orders/contractor_update.js');
 			eval_js('new ContractorUpdate()');
 		}
