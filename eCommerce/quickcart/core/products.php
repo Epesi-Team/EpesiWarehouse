@@ -69,14 +69,17 @@ class Products
 								d.f_page_title as sNameTitle, 
 								d.f_meta_description as sMetaDescription, 
 								d.f_keywords as sMetaKeywords,
-								it.f_vendor
+								it.f_vendor,
+								loc.f_quantity
 					FROM premium_ecommerce_products_data_1 pr
 					INNER JOIN (premium_warehouse_items_data_1 it,premium_ecommerce_availability_data_1 av) ON (pr.f_item_name=it.id AND av.id=pr.f_available)
 					LEFT JOIN premium_ecommerce_prices_data_1 pri ON (pri.f_item_name=it.id AND pri.active=1 AND pri.f_currency='.$currency.')
 					LEFT JOIN premium_ecommerce_descriptions_data_1 d ON (d.f_item_name=it.id AND d.f_language="'.LANGUAGE.'")
 					LEFT JOIN premium_ecommerce_availability_labels_data_1 avl ON (pr.f_available=avl.f_availability AND avl.f_language="'.LANGUAGE.'") 
 					LEFT JOIN premium_warehouse_location_data_1 loc ON (loc.f_item_sku=it.id AND loc.f_quantity>0)
-					 WHERE pr.f_publish>=%d AND pr.active=1 AND loc.f_quantity is not null',array($iStatus));
+					 WHERE pr.f_publish>=%d AND pr.active=1',array($iStatus));
+
+	$uncategorized = false;
 
 	while($aExp = $ret->FetchRow()) {
 		$ret2 = DB::Execute('SELECT pp.f_value,
@@ -108,11 +111,17 @@ class Products
 			$aExp['sName'] = $aExp['sName2'];
 		if($aExp['sAvailable']=='') 
 			$aExp['sAvailable'] = $aExp['sAvailable2'];
+		if(!$aExp['f_quantity'])
+			unset($aExp['fPrice']);
 		unset($aExp['sName2']);
 		$cats = array_filter(explode('__',$aExp['f_category']));
 		unset($aExp['f_category']);
 		$pages = array();
-		foreach($cats as $c) {
+		if(empty($cats)) {
+		    $pages[23] = 23; //uncategorized
+		    $uncategorized = true;
+		} else {
+    		    foreach($cats as $c) {
 			$pos = strrpos($c,'/');
 			if($pos!==false)
 				$last_cat = substr($c,$pos+1);
@@ -120,6 +129,7 @@ class Products
 				$last_cat = $c;
 			$last_cat *= 4;
 			$pages[$last_cat] = $last_cat;
+		    }
 		}
 		if($aExp['f_vendor']!=='') {
 			$id = $aExp['f_vendor']*4+1;
@@ -129,6 +139,9 @@ class Products
         $this->aProducts[$aExp['iProduct']] = $aExp;
         $this->aProducts[$aExp['iProduct']]['sLinkName'] = '?'.$aExp['iProduct'].','.change2Url( $this->aProducts[$aExp['iProduct']]['sName'] );
         $this->aProductsPages[$aExp['iProduct']] = $pages;
+	}
+	if(!$uncategorized) {//remove uncategorized category
+	    unset(Pages::getInstance()->aPages[23]);
 	}
 	//} epesi
   

@@ -392,6 +392,12 @@ class Pages
 					 'iType' => 5, 'iSubpagesShow' => 1, 'iProducts' => 0);
     $this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
     $this->aPagesParentsTypes[5][] = $id;
+
+	//uncategorized products
+	$id = 23;
+	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => 'Uncategorized', 'sNameTitle' => 'Uncategorized', 'sDescriptionShort' => '', 'iStatus' => 1, 'iPosition' => 1000, 'iType' => 3, 'iSubpagesShow' => 1, 'iProducts' => 1, 'sDescriptionFull'=>'', 'sMetaDescription' => '', 'sMetaKeywords' =>'' );
+	$this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
+	$this->aPagesParentsTypes[3][] = $id;
 	//} epesi
 
 /*    if( !is_file( DB_PAGES ) )

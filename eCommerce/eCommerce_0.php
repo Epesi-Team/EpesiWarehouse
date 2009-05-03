@@ -452,6 +452,7 @@ class Premium_Warehouse_eCommerce extends Module {
 		    return;
 		}
 		$rec = array_pop($recs);
+
 		$on = '<span class="checkbox_on" />';
 		$off = '<span class="checkbox_off" />';
 		

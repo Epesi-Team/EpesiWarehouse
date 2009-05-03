@@ -360,6 +360,13 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 	public static function publish_warehouse_item($id) {
 		Utils_RecordBrowserCommon::new_record('premium_ecommerce_products',array('item_name'=>$id,'publish'=>1,'available'=>1));
     		Premium_Warehouse_eCommerceCommon::icecat_sync($id,false);
+		$r = Utils_RecordBrowserCommon::get_record('premium_warehouse_items',$id);
+		if($r['net_price']=='') return;
+		$price = Utils_CurrencyFieldCommon::get_values($r['net_price']);
+		if($price[0]=='') return;
+		$p = ($price[0]*(100+Data_TaxRatesCommon::get_tax_rate($r['tax_rate'])))/100;
+		$c = $price[1];
+	        Utils_RecordBrowserCommon::new_record('premium_ecommerce_prices', array('item_name'=>$id, 'currency'=>$c, 'gross_price'=>$p,'tax_rate'=>$r['tax_rate']));
 	}
 	
 
