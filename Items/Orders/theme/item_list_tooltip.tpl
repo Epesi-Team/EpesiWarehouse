@@ -9,12 +9,12 @@
 		<th nowrap="1">
 			{$header.quantity}
 		</th>
-		<th nowrap="1">
+{*		<th nowrap="1">
 			{$header.net_price}
 		</th>
 		<th nowrap="1">
 			{$header.tax}
-		</th>
+		</th>*}
 		<th nowrap="1">
 			{$header.gross_price}
 		</th>
@@ -30,12 +30,12 @@
 			<td nowrap="1">
 				{$i.quantity}
 			</td>
-			<td nowrap="1">
+{*			<td nowrap="1">
 				{$i.net_price}
 			</td>
 			<td nowrap="1">
 				{$i.tax}
-			</td>
+			</td>*}
 			<td nowrap="1">
 				{$i.gross_price}
 			</td>
