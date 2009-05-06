@@ -24,7 +24,7 @@ class Premium_Warehouse_InvoicePLCommon extends ModuleCommon {
 	}
 
 	public static function submit_order($values, $mode) {
-		if (($mode=='edit' || $mode=='add') && $values['status']==4 && $values['transaction_type']==1 && !$values['invoice_number']) {
+		if (($mode=='edit' || $mode=='add') && $values['status']==4 && $values['transaction_type']==1 && (!isset($values['invoice_number']) || !$values['invoice_number'])) {
 			$values['invoice_number'] = self::generate_invoice_number($values);
 		}
 		return Premium_Warehouse_Items_OrdersCommon::submit_order($values, $mode);
