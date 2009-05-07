@@ -1,0 +1,526 @@
+<?php
+class Orders
+{
+
+  var $aOrders = null;
+  var $aProducts = null;
+
+  /**
+  * List products in basket
+  * @return string
+  * @param string $sFile
+  * @param int    $iId
+  * @param string $sBlock
+  */
+  function listProducts( $sFile, $iId = null, $sBlock = null ){
+    $oTpl =& TplParser::getInstance( );
+    $content = null;
+
+    if( !isset( $this->aProducts ) ){
+      if( !isset( $iId ) ){
+        $this->generateBasket( );
+      }
+      else{
+        $this->generateProducts( $iId );
+      }
+    }
+
+    if( !isset( $sBlock ) )
+      $sBlock = 'BASKET_';
+
+    if( isset( $this->aProducts ) ){
+      $i = 0;
+      $iCount = count( $this->aProducts );
+      foreach( $this->aProducts as $aData ){
+        $aData['iStyle'] = ( $i % 2 ) ? 0: 1;
+        $aData['sStyle'] = ( $i == ( $iCount - 1 ) ) ? 'L': $i + 1;
+        $aData['sSummary'] = displayPrice( normalizePrice( $aData['fSummary'] ) );
+        $aData['sPrice'] = displayPrice( $aData['fPrice'] );
+        $aData['sLinkDelete'] = defined( 'CUSTOMER_PAGE' ) ? $GLOBALS['aData']['sLinkName'].'&amp;iProductDelete='.$aData['iProduct'] : null;
+        $oTpl->setVariables( 'aData', $aData );
+        $content .= $oTpl->tbHtml( $sFile, $sBlock.'LIST' );
+        $i++;
+      }
+
+      $aData['fProductsSummary'] = normalizePrice( $this->fProductsSummary );
+      $aData['sProductsSummary'] = displayPrice( $aData['fProductsSummary'] );
+      if( isset( $iId ) && isset( $this->aOrders[$iId] ) ){
+        $this->aOrders[$iId]['fProductsSummary'] = $aData['fProductsSummary'];
+        if( !empty( $this->aOrders[$iId]['fPaymentCarrierPrice'] ) ){
+          $this->aOrders[$iId]['fOrderSummary'] = $aData['fOrderSummary'] = normalizePrice( $aData['fProductsSummary'] +  $this->aOrders[$iId]['fPaymentCarrierPrice'] );
+          $this->aOrders[$iId]['sOrderSummary'] = $aData['sOrderSummary'] = displayPrice( $aData['fOrderSummary'] );
+        }
+      }
+      $oTpl->setVariables( 'aData', $aData );
+      return $oTpl->tbHtml( $sFile, $sBlock.'HEAD' ).$content.$oTpl->tbHtml( $sFile, $sBlock.'FOOT' );
+    }
+  } // end function listProducts
+
+  /**
+  * Generates variable with products in basket
+  * @return void
+  */
+  function generateBasket( ){
+    $aFile      = file( DB_ORDERS_TEMP );
+    $iCount     = count( $aFile );
+    $this->aProducts = null;
+    $this->fProductsSummary   = null;
+    $_SESSION['iOrderQuantity'.LANGUAGE]  = 0;
+    $_SESSION['fOrderSummary'.LANGUAGE]   = null;
+
+    for( $i = 1; $i < $iCount; $i++ ){
+      $aExp = explode( '$', $aFile[$i] );
+      if( isset( $aExp[0] ) && $aExp[0] == $_SESSION['iCustomer'.LANGUAGE] ){
+        $this->aProducts[$aExp[1]] = orders_temp( $aExp );
+        $this->aProducts[$aExp[1]]['sLinkName'] = '?'.$aExp[1].','.change2Url( $this->aProducts[$aExp[1]]['sName'] );
+        $this->aProducts[$aExp[1]]['fSummary'] = normalizePrice( $this->aProducts[$aExp[1]]['fPrice'] * $this->aProducts[$aExp[1]]['iQuantity'] );
+        $_SESSION['iOrderQuantity'.LANGUAGE] += $aExp[2];
+        $_SESSION['fOrderSummary'.LANGUAGE]  += ( $aExp[2] * $aExp[3] );
+      }
+    } // end for
+    if( isset( $_SESSION['fOrderSummary'.LANGUAGE] ) )
+      $this->fProductsSummary = $_SESSION['fOrderSummary'.LANGUAGE] = normalizePrice( $_SESSION['fOrderSummary'.LANGUAGE] );
+  } // end function generateBasket
+
+  /**
+  * Generates variable with products in order
+  * @return void
+  * @param int  $iOrder
+  */
+  function generateProducts( $iOrder ){
+    $aFile  = file( DB_ORDERS_PRODUCTS );
+    $iCount = count( $aFile );
+    $this->fProductsSummary = null;
+    for( $i = 1; $i < $iCount; $i++ ){
+      $aExp = explode( '$', $aFile[$i] );
+      if( isset( $aExp[1] ) && $aExp[1] == $iOrder ){
+        $this->aProducts[$aExp[0]] = orders_products( $aExp );
+        $this->aProducts[$aExp[0]]['fSummary'] = normalizePrice( $this->aProducts[$aExp[0]]['fPrice'] * $this->aProducts[$aExp[0]]['iQuantity'] );
+        $this->fProductsSummary += $this->aProducts[$aExp[0]]['fPrice'] * $this->aProducts[$aExp[0]]['iQuantity'];
+      }
+    } // end for
+
+    if( isset( $this->fProductsSummary ) ){
+      $this->fProductsSummary = normalizePrice( $this->fProductsSummary );
+    }
+  } // end function generateProducts
+
+  /**
+  * Check basket is empty or not
+  * @return bool
+  */
+  function checkEmptyBasket( ){
+    $this->generateBasket( );
+    return ( isset( $this->aProducts ) ) ? false : true;
+  } // end function checkEmptyBasket
+
+  /**
+  * Save basket
+  * @return void
+  * @param array $aForm
+  */
+  function saveBasket( $aForm ){
+    if( isset( $aForm['aProducts'] ) && is_array( $aForm['aProducts'] ) ){
+      $aFile  = file( DB_ORDERS_TEMP );
+      $iCount = count( $aFile );
+      $rFile = fopen( DB_ORDERS_TEMP, 'w' );
+      flock( $rFile, LOCK_EX );
+      for( $i = 0; $i < $iCount; $i++ ){
+        if( $i > 0 ){
+          $aFile[$i]  = rtrim( $aFile[$i] );
+          $aExp       = explode( '$', $aFile[$i] );
+          if( isset( $aForm['aProducts'][$aExp[1]] ) && is_numeric( $aForm['aProducts'][$aExp[1]] ) && $aForm['aProducts'][$aExp[1]] > 0 && $aForm['aProducts'][$aExp[1]] < 10000 && $aExp[0] == $_SESSION['iCustomer'.LANGUAGE] ){
+            $aExp[2] = (int) $aForm['aProducts'][$aExp[1]];
+            $aFile[$i] = trim( implode( '$', $aExp ) )."\n";
+          }
+          else
+            $aFile[$i] .= "\n";
+        }
+        else{
+          $aFile[$i] = '<?php exit; ?>'."\n";
+        }
+
+        fwrite( $rFile, $aFile[$i] );
+      } // end for
+      flock( $rFile, LOCK_UN );
+      fclose( $rFile );
+    }
+  } // end function saveBasket
+
+  /**
+  * Delete product from basket
+  * @return void
+  * @param int  $iProduct
+  * @param int  $iOrder
+  */
+  function deleteFromBasket( $iProduct, $iOrder = null ){
+    if( !isset( $iOrder ) ){
+      $iOrder = $_SESSION['iCustomer'.LANGUAGE];
+      $sDb    = DB_ORDERS_TEMP;
+    }
+    $aFile  = file( $sDb );
+    $iCount = count( $aFile );
+    $rFile = fopen( $sDb, 'w' );
+    flock( $rFile, LOCK_EX );
+    for( $i = 0; $i < $iCount; $i++ ){
+      if( $i > 0 ){
+        $aFile[$i]  = rtrim( $aFile[$i] );
+        $aExp       = explode( '$', $aFile[$i] );
+        if( $aExp[1] == $iProduct && $aExp[0] == $iOrder ){
+          $aFile[$i] = null;
+        }
+        else
+          $aFile[$i] .= "\n";
+      }
+      else{
+        $aFile[$i] = '<?php exit; ?>'."\n";
+      }
+
+      fwrite( $rFile, $aFile[$i] );
+    } // end for
+    flock( $rFile, LOCK_UN );
+    fclose( $rFile );  
+  } // end function deleteFromBasket
+
+  /**
+  * Add product to basket
+  * @return void
+  * @param int  $iProduct
+  * @param int  $iQuantity
+  * @param int  $iOrder
+  */
+  function addToBasket( $iProduct, $iQuantity, $iOrder = null ){
+    if( !isset( $iOrder ) ){
+      $iOrder = $_SESSION['iCustomer'.LANGUAGE];
+      $sDb    = DB_ORDERS_TEMP;
+    }
+
+    $iQuantity = (int) $iQuantity;
+    $aFile  = file( $sDb );
+    $iCount = count( $aFile );
+    $rFile = fopen( $sDb, 'w' );
+    $iTime = time( );
+    flock( $rFile, LOCK_EX );
+    for( $i = 0; $i < $iCount; $i++ ){
+      if( $i > 0 ){
+        $aFile[$i]  = rtrim( $aFile[$i] );
+        $aExp       = explode( '$', $aFile[$i] );
+        if( $aExp[0] == $iOrder ){
+          if( $aExp[1] == $iProduct ){
+            if( ( $aExp[2] + $iQuantity ) < 10000 )
+              $aExp[2] += (int) $iQuantity;
+            $aFile[$i] = trim( implode( '$', $aExp ) )."\n";
+            $bFound = true;
+          }
+          else{
+            $aFile[$i] .= "\n";
+          }
+        }
+        else{
+          if( $iTime - substr( $aExp[0], 0, 10 ) >= 259200 ) // delete empty orders older then 72 hours
+            $aFile[$i] = null;
+          else
+            $aFile[$i] .= "\n";
+        }
+      }
+      else{
+        $aFile[$i] = '<?php exit; ?>'."\n";
+      }
+
+      fwrite( $rFile, $aFile[$i] );
+    } // end for
+
+    if( !isset( $bFound ) ){
+      $oProduct =& Products::getInstance( );
+
+      fwrite( $rFile, $iOrder.'$'.$iProduct.'$'.$iQuantity.'$'.$oProduct->aProducts[$iProduct]['fPrice'].'$'.$oProduct->aProducts[$iProduct]['sName'].'$'."\n" );
+    }
+    flock( $rFile, LOCK_UN );
+    fclose( $rFile );
+  } // end function addToBasket
+
+  /**
+  * Check order fields
+  * @return bool
+  * @param array  $aForm
+  */
+  function checkFields( $aForm ){
+    if( isset( $aForm['sPaymentCarrier'] ) ){
+      $aExp = explode( ';', $aForm['sPaymentCarrier'] );
+      if( isset( $aExp[0] ) && isset( $aExp[1] ) )
+        $sPrice = $this->throwPaymentCarrierPrice( $aExp[0], $aExp[1] );
+    }
+    else{
+      return false;
+    }
+
+    if(
+      throwStrLen( $aForm['sFirstName'] ) > 1
+      && throwStrLen( $aForm['sLastName'] ) > 2
+      && throwStrLen( $aForm['sStreet'] ) > 1
+      && throwStrLen( $aForm['sZipCode'] ) > 2
+      && throwStrLen( $aForm['sCity'] ) > 2
+      && throwStrLen( $aForm['sPhone'] ) > 2
+      && checkEmail( $aForm['sEmail'] )
+      && isset( $sPrice )
+      && ( ( isset( $aForm['iRules'] ) && isset( $aForm['iRulesAccept'] ) ) || !isset( $aForm['iRules'] ) )
+    )
+      return true;
+    else
+      return false;
+  } // end function checkFields
+
+  /**
+  * Add order to database
+  * @return int
+  * @param array  $aForm
+  */
+  function addOrder( $aForm ){
+    $oFF  =& FlatFiles::getInstance( );
+    $aForm = changeMassTxt( $aForm, 'H', Array( 'sComment', 'LenHNds' ) );
+    $aForm['iOrder'] = $oFF->throwLastId( DB_ORDERS, 'iOrder' ) + 1;
+    $aForm['iTime'] = time( );
+    $aForm['sIp'] = $_SERVER['REMOTE_ADDR'];
+    $aForm['iStatus'] = 1;
+    $aForm['sLanguage'] = LANGUAGE;
+
+    $aExp = explode( ';', $aForm['sPaymentCarrier'] );
+    $aCarrier = $this->throwCarrier( $aExp[0] );
+    $aPayment = $this->throwPayment( $aExp[1] );
+
+    $aForm['sCarrierName']  = $aCarrier['sName'];
+    $aForm['fCarrierPrice'] = $aCarrier['fPrice'];
+    $aForm['iCarrier']      = $aCarrier['iCarrier'];
+    $aForm['sPaymentName']  = $aPayment['sName'];
+    $aForm['iPayment']      = $aPayment['iPayment'];
+    $aForm['sPaymentPrice'] = $this->throwPaymentCarrierPrice( $aExp[0], $aExp[1] );
+
+    $oFF->save( DB_ORDERS, $aForm, null, 'rsort' );
+    $oFF->save( DB_ORDERS_COMMENTS, $aForm );
+
+    if( isset( $this->aProducts ) ){
+      $iElement = $oFF->throwLastId( DB_ORDERS_PRODUCTS, 'iElement' ) + 1;
+      foreach( $this->aProducts as $aData ){
+        $oFF->save( DB_ORDERS_PRODUCTS, Array( 'iElement' => $iElement++, 'iOrder' => $aForm['iOrder'], 'iProduct' => $aData['iProduct'], 'iQuantity' => $aData['iQuantity'], 'fPrice' => $aData['fPrice'], 'sName' => $aData['sName'] ) );
+      }
+    }
+
+    $oFF->deleteInFile( DB_ORDERS_TEMP, $_SESSION['iCustomer'.LANGUAGE], 'iCustomer' );
+
+    $_SESSION['iOrderQuantity'.LANGUAGE]  = 0;
+    $_SESSION['fOrderSummary'.LANGUAGE]   = null;
+
+    return $aForm['iOrder'];
+  } // end function addOrder 
+
+  /**
+  * Return order status name
+  * @return string
+  * @param int    $iStatus
+  */
+  function throwStatus( $iStatus = null ){
+    global $lang;
+    $aStatus[1] = $lang['Orders_pending'];
+    $aStatus[2] = $lang['Orders_processing'];
+    $aStatus[3] = $lang['Orders_finished'];
+    $aStatus[4] = $lang['Orders_canceled'];
+    return isset( $iStatus ) ? $aStatus[$iStatus] : $aStatus;
+  } // end function throwStatus
+
+  /**
+  * Return order data
+  * @return array
+  * @param int  $iOrder
+  */
+  function throwOrder( $iOrder ){
+    $oFF  =& FlatFiles::getInstance( );
+    
+    if( isset( $this->aOrders[$iOrder] ) ){
+      return $this->aOrders[$iOrder];
+    }
+    else{
+      $aData = $oFF->throwDataFromFiles( Array( DB_ORDERS, DB_ORDERS_COMMENTS ), $iOrder, 'iOrder' );
+    }
+
+    if( isset( $aData ) ){
+      $aData['fPaymentCarrierPrice'] = generatePrice( $aData['fCarrierPrice'], $aData['sPaymentPrice'] );
+      $aData['sPaymentCarrierPrice'] = displayPrice( $aData['fPaymentCarrierPrice'] );
+      $aData['sDate'] = displayDate( $aData['iTime'] );
+      $this->aOrders[$iOrder] = $aData;
+      return $aData;
+    }
+  } // end function throwOrder
+
+  /**
+  * Return saved order
+  * @return int
+  * @param string $sOrder
+  */
+  function throwSavedOrderId( $sOrder ){
+    $aFile = file( DB_ORDERS_TEMP );
+    $iCount= count( $aFile );
+    for( $i = 1; $i < $iCount; $i++ ){
+      $aExp = explode( '$', $aFile[$i] );
+      if( $sOrder == md5( $aExp[0] ) )
+        return $aExp[0];
+    } // end for
+
+    return null;
+  } // end function throwSavedOrderId
+
+  /**
+  * Return status list
+  * @return string
+  * @param string $sFile
+  * @param int    $iOrder
+  */
+  function listOrderStatuses( $sFile, $iOrder ){
+    $aFile      = file( DB_ORDERS_STATUS );
+    $iCount     = count( $aFile );
+    $oTpl       =& TplParser::getInstance( );
+    $content    = null;
+
+    for( $i = 1; $i < $iCount; $i++ ){
+      $aExp = explode( '$', $aFile[$i] );
+      if( $aExp[0] == $iOrder ){
+        $aData = orders_status( $aExp );
+        $aData['sDate'] = displayDate( $aData['iTime'] );
+        $aData['sStatus'] = $this->throwStatus( $aData['iStatus'] );
+        $oTpl->setVariables( 'aData', $aData );
+        $content .= $oTpl->tbHtml( $sFile, 'STATUS_LIST' );
+      }
+    } // end for
+
+    if( isset( $content ) ){
+      $oTpl->setVariables( 'aData', $aData );
+      return $oTpl->tbHtml( $sFile, 'STATUS_HEAD' ).$content.$oTpl->tbHtml( $sFile, 'STATUS_FOOT' );
+    }
+  } // end function listOrderStatuses
+
+  /**
+  * Return payment and carrier price
+  * @return string
+  * @param int  $iCarrier
+  * @param int  $iPayment
+  */
+  function throwPaymentCarrierPrice( $iCarrier, $iPayment ){
+    $aFile = file( DB_CARRIERS_PAYMENTS );
+    $iCount= count( $aFile );
+    for( $i = 1; $i < $iCount; $i++ ){
+      $aExp = explode( '$', $aFile[$i] );
+      if( $aExp[0] == $iCarrier && $aExp[1] == $iPayment ){
+        return $aExp[2];
+      }
+    }    
+  } // end function throwPaymentCarrierPrice
+
+  /**
+  * Return list of payments and carriers
+  * @return string
+  * @param string $sFile
+  */
+  function listCarriersPayments( $sFile ){
+    $oTpl       =& TplParser::getInstance( );
+    $content    = null;
+    $sPaymentList= null;
+    $oFF        =& FlatFiles::getInstance( );
+
+    $aPayments = $oFF->throwFileArraySmall( DB_PAYMENTS, 'iPayment', 'sName' );
+    if( isset( $aPayments ) ){
+      $aFile = file( DB_CARRIERS_PAYMENTS );
+      $iCount= count( $aFile );
+      for( $i = 1; $i < $iCount; $i++ ){
+        $aExp = explode( '$', $aFile[$i] );
+        $aPaymentsCarriers[$aExp[0]][$aExp[1]] = $aExp[2];
+      }
+
+      $sFunction  = LANGUAGE.'_carriers';
+      $aFile      = file( DB_CARRIERS );
+      $iCount     = count( $aFile );
+      for( $i = 1; $i < $iCount; $i++ ){
+        $aExp = explode( '$', $aFile[$i] );
+        if( isset( $aPaymentsCarriers[$aExp[0]] ) )
+          $aCarriers[$aExp[0]] = $sFunction( $aExp );
+      }
+     
+      if( !isset( $aCarriers ) )
+        return null;
+
+      foreach( $aCarriers as $iCarrier => $aData ){
+        $aData['sPayments'] = null;
+        foreach( $aPayments as $iPayment => $sName ){
+          if( isset( $aPaymentsCarriers[$iCarrier][$iPayment] ) ){
+            if( !empty( $aPaymentsCarriers[$iCarrier][$iPayment] ) ){
+              $aData['fPaymentCarrierPrice'] = generatePrice( $aData['fPrice'], $aPaymentsCarriers[$iCarrier][$iPayment] );
+            }
+            else{
+              $aData['fPaymentCarrierPrice'] = $aData['fPrice'];
+            }
+            $aData['sPaymentCarrierPrice'] = displayPrice( $aData['fPaymentCarrierPrice'] );
+            $aData['iPayment'] = $iPayment;
+            $oTpl->setVariables( 'aData', $aData );
+            $aData['sPayments'] .= $oTpl->tbHtml( $sFile, 'ORDER_PAYMENT_CARRIERS_LIST' );
+          }
+          else{
+            $aData['sPayments'] .= $oTpl->tbHtml( $sFile, 'ORDER_PAYMENT_CARRIERS_EMPTY' );
+          }
+        } // end foreach
+        $oTpl->setVariables( 'aData', $aData );
+        $content .= $oTpl->tbHtml( $sFile, 'ORDER_CARRIERS' );
+      } // end foreach
+
+      foreach( $aPayments as $aData['iPayment'] => $aData['sName'] ){
+        $oTpl->setVariables( 'aData', $aData );
+        $sPaymentList .= $oTpl->tbHtml( $sFile, 'ORDER_PAYMENTS' );
+      } // end foreach
+
+      if( isset( $content ) ){
+        $oTpl->setVariables( 'aData', Array( 'sPaymentList' => $sPaymentList ) );
+        return $oTpl->tbHtml( $sFile, 'ORDER_PAYMENT_CARRIERS_HEAD' ).$content.$oTpl->tbHtml( $sFile, 'ORDER_PAYMENT_CARRIERS_FOOT' );
+      }
+    }
+  } // end function listCarriersPayments
+
+  /**
+  * Return carrier data
+  * @return array
+  * @param int  $iCarrier
+  */
+  function throwCarrier( $iCarrier ){
+    $oFF =& FlatFiles::getInstance( );
+    return $oFF->throwData( DB_CARRIERS, $iCarrier, 'iCarrier' );
+  } // end function throwCarrier
+
+  /**
+  * Return payment data
+  * @return array
+  * @param int  $iPayment
+  */
+  function throwPayment( $iPayment ){
+    $oFF =& FlatFiles::getInstance( );
+    return $oFF->throwData( DB_PAYMENTS, $iPayment, 'iPayment' );
+  } // end function throwPayment
+
+  /**
+  * Send email to admin with order details
+  * @return void
+  * @param string $sFile
+  * @param int    $iOrder
+  */
+  function sendEmailWithOrderDetails( $sFile, $iOrder ){
+    $oTpl     =& TplParser::getInstance( );
+    $content  = null;
+    $aData    = $this->throwOrder( $iOrder );
+
+    $aData['sProducts'] = $this->listProducts( $sFile, $iOrder, 'ORDER_EMAIL_' );
+    $aData['sOrderSummary'] = $this->aOrders[$iOrder]['sOrderSummary'];
+    
+    $oTpl->setVariables( 'aData', $aData );
+    $aSend['sMailContent'] = ereg_replace( '\|n\|', "\n", $oTpl->tbHtml( $sFile, 'ORDER_EMAIL_BODY' ) );
+    $aSend['sTopic'] = $oTpl->tbHtml( $sFile, 'ORDER_EMAIL_TITLE' );
+    $aSend['sSender']= $GLOBALS['config']['orders_email'];
+    sendEmail( $aSend, null, $GLOBALS['config']['orders_email'] );
+  } // end function sendEmailWithOrderDetails
+
+};
+?>
