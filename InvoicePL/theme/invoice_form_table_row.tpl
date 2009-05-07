@@ -32,7 +32,7 @@
 		</td>
 		<td width="32px" align="center">
 			<font size="7">
-				{$details.tax_rate}
+				{$details.tax_name}
 			</font>
 		</td>
 		<td width="45px" align="right">

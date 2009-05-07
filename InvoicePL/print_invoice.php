@@ -92,6 +92,7 @@ foreach ($items as $k=>$v) {
 	
 	$items[$k]['gross_price'] = Utils_CurrencyFieldCommon::format($items[$k]['gross_price'][0], $items[$k]['gross_price'][1]);
 	$items[$k]['net_price'] = Utils_CurrencyFieldCommon::format($items[$k]['net_price'][0], $items[$k]['net_price'][1]);
+	$items[$k]['tax_name'] = Data_TaxRatesCommon::get_tax_rate($items[$k]['tax_rate']).'%';
 
 	$theme = Base_ThemeCommon::init_smarty();
 	$theme->assign('details', $items[$k]);
