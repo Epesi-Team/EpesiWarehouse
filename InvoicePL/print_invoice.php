@@ -142,7 +142,7 @@ session_commit();
 
 header('Content-Type: application/pdf');
 header('Content-Length: '.strlen($buffer));
-header('Content-disposition: attachement; filename="faktura_'.$order['id'].'.pdf"');
+header('Content-disposition: attachement; filename="faktura_'.$order['invoice_id'].'.pdf"');
 
 print($buffer);
 ?>

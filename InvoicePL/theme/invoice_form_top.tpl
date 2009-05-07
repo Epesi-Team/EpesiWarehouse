@@ -30,7 +30,7 @@
 		</td>
 		<td width="10px">
 		</td>
-		<td align="left">
+		<td align="left" width="400">
 			{$company.company_name}
 		</td>
 	</tr>
@@ -40,7 +40,7 @@
 		</td>
 		<td width="10px">
 		</td>
-		<td align="left">
+		<td align="left" width="400">
 			{$warehouse.postal_code} {$warehouse.city}, {$warehouse.address_1}
 		</td>
 	</tr>
@@ -50,12 +50,12 @@
 		</td>
 		<td width="10px">
 		</td>
-		<td align="left">
+		<td align="left" width="400">
 			<b>{$warehouse.tax_id}</b>
 		</td>
 	</tr>
 </table>
-
+<br>
 <table>
 	<tr>
 		<td align="right" width="80px">
@@ -65,7 +65,7 @@
 		</td>
 		<td width="10px">
 		</td>
-		<td align="left">
+		<td align="left" width="400">
 			{$order.company_name}
 		</td>
 	</tr>
@@ -75,7 +75,7 @@
 		</td>
 		<td width="10px">
 		</td>
-		<td align="left">
+		<td align="left" width="400">
 			{$order.postal_code} {$order.city}, {$order.address_1}
 		</td>
 	</tr>
@@ -85,7 +85,7 @@
 		</td>
 		<td width="10px">
 		</td>
-		<td align="left">
+		<td align="left" width="400">
 			<b>{if isset($order.tax_id)}{$order.tax_id}{/if}</b>
 		</td>
 	</tr>
@@ -107,7 +107,7 @@
 		</td>
 		<td width="5px">
 		</td>
-		<td align="left">
+		<td align="left" width="160px">
 			{$order.terms_label}
 		</td>
 	</tr>
@@ -117,7 +117,7 @@
 		</td>
 		<td width="10px">
 		</td>
-		<td align="left">
+		<td align="left" colspan="4">
 			{$warehouse.bank_account}
 		</td>
 	</tr>
