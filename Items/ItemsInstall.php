@@ -61,6 +61,7 @@ class Premium_Warehouse_ItemsInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::set_caption('premium_warehouse_items_categories', 'Items Categories');
 		Utils_RecordBrowserCommon::set_icon('premium_warehouse_items_categories', Base_ThemeCommon::get_template_filename('Premium/Warehouse/Items', 'icon.png'));
 		Utils_RecordBrowserCommon::set_access_callback('premium_warehouse_items_categories', 'Premium_Warehouse_ItemsCommon', 'access_items_categories');
+		Utils_RecordBrowserCommon::set_processing_method('premium_warehouse_items_categories', array('Premium_Warehouse_ItemsCommon', 'submit_position'));
 
 // ************ addons ************** //
 		Utils_RecordBrowserCommon::new_addon('premium_warehouse_items', 'Premium/Warehouse/Items', 'attachment_addon', 'Notes');

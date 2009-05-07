@@ -344,10 +344,14 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 	}
 
 
-	public static function submit_position($values, $mode) {
+	public static function submit_position($values, $mode, $recordset) {
 		switch ($mode) {
 			case 'add':
-			    $values['position'] = 0;
+			case 'restore':
+			    $values['position'] = Utils_RecordBrowserCommon::get_records_limit($recordset);
+			    break;
+			case 'delete':
+			    DB::Execute('UPDATE '.$recordset.'_data_1 SET f_position=f_position-1 WHERE f_position>%d',array($values['position']));
 			    break;
 		}
 		return $values;

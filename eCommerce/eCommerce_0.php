@@ -130,10 +130,13 @@ class Premium_Warehouse_eCommerce extends Module {
     		    Utils_RecordBrowserCommon::update_record($tab,$r['id'],array('position'=>$_REQUEST['new']));
 		    location(array());
 		}
-		if($r['position']=='')
-		    $r['position'] = 0;
-		$gb_row->add_action(Module::create_href(array('pos_action'=>$r['id'],'old'=>$r['position'],'new'=>$r['position']-1)),'move-up');
-		$gb_row->add_action(Module::create_href(array('pos_action'=>$r['id'],'old'=>$r['position'],'new'=>$r['position']+1)),'move-down');
+		if($r['position']>0)
+		    $gb_row->add_action(Module::create_href(array('pos_action'=>$r['id'],'old'=>$r['position'],'new'=>$r['position']-1)),'move-up');
+		static $max;
+		if(!isset($max))
+		    $max = Utils_RecordBrowserCommon::get_records_limit($tab);
+		if($r['position']<$max-1)
+    		    $gb_row->add_action(Module::create_href(array('pos_action'=>$r['id'],'old'=>$r['position'],'new'=>$r['position']+1)),'move-down');
 	}
 
 	public function parameter_labels_addon($arg) {

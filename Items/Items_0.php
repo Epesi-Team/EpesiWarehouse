@@ -22,7 +22,9 @@ class Premium_Warehouse_Items extends Module {
 		if (isset($_REQUEST['recordset']) || $mod=='categories') {
 			if (isset($_REQUEST['recordset'])) $this->set_module_variable('recordset', 'categories');
 			$this->rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items_categories');
-			$this->display_module($this->rb, array(array('category_name'=>'ASC'),array('parent_category'=>'')));
+			$this->rb->set_additional_actions_method($this, 'actions_for_position');
+			$this->rb->force_order(array('position'=>'ASC','category_name'=>'ASC'));
+			$this->display_module($this->rb, array(array(),array('parent_category'=>'')));
 			return;
 		}
 		$this->rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items');
@@ -68,6 +70,24 @@ class Premium_Warehouse_Items extends Module {
     			$this->rb->set_additional_actions_method('Premium_Warehouse_eCommerceCommon', 'warehouse_item_actions');
 
 		$this->display_module($this->rb, array(array(),array(),$cols));
+	}
+
+	public function actions_for_position($r, & $gb_row) {
+		$tab = 'premium_warehouse_items_categories';
+		if(isset($_REQUEST['pos_action']) && $r['id']==$_REQUEST['pos_action'] && is_numeric($_REQUEST['old']) && is_numeric($_REQUEST['new'])) {
+		    $recs = Utils_RecordBrowserCommon::get_records($tab,array('position'=>$_REQUEST['new']), array('id'));
+		    foreach($recs as $rr)
+			Utils_RecordBrowserCommon::update_record($tab,$rr['id'],array('position'=>$_REQUEST['old']));
+    		    Utils_RecordBrowserCommon::update_record($tab,$r['id'],array('position'=>$_REQUEST['new']));
+		    location(array());
+		}
+		if($r['position']>0)
+		    $gb_row->add_action(Module::create_href(array('pos_action'=>$r['id'],'old'=>$r['position'],'new'=>$r['position']-1)),'move-up');
+		static $max;
+		if(!isset($max))
+		    $max = Utils_RecordBrowserCommon::get_records_limit($tab);
+		if($r['position']<$max-1)
+    		    $gb_row->add_action(Module::create_href(array('pos_action'=>$r['id'],'old'=>$r['position'],'new'=>$r['position']+1)),'move-down');
 	}
 	
 	public function trans_filter($choice) {

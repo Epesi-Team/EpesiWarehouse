@@ -288,19 +288,12 @@ class Pages
     $this->aPagesParentsTypes = null;
 
 	//categories - id mod 4 == 0
-	$i = 0;
 	$query = 'SELECT c.id, c.f_category_name, c.f_parent_category, 
 					d.f_page_title, d.f_meta_description, d.f_keywords, 
 					d.f_display_name, d.f_short_description, d.f_long_description,
 					c.f_position
-			FROM premium_warehouse_items_categories_data_1 c LEFT JOIN premium_ecommerce_cat_descriptions_data_1 d ON (c.id=d.f_category AND d.f_language="'.LANGUAGE.'") WHERE c.active=1 AND c.f_parent_category';
-	$x = DB::GetAll($query.' is null');
-	while($i<count($x)) {
-		$ret = DB::Execute($query.'=%d',array($x[$i]['id']));
-		while($row = $ret->FetchRow())
-			$x[] = $row;
-		$i++;
-	}
+			FROM premium_warehouse_items_categories_data_1 c LEFT JOIN premium_ecommerce_cat_descriptions_data_1 d ON (c.id=d.f_category AND d.f_language="'.LANGUAGE.'") WHERE c.active=1';
+	$x = DB::GetAll($query.' ORDER BY c.f_parent_category,c.f_position');
 	foreach($x as $r) {
 		if(!$r['f_parent_category']) 
 			$r['f_parent_category'] = 0;

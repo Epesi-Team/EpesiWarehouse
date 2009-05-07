@@ -77,7 +77,7 @@ class Products
 					LEFT JOIN premium_ecommerce_descriptions_data_1 d ON (d.f_item_name=it.id AND d.f_language="'.LANGUAGE.'")
 					LEFT JOIN premium_ecommerce_availability_labels_data_1 avl ON (pr.f_available=avl.f_availability AND avl.f_language="'.LANGUAGE.'") 
 					LEFT JOIN premium_warehouse_location_data_1 loc ON (loc.f_item_sku=it.id AND loc.f_quantity>0)
-					 WHERE pr.f_publish>=%d AND pr.active=1',array($iStatus));
+					 WHERE pr.f_publish>=%d AND pr.active=1 ORDER BY pr.f_position',array($iStatus));
 
 	$uncategorized = false;
 
