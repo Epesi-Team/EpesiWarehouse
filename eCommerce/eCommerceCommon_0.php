@@ -148,7 +148,9 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
     public static function menu() {
 		return array('Warehouse'=>array(
 			'__submenu__'=>1,
-			'eCommerce products'=>array()
+			'eCommerce'=>array('__submenu__'=>1,
+			    'Products'=>array(),
+			    'Stats'=>array('__function__'=>'stats'))
 		));
 	}
 	
@@ -415,8 +417,11 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 
 		$gb_row->add_action($action,'',$tip,Base_ThemeCommon::get_template_file('Premium_Warehouse_eCommerce',$icon));
 	}
-	
 
+  	public static function QFfield_poll_votes(&$form, $field, $label, $mode, $default) {
+		$form->addElement('static', $field, $label, $default);
+	}
+	
 	public static function admin_caption() {
 		return 'eCommerce';
 	}

@@ -17,6 +17,7 @@ defined("_VALID_ACCESS") || die('Direct access forbidden');
 class Premium_Warehouse_eCommerce extends Module {
 	private $rb;
 	private $recordset;
+	private $caption;
 	
 	public function admin() {
 		$buttons = array();
@@ -32,6 +33,8 @@ class Premium_Warehouse_eCommerce extends Module {
 		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'parameter_groups')).'>'.$this->ht('Parameter Groups').'</a>',
 						'icon'=>null);
 		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'payments_carriers')).'>'.$this->ht('Payments & Carriers').'</a>',
+						'icon'=>null);
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'polls')).'>'.$this->ht('Polls').'</a>',
 						'icon'=>null);
 		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'QC_dirs')).'>'.$this->ht('Quickcart settings').'</a>',
 						'icon'=>null);
@@ -49,9 +52,9 @@ class Premium_Warehouse_eCommerce extends Module {
 	public function body() {
 		$this->recordset = 'products';
 		$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_products');
-		$this->rb->set_defaults(array('publish'=>1,'position'=>0,'status'=>1));
+		$this->rb->set_defaults(array('publish'=>1,'status'=>1));
 		$this->rb->set_additional_actions_method($this, 'actions_for_position');
-		$this->rb->force_order(array('position'=>'ASC','item_name'=>'ASC'));
+		$this->rb->force_order(array('position'=>'ASC'));
 		$this->display_module($this->rb);
 	}
 
@@ -61,9 +64,8 @@ class Premium_Warehouse_eCommerce extends Module {
 	
 		$this->recordset = 'parameters';
 		$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_parameters');
-		$this->rb->set_defaults(array('position'=>0));
 		$this->rb->set_additional_actions_method($this, 'actions_for_position');
-		$this->rb->force_order(array('position'=>'ASC','parameter_code'=>'ASC'));
+		$this->rb->force_order(array('position'=>'ASC'));
 		$this->display_module($this->rb);
 
 		return true;
@@ -75,12 +77,42 @@ class Premium_Warehouse_eCommerce extends Module {
 
 		$this->recordset = 'parameter_groups';
 		$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_parameter_groups');
-		$this->rb->set_defaults(array('position'=>0));
 		$this->rb->set_additional_actions_method($this, 'actions_for_position');
-		$this->rb->force_order(array('position'=>'ASC','group_code'=>'ASC'));
+		$this->rb->force_order(array('position'=>'ASC'));
 		$this->display_module($this->rb);
 
 		return true;
+	}
+
+	public function polls() {
+		if($this->is_back()) return false;
+		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
+	
+		$this->recordset = 'polls';
+		$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_polls');
+		$this->rb->set_defaults(array('publish'=>1));
+		$this->rb->set_additional_actions_method($this, 'actions_for_position');
+		$this->rb->force_order(array('position'=>'ASC'));
+		$this->display_module($this->rb);
+
+		return true;
+	}
+	
+	public function clear_votes($poll) {
+		DB::Execute('UPDATE premium_ecommerce_poll_answers_data_1 SET f_votes=0 WHERE f_poll=%d',array($poll));
+	}
+	
+	public function poll_answers_addon($arg) {
+		Base_ActionBarCommon::add('delete', 'Clear votes', $this->create_callback_href(array($this,'clear_votes'),array($arg['id'])));
+		
+		$rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_poll_answers');
+		$order = array(array('poll'=>$arg['id']), array('poll'=>false,'answer'=>true,'votes'=>true), array('answer'=>'ASC'));
+		$rb->set_defaults(array('poll'=>$arg['id'],'votes'=>0));
+		$rb->set_header_properties(array(
+			'answer'=>array('width'=>50, 'wrapmode'=>'nowrap'),
+			'votes'=>array('width'=>1, 'wrapmode'=>'nowrap')
+									));
+		$this->display_module($rb,$order,'show_data');
 	}
 
 	public function availability() {
@@ -89,9 +121,8 @@ class Premium_Warehouse_eCommerce extends Module {
 	
 		$this->recordset = 'availability';
 		$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_availability');
-		$this->rb->set_defaults(array('position'=>0));
 		$this->rb->set_additional_actions_method($this, 'actions_for_position');
-		$this->rb->force_order(array('position'=>'ASC','availability_code'=>'ASC'));
+		$this->rb->force_order(array('position'=>'ASC'));
 		$this->display_module($this->rb);
 
 		return true;
@@ -103,9 +134,9 @@ class Premium_Warehouse_eCommerce extends Module {
 	
 		$this->recordset = 'pages';
 		$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_pages');
-		$this->rb->set_defaults(array('position'=>0,'publish'=>1,'type'=>2));
+		$this->rb->set_defaults(array('publish'=>1,'type'=>2));
 		$this->rb->set_additional_actions_method($this, 'actions_for_position');
-		$this->rb->force_order(array('position'=>'ASC','page_name'=>'ASC'));
+		$this->rb->force_order(array('position'=>'ASC'));
 		$this->display_module($this->rb);
 
 		return true;
@@ -226,7 +257,7 @@ class Premium_Warehouse_eCommerce extends Module {
 									));
 		$this->display_module($rb,$order,'show_data');
 	}
-	
+
 	public function prices_addon($arg) {
 		$rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_prices');
 		$order = array(array('item_name'=>$arg['item_name']), array('item_name'=>false), array('currency'=>'ASC'));
@@ -511,7 +542,104 @@ class Premium_Warehouse_eCommerce extends Module {
  		$this->display_module($m);
 	}
 	
+	public function stats() {
+		$this->caption = 'eCommerce stats';
+
+		$t = time();
+		$start = & $this->get_module_variable('stats_start',date('Y-m-d', $t - (30 * 24 * 60 * 60))); //last 30 days
+		$end = & $this->get_module_variable('stats_end',date('Y-m-d',$t));
+
+		$form = $this->init_module('Libs/QuickForm',null,'reports_frm');
+
+		$form->addElement('datepicker', 'start', $this->t('From'));
+		$form->addElement('datepicker', 'end', $this->t('To'));
+		$form->addElement('submit', 'submit_button', $this->ht('Show'));
+		$form->addRule('start', 'Field required', 'required');
+		$form->addRule('end', 'Field required', 'required');
+		$form->setDefaults(array('start'=>$start,'end'=>$end));
+
+		if($form->validate()) {
+			$data = $form->exportValues();
+			$start = $data['start'];
+			$end = $data['end'];
+			$end = date('Y-m-d',strtotime($end)+86400);
+		}
+		$form->display();
+
+		$tb = & $this->init_module('Utils/TabbedBrowser');
+		$tb->set_tab($this->t("Products"), array($this,'stats_tab'),array('products',$start,$end));
+		$tb->set_tab($this->t("Pages"), array($this,'stats_tab'),array('pages',$start,$end));
+		$tb->set_tab($this->t("Categories"), array($this,'stats_tab'),array('categories',$start,$end));
+		$this->display_module($tb);
+		$this->tag();
+	}
+	
+	public function stats_tab($tab,$start,$end) {
+		$start_reg = Base_RegionalSettingsCommon::reg2time($start);
+		$end_reg = Base_RegionalSettingsCommon::reg2time($end);
+		
+		$ret = DB::Execute('SELECT obj,count(visited_on) as num FROM premium_ecommerce_'.$tab.'_stats WHERE visited_on>=%d AND visited_on<%d GROUP BY obj',array($start_reg,$end_reg));
+
+		$f = $this->init_module('Libs/OpenFlashChart');
+		$title = new title( $this->ht($tab) );
+		$f->set_title( $title );
+
+		$av_colors = array('#339933','#339933','#999933', '#993333', '#336699', '#808080','#339999','#993399');
+		$max = -1;
+		while($row = $ret->FetchRow()) {
+			$bar = new bar_glass();
+			$bar->set_colour($av_colors[$row['obj']%count($av_colors)]);
+			$bar->set_key($row['obj'],3);
+			$bar->set_values( array($row['num']) );
+			if($max<$row['num']) $max = $row['num'];
+			$f->add_element( $bar );
+		}
+		if($max==-1) {
+		    print($this->t("No stats available"));
+		    return;
+		}
+		$y_ax = new y_axis();
+		$y_ax->set_range(0,$max);
+		$y_ax->set_steps($max/10);
+		$f->set_y_axis($y_ax);
+
+		$f->set_width(950);
+		$f->set_height(400);
+		$this->display_module($f);
+	}
+	
+	public function pages_stats_addon($arg) {
+		$this->stats_addon('pages',$arg['id']);
+	}
+	
+	public function categories_stats_addon($arg) {
+		$this->stats_addon('categories',$arg['id']);
+	}
+	
+	public function products_stats_addon($arg) {
+		$this->stats_addon('products',$arg['product_name']);
+	}
+	
+	private function stats_addon($tab,$id) {
+		$gb = & $this->init_module('Utils/GenericBrowser',null,'stats');
+
+		$gb->set_table_columns(array(
+			array('name'=>$this->t('Time'), 'order'=>'visited_on')));
+
+		$query = 'SELECT visited_on FROM premium_ecommerce_'.$tab.'_stats WHERE obj='.$id;
+		$query_qty = 'SELECT count(*) FROM premium_ecommerce_'.$tab.'_stats WHERE obj='.$id;
+
+		$ret = $gb->query_order_limit($query, $query_qty);
+		
+		while(($row=$ret->FetchRow())) {
+			$gb->add_row($row['visited_on']);
+		}
+
+		$this->display_module($gb);
+	}
+	
 	public function caption(){
+		if (isset($this->caption)) return $this->caption;
 		if (isset($this->rb)) return $this->rb->caption();
 		return 'eCommerce administration';
 	}

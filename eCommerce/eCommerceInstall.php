@@ -253,6 +253,63 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 			return false;
 		}
 		
+		//********************************** quickcart pro compatibility *******************************
+		//stats
+		$ret = DB::CreateTable('premium_ecommerce_products_stats','
+			obj I4 NOTNULL,
+			visited_on T DEFTIMESTAMP',
+			array('constraints'=>' , FOREIGN KEY (product) REFERENCES premium_warehouse_items_data_1(id)'));
+		if(!$ret){
+			print('Unable to create table premium_ecommerce_products_stats.<br>');
+			return false;
+		}
+		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_products', 'Premium/Warehouse/eCommerce', 'products_stats_addon', 'Visits');
+		$ret = DB::CreateTable('premium_ecommerce_pages_stats','
+			obj I4 NOTNULL,
+			visited_on T DEFTIMESTAMP',
+			array('constraints'=>' , FOREIGN KEY (page) REFERENCES premium_ecommerce_pages_data_1(id)'));
+		if(!$ret){
+			print('Unable to create table premium_ecommerce_pages_stats.<br>');
+			return false;
+		}
+		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_products', 'Premium/Warehouse/eCommerce', 'pages_stats_addon', 'Visits');
+		$ret = DB::CreateTable('premium_ecommerce_categories_stats','
+			obj I4 NOTNULL,
+			visited_on T DEFTIMESTAMP',
+			array('constraints'=>' , FOREIGN KEY (page) REFERENCES premium_warehouse_items_categories_data_1(id)'));
+		if(!$ret){
+			print('Unable to create table premium_ecommerce_categories_stats.<br>');
+			return false;
+		}
+		Utils_RecordBrowserCommon::new_addon('premium_warehouse_items_categories', 'Premium/Warehouse/eCommerce', 'categories_stats_addon', 'Visits');
+
+		//polls
+		$fields = array(
+			array('name'=>'Question', 	'type'=>'long text', 'required'=>true, 'extra'=>false, 'visible'=>true),
+			array('name'=>'Language', 	'type'=>'commondata', 'required'=>true, 'extra'=>false, 'param'=>array('Premium/Warehouse/eCommerce/Languages'), 'visible'=>true),
+			array('name'=>'Publish', 	'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>true),
+			array('name'=>'Position', 		'type'=>'integer', 'required'=>true, 'extra'=>false,'visible'=>false)
+		);
+		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_polls', $fields);
+
+		Utils_RecordBrowserCommon::set_favorites('premium_ecommerce_polls', false);
+		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_polls', 'eCommerce - Polls');
+		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_polls', 'Premium_Warehouse_eCommerceCommon', 'access_parameters');
+		Utils_RecordBrowserCommon::set_processing_method('premium_ecommerce_polls', array('Premium_Warehouse_eCommerceCommon', 'submit_position'));
+		
+		$fields = array(
+			array('name'=>'Poll', 	'type'=>'select', 'param'=>'premium_ecommerce_polls::Question', 'required'=>true, 'extra'=>false),
+			array('name'=>'Answer', 		'type'=>'long text', 'required'=>true, 'extra'=>false, 'visible'=>true),
+			array('name'=>'Votes', 		'type'=>'integer', 'required'=>false, 'extra'=>false, 'visible'=>true, 'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_poll_votes'))
+		);
+
+		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_poll_answers', $fields);
+
+		Utils_RecordBrowserCommon::set_favorites('premium_ecommerce_poll_answers', false);
+		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_poll_answers', 'eCommerce - Poll Answers');
+		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_poll_answers', 'Premium_Warehouse_eCommerceCommon', 'access_parameters');
+		
+		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_polls', 'Premium/Warehouse/eCommerce', 'poll_answers_addon', 'Answers');
 
 
 // ************* addons ************ //
@@ -305,6 +362,12 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 	public function uninstall() {
 		DB::DropTable('premium_ecommerce_orders_temp');
 		DB::DropTable('premium_ecommerce_quickcart');
+		DB::DropTable('premium_ecommerce_products_stats');
+		DB::DropTable('premium_ecommerce_pages_stats');
+		DB::DropTable('premium_ecommerce_categories_stats');
+		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_pages', 'Premium/Warehouse/eCommerce', 'pages_stats_addon');
+		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_products', 'Premium/Warehouse/eCommerce', 'products_stats_addon');
+		Utils_RecordBrowserCommon::delete_addon('premium_warehouse_items_categories', 'Premium/Warehouse/eCommerce', 'categories_stats_addon');
 
 		Utils_RecordBrowserCommon::delete_record_field('company','eCommerce Category');
 	
@@ -338,6 +401,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_pages_data', 'Premium/Warehouse/eCommerce', 'attachment_page_desc_addon');
 		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_products', 'Premium/Warehouse/eCommerce', 'attachment_product_addon');
 		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_descriptions', 'Premium/Warehouse/eCommerce', 'attachment_product_desc_addon');
+		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_polls', 'Premium/Warehouse/eCommerce', 'poll_answers');
 
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_products');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_cat_descriptions');
@@ -353,6 +417,8 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_pages_data');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_prices');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_payments_carriers');
+		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_polls');
+		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_poll_answers');
 		return true;
 	}
 	
@@ -367,6 +433,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 			array('name'=>'Premium/Warehouse/Items/Orders','version'=>0),
 			array('name'=>'Utils/CurrencyField','version'=>0),
 			array('name'=>'Utils/Image','version'=>0),
+			array('name'=>'Libs/OpenFlashChart','version'=>0),
 			array('name'=>'Utils/RecordBrowser', 'version'=>0));
 	}
 	
