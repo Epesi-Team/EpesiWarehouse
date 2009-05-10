@@ -7,10 +7,10 @@ function savePageStat( $iPage ){
     //{ epesi
     switch($iPage%4) {
 	case 0: //category
-		DB::Execute('INSERT INTO premium_ecommerce_categories_stats(page,visited_on) VALUES (%d,%T)',array($iPage/4,time()));
+		DB::Execute('INSERT INTO premium_ecommerce_categories_stats(obj,visited_on) VALUES (%d,%T)',array($iPage/4,time()));
 		break;
 	case 2: //epesi backend page
-		DB::Execute('INSERT INTO premium_ecommerce_pages_stats(page,visited_on) VALUES (%d,%T)',array(($iPage-2)/4,time()));
+		DB::Execute('INSERT INTO premium_ecommerce_pages_stats(obj,visited_on) VALUES (%d,%T)',array(($iPage-2)/4,time()));
 		break;
 	case 1: //companies
 	case 3: //basket,start page, etc.

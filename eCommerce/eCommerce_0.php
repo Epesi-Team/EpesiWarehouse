@@ -24,6 +24,8 @@ class Premium_Warehouse_eCommerce extends Module {
 //		$icon = Base_ThemeCommon::get_template_file($name,'icon.png');
 		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'availability')).'>'.$this->ht('Availability').'</a>',
 						'icon'=>null);
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'boxes')).'>'.$this->ht('Boxes').'</a>',
+						'icon'=>null);
 		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'icecat')).'>'.$this->ht('Icecat').'</a>',
 						'icon'=>null);
 		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'pages')).'>'.$this->ht('Pages').'</a>',
@@ -84,6 +86,20 @@ class Premium_Warehouse_eCommerce extends Module {
 		return true;
 	}
 
+	public function boxes() {
+		if($this->is_back()) return false;
+		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
+	
+		$this->recordset = 'boxes';
+		$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_boxes');
+		$this->rb->set_defaults(array('publish'=>1));
+		$this->rb->set_additional_actions_method($this, 'actions_for_position');
+		$this->rb->force_order(array('position'=>'ASC'));
+		$this->display_module($this->rb);
+
+		return true;
+	}
+	
 	public function polls() {
 		if($this->is_back()) return false;
 		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
@@ -575,10 +591,24 @@ class Premium_Warehouse_eCommerce extends Module {
 	}
 	
 	public function stats_tab($tab,$start,$end) {
-		$start_reg = Base_RegionalSettingsCommon::reg2time($start);
-		$end_reg = Base_RegionalSettingsCommon::reg2time($end);
+		$start_reg = Base_RegionalSettingsCommon::reg2time($start,false);
+		$end_reg = Base_RegionalSettingsCommon::reg2time($end,false);
 		
-		$ret = DB::Execute('SELECT obj,count(visited_on) as num FROM premium_ecommerce_'.$tab.'_stats WHERE visited_on>=%d AND visited_on<%d GROUP BY obj',array($start_reg,$end_reg));
+		switch($tab) {
+		    case 'categories':
+			$jf = 'f_category_name';
+			$j = 'premium_warehouse_items_categories_data_1';
+			break;
+		    case 'pages':
+			$jf = 'f_page_name';
+			$j = 'premium_ecommerce_pages_data_1';
+			break;
+		    case 'products':
+			$jf = 'f_item_name';
+			$j = 'premium_ecommerce_products_data_1';
+			break;
+		}
+		$ret = DB::Execute('SELECT obj,count(visited_on) as num, j.'.$jf.' as name FROM premium_ecommerce_'.$tab.'_stats INNER JOIN '.$j.' j ON obj=j.id WHERE visited_on>=%T AND visited_on<%T GROUP BY obj',array($start_reg,$end_reg+3600*24));
 
 		$f = $this->init_module('Libs/OpenFlashChart');
 		$title = new title( $this->ht($tab) );
@@ -587,10 +617,10 @@ class Premium_Warehouse_eCommerce extends Module {
 		$av_colors = array('#339933','#339933','#999933', '#993333', '#336699', '#808080','#339999','#993399');
 		$max = -1;
 		while($row = $ret->FetchRow()) {
-			$bar = new bar_glass();
+			$bar = new bar();
 			$bar->set_colour($av_colors[$row['obj']%count($av_colors)]);
-			$bar->set_key($row['obj'],3);
-			$bar->set_values( array($row['num']) );
+			$bar->set_key($row['name'],3);
+			$bar->set_values( array((int)$row['num']) );
 			if($max<$row['num']) $max = $row['num'];
 			$f->add_element( $bar );
 		}

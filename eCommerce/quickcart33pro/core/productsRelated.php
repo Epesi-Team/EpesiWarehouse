@@ -6,6 +6,7 @@
 * @param string $sFile
 * @param int  $iProduct
 */
+/*
 function listProductsRelatedSelect( $sFile, $iProduct ){
   $oFF    =& FlatFiles::getInstance( );
   $content = null;
@@ -21,6 +22,7 @@ function listProductsRelatedSelect( $sFile, $iProduct ){
   }
   return $content;
 } // end function
+*/
 
 /**
 * Check if product related can be shown
@@ -28,12 +30,14 @@ function listProductsRelatedSelect( $sFile, $iProduct ){
 * @param array  $aData
 * @param array  $aCheck
 */
+/*
 function checkIsProductRelated( $aData, $aCheck ){
   if( is_array( $aData ) && isset( $aCheck[0][$aData['iProduct']] ) && ( $aCheck[1] === 0 || ( isset( $aCheck[2][$aData['iProduct']] ) && $aData['iStatus'] >= $aCheck[1] ) ) )
     return true;
   else
     return null;
 } // end function
+*/
 
 
 /**
@@ -43,7 +47,7 @@ function checkIsProductRelated( $aData, $aCheck ){
 * @param int    $iProduct
 */
 function listProductsRelated( $sFile, $iProduct ){
-  $oFF    =& FlatFiles::getInstance( );
+//  $oFF    =& FlatFiles::getInstance( );//commented by epesi team
   $oTpl   =& TplParser::getInstance( );
   $oFile  =& Files::getInstance( );
   $aRelatedIds = throwProductsRelated( $iProduct );
@@ -55,7 +59,50 @@ function listProductsRelated( $sFile, $iProduct ){
     $aCategories = $GLOBALS['oProduct']->aProductsPages;
   else
     $aCategories = null;
-  $aProducts = $oFF->throwFileArray( DB_PRODUCTS, 'checkIsProductRelated', Array( $aRelatedIds, $iStatus, $aCategories ) );
+//  $aProducts = $oFF->throwFileArray( DB_PRODUCTS, 'checkIsProductRelated', Array( $aRelatedIds, $iStatus, $aCategories ) );//commented by epesi team
+//{ epesi
+/*Array ( 
+[iProduct] => 3 
+[sName] => Moki (Gore tex, Vibram, Nubuck) 
+[fPrice] => 159.00 
+[iStatus] => 1 
+[iPosition] => 1 
+[sAvailable] => Available in 2-3 days 
+[sDescriptionShort] => Aliquam ac est et lectus viverra molestie. Nunc orci. Suspendisse in metus. Quisque vel nulla. Fusce vel dui eu nulla commodo fringilla. In gravida ipsum id nisl. Aliquam semper. 
+[sWeight] => 
+[iFindAll] => 3 
+)*/
+//TODO: categories filter, iFindAll???
+    global $config;
+    $currency = DB::GetOne('SELECT id FROM utils_currency WHERE code=%s',array($config['currency_symbol']));
+    if($currency===false) 
+	die('Currency not defined in Epesi: '.$config['currency_symbol']);
+    $ret = DB::Execute('SELECT 	it.id as iProduct, 
+								it.f_item_name as sName2, 
+								pri.f_gross_price as fPrice, 
+								pr.f_publish as iStatus, 
+								pr.f_position as iPosition, 
+								av.f_availability_code as sAvailable2, 
+								avl.f_label as sAvailable, 
+								d.f_display_name as sName,
+								d.f_short_description as sDescriptionShort,
+								\'\' as sWeight
+					FROM premium_ecommerce_products_data_1 pr
+					INNER JOIN (premium_warehouse_items_data_1 it,premium_ecommerce_availability_data_1 av) ON (pr.f_item_name=it.id AND av.id=pr.f_available)
+					LEFT JOIN premium_ecommerce_prices_data_1 pri ON (pri.f_item_name=it.id AND pri.active=1 AND pri.f_currency='.$currency.')
+					LEFT JOIN premium_ecommerce_descriptions_data_1 d ON (d.f_item_name=it.id AND d.f_language="'.LANGUAGE.'")
+					LEFT JOIN premium_ecommerce_availability_labels_data_1 avl ON (pr.f_available=avl.f_availability AND avl.f_language="'.LANGUAGE.'") 
+					LEFT JOIN premium_warehouse_location_data_1 loc ON (loc.f_item_sku=it.id AND loc.f_quantity>0)
+					 WHERE pr.f_publish>=%d AND pr.active=1 AND it.id in ('.implode($aRelatedIds,',').') ORDER BY pr.f_position',array($iStatus));
+    $aProducts = array();
+    while($row = $ret->FetchRow()) {
+	if($row['sName']=='') 
+		$row['sName'] = $row['sName2'];
+	if($row['sAvailable']=='') 
+		$row['sAvailable'] = $row['sAvailable2'];
+	$aProducts[] = $row;
+    }
+//} epesi
 
   $iColumns = 3;
   $i2       = 0;
@@ -128,12 +175,14 @@ function listProductsRelated( $sFile, $iProduct ){
 * @param array $aData
 * @param int $iProduct
 */
+/*
 function checkThrowProductsRelated( $aData, $iProduct ){
   if( $aData['iProduct'] == $iProduct )
     return true;
   else
     return null;
 } // end function checkThrowProductsRelated
+*/
 
 /**
 * Throw array with ids of related products (id of related product as index and value)
@@ -141,15 +190,20 @@ function checkThrowProductsRelated( $aData, $iProduct ){
 * @param int  $iProduct
 */
 function throwProductsRelated( $iProduct ){
-  $oFF      =& FlatFiles::getInstance( );
+  /*$oFF      =& FlatFiles::getInstance( );
   $aData    = $oFF->throwFileArray( DB_PRODUCTS_RELATED, 'checkThrowProductsRelated', $iProduct );
   $iCount   = count( $aData );
   $aReturn  = null;
   for( $i = 0; $i < $iCount; $i++ ){  
     $aReturn[$aData[$i]['iRelated']] = $aData[$i]['iRelated'];
   } // end for
-
   return $aReturn;
+*/
+    //{ epesi
+    $aReturn  = array();
+    $rel = array_filter(explode('__',DB::GetOne('SELECT f_related_products FROM premium_ecommerce_products_data_1 WHERE f_item_name=%d AND active=1',array($iProduct))));
+    return array_combine($rel,$rel);
+    //} epesi
 } // end function
 
 ?>

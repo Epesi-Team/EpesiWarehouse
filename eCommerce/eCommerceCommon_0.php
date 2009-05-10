@@ -422,10 +422,34 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 		$form->addElement('static', $field, $label, $default);
 	}
 	
+	public static function display_product_name_short($r) {
+		$rec = Utils_RecordBrowserCommon::get_record('premium_warehouse_items',$r['item_name']);
+		return $rec['item_name'];
+	}
+
+	public static function adv_related_products_params() {
+		return array('cols'=>array(),
+			'format_callback'=>array('Premium_Warehouse_eCommerceCommon','display_product_name_short'));
+	}
+
+	public static function related_products_crits($arg, $r){
+		if (isset($r['id'])) 
+		    return array('!id'=>$r['id']);
+		return array();
+	}
+
+	public static function display_related_product_name($r, $nolink, $desc) {
+	    $ret = array();
+	    foreach($r['related_products'] as $p) {
+		$rr = Utils_RecordBrowserCommon::get_record('premium_ecommerce_products',$p);
+		$ret[] = self::display_product_name_short($rr);
+	    }
+	    return implode($ret,', ');
+	}
+	
 	public static function admin_caption() {
 		return 'eCommerce';
 	}
 	
-
 }
 ?>

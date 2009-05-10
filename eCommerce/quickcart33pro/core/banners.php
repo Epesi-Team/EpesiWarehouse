@@ -30,7 +30,7 @@ function throwBannersStats( $iBanner = null ){
 * @param array  $aTypes
 */
 function throwBannersRand( $sFile, $aTypes = null ){
-
+/*
   $oFF  =& FlatFiles::getInstance( );
   $oTpl =& TplParser::getInstance( );
 
@@ -80,7 +80,7 @@ function throwBannersRand( $sFile, $aTypes = null ){
     if( isset( $aReturn ) && is_array( $aReturn ) ){
       return $aReturn;
     }
-  }
+  }*/
 } // end function throwBannersRand
 
 /**
