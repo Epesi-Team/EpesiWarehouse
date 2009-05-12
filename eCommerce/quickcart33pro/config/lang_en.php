@@ -35,10 +35,10 @@ $config['orders_email'] = "";
 
 $config['news_list'] = 5;
 
-$config['contact_page']	= 2;
+$config['contact_page']	= 31; //epesi required id
 $config['email'] = "";
 
-$config['site_map'] = 21;
+$config['site_map'] = 27; //epesi required id
 $config['site_map_products'] = null;
 
 $aMenuTypes[1] = 'Top menu above logo';

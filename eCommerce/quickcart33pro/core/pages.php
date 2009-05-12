@@ -393,6 +393,18 @@ class Pages
 	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => 'Uncategorized', 'sNameTitle' => 'Uncategorized', 'sDescriptionShort' => '', 'iStatus' => 1, 'iPosition' => 1000, 'iType' => 3, 'iSubpagesShow' => 1, 'iProducts' => 1, 'sDescriptionFull'=>'', 'sMetaDescription' => '', 'sMetaKeywords' =>'' );
 	$this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
 	$this->aPagesParentsTypes[3][] = $id;
+	
+	//sitemap
+	$id = 27;
+	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => 'site map', 'sNameTitle' => '', 'sDescriptionShort' => '', 'iStatus' => 1, 'iPosition' => 1000, 'iType' => 0, 'iSubpagesShow' => 1, 'iProducts' => 0, 'sDescriptionFull'=>'', 'sMetaDescription' => '', 'sMetaKeywords' =>'', 'sTags' => '', 'iTime' => 1207743540, 'iRss' => 0, 'iAdmin' => '', 'iAuthorized' => '', 'iCategoryNokaut' => '' );
+	$this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
+	$this->aPagesParentsTypes[1][] = $id;
+
+	//sitemap
+	$id = 31;
+	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => 'contact us', 'sNameTitle' => '', 'sDescriptionShort' => unserialize(DB::GetOne('SELECT value FROM variables WHERE name=%s',array('ecommerce_contactus'))), 'iStatus' => 1, 'iPosition' => 1000, 'iType' => 0, 'iSubpagesShow' => 1, 'iProducts' => 0, 'sDescriptionFull'=>'', 'sMetaDescription' => '', 'sMetaKeywords' =>'', 'sTags' => '', 'iTime' => 1207743540, 'iRss' => 0, 'iAdmin' => '', 'iAuthorized' => '', 'iCategoryNokaut' => '' );
+	$this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
+	$this->aPagesParentsTypes[2][] = $id;
 	//} epesi
 /*
     if( !is_file( DB_PAGES ) )

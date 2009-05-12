@@ -283,6 +283,14 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 			return false;
 		}
 		Utils_RecordBrowserCommon::new_addon('premium_warehouse_items_categories', 'Premium/Warehouse/eCommerce', 'categories_stats_addon', 'Visits');
+		$ret = DB::CreateTable('premium_ecommerce_searched_stats','
+			obj X NOTNULL,
+			visited_on T DEFTIMESTAMP',
+			array('constraints'=>''));
+		if(!$ret){
+			print('Unable to create table premium_ecommerce_searched_stats.<br>');
+			return false;
+		}
 
 		//polls
 		$fields = array(
@@ -345,6 +353,15 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::set_favorites('premium_ecommerce_banners', false);
 		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_banners', 'eCommerce - Banners');
 		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_banners', 'Premium_Warehouse_eCommerceCommon', 'access_parameters');
+		
+		//newsletter
+		$fields = array(
+			array('name'=>'Email', 		'type'=>'text', 'required'=>true, 'param'=>'128', 'extra'=>false, 'visible'=>true, 'display_callback'=>array('CRM_ContactsCommon', 'display_email'), 'QFfield_callback'=>array('CRM_ContactsCommon', 'QFfield_email'))
+		);
+		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_newsletter', $fields);
+
+		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_newsletter', 'eCommerce - Newsletter');
+		
 
 // ************* addons ************ //
 		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_products', 'Premium/Warehouse/eCommerce', 'parameters_addon', 'Parameters');
@@ -381,8 +398,9 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		$this->add_aco('edit protected notes','Employee Administrator');
 		$this->add_aco('edit public notes','Employee');
 
-		Variable::set('ecommerce_start_page','This is start page of quickcart shop with epesi backend. You can edit it in Warehouse - eCommerce settings.');
-		Variable::set('ecommerce_rules','You can edit this page in Warehouse - eCommerce settings.');
+		Variable::set('ecommerce_start_page','This is start page of quickcart shop with epesi backend. You can edit it in Administration - eCommerce settings.');
+		Variable::set('ecommerce_rules','You can edit this page in Administration - eCommerce settings.');
+		Variable::set('ecommerce_contactus','You can edit this page in Administration - eCommerce settings.');
 		Variable::set('quickcart_thumbnail_size',0);
 
 		//icecat
@@ -399,6 +417,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		DB::DropTable('premium_ecommerce_products_stats');
 		DB::DropTable('premium_ecommerce_pages_stats');
 		DB::DropTable('premium_ecommerce_categories_stats');
+		DB::DropTable('premium_ecommerce_searched_stats');
 		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_pages', 'Premium/Warehouse/eCommerce', 'pages_stats_addon');
 		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_products', 'Premium/Warehouse/eCommerce', 'products_stats_addon');
 		Utils_RecordBrowserCommon::delete_addon('premium_warehouse_items_categories', 'Premium/Warehouse/eCommerce', 'categories_stats_addon');
@@ -407,6 +426,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 	
 		Variable::delete('ecommerce_start_page');
 		Variable::delete('ecommerce_rules');
+		Variable::delete('ecommerce_contactus');
 		Variable::delete('quickcart_thumbnail_size');
 
 		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_products', 'Premium_Warehouse_eCommerce', 'icecat_addon');

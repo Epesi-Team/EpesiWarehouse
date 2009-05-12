@@ -55,24 +55,13 @@ function listProductsRelated( $sFile, $iProduct ){
   if( !isset( $aRelatedIds ) )
     return null;
   $iStatus = throwStatus( );
-  if( $iStatus !== 0 )
+/*  if( $iStatus !== 0 )
     $aCategories = $GLOBALS['oProduct']->aProductsPages;
   else
     $aCategories = null;
-//  $aProducts = $oFF->throwFileArray( DB_PRODUCTS, 'checkIsProductRelated', Array( $aRelatedIds, $iStatus, $aCategories ) );//commented by epesi team
+  $aProducts = $oFF->throwFileArray( DB_PRODUCTS, 'checkIsProductRelated', Array( $aRelatedIds, $iStatus, $aCategories ) );//commented by epesi team
+  */
 //{ epesi
-/*Array ( 
-[iProduct] => 3 
-[sName] => Moki (Gore tex, Vibram, Nubuck) 
-[fPrice] => 159.00 
-[iStatus] => 1 
-[iPosition] => 1 
-[sAvailable] => Available in 2-3 days 
-[sDescriptionShort] => Aliquam ac est et lectus viverra molestie. Nunc orci. Suspendisse in metus. Quisque vel nulla. Fusce vel dui eu nulla commodo fringilla. In gravida ipsum id nisl. Aliquam semper. 
-[sWeight] => 
-[iFindAll] => 3 
-)*/
-//TODO: categories filter, iFindAll???
     global $config;
     $currency = DB::GetOne('SELECT id FROM utils_currency WHERE code=%s',array($config['currency_symbol']));
     if($currency===false) 
@@ -93,7 +82,9 @@ function listProductsRelated( $sFile, $iProduct ){
 					LEFT JOIN premium_ecommerce_descriptions_data_1 d ON (d.f_item_name=it.id AND d.f_language="'.LANGUAGE.'")
 					LEFT JOIN premium_ecommerce_availability_labels_data_1 avl ON (pr.f_available=avl.f_availability AND avl.f_language="'.LANGUAGE.'") 
 					LEFT JOIN premium_warehouse_location_data_1 loc ON (loc.f_item_sku=it.id AND loc.f_quantity>0)
-					 WHERE pr.f_publish>=%d AND pr.active=1 AND it.id in ('.implode($aRelatedIds,',').') ORDER BY pr.f_position',array($iStatus));
+					 WHERE pr.f_publish>=%d AND pr.active=1 AND pr.id in ('.implode($aRelatedIds,',').') 
+					 ORDER BY pr.f_position',array($iStatus));
+    
     $aProducts = array();
     while($row = $ret->FetchRow()) {
 	if($row['sName']=='') 

@@ -149,6 +149,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 		return array('Warehouse'=>array(
 			'__submenu__'=>1,
 			'eCommerce'=>array('__submenu__'=>1,
+			    'Newsletter'=>array('__function__'=>'newsletter'),
 			    'Products'=>array(),
 			    'Stats'=>array('__function__'=>'stats'))
 		));

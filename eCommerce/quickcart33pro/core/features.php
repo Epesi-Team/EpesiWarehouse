@@ -4,6 +4,7 @@
 * @return array
 * @param int  $iProduct
 */
+/*
 function throwProductFeatures( $iProduct ){
   if( !is_file( DB_FEATURES_PRODUCTS ) )
     return null;
@@ -25,6 +26,7 @@ function throwProductFeatures( $iProduct ){
     }
   }
 } // end function throwProductFeatures
+*/
 
 /**
 * Return product features list
@@ -33,7 +35,7 @@ function throwProductFeatures( $iProduct ){
 * @param int    $iProduct
 */
 function listProductFeatures( $sFile = null, $iProduct = null ){
-  if( !is_file( DB_FEATURES ) )
+/*  if( !is_file( DB_FEATURES ) )
     return null;
   $oFF  =& FlatFiles::getInstance( );
   $oTpl =& TplParser::getInstance( );
@@ -59,6 +61,6 @@ function listProductFeatures( $sFile = null, $iProduct = null ){
     } // end for
     if( isset( $content ) )
       return $oTpl->tbHtml( $sFile, 'FEATURES_HEAD' ).$content.$oTpl->tbHtml( $sFile, 'FEATURES_FOOT' );
-  }
+  }*/
 } // end function listProductFeatures
 ?>

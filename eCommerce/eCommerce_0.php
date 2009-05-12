@@ -26,6 +26,8 @@ class Premium_Warehouse_eCommerce extends Module {
 						'icon'=>null);
 		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'boxes')).'>'.$this->ht('Boxes').'</a>',
 						'icon'=>null);
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'contactus_page')).'>'.$this->ht('Contact us').'</a>',
+						'icon'=>null);
 		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'icecat')).'>'.$this->ht('Icecat').'</a>',
 						'icon'=>null);
 		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'pages')).'>'.$this->ht('Pages').'</a>',
@@ -287,6 +289,10 @@ class Premium_Warehouse_eCommerce extends Module {
 	
 	public function start_page() {
 		return $this->edit_variable('Start page','ecommerce_start_page');
+	}
+	
+	public function contactus_page() {
+		return $this->edit_variable('Contact us','ecommerce_contactus');
 	}
 	
 	public function rules_page() {
@@ -586,6 +592,7 @@ class Premium_Warehouse_eCommerce extends Module {
 		$tb->set_tab($this->t("Products"), array($this,'stats_tab'),array('products',$start,$end));
 		$tb->set_tab($this->t("Pages"), array($this,'stats_tab'),array('pages',$start,$end));
 		$tb->set_tab($this->t("Categories"), array($this,'stats_tab'),array('categories',$start,$end));
+		$tb->set_tab($this->t("Searched Words"), array($this,'stats_tab'),array('searched',$start,$end));
 		$this->display_module($tb);
 		$this->tag();
 	}
@@ -594,35 +601,43 @@ class Premium_Warehouse_eCommerce extends Module {
 		$start_reg = Base_RegionalSettingsCommon::reg2time($start,false);
 		$end_reg = Base_RegionalSettingsCommon::reg2time($end,false);
 		
-		switch($tab) {
-		    case 'categories':
-			$jf = 'f_category_name';
-			$j = 'premium_warehouse_items_categories_data_1';
-			break;
-		    case 'pages':
-			$jf = 'f_page_name';
-			$j = 'premium_ecommerce_pages_data_1';
-			break;
-		    case 'products':
-			$jf = 'f_item_name';
-			$j = 'premium_ecommerce_products_data_1';
-			break;
+		if($tab=='searched') {
+			$ret = DB::Execute('SELECT obj,count(visited_on) as num, obj as name FROM premium_ecommerce_'.$tab.'_stats WHERE visited_on>=%T AND visited_on<%T GROUP BY obj ORDER BY num DESC LIMIT 10',array($start_reg,$end_reg+3600*24));
+		} else {
+			$aj = '';
+			switch($tab) {
+			    case 'categories':
+				$jf = 'j.f_category_name';
+				$j = 'premium_warehouse_items_categories_data_1 j';
+				break;
+			    case 'pages':
+				$jf = 'j.f_page_name';
+				$j = 'premium_ecommerce_pages_data_1 j';
+				break;
+			    case 'products':
+				$jf = 'i.f_item_name';
+				$j = '(premium_ecommerce_products_data_1 j, premium_warehouse_items_data_1 i)';
+				$aj = 'AND j.f_item_name=i.id';
+				break;
+			}
+			$ret = DB::Execute('SELECT obj,count(visited_on) as num, '.$jf.' as name FROM premium_ecommerce_'.$tab.'_stats INNER JOIN '.$j.' ON (obj=j.id '.$aj.') WHERE visited_on>=%T AND visited_on<%T GROUP BY obj ORDER BY num DESC LIMIT 10',array($start_reg,$end_reg+3600*24));
 		}
-		$ret = DB::Execute('SELECT obj,count(visited_on) as num, j.'.$jf.' as name FROM premium_ecommerce_'.$tab.'_stats INNER JOIN '.$j.' j ON obj=j.id WHERE visited_on>=%T AND visited_on<%T GROUP BY obj',array($start_reg,$end_reg+3600*24));
 
 		$f = $this->init_module('Libs/OpenFlashChart');
 		$title = new title( $this->ht($tab) );
 		$f->set_title( $title );
 
-		$av_colors = array('#339933','#339933','#999933', '#993333', '#336699', '#808080','#339999','#993399');
+		$av_colors = array('#339933','#999933', '#993333', '#336699', '#808080','#339999','#993399');
 		$max = -1;
+		$i = 0;
 		while($row = $ret->FetchRow()) {
 			$bar = new bar();
-			$bar->set_colour($av_colors[$row['obj']%count($av_colors)]);
+			$bar->set_colour($av_colors[$i%count($av_colors)]);
 			$bar->set_key($row['name'],3);
 			$bar->set_values( array((int)$row['num']) );
 			if($max<$row['num']) $max = $row['num'];
 			$f->add_element( $bar );
+			$i++;
 		}
 		if($max==-1) {
 		    print($this->t("No stats available"));
@@ -666,6 +681,13 @@ class Premium_Warehouse_eCommerce extends Module {
 		}
 
 		$this->display_module($gb);
+	}
+	
+	public function newsletter() {
+		$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_newsletter');
+		$args = array(array(), array(), array('email'=>'ASC'));
+		$this->display_module($this->rb,$args,'show_data');
+	
 	}
 	
 	public function caption(){
