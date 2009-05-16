@@ -366,7 +366,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 	private static $orders_rec;
 	
 	public static function orders_get_record() {
-	    return self::$orders_rec;
+	    return self::$orders_rec['id'];
 	}
 	
 	public static function orders_addon_parameters($r) {
