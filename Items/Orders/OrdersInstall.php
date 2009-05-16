@@ -96,7 +96,7 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 			array('name'=>'Returned', 			'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>false),
 
 			array('name'=>'Net Price', 			'type'=>'currency', 'required'=>true, 'extra'=>false, 'visible'=>true, 'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_net_price')),
-			array('name'=>'Gross Price', 		'type'=>'currency', 'required'=>true, 'extra'=>false, 'visible'=>true, 'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_gross_price')),
+			array('name'=>'Gross Price', 		'type'=>'currency', 'required'=>true, 'extra'=>false, 'visible'=>true, 'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_gross_price'), 'display_callback'=>array($this->get_type().'Common', 'display_gross_price')),
 			array('name'=>'Tax Rate', 			'type'=>'select', 'required'=>true, 'extra'=>false, 'visible'=>true, 'param'=>'data_tax_rates::Name', 'QFfield_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'QFfield_details_tax_rate')),
 			array('name'=>'Net Total', 			'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_order_details_total'), 'style'=>'currency'),
 			array('name'=>'Tax Value', 			'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_order_details_tax_value'), 'style'=>'currency'),

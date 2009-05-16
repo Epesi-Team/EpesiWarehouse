@@ -213,6 +213,12 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		return Utils_CurrencyFieldCommon::format($ret, $price[1]);
 	}
 	
+	public static function display_gross_price($r, $nolink) {
+		$price = Utils_CurrencyFieldCommon::get_values($r['net_price']);
+		$ret = round((100+Data_TaxRatesCommon::get_tax_rate($r['tax_rate']))*$price[0]/100, Utils_CurrencyFieldCommon::get_precission($price[1]));
+		return Utils_CurrencyFieldCommon::format($ret, $price[1]);
+	}
+	
 	public static function get_reserved_qty($item_id) {
 		$trans = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders', array('status'=>array(2,3,4,5), 'transaction_type'=>1), array('id', 'warehouse'));
 		$trans = $trans+Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders', array('status'=>array(2,3), 'transaction_type'=>4), array('id', 'target_warehouse'));
