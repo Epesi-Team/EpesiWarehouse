@@ -76,6 +76,17 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		//payments and carriers
 		$fields = array(
 			array('name'=>'Payment', 	'type'=>'commondata', 'required'=>true, 'extra'=>false, 'visible'=>true, 'param'=>array('order_by_key'=>true,'Premium_Items_Orders_Payment_Types')),
+			array('name'=>'Relate with',		'type'=>'integer',	'required'=>true, 'extra'=>false, 'visible'=>true,'display_callback'=>array($this->get_type().'Common', 'display_payment_related_with'),'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_payment_related_with')),
+			array('name'=>'Description', 		'type'=>'long text', 'required'=>false, 'extra'=>false,'visible'=>true)
+		);
+		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_payments', $fields);
+
+		Utils_RecordBrowserCommon::set_favorites('premium_ecommerce_payments', false);
+		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_payments', 'eCommerce - Payments');
+		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_payments', 'Premium_Warehouse_eCommerceCommon', 'access_parameters');
+
+		$fields = array(
+			array('name'=>'Payment', 	'type'=>'commondata', 'required'=>true, 'extra'=>false, 'visible'=>true, 'param'=>array('order_by_key'=>true,'Premium_Items_Orders_Payment_Types')),
 			array('name'=>'Shipment', 	'type'=>'commondata', 'required'=>true, 'extra'=>false, 'visible'=>true, 'param'=>array('order_by_key'=>true,'Premium_Items_Orders_Shipment_Types')),
 			array('name'=>'Currency', 	'type'=>'integer', 'required'=>true, 'extra'=>false,'visible'=>true, 'display_callback'=>array($this->get_type().'Common', 'display_currency'),'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_currency')),
 			array('name'=>'Price', 		'type'=>'integer', 'required'=>true, 'extra'=>false,'visible'=>true)
@@ -83,7 +94,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_payments_carriers', $fields);
 
 		Utils_RecordBrowserCommon::set_favorites('premium_ecommerce_payments_carriers', false);
-		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_payments_carriers', 'eCommerce - payments');
+		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_payments_carriers', 'eCommerce - Payments and Carriers');
 		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_payments_carriers', 'Premium_Warehouse_eCommerceCommon', 'access_parameters');
 
 		//product prices
@@ -244,6 +255,23 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 			print('Unable to create table premium_ecommerce_orders_temp.<br>');
 			return false;
 		}
+		
+		$fields = array(
+			array('name'=>'Transaction ID', 	'type'=>'select', 'required'=>true, 'param'=>'premium_warehouse_items_orders::Transaction ID;Premium_Warehouse_Items_OrdersCommon::transactions_crits', 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_transaction_id_in_details')),
+			array('name'=>'Language', 		'type'=>'commondata', 'required'=>true, 'extra'=>false, 'param'=>array('Premium/Warehouse/eCommerce/Languages'), 'visible'=>true),
+			array('name'=>'Email', 			'type'=>'text', 'required'=>false, 'param'=>'128', 'extra'=>false, 'visible'=>false, 'display_callback'=>array('CRM_ContactsCommon', 'display_email'), 'QFfield_callback'=>array('CRM_ContactsCommon', 'QFfield_email')),
+			array('name'=>'IP', 			'type'=>'text', 'required'=>false, 'param'=>'32', 'extra'=>false, 'visible'=>false),
+			array('name'=>'Comment',		'type'=>'long text', 'required'=>false, 'extra'=>false),
+			array('name'=>'Invoice', 		'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>true),
+			array('name'=>'Payment System',		'type'=>'integer',	'required'=>true, 'extra'=>false, 'visible'=>true,'display_callback'=>array($this->get_type().'Common', 'display_payment_system'),'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_payment_system')),
+			array('name'=>'Payment Channel',	'type'=>'integer',	'required'=>true, 'extra'=>false, 'visible'=>true,'display_callback'=>array($this->get_type().'Common', 'display_payment_channel'),'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_payment_channel')),
+			array('name'=>'Payment Realized',	'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>true)
+		);
+		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_orders', $fields);
+
+		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_orders', 'eCommerce - Orders');
+		Utils_RecordBrowserCommon::new_addon('premium_warehouse_items_orders', 'Premium/Warehouse/eCommerce', 'orders_addon', 'Premium_Warehouse_eCommerceCommon::orders_addon_parameters');
+
 
 		//quickcarts
 		$ret = DB::CreateTable('premium_ecommerce_quickcart','
@@ -362,6 +390,26 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 
 		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_newsletter', 'eCommerce - Newsletter');
 		
+		//comments
+		$fields = array(
+			array('name'=>'Product', 	'type'=>'select', 'param'=>'premium_warehouse_items::Item Name', 'required'=>true, 'extra'=>false),
+			array('name'=>'Language', 	'type'=>'commondata', 'required'=>true, 'extra'=>false, 'param'=>array('Premium/Warehouse/eCommerce/Languages'), 'visible'=>true),
+			array('name'=>'Name', 		'type'=>'long text', 'required'=>true, 'extra'=>false, 'visible'=>true),
+			array('name'=>'Content', 	'type'=>'long text', 'required'=>true, 'extra'=>false, 'visible'=>true),
+			array('name'=>'Time', 		'type'=>'timestamp', 'required'=>true, 'extra'=>false, 'visible'=>true),
+			array('name'=>'Ip', 		'type'=>'text', 'param'=>32, 'required'=>true, 'extra'=>false, 'visible'=>true),
+			array('name'=>'Publish', 	'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>true)
+		);
+
+		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_product_comments', $fields);
+
+		Utils_RecordBrowserCommon::set_favorites('premium_ecommerce_product_comments', false);
+		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_product_comments', 'eCommerce - Product Comments');
+		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_product_comments', 'Premium_Warehouse_eCommerceCommon', 'access_parameters');
+		
+		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_products', 'Premium/Warehouse/eCommerce', 'product_comments_addon', 'Comments');
+		
+		
 
 // ************* addons ************ //
 		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_products', 'Premium/Warehouse/eCommerce', 'parameters_addon', 'Parameters');
@@ -456,6 +504,8 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_products', 'Premium/Warehouse/eCommerce', 'attachment_product_addon');
 		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_descriptions', 'Premium/Warehouse/eCommerce', 'attachment_product_desc_addon');
 		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_polls', 'Premium/Warehouse/eCommerce', 'poll_answers');
+		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_products', 'Premium/Warehouse/eCommerce', 'product_comments_addon');
+		Utils_RecordBrowserCommon::delete_addon('premium_warehouse_items_orders', 'Premium/Warehouse/eCommerce', 'orders_addon');
 
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_products');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_cat_descriptions');
@@ -470,11 +520,14 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_pages');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_pages_data');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_prices');
+		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_payments');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_payments_carriers');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_polls');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_poll_answers');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_boxes');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_banners');
+		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_product_comments');
+		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_orders');
 		return true;
 	}
 	

@@ -9,7 +9,7 @@
 function addComment( $aForm, $iLink, $sFileDb = null ){
   if( !isset( $sFileDb ) )
     $sFileDb = DB_PAGES_COMMENTS;
-  if( !is_file( $sFileDb ) )
+/*  if( !is_file( $sFileDb ) )
     return null;
 
   $oFF =& FlatFiles::getInstance( );
@@ -22,6 +22,12 @@ function addComment( $aForm, $iLink, $sFileDb = null ){
   $aForm['iStatus']  = 0;
 
   $oFF->save( $sFileDb, $aForm, null, 'rsort' );
+  */
+  //{ epesi
+  $aForm = changeMassTxt( $aForm, 'HLen', Array( 'sContent', 'HBrLen' ) );
+  DB::Execute('INSERT INTO premium_ecommerce_product_comments_data_1(created_on,f_name,f_content,f_time,f_product,f_ip,f_publish,f_language) VALUES (%T,%s,%s,%T,%d,%s,%b,%s)',
+		array(time(),$aForm['sName'],$aForm['sContent'],time(),$iLink,$_SERVER['REMOTE_ADDR'],0,LANGUAGE));
+  //} epesi
 
 } // end function addComment
 
@@ -38,6 +44,7 @@ function listComments( $sFile, $iLink, $sFileDb = null ){
     $sFileDb = DB_PAGES_COMMENTS;
     $bPages = true;
   }
+  /*
   if( !is_file( $sFileDb ) )
     return null;
 
@@ -62,7 +69,20 @@ function listComments( $sFile, $iLink, $sFileDb = null ){
   if( isset( $aFile ) && is_array( $aFile ) ){
     for( $i = 0; $i < $iCount; $i++ ){  
       $aData = $aFile[$i];
-
+*/
+  //{ epesi
+  $oTpl =& TplParser::getInstance( );
+  $bPages = false;
+  $fields = 'f_name as sName, f_content as sContent, f_time as iTime, f_ip as sIp, f_publish as iStatus';
+  if( isset( $iLink ) && is_numeric( $iLink ) ){
+    $ret = DB::Execute('SELECT '.$fields.' FROM premium_ecommerce_product_comments_data_1 WHERE f_product=%d AND f_language=\''.LANGUAGE.'\' AND f_publish=1 AND active=1',array($iLink));
+  } else {
+    $ret = DB::Execute('SELECT '.$fields.' FROM premium_ecommerce_product_comments_data_1 WHERE f_language=\''.LANGUAGE.'\' AND f_publish=1 AND active=1 LIMIT 50',array());
+  }
+  $content = null; {
+  while($aData = $ret->FetchRow()) {
+	$aData['iTime'] = strtotime($aData['iTime']);
+  //} epesi
       $aData['sLinkName'] = isset( $bPages ) ? $GLOBALS['oPage']->aPages[$aData['iLink']]['sName'] : $GLOBALS['oProduct']->aProducts[$aData['iLink']]['sName'];
       $aData['iStyle']  = ( $i % 2 ) ? 0: 1;
       $aData['sStyle']  = ( $i == ( $iCount - 1 ) ) ? 'L': $i + 1;
@@ -85,6 +105,7 @@ function listComments( $sFile, $iLink, $sFileDb = null ){
 * @param array  $aData
 * @param array  $aCheck
 */
+/*
 function listCommentsCheck( $aData, $aCheck ){
   if( isset( $aData ) && $aData['iLink'] == $aCheck['iLink'] && $aData['iStatus'] >= $aCheck['iStatus'] ){
     return true;
@@ -92,5 +113,5 @@ function listCommentsCheck( $aData, $aCheck ){
   else{
     return null;
   }
-} // end function listCommentsCheck
+} */// end function listCommentsCheck
 ?>

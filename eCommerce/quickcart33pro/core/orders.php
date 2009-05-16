@@ -408,6 +408,11 @@ $oFF->save( DB_ORDERS, $aForm, null, 'rsort' );
     }
 
     $oFF->deleteInFile( DB_ORDERS_TEMP, $_SESSION['iCustomer'.LANGUAGE], 'iCustomer' );
+
+    $_SESSION['iOrderQuantity'.LANGUAGE]  = 0;
+    $_SESSION['fOrderSummary'.LANGUAGE]   = null;
+
+    return $aForm['iOrder'];
 */
 
 	//{ epesi
@@ -431,37 +436,65 @@ $oFF->save( DB_ORDERS, $aForm, null, 'rsort' );
 	//'sLanguage' => 1, 
 	//'sEmail' => 17, 
 	//'sIp' => 18 )*/
+
+    if( !isset( $aForm['iInvoice'] ) )
+      $aForm['iInvoice'] = null;
+
     list($carrier,$payment) = explode( ';', $aForm['sPaymentCarrier'] );
     $price = $this->throwPaymentCarrierPrice($carrier,$payment);
     $currency = $this->getCurrencyId();
+
+    $aPayment = $this->throwPayment( $payment );
+
+    if( isset( $aPayment['iOuterSystem'] ) ){
+      $aForm['iPaymentSystem'] = $aPayment['iOuterSystem'];
+      if( isset( $aForm['aPaymentChannel'][$aPayment['iPayment']] ) )
+        $aForm['mPaymentChannel'] = $aForm['aPaymentChannel'][$aPayment['iPayment']];
+      else
+        $aForm['mPaymentChannel'] = null;
+    }
+    else{
+      $aForm['iPaymentSystem'] = null;
+      $aForm['mPaymentChannel'] = null;
+    }
+    $aForm['iPaymentRealized']  = 0;
 	
     $t = time();
-    $memo = "Language: ".LANGUAGE."\ne-mail: ".$aForm['sEmail']."\nIp: ".$_SERVER['REMOTE_ADDR']."\nComment:\n".$aForm['sComment'];
+    //$memo = "Language: ".LANGUAGE."\ne-mail: ".$aForm['sEmail']."\nIp: ".$_SERVER['REMOTE_ADDR']."\nComment:\n".$aForm['sComment'];
     DB::Execute('INSERT INTO premium_warehouse_items_orders_data_1(f_transaction_type,f_transaction_date,f_status,
 						f_company_name,f_last_name,f_first_name,f_address_1,f_city,f_postal_code,f_phone,f_country,f_zone,f_memo,created_on,
-						f_shipment_type,f_shipment_cost,f_payment,f_payment_type) VALUES 
-						(1,%D,"-1",%s,%s,%s,%s,%s,%s,%s,"","",%s,%T,%s,%s,1,%s)',
+						f_shipment_type,f_shipment_cost,f_payment,f_payment_type,f_tax_id) VALUES 
+						(1,%D,"-1",%s,%s,%s,%s,%s,%s,%s,"","",%s,%T,%s,%s,1,%s,%s)',
 					array($t,$aForm['sCompanyName'],$aForm['sLastName'],$aForm['sFirstName'],$aForm['sStreet'],$aForm['sCity'],
-					$aForm['sZipCode'],$aForm['sPhone'],$memo,$t,$carrier,$price.'_'.$currency,$payment));
+					$aForm['sZipCode'],$aForm['sPhone'],$memo,$t,$carrier,$price.'_'.$currency,$payment,$aForm['sNip']));
     $id = DB::Insert_ID('premium_warehouse_items_orders_data_1','id');
     $trans_id = '#'.str_pad($id, 6, '0', STR_PAD_LEFT);
     DB::Execute('UPDATE premium_warehouse_items_orders_data_1 SET f_transaction_id=%s WHERE id=%d',array($trans_id,$id));
 
+    DB::Execute('INSERT INTO premium_ecommerce_orders_data_1(f_transaction_id, f_language, f_email, f_ip, f_comment, f_invoice, f_payment_system, 
+						f_payment_channel,f_payment_realized,created_on) VALUES
+						(%d,%s,%s,%s,%s,%b,%d,%s,%b,%T)',
+					array($id,LANGUAGE,$aForm['sEmail'],$_SERVER['REMOTE_ADDR'],$aForm['sComment'],$aForm['iInvoice'],
+					$aForm['iPaymentSystem'],$aForm['mPaymentChannel'],$aForm['iPaymentRealized'],time()));
+
+    $taxes = DB::GetAssoc('SELECT id, f_percentage FROM data_tax_rates_data_1 WHERE active=1');
+
     if( isset( $this->aProducts ) ){
       foreach( $this->aProducts as $aData ){
-	$net = $aData['fPrice']*100/(100+$aData['tax']);
-        DB::Execute('INSERT INTO premium_warehouse_items_orders_details_data_1(f_transaction_id,f_item_name,f_quantity,f_description,f_gross_price,f_tax_rate,created_on,f_net_price) 
-							VALUES (%s,%d,%d,%s,%s,%s,%T,%s)', array($id,$aData['iProduct'],$aData['iQuantity'],$aData['sName'],$aData['fPrice'].'__'.$currency,$aData['tax'],$t,$net.'__'.$currency));
+	$net = $aData['fPrice']*100/(100+$taxes[$aData['tax']]);
+        DB::Execute('INSERT INTO premium_warehouse_items_orders_details_data_1(f_transaction_id,f_item_name,f_quantity,f_description,f_tax_rate,created_on,f_net_price) 
+							VALUES (%s,%d,%d,%s,%s,%T,%s)', array($id,$aData['iProduct'],$aData['iQuantity'],$aData['sName'],$aData['tax'],$t,$net.'__'.$currency));
       }
     }
 	
   	DB::Execute('DELETE FROM premium_ecommerce_orders_temp WHERE customer=%s',array($_SESSION['iCustomer'.LANGUAGE]));
-	//} epesi
 
     $_SESSION['iOrderQuantity'.LANGUAGE]  = 0;
     $_SESSION['fOrderSummary'.LANGUAGE]   = null;
 
-    return $aForm['iOrder'];
+    return $id;
+	//} epesi
+
   } // end function addOrder
 
   /**
@@ -491,22 +524,28 @@ $oFF->save( DB_ORDERS, $aForm, null, 'rsort' );
     }
     else{
 	//{ epesi
-	$aData = DB::GetRow('SELECT id as iOrder, 
+	$aData = DB::GetRow('SELECT w.id as iOrder, 
 				    1 as iStatus, 
-				    created_on as iTime,
-				    f_shipment_type as iCarrier,
+				    w.created_on as iTime,
+				    w.f_shipment_type as iCarrier,
 				    1 as iPayment,
-				    f_shipment_type,
-				    f_payment_type,
-				    f_first_name as sFirstName,
-				    f_last_name as sLastName,
-				    f_company_name as sCompanyName,
-				    f_address_1 as sStreet,
-				    f_postal_code as sZipCode,
-				    f_city as sCity,
-				    f_phone as sPhone,
-				    f_memo as memo
-				    FROM premium_warehouse_items_orders_data_1 WHERE id=%d',array($iOrder));
+				    w.f_shipment_type,
+				    w.f_payment_type,
+				    w.f_first_name as sFirstName,
+				    w.f_last_name as sLastName,
+				    w.f_company_name as sCompanyName,
+				    w.f_address_1 as sStreet,
+				    w.f_postal_code as sZipCode,
+				    w.f_city as sCity,
+				    w.f_phone as sPhone,
+				    o.f_comment as sComment,
+				    o.f_ip as sIp,
+				    o.f_email as sEmail,
+				    o.f_language as sLanguage,
+				    o.f_payment_system as iPaymentSystem,
+				    o.f_payment_channel as mPaymentChannel,
+				    o.f_payment_realized as iPaymentRealized
+				    FROM premium_warehouse_items_orders_data_1 w INNER JOIN premium_ecommerce_orders_data_1 o ON o.f_transaction_id=w.id WHERE w.id=%d',array($iOrder));
         if($aData) {
 	        $aPayments = $this->getPayments();
 	        $aShipments = $this->getShipments();
@@ -514,15 +553,6 @@ $oFF->save( DB_ORDERS, $aForm, null, 'rsort' );
 		$aData['sPaymentName'] = $aPayments[$aData['f_payment_type']];
 		$aData['sPaymentPrice'] = $this->throwPaymentCarrierPrice( $aData['f_shipment_type'], $aData['f_payment_type'] );
         	$aData['iTime'] = strtotime($aData['iTime']);
-		if(ereg("^Language: ([a-zA-Z0-9]+)\ne-mail: ([a-zA-Z0-9@\.]+)\nIp: ([0-9\.]+)\nComment:\n([^$]*)",$aData['memo'],$reqs)) {
-		    $aData['sLanguage'] = $reqs[1];
-		    $aData['sEmail'] = $reqs[2];
-		    $aData['sIp'] = $reqs[3];
-		    $aData['sComment'] = $reqs[4];
-		} else {
-		    $aData['sLanguage'] = LANGUAGE; 
-		    $aData['sComment'] = $_SERVER['REMOTE_ADDR'];
-		}
 	}
 	//} epesi
 
@@ -679,6 +709,8 @@ $this->aOrders[$iOrder] = $aData;
 */
 
       // { epesi
+    $aOuterPayments = DB::GetAssoc('SELECT f_payment,f_relate_with FROM premium_ecommerce_payments_data_1 WHERE active=1');
+     
     $aPayments = $this->getPayments();
     $aShipments = $this->getShipments();
     if( $aPayments && $aShipments ){
@@ -746,18 +778,26 @@ $this->aOrders[$iOrder] = $aData;
   
   function getPayments(){
      //get possible payments
-    $payments_id = DB::GetOne('SELECT id FROM utils_commondata_tree WHERE akey="Premium_Items_Orders_Payment_Types"');
-    if($payments_id===false)
-	die('Common data key "Premium_Items_Orders_Payment_Types" not defined.');
-    return DB::GetAssoc('SELECT akey, value FROM utils_commondata_tree WHERE parent_id=%d ORDER BY akey',array($payments_id));
+     static $payments = null;
+     if(!isset($payments)) {
+        $payments_id = DB::GetOne('SELECT id FROM utils_commondata_tree WHERE akey="Premium_Items_Orders_Payment_Types"');
+	if($payments_id===false)
+	    die('Common data key "Premium_Items_Orders_Payment_Types" not defined.');
+	$payments = DB::GetAssoc('SELECT akey, value FROM utils_commondata_tree WHERE parent_id=%d ORDER BY akey',array($payments_id));
+    }
+    return $payments;
   }
 
   function getShipments(){
     //get possible shipments
-    $shipments_id = DB::GetOne('SELECT id FROM utils_commondata_tree WHERE akey="Premium_Items_Orders_Shipment_Types"');
-    if($shipments_id===false)
-	die('Common data key "Premium_Items_Orders_Shipment_Types" not defined.');
-    return DB::GetAssoc('SELECT akey, value FROM utils_commondata_tree WHERE parent_id=%d ORDER BY akey',array($shipments_id));
+     static $shipments = null;
+     if(!isset($shipments)) {
+        $shipments_id = DB::GetOne('SELECT id FROM utils_commondata_tree WHERE akey="Premium_Items_Orders_Shipment_Types"');
+	if($shipments_id===false)
+	    die('Common data key "Premium_Items_Orders_Shipment_Types" not defined.');
+	$shipments = DB::GetAssoc('SELECT akey, value FROM utils_commondata_tree WHERE parent_id=%d ORDER BY akey',array($shipments_id));
+    }
+    return $shipments;
   }
   
   // } epesi
@@ -777,9 +817,15 @@ $this->aOrders[$iOrder] = $aData;
   * @return array
   * @param int  $iPayment
   */
-/*  function throwPayment( $iPayment ){
-    $oFF =& FlatFiles::getInstance( );
-    $aData = $oFF->throwData( DB_PAYMENTS, $iPayment, 'iPayment' );
+  function throwPayment( $iPayment ){
+/*    $oFF =& FlatFiles::getInstance( );
+    $aData = $oFF->throwData( DB_PAYMENTS, $iPayment, 'iPayment' );*/
+    //{ epesi
+    $payments = $this->getPayments();
+    if(!isset($payments[$iPayment])) return null;
+    $aData = DB::GetRow('SELECT f_relate_with as iOuterSystem, f_description as sDescription, f_payment as iPayment FROM premium_ecommerce_payments_data_1 WHERE f_payment=%s',array($iPayment));
+    $aData['sName'] = $payments[$iPayment];
+    //} epesi
     if( isset( $aData ) && is_array( $aData ) ){
       $aData['sDescription'] = changeTxt( $aData['sDescription'], 'Ndsnl' );
       return $aData;
@@ -787,7 +833,7 @@ $this->aOrders[$iOrder] = $aData;
     else
       return null;
   } // end function throwPayment
-*/
+
   /**
   * Send email to admin with order details
   * @return void

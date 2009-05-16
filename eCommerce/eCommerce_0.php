@@ -164,10 +164,28 @@ class Premium_Warehouse_eCommerce extends Module {
 		if($this->is_back()) return false;
 		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
 	
-		$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_payments_carriers');
-		$this->display_module($this->rb);
+		$tb = & $this->init_module('Utils/TabbedBrowser');
+		$tb->set_tab($this->t("Payments"), array($this,'payments'),array());
+		$tb->set_tab($this->t("Carriers"), array($this,'carriers'),array());
+		$tb->set_tab($this->t("Prices"), array($this,'payments_carriers_assoc'),array());
+		$this->display_module($tb);
+		$this->tag();
 
 		return true;
+	}
+	
+	public function payments() {
+		$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_payments');
+		$this->display_module($this->rb);
+	}
+
+	public function carriers() {
+	
+	}
+	
+	public function payments_carriers_assoc() {
+		$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_payments_carriers');
+		$this->display_module($this->rb);
 	}
 
 	public function actions_for_position($r, & $gb_row) {
@@ -285,6 +303,12 @@ class Premium_Warehouse_eCommerce extends Module {
 			'price'=>array('wrapmode'=>'nowrap')
 									));
 		$this->display_module($rb,$order,'show_data');
+	}
+
+	public function orders_addon($arg) {
+		$rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_orders');
+		//$order = array(array('transaction_id'=>$arg['id']), array('transaction_id'=>false));
+		$this->display_module($rb,array('view',Premium_Warehouse_eCommerceCommon::orders_get_record()),'view_entry');
 	}
 	
 	public function start_page() {
@@ -683,11 +707,41 @@ class Premium_Warehouse_eCommerce extends Module {
 		$this->display_module($gb);
 	}
 	
+	public function product_comments_addon($arg) {
+		$rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_product_comments');
+		$order = array(array('item_name'=>$arg['item_name']), array('item_name'=>false), array('time'=>'DESC'));
+		$rb->set_defaults(array('item_name'=>$arg['item_name']));
+		$rb->set_header_properties(array(
+			'language'=>array('width'=>1, 'wrapmode'=>'nowrap'),
+			'content'=>array('width'=>50, 'wrapmode'=>'nowrap')
+									));
+		$this->display_module($rb,$order,'show_data');
+	}
+	
 	public function newsletter() {
 		$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_newsletter');
 		$args = array(array(), array(), array('email'=>'ASC'));
 		$this->display_module($this->rb,$args,'show_data');
+	}
+
+	public function comments() {
+		$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_product_comments');
+		$args = array(array('publish'=>0), array('product'=>true,'publish'=>false), array('time'=>'DESC'));
+		$this->rb->set_header_properties(array(
+			'language'=>array('width'=>1, 'wrapmode'=>'nowrap'),
+			'content'=>array('width'=>50, 'wrapmode'=>'nowrap')
+									));
+		$this->rb->set_additional_actions_method($this, 'comments_publish_action');
+		$this->display_module($this->rb,$args,'show_data');
 	
+	}
+	
+	public function comments_publish_action($r, & $gb_row) {
+		if(isset($_REQUEST['publish_action']) && $r['id']==$_REQUEST['publish_action']) {
+    		    Utils_RecordBrowserCommon::update_record('premium_ecommerce_product_comments',$r['id'],array('publish'=>1));
+		    location(array());
+		}
+		$gb_row->add_action(Module::create_href(array('publish_action'=>$r['id'])),'Publish',null,'restore');
 	}
 	
 	public function caption(){

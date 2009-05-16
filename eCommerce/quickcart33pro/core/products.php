@@ -98,6 +98,7 @@ class Products
 			$aExp['sAvailable'] = $aExp['sAvailable2'];
 		if(!$aExp['f_quantity'])
 			unset($aExp['fPrice']);
+		$aExp['iComments'] = 1;
 		unset($aExp['sName2']);
 		$cats = array_filter(explode('__',$aExp['f_category']));
 		unset($aExp['f_category']);

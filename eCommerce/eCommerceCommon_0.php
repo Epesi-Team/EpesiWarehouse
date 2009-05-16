@@ -98,6 +98,22 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 		return $opts[$r['type']];
 	}
 
+	public static $payment_related_opts = array(''=>'---','1'=>'DotPay','2'=>'Przelewy24','3'=>'PayPal', '4'=>'Platnosci.pl', '5'=>'Żagiel');
+
+  	public static function QFfield_payment_related_with(&$form, $field, $label, $mode, $default) {
+		if ($mode=='add' || $mode=='edit') {
+			$form->addElement('select', $field, $label, self::$payment_related_opts, array('id'=>$field));
+			if ($mode=='edit') $form->setDefaults(array($field=>$default));
+		} else {
+			$form->addElement('static', $field, $label);
+			$form->setDefaults(array($field=>self::$payment_related_opts[$default]));
+		}
+	}
+
+  	public static function display_payment_related_with($r, $nolink=false) {
+		return self::$payment_related_opts[$r['relate_with']];
+	}
+
   	public static function parent_page_crits($v, $rec) {
 		if(!$rec)
 			return array();
@@ -149,6 +165,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 		return array('Warehouse'=>array(
 			'__submenu__'=>1,
 			'eCommerce'=>array('__submenu__'=>1,
+			    'Comments queue'=>array('__function__'=>'comments'),
 			    'Newsletter'=>array('__function__'=>'newsletter'),
 			    'Products'=>array(),
 			    'Stats'=>array('__function__'=>'stats'))
@@ -346,6 +363,21 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 	    return false;
 	}
 
+	private static $orders_rec;
+	
+	public static function orders_get_record() {
+	    return self::$orders_rec;
+	}
+	
+	public static function orders_addon_parameters($r) {
+	    if(!isset(self::$orders_rec)) {
+		    $ret = Utils_RecordBrowserCommon::get_records('premium_ecommerce_orders',array('transaction_id'=>$r['id']));
+		    if(!$ret)
+			    return false;
+		    self::$orders_rec = array_pop($ret);
+	    }
+	    return array('show'=>true, 'label'=>'eCommerce');
+	}
 
 	public static function submit_position($values, $mode, $recordset) {
 		switch ($mode) {
