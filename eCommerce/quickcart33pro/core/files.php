@@ -221,7 +221,7 @@ class Files
 	    $iKey = 1;
 	    $product = $product*4+2;
 	}	    
-	$type = 1; // ??????????
+	$type = 2; // ??????????
 	$this->aFilesImages[$iKey][$row['id']] = array( 'iFile' => $row['id'], 'iProduct' => $product, 'sFileName' => 'epesi/'.$row['id'].'_'.$row['revision'].$ext, 'sDescription' => $row['text'], 'iPhoto' => $photo, 'iPosition' => 0, 'iType' =>$type, 'iSize1' => $th_size, 'iSize2' => $th_size );
 
 	if( $photo ){

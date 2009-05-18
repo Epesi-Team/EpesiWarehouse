@@ -528,9 +528,8 @@ $oFF->save( DB_ORDERS, $aForm, null, 'rsort' );
 				    1 as iStatus, 
 				    w.created_on as iTime,
 				    w.f_shipment_type as iCarrier,
-				    1 as iPayment,
 				    w.f_shipment_type,
-				    w.f_payment_type,
+				    w.f_payment_type as iPayment,
 				    w.f_first_name as sFirstName,
 				    w.f_last_name as sLastName,
 				    w.f_company_name as sCompanyName,
@@ -550,8 +549,8 @@ $oFF->save( DB_ORDERS, $aForm, null, 'rsort' );
 	        $aPayments = $this->getPayments();
 	        $aShipments = $this->getShipments();
 		$aData['sCarrierName'] = $aShipments[$aData['f_shipment_type']];
-		$aData['sPaymentName'] = $aPayments[$aData['f_payment_type']];
-		$aData['sPaymentPrice'] = $this->throwPaymentCarrierPrice( $aData['f_shipment_type'], $aData['f_payment_type'] );
+		$aData['sPaymentName'] = $aPayments[$aData['iPayment']];
+		$aData['sPaymentPrice'] = $this->throwPaymentCarrierPrice( $aData['f_shipment_type'], $aData['iPayment'] );
         	$aData['iTime'] = strtotime($aData['iTime']);
 	}
 	//} epesi
@@ -738,6 +737,7 @@ $this->aOrders[$iOrder] = $aData;
         $oTpl->setVariables( 'aData', $aData );
         $content .= $oTpl->tbHtml( $sFile, 'ORDER_CARRIERS' );
       } // end foreach
+      $aData = array();
      // } epesi
 
       foreach( $aPayments as $aData['iPayment'] => $aData['sName'] ){
@@ -752,6 +752,7 @@ $this->aOrders[$iOrder] = $aData;
         }
         $oTpl->setVariables( 'aData', $aData );
         $sPaymentList .= $oTpl->tbHtml( $sFile, 'ORDER_PAYMENTS' );
+	$aData = array(); //epesi team quickcart bug fix
       } // end foreach
 
       if( isset( $content ) ){

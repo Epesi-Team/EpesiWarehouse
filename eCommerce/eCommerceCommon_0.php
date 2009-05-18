@@ -82,20 +82,20 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 		return array();
 	}
 
+	private static $page_opts = array(''=>'---','1'=>'Top menu above logo','2'=>'Top menu under logo','5'=>'Hidden');
+
   	public static function QFfield_page_type(&$form, $field, $label, $mode, $default) {
-		$opts = array(''=>'---','1'=>'Top menu above logo','2'=>'Top menu under logo','5'=>'Hidden');
 		if ($mode=='add' || $mode=='edit') {
-			$form->addElement('select', $field, $label, $opts, array('id'=>$field));
+			$form->addElement('select', $field, $label, self::$page_opts, array('id'=>$field));
 			if ($mode=='edit') $form->setDefaults(array($field=>$default));
 		} else {
 			$form->addElement('static', $field, $label);
-			$form->setDefaults(array($field=>$opts[$default]));
+			$form->setDefaults(array($field=>self::$page_opts[$default]));
 		}
 	}
 
   	public static function display_page_type($r, $nolink=false) {
-		$opts = array(''=>'---','1'=>'Top menu above logo','2'=>'Top menu under logo','5'=>'Hidden');
-		return $opts[$r['type']];
+		return self::$page_opts[$r['type']];
 	}
 
 	public static $payment_related_opts = array(''=>'---','1'=>'DotPay','2'=>'Przelewy24','3'=>'PayPal', '4'=>'Platnosci.pl', '5'=>'Żagiel');
@@ -453,6 +453,104 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 
   	public static function QFfield_poll_votes(&$form, $field, $label, $mode, $default) {
 		$form->addElement('static', $field, $label, $default);
+	}
+
+	public static function display_payment_system($r) {
+		if(is_array($r)) $r = $r['payment_system'];
+		if(isset(self::$payment_related_opts[$r]))
+		    return self::$payment_related_opts[$r];
+		return "---";
+	}
+	
+	private static $last_payment_system;
+
+  	public static function QFfield_payment_system(&$form, $field, $label, $mode, $default) {
+		$form->addElement('static', $field, $label, self::display_payment_system($default));
+		self::$last_payment_system = $default;
+	}
+	
+	private static function get_payment_channel($sys,$chn) {
+	    static $aPay;
+	    if(!isset($aPay)) {
+		$aPay = array();
+		$aPay[1] = array();
+		$aPay[1][0] = 'Credit card';
+		$aPay[1][1] = 'mTransfer (mBank)';
+		$aPay[1][2] = 'Płacę z Inteligo (PKO BP Inteligo)';
+		$aPay[1][3] = 'Multitransfer (MultiBank)';
+		$aPay[1][4] = 'DotPay Transfer (DotPay.pl)';
+		$aPay[1][6] = 'Przelew24 (Bank Zachodni WBK)';
+		$aPay[1][7] = 'ING OnLine (ING Bank Śląski)';
+		$aPay[1][8] = 'Sez@m (Bank Przemysłowo-Handlowy S.A.)';
+		$aPay[1][9] = 'Pekao24 (Bank Pekao S.A.)';
+		$aPay[1][10] = 'MilleNet (Millennium Bank)';
+		$aPay[1][12] = 'PayPal';
+		$aPay[1][13] = 'Deutsche Bank PBC S.A.';
+		$aPay[1][14] = 'Kredyt Bank S.A. - KB24 Bankowość Elektroniczna';
+		$aPay[1][15] = 'PKO BP (konto Inteligo)';
+		$aPay[1][16] = 'Lukas Bank';
+		$aPay[1][17] = 'Nordea Bank Polska';
+		$aPay[1][18] = 'Bank BPH (usługa Przelew z BPH)';
+		$aPay[1][19] = 'Citibank Handlowy';
+		$aPay[4] = array();
+		$aPay[4]['m'] = 'mTransfer - mBank';
+		$aPay[4]['n'] = 'MultiTransfer - MultiBank';
+		$aPay[4]['w'] = 'BZWBK - Przelew24';
+		$aPay[4]['o'] = 'Pekao24Przelew - BankPekao';
+		$aPay[4]['i'] = 'Płace z Inteligo';
+		$aPay[4]['d'] = 'Płac z Nordea';
+		$aPay[4]['p'] = 'Płac z PKO BP';
+		$aPay[4]['h'] = 'Płac z BPH';
+		$aPay[4]['g'] = 'Płac z ING';
+		$aPay[4]['c'] = 'Credit card';
+	    }
+	    if(!isset($aPay[$sys][$chn])) return '---';
+	    return $aPay[$sys][$chn];
+	}
+
+	public static function display_payment_channel($r) {
+		return self::get_payment_channel($r['payment_system'],$r['payment_channel']);
+	}
+
+  	public static function QFfield_payment_channel(&$form, $field, $label, $mode, $default) {
+		$form->addElement('static', $field, $label, self::get_payment_channel(self::$last_payment_system,$default));
+	}
+	
+	public static function display_payment_realized($r) {
+		return $r['payment_realized']?'Yes':'No';
+	}
+
+  	public static function QFfield_payment_realized(&$form, $field, $label, $mode, $default,$args) {
+		if(isset($_REQUEST['payment_realized'])) {
+		    $id = self::orders_get_record();
+		    if($_REQUEST['payment_realized']) $val=1;
+			else $val=0;
+		    Utils_RecordBrowserCommon::update_record('premium_ecommerce_orders',$id,array('payment_realized'=>$val));
+		    $default = $val;
+		}
+		$form->addElement('static', $field, $label, $default?'<a '.Module::create_confirm_href(Base_LangCommon::ts('Premium_Warehouse_eCommerce','Mark this record as not paid?'),array('payment_realized'=>0)).'><span class="checkbox_on" /></a>':'<a '.Module::create_href(array('payment_realized'=>1)).'><span '.Utils_TooltipCommon::open_tag_attrs('Click to mark as paid').' class="checkbox_off" /></a>');
+	}
+
+	private static $banner_opts = array(0=>'Top', 1=>'Menu left');
+	
+  	public static function QFfield_banner_type(&$form, $field, $label, $mode, $default) {
+		if ($mode=='add' || $mode=='edit') {
+			$form->addElement('select', $field, $label, self::$banner_opts, array('id'=>$field));
+			if ($mode=='edit') $form->setDefaults(array($field=>$default));
+		} else {
+			$form->addElement('static', $field, $label);
+			$form->setDefaults(array($field=>self::$banner_opts[$default]));
+		}
+	}
+
+  	public static function display_banner_type($r, $nolink=false) {
+		return self::$banner_opts[$r['type']];
+	}
+
+	public static function display_banner_file($r) {
+	}
+
+  	public static function QFfield_banner_file(&$form, $field, $label, $mode, $default,$args) {
 	}
 	
 	public static function display_product_name_short($r) {

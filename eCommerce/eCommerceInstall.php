@@ -228,9 +228,6 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 			array('name'=>'Meta Description', 	'type'=>'text', 'required'=>false, 'extra'=>false, 'param'=>256, 'visible'=>false),
 			array('name'=>'Keywords', 	'type'=>'text', 'required'=>false, 'extra'=>false, 'param'=>128, 'visible'=>false)
 		);
-
-		//sTemplate' => 4, 'sTheme' => 5, 'sUrl' => 6, 'sBanner' => 7
-
 		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_pages_data', $fields);
 
 		Utils_RecordBrowserCommon::set_favorites('premium_ecommerce_pages_data', false);
@@ -265,7 +262,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 			array('name'=>'Invoice', 		'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>true),
 			array('name'=>'Payment System',		'type'=>'integer',	'required'=>true, 'extra'=>false, 'visible'=>true,'display_callback'=>array($this->get_type().'Common', 'display_payment_system'),'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_payment_system')),
 			array('name'=>'Payment Channel',	'type'=>'integer',	'required'=>true, 'extra'=>false, 'visible'=>true,'display_callback'=>array($this->get_type().'Common', 'display_payment_channel'),'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_payment_channel')),
-			array('name'=>'Payment Realized',	'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>true)
+			array('name'=>'Payment Realized',	'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>true,'display_callback'=>array($this->get_type().'Common', 'display_payment_realized'),'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_payment_realized'))
 		);
 		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_orders', $fields);
 
@@ -365,10 +362,9 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 
 		//banners
 		$fields = array(
-		//TODO: upload file, color picker, Views limit tip - (0 - no limit), default values
-			//array('name'=>'File', 		'type'=>'text', 'param'=>128, 'required'=>true, 'extra'=>false, 'visible'=>false),
-			array('name'=>'Link', 		'type'=>'text', 'param'=>128, 'required'=>true, 'extra'=>false, 'visible'=>false),
-			array('name'=>'Type',		'type'=>'integer',	'required'=>true, 'extra'=>false, 'visible'=>true,'display_callback'=>array($this->get_type().'Common', 'display_page_type'),'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_page_type')),
+			array('name'=>'File', 		'type'=>'text', 'param'=>128, 'required'=>true, 'extra'=>false, 'visible'=>true, 'display_callback'=>array($this->get_type().'Common', 'display_banner_file'),'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_banner_file')),
+			array('name'=>'Link', 		'type'=>'text', 'param'=>255, 'required'=>true, 'extra'=>false, 'visible'=>false),
+			array('name'=>'Type',		'type'=>'integer',	'required'=>true, 'extra'=>false, 'visible'=>true,'display_callback'=>array($this->get_type().'Common', 'display_banner_type'),'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_banner_type')),
 			array('name'=>'Language', 	'type'=>'commondata', 'required'=>true, 'extra'=>false, 'param'=>array('Premium/Warehouse/eCommerce/Languages'), 'visible'=>true),
 			array('name'=>'Width',		'type'=>'integer',	'required'=>true, 'extra'=>false, 'visible'=>false),
 			array('name'=>'Height',		'type'=>'integer',	'required'=>true, 'extra'=>false, 'visible'=>false),

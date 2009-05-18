@@ -24,6 +24,8 @@ class Premium_Warehouse_eCommerce extends Module {
 //		$icon = Base_ThemeCommon::get_template_file($name,'icon.png');
 		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'availability')).'>'.$this->ht('Availability').'</a>',
 						'icon'=>null);
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'banners')).'>'.$this->ht('Banners').'</a>',
+						'icon'=>null);
 		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'boxes')).'>'.$this->ht('Boxes').'</a>',
 						'icon'=>null);
 		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'contactus_page')).'>'.$this->ht('Contact us').'</a>',
@@ -94,9 +96,20 @@ class Premium_Warehouse_eCommerce extends Module {
 	
 		$this->recordset = 'boxes';
 		$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_boxes');
-		$this->rb->set_defaults(array('publish'=>1));
+		$this->rb->set_defaults(array('publish'=>1,'language'=>Base_LangCommon::get_lang_code()));
 		$this->rb->set_additional_actions_method($this, 'actions_for_position');
 		$this->rb->force_order(array('position'=>'ASC'));
+		$this->display_module($this->rb);
+
+		return true;
+	}
+	
+	public function banners() {
+		if($this->is_back()) return false;
+		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
+	
+		$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_banners');
+		$this->rb->set_defaults(array('publish'=>1,'views_limit'=>0,'width'=>480,'height'=>80,'color'=>'#000000','language'=>Base_LangCommon::get_lang_code()));
 		$this->display_module($this->rb);
 
 		return true;
@@ -105,10 +118,12 @@ class Premium_Warehouse_eCommerce extends Module {
 	public function polls() {
 		if($this->is_back()) return false;
 		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
+		
+		print('<h2>'.$this->t('Last active poll is displayed.').'</h2>');
 	
 		$this->recordset = 'polls';
 		$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_polls');
-		$this->rb->set_defaults(array('publish'=>1));
+		$this->rb->set_defaults(array('publish'=>1,'language'=>Base_LangCommon::get_lang_code()));
 		$this->rb->set_additional_actions_method($this, 'actions_for_position');
 		$this->rb->force_order(array('position'=>'ASC'));
 		$this->display_module($this->rb);
@@ -209,7 +224,7 @@ class Premium_Warehouse_eCommerce extends Module {
 	public function parameter_labels_addon($arg) {
 		$rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_parameter_labels');
 		$order = array(array('parameter'=>$arg['id']), array('parameter'=>false,'language'=>true,'label'=>true), array('language'=>'ASC'));
-		$rb->set_defaults(array('parameter'=>$arg['id']));
+		$rb->set_defaults(array('parameter'=>$arg['id'],'language'=>Base_LangCommon::get_lang_code()));
 		$rb->set_header_properties(array(
 			'language'=>array('width'=>1, 'wrapmode'=>'nowrap'),
 			'label'=>array('width'=>50, 'wrapmode'=>'nowrap')
@@ -220,7 +235,7 @@ class Premium_Warehouse_eCommerce extends Module {
 	public function parameter_group_labels_addon($arg) {
 		$rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_parameter_group_labels');
 		$order = array(array('group'=>$arg['id']), array('group'=>false,'language'=>true,'label'=>true), array('language'=>'ASC'));
-		$rb->set_defaults(array('group'=>$arg['id']));
+		$rb->set_defaults(array('group'=>$arg['id'],'language'=>Base_LangCommon::get_lang_code()));
 		$rb->set_header_properties(array(
 			'language'=>array('width'=>1, 'wrapmode'=>'nowrap'),
 			'label'=>array('width'=>50, 'wrapmode'=>'nowrap')
@@ -231,7 +246,7 @@ class Premium_Warehouse_eCommerce extends Module {
 	public function availability_labels_addon($arg) {
 		$rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_availability_labels');
 		$order = array(array('availability'=>$arg['id']), array('availability'=>false,'language'=>true,'label'=>true), array('language'=>'ASC'));
-		$rb->set_defaults(array('availability'=>$arg['id']));
+		$rb->set_defaults(array('availability'=>$arg['id'],'language'=>Base_LangCommon::get_lang_code()));
 		$rb->set_header_properties(array(
 			'language'=>array('width'=>1, 'wrapmode'=>'nowrap'),
 			'label'=>array('width'=>50, 'wrapmode'=>'nowrap')
@@ -242,7 +257,7 @@ class Premium_Warehouse_eCommerce extends Module {
 	public function descriptions_addon($arg) {
 		$rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_descriptions');
 		$order = array(array('item_name'=>$arg['item_name']), array('item_name'=>false), array('language'=>'ASC'));
-		$rb->set_defaults(array('item_name'=>$arg['item_name']));
+		$rb->set_defaults(array('item_name'=>$arg['item_name'],'language'=>Base_LangCommon::get_lang_code()));
 		$rb->set_header_properties(array(
 			'language'=>array('width'=>1, 'wrapmode'=>'nowrap'),
 			'description'=>array('width'=>50, 'wrapmode'=>'nowrap')
@@ -253,7 +268,7 @@ class Premium_Warehouse_eCommerce extends Module {
 	public function cat_descriptions_addon($arg) {
 		$rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_cat_descriptions');
 		$order = array(array('category'=>$arg['id']), array('category'=>false), array('language'=>'ASC'));
-		$rb->set_defaults(array('category'=>$arg['id']));
+		$rb->set_defaults(array('category'=>$arg['id'],'language'=>Base_LangCommon::get_lang_code()));
 		$rb->set_header_properties(array(
 			'language'=>array('width'=>1, 'wrapmode'=>'nowrap'),
 			'description'=>array('width'=>50, 'wrapmode'=>'nowrap')
@@ -263,8 +278,8 @@ class Premium_Warehouse_eCommerce extends Module {
 
 	public function parameters_addon($arg) {
 		$rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_products_parameters');
-		$order = array(array('item_name'=>$arg['item_name']), array('item_name'=>false), array('parameter'=>'ASC'));
-		$rb->set_defaults(array('item_name'=>$arg['item_name']));
+		$order = array(array('item_name'=>$arg['item_name']), array('item_name'=>false), array('language'=>'ASC','parameter'=>'ASC'));
+		$rb->set_defaults(array('item_name'=>$arg['item_name'],'language'=>Base_LangCommon::get_lang_code()));
 		$rb->set_header_properties(array(
 			'parameter'=>array('wrapmode'=>'nowrap'),
 			'value'=>array('wrapmode'=>'nowrap')
@@ -286,7 +301,7 @@ class Premium_Warehouse_eCommerce extends Module {
 	public function pages_info_addon($arg) {
 		$rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_pages_data');
 		$order = array(array('page'=>$arg['id']), array('page'=>false), array('language'=>'ASC'));
-		$rb->set_defaults(array('page'=>$arg['id']));
+		$rb->set_defaults(array('page'=>$arg['id'],'language'=>Base_LangCommon::get_lang_code()));
 		$rb->set_header_properties(array(
 			'language'=>array('width'=>1, 'wrapmode'=>'nowrap'),
 			'name'=>array('wrapmode'=>'nowrap')
@@ -308,7 +323,7 @@ class Premium_Warehouse_eCommerce extends Module {
 	public function orders_addon($arg) {
 		$rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_orders');
 		//$order = array(array('transaction_id'=>$arg['id']), array('transaction_id'=>false));
-		$this->display_module($rb,array('view',Premium_Warehouse_eCommerceCommon::orders_get_record()),'view_entry');
+		$this->display_module($rb,array('view',Premium_Warehouse_eCommerceCommon::orders_get_record(),null,false),'view_entry');
 	}
 	
 	public function start_page() {
@@ -710,7 +725,7 @@ class Premium_Warehouse_eCommerce extends Module {
 	public function product_comments_addon($arg) {
 		$rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_product_comments');
 		$order = array(array('item_name'=>$arg['item_name']), array('item_name'=>false), array('time'=>'DESC'));
-		$rb->set_defaults(array('item_name'=>$arg['item_name']));
+		$rb->set_defaults(array('item_name'=>$arg['item_name'],'language'=>Base_LangCommon::get_lang_code()));
 		$rb->set_header_properties(array(
 			'language'=>array('width'=>1, 'wrapmode'=>'nowrap'),
 			'content'=>array('width'=>50, 'wrapmode'=>'nowrap')
