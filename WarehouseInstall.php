@@ -56,6 +56,9 @@ class Premium_WarehouseInstall extends ModuleInstall {
 		$this->add_aco('view public notes','Employee');
 		$this->add_aco('edit protected notes','Employee Administrator');
 		$this->add_aco('edit public notes','Employee');
+
+		Variable::set('premium_warehouse_weight_units', 'kg');
+		Variable::set('premium_warehouse_volume_units', 'm<sup>3</sup>');
 		
 		return true;
 	}

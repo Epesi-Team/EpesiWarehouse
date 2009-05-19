@@ -15,6 +15,10 @@
 defined("_VALID_ACCESS") || die('Direct access forbidden');
 
 class Premium_WarehouseCommon extends ModuleCommon {
+    public static function admin_caption() {
+		return 'Warehouse';
+    }
+
     public static function get_warehouse($id) {
 		return Utils_RecordBrowserCommon::get_record('premium_warehouse', $id);
     }

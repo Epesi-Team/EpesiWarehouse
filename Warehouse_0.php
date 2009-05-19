@@ -33,6 +33,52 @@ class Premium_Warehouse extends Module {
 		$this->display_module($a);
 	}
 
+	public function admin() {
+		if($this->is_back()) {
+			if($this->parent->get_type()=='Base_Admin')
+				$this->parent->reset();
+			else
+				location(array());
+			return;
+		}
+	
+		$form = & $this->init_module('Libs/QuickForm');
+
+		$form->addElement('header', null, $this->t('Warehouse'));
+
+		$form->addElement('text', 'weight_units', $this->t('Weight units'));
+		$form->addRule('weight_units', $this->t('Must be between 1 and 10 chars'), 'rangelength', array(1,10));
+		$form->addRule('weight_units', $this->t('Field required'), 'required');
+		$form->addElement('text', 'volume_units', $this->t('Volume units'));
+		$form->addRule('volume_units', $this->t('Must be between 1 and 10 chars'), 'rangelength', array(1,10));
+		$form->addRule('volume_units', $this->t('Field required'), 'required');
+
+		$form->addElement('static', 'notice', $this->t('Notice'), 'You can use upper indexing.<br />Example: "dm^3" will be displayed as "dm<sup>3</sup>"');
+		
+		$form->setDefaults(array(
+			'weight_units'=>preg_replace('/\<sup\>([0-9]+)\<\/sup\>/', '^$1', Variable::get('premium_warehouse_weight_units')),
+			'volume_units'=>preg_replace('/\<sup\>([0-9]+)\<\/sup\>/', '^$1', Variable::get('premium_warehouse_volume_units'))
+		));
+
+		if($form->validate()) {
+			$vals = $form->exportValues();
+			$vals['weight_units']=preg_replace('/\^([0-9]+)/', '<sup>$1</sup>', $vals['weight_units']);
+			$vals['volume_units']=preg_replace('/\^([0-9]+)/', '<sup>$1</sup>', $vals['volume_units']);
+			Variable::set('premium_warehouse_weight_units', $vals['weight_units']);
+			Variable::set('premium_warehouse_volume_units', $vals['volume_units']);
+			if($this->parent->get_type()=='Base_Admin')
+				$this->parent->reset();
+			else
+				location(array());
+			return;
+		} else $form->display();
+
+		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
+		Base_ActionBarCommon::add('save', 'Save', $form->get_submit_form_href());
+		
+    	return true;
+	}
+
 	public function caption(){
 		if (isset($this->rb)) return $this->rb->caption();
 	}

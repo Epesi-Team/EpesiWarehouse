@@ -43,6 +43,16 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 		return Utils_RecordBrowserCommon::create_linked_label_r('premium_warehouse_items', 'SKU', $r, $nolink);
 	}
 	
+	public static function display_volume($r, $nolink) {
+		if (!is_numeric($r['volume'])) return '--';
+		return $r['volume'].' '.Variable::get('premium_warehouse_volume_units');
+	}
+	
+	public static function display_weight($r, $nolink) {
+		if (!is_numeric($r['weight'])) return '--';
+		return $r['weight'].' '.Variable::get('premium_warehouse_weight_units');
+	}
+	
 	public static function display_gross_price($r, $nolink) {
 		$price = Utils_CurrencyFieldCommon::get_values($r['net_price']);
 		$ret = Utils_CurrencyFieldCommon::format(($price[0]*(100+Data_TaxRatesCommon::get_tax_rate($r['tax_rate'])))/100, $price[1]);

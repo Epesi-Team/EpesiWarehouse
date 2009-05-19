@@ -142,6 +142,33 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			$ret[] = Utils_CurrencyFieldCommon::format($v, $k);
 		return implode('; ',$ret);
 	}
+	
+	public static function calculate_weight_and_volume($r, $arg) {
+		static $res=array();
+		if (isset($_REQUEST['__location'])) $res = array();
+		if (isset($res[$r['id']][$arg])) return $res[$r['id']][$arg];
+		$recs = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$r['id']));
+		$res[$r['id']]['volume'] = 0;
+		$res[$r['id']]['weight'] = 0;
+		foreach($recs as $rr){
+			$i = Utils_RecordBrowserCommon::get_record('premium_warehouse_items', $rr['item_name']);
+			$res[$r['id']]['volume'] += $i['volume']*$rr['quantity'];
+			$res[$r['id']]['weight'] += $i['weight']*$rr['quantity'];
+		}
+		return $res[$r['id']][$arg];
+	}
+
+	public static function display_weight($r, $nolink) {
+		$val = self::calculate_weight_and_volume($r, 'weight');
+		if (!is_numeric($val)) return '--';
+		return $val.' '.Variable::get('premium_warehouse_weight_units');
+	}
+	
+	public static function display_volume($r, $nolink) {
+		$val = self::calculate_weight_and_volume($r, 'volume');
+		if (!is_numeric($val)) return '--';
+		return $val.' '.Variable::get('premium_warehouse_volume_units');
+	}	
 
 	public static function display_transaction_id($r, $nolink) {
 		$ret = Utils_RecordBrowserCommon::create_linked_label_r('premium_warehouse_items_orders', 'transaction_id', $r, $nolink);
