@@ -377,6 +377,8 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::set_favorites('premium_ecommerce_banners', false);
 		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_banners', 'eCommerce - Banners');
 		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_banners', 'Premium_Warehouse_eCommerceCommon', 'access_parameters');
+
+		Utils_RecordBrowserCommon::set_processing_method('premium_ecommerce_banners', array('Premium_Warehouse_eCommerceCommon','banners_processing'));
 		
 		//newsletter
 		$fields = array(
@@ -452,6 +454,8 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Variable::set('icecat_pass','');
 		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_products', 'Premium_Warehouse_eCommerce', 'icecat_addon', 'Premium_Warehouse_eCommerceCommon::icecat_addon_parameters');
 
+		$this->create_data_dir();
+		@mkdir($this->get_data_dir().'banners');
 		return true;
 	}
 	

@@ -112,7 +112,7 @@ class Premium_Warehouse_eCommerce extends Module {
 		$this->rb->set_defaults(array('publish'=>1,'views_limit'=>0,'width'=>480,'height'=>80,'color'=>'#000000','language'=>Base_LangCommon::get_lang_code()));
 		$this->display_module($this->rb);
 
-		return true;
+        return true;
 	}
 	
 	public function polls() {

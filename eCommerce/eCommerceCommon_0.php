@@ -548,11 +548,56 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 	}
 
 	public static function display_banner_file($r) {
+	    if(ereg('\.swf$',$r['file']))
+		    $ret = '<object type="application/x-shockwave-flash" data="'.$r['file'].'" width="'.$r['width'].'" height="'.$r['height'].'"><param name="bgcolor" value="'.$r['color'].'" /><param name="movie" value="'.$r['file'].'" /></object>';
+	    else
+		    $ret = '<img src="'.$r['file'].'" style="width:'.$r['width'].'px;height:'.$r['height'].'px;" alt="" />';
+        return Utils_TooltipCommon::create($ret,$r['link']);
 	}
 
   	public static function QFfield_banner_file(&$form, $field, $label, $mode, $default,$args) {
+        if($mode=='add' || $mode=='edit') {
+            print('<iframe name="banner_upload_iframe" src="" style="display:none"></iframe>');
+            $fu = new HTML_QuickForm('banner_upload', 'post', 'modules/Premium/Warehouse/eCommerce/bannerUpload.php', 'banner_upload_iframe');
+            $fu->addElement('file', 'file', '',array('id'=>'banner_upload_field','style'=>'position: absolute; z-index: 3','onChange'=>'form.submit()'));
+            $fu->display();
+
+            $st = $form->createElement('static','info','','<div id="banner_upload_info">&nbsp;</div>');
+            $bt = $form->createElement('static','uploader','','<div id="banner_upload_slot" style="height: 24px"></div>');
+            $h = $form->createElement('text',null,'',array('id'=>'banner_upload_file','style'=>'display: none'));
+            
+            $form->addGroup(array($bt,$st,$h),$field,$label);
+            if($mode=='edit' && $form->exportValue($field)=='')
+                $h->setValue($default);
+            if($mode=='add')
+                $form->addRule($field,'Field required','required');
+            eval_js('$("banner_upload_field").clonePosition("banner_upload_slot")');
+        } else {
+            $form->addElement('static',$field,$label,'<img src="'.$default.'" style="max-width:300px;max-height:120px">');
+        }
 	}
-	
+
+    public static function banners_processing($v,$mode) {
+        if($mode=='view' || $mode=='editing' || $mode=='adding') return $v;
+        $f = DATA_DIR.'/Premium_Warehouse_eCommerce/banners/'.basename($v['file']);
+        if($f!=$v['file']) {
+            rename($v['file'],$f);
+            $v['file'] = $f;
+        }
+        //cleanup old files
+        $ls = scandir(DATA_DIR.'/Premium_Warehouse_eCommerce/banners/tmp');
+        $rt=microtime(true);
+        foreach($ls as $file) {
+            $reqs = array();
+            if(!eregi('^([0-9]+)\.([0-9]+).([a-z0-9]+)$',$file, $reqs)) continue;
+            $rtc = $reqs[1].'.'.$reqs[2];
+            if(floatval($rt)-floatval($rtc)>86400) //files older then 24h
+                @unlink(DATA_DIR.'/Premium_Warehouse_eCommerce/banners/tmp/'.$file);
+        }
+
+        return $v;
+    }
+
 	public static function display_product_name_short($r) {
 		$rec = Utils_RecordBrowserCommon::get_record('premium_warehouse_items',$r['item_name']);
 		return $rec['item_name'];
