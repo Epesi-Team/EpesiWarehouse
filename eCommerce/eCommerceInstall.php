@@ -34,8 +34,8 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::set_favorites('premium_ecommerce_products', true);
 		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_products', 'eCommerce - Products');
 		Utils_RecordBrowserCommon::set_icon('premium_ecommerce_products', Base_ThemeCommon::get_template_filename('Premium/Warehouse/eCommerce', 'icon.png'));
-		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_products', 'Premium_Warehouse_eCommerceCommon', 'access_products');
-		Utils_RecordBrowserCommon::set_processing_method('premium_ecommerce_products', array('Premium_Warehouse_eCommerceCommon', 'submit_position'));
+		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_products', array('Premium_Warehouse_eCommerceCommon', 'access_products'));
+		Utils_RecordBrowserCommon::set_processing_callback('premium_ecommerce_products', array('Premium_Warehouse_eCommerceCommon', 'submit_position'));
 
 		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_products', 'Premium/Warehouse/eCommerce', 'attachment_product_addon', 'Notes');
 		
@@ -53,7 +53,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 
 		Utils_RecordBrowserCommon::set_favorites('premium_ecommerce_cat_descriptions', false);
 		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_cat_descriptions', 'eCommerce - Cat. Descriptions');
-		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_cat_descriptions', 'Premium_Warehouse_eCommerceCommon', 'access_cat_descriptions');
+		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_cat_descriptions', array('Premium_Warehouse_eCommerceCommon', 'access_cat_descriptions'));
 
 		$fields = array(
 			array('name'=>'Item Name', 			'type'=>'select', 'required'=>true, 'param'=>'premium_warehouse_items::Item Name;Premium_Warehouse_Items_OrdersCommon::products_crits', 'extra'=>false, 'visible'=>true, 'display_callback'=>array($this->get_type().'Common', 'display_item_name')),
@@ -69,7 +69,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 
 		Utils_RecordBrowserCommon::set_favorites('premium_ecommerce_descriptions', false);
 		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_descriptions', 'eCommerce - Descriptions');
-		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_descriptions', 'Premium_Warehouse_eCommerceCommon', 'access_descriptions');
+		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_descriptions', array('Premium_Warehouse_eCommerceCommon', 'access_descriptions'));
 
 		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_descriptions', 'Premium/Warehouse/eCommerce', 'attachment_product_desc_addon', 'Notes');
 
@@ -83,7 +83,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 
 		Utils_RecordBrowserCommon::set_favorites('premium_ecommerce_payments', false);
 		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_payments', 'eCommerce - Payments');
-		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_payments', 'Premium_Warehouse_eCommerceCommon', 'access_parameters');
+		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_payments', array('Premium_Warehouse_eCommerceCommon', 'access_parameters'));
 
 		$fields = array(
 			array('name'=>'Payment', 	'type'=>'commondata', 'required'=>true, 'extra'=>false, 'visible'=>true, 'param'=>array('order_by_key'=>true,'Premium_Items_Orders_Payment_Types')),
@@ -95,7 +95,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 
 		Utils_RecordBrowserCommon::set_favorites('premium_ecommerce_payments_carriers', false);
 		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_payments_carriers', 'eCommerce - Payments and Carriers');
-		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_payments_carriers', 'Premium_Warehouse_eCommerceCommon', 'access_parameters');
+		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_payments_carriers', array('Premium_Warehouse_eCommerceCommon', 'access_parameters'));
 
 		//product prices
 		$fields = array(
@@ -108,7 +108,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 
 		Utils_RecordBrowserCommon::set_favorites('premium_ecommerce_prices', false);
 		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_prices', 'eCommerce - prices');
-		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_prices', 'Premium_Warehouse_eCommerceCommon', 'access_products');
+		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_prices', array('Premium_Warehouse_eCommerceCommon', 'access_products'));
 
 		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_products', 'Premium/Warehouse/eCommerce', 'prices_addon', 'Prices');
 
@@ -122,8 +122,8 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 
 		Utils_RecordBrowserCommon::set_favorites('premium_ecommerce_parameters', false);
 		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_parameters', 'eCommerce - Parameters');
-		Utils_RecordBrowserCommon::set_processing_method('premium_ecommerce_parameters', array('Premium_Warehouse_eCommerceCommon', 'submit_position'));
-		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_parameters', 'Premium_Warehouse_eCommerceCommon', 'access_parameters');
+		Utils_RecordBrowserCommon::set_processing_callback('premium_ecommerce_parameters', array('Premium_Warehouse_eCommerceCommon', 'submit_position'));
+		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_parameters', array('Premium_Warehouse_eCommerceCommon', 'access_parameters'));
 
 		$fields = array(
 			array('name'=>'Parameter', 	'type'=>'select', 'param'=>'premium_ecommerce_parameters::Parameter Code', 'required'=>true, 'extra'=>false),
@@ -134,8 +134,8 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 
 		Utils_RecordBrowserCommon::set_favorites('premium_ecommerce_parameter_labels', false);
 		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_parameter_labels', 'eCommerce - Parameters');
-		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_parameter_labels', 'Premium_Warehouse_eCommerceCommon', 'access_parameter_labels');
-		//Utils_RecordBrowserCommon::set_processing_method('premium_ecommerce_parameter_labels', array('Premium_Warehouse_eCommerceCommon', 'submit_parameter_labels'));
+		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_parameter_labels', array('Premium_Warehouse_eCommerceCommon', 'access_parameter_labels'));
+		//Utils_RecordBrowserCommon::set_processing_callback('premium_ecommerce_parameter_labels', array('Premium_Warehouse_eCommerceCommon', 'submit_parameter_labels'));
 
 		//parameter groups
 		$fields = array(
@@ -146,8 +146,8 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 
 		Utils_RecordBrowserCommon::set_favorites('premium_ecommerce_parameter_groups', false);
 		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_parameter_groups', 'eCommerce - Parameter Groups');
-		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_parameter_groups', 'Premium_Warehouse_eCommerceCommon', 'access_parameters');
-		Utils_RecordBrowserCommon::set_processing_method('premium_ecommerce_parameter_groups', array('Premium_Warehouse_eCommerceCommon', 'submit_position'));
+		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_parameter_groups', array('Premium_Warehouse_eCommerceCommon', 'access_parameters'));
+		Utils_RecordBrowserCommon::set_processing_callback('premium_ecommerce_parameter_groups', array('Premium_Warehouse_eCommerceCommon', 'submit_position'));
 
 		$fields = array(
 			array('name'=>'Group', 		'type'=>'select', 'param'=>'premium_ecommerce_parameter_groups::Group Code', 'required'=>true, 'extra'=>false),
@@ -158,8 +158,8 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 
 		Utils_RecordBrowserCommon::set_favorites('premium_ecommerce_parameter_group_labels', false);
 		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_parameter_group_labels', 'eCommerce - Parameters');
-		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_parameter_group_labels', 'Premium_Warehouse_eCommerceCommon', 'access_parameter_labels');
-		//Utils_RecordBrowserCommon::set_processing_method('premium_ecommerce_parameter_group_labels', array('Premium_Warehouse_eCommerceCommon', 'submit_parameter_labels'));
+		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_parameter_group_labels', array('Premium_Warehouse_eCommerceCommon', 'access_parameter_labels'));
+		//Utils_RecordBrowserCommon::set_processing_callback('premium_ecommerce_parameter_group_labels', array('Premium_Warehouse_eCommerceCommon', 'submit_parameter_labels'));
 		
 		//product-group-parameter-value
 		$fields = array(
@@ -173,7 +173,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 
 		Utils_RecordBrowserCommon::set_favorites('premium_ecommerce_products_parameters', false);
 		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_products_parameters', 'eCommerce - Products Paramteres');
-		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_products_parameters', 'Premium_Warehouse_eCommerceCommon', 'access_products_parameters');
+		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_products_parameters', array('Premium_Warehouse_eCommerceCommon', 'access_products_parameters'));
 
 		//product availability
 		$fields = array(
@@ -184,8 +184,8 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 
 		Utils_RecordBrowserCommon::set_favorites('premium_ecommerce_availability', false);
 		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_availability', 'eCommerce - Product Available');
-		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_availability', 'Premium_Warehouse_eCommerceCommon', 'access_parameters');
-		Utils_RecordBrowserCommon::set_processing_method('premium_ecommerce_availability', array('Premium_Warehouse_eCommerceCommon', 'submit_position'));
+		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_availability', array('Premium_Warehouse_eCommerceCommon', 'access_parameters'));
+		Utils_RecordBrowserCommon::set_processing_callback('premium_ecommerce_availability', array('Premium_Warehouse_eCommerceCommon', 'submit_position'));
 
 		$fields = array(
 			array('name'=>'Availability', 	'type'=>'select', 'param'=>'premium_ecommerce_availability::Availability Code', 'required'=>true, 'extra'=>false),
@@ -196,7 +196,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 
 		Utils_RecordBrowserCommon::set_favorites('premium_ecommerce_availability_labels', false);
 		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_availability_labels', 'eCommerce - Product Available');
-		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_availability_labels', 'Premium_Warehouse_eCommerceCommon', 'access_parameters');
+		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_availability_labels', array('Premium_Warehouse_eCommerceCommon', 'access_parameters'));
 
 		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_availability', 'Premium/Warehouse/eCommerce', 'availability_labels_addon', 'Labels');
 
@@ -212,9 +212,9 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 
 		Utils_RecordBrowserCommon::set_favorites('premium_ecommerce_pages', false);
 		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_pages', 'eCommerce - Pages');
-		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_pages', 'Premium_Warehouse_eCommerceCommon', 'access_parameters');
+		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_pages', array('Premium_Warehouse_eCommerceCommon', 'access_parameters'));
 		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_pages', 'Premium/Warehouse/eCommerce', 'subpages_addon', 'Subpages');
-		Utils_RecordBrowserCommon::set_processing_method('premium_ecommerce_pages', array('Premium_Warehouse_eCommerceCommon', 'submit_position'));
+		Utils_RecordBrowserCommon::set_processing_callback('premium_ecommerce_pages', array('Premium_Warehouse_eCommerceCommon', 'submit_position'));
 
 		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_pages', 'Premium/Warehouse/eCommerce', 'attachment_page_addon', 'Notes');
 
@@ -232,7 +232,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 
 		Utils_RecordBrowserCommon::set_favorites('premium_ecommerce_pages_data', false);
 		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_pages_data', 'eCommerce - Pages');
-		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_pages_data', 'Premium_Warehouse_eCommerceCommon', 'access_parameters');
+		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_pages_data', array('Premium_Warehouse_eCommerceCommon', 'access_parameters'));
 		
 		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_pages', 'Premium/Warehouse/eCommerce', 'pages_info_addon', 'Info');
 
@@ -328,8 +328,8 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 
 		Utils_RecordBrowserCommon::set_favorites('premium_ecommerce_polls', false);
 		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_polls', 'eCommerce - Polls');
-		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_polls', 'Premium_Warehouse_eCommerceCommon', 'access_parameters');
-		Utils_RecordBrowserCommon::set_processing_method('premium_ecommerce_polls', array('Premium_Warehouse_eCommerceCommon', 'submit_position'));
+		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_polls', array('Premium_Warehouse_eCommerceCommon', 'access_parameters'));
+		Utils_RecordBrowserCommon::set_processing_callback('premium_ecommerce_polls', array('Premium_Warehouse_eCommerceCommon', 'submit_position'));
 		
 		$fields = array(
 			array('name'=>'Poll', 	'type'=>'select', 'param'=>'premium_ecommerce_polls::Question', 'required'=>true, 'extra'=>false),
@@ -341,7 +341,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 
 		Utils_RecordBrowserCommon::set_favorites('premium_ecommerce_poll_answers', false);
 		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_poll_answers', 'eCommerce - Poll Answers');
-		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_poll_answers', 'Premium_Warehouse_eCommerceCommon', 'access_parameters');
+		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_poll_answers', array('Premium_Warehouse_eCommerceCommon', 'access_parameters'));
 		
 		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_polls', 'Premium/Warehouse/eCommerce', 'poll_answers_addon', 'Answers');
 		
@@ -357,8 +357,8 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 
 		Utils_RecordBrowserCommon::set_favorites('premium_ecommerce_boxes', false);
 		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_boxes', 'eCommerce - Boxes');
-		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_boxes', 'Premium_Warehouse_eCommerceCommon', 'access_parameters');
-		Utils_RecordBrowserCommon::set_processing_method('premium_ecommerce_boxes', array('Premium_Warehouse_eCommerceCommon', 'submit_position'));
+		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_boxes', array('Premium_Warehouse_eCommerceCommon', 'access_parameters'));
+		Utils_RecordBrowserCommon::set_processing_callback('premium_ecommerce_boxes', array('Premium_Warehouse_eCommerceCommon', 'submit_position'));
 
 		//banners
 		$fields = array(
@@ -376,9 +376,9 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 
 		Utils_RecordBrowserCommon::set_favorites('premium_ecommerce_banners', false);
 		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_banners', 'eCommerce - Banners');
-		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_banners', 'Premium_Warehouse_eCommerceCommon', 'access_parameters');
+		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_banners', array('Premium_Warehouse_eCommerceCommon', 'access_parameters'));
 
-		Utils_RecordBrowserCommon::set_processing_method('premium_ecommerce_banners', array('Premium_Warehouse_eCommerceCommon','banners_processing'));
+		Utils_RecordBrowserCommon::set_processing_callback('premium_ecommerce_banners', array('Premium_Warehouse_eCommerceCommon','banners_processing'));
 		
 		//newsletter
 		$fields = array(
@@ -403,7 +403,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 
 		Utils_RecordBrowserCommon::set_favorites('premium_ecommerce_product_comments', false);
 		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_product_comments', 'eCommerce - Product Comments');
-		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_product_comments', 'Premium_Warehouse_eCommerceCommon', 'access_parameters');
+		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_product_comments', array('Premium_Warehouse_eCommerceCommon', 'access_parameters'));
 		
 		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_products', 'Premium/Warehouse/eCommerce', 'product_comments_addon', 'Comments');
 		

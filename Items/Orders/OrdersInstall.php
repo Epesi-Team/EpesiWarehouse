@@ -74,9 +74,9 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::set_recent('premium_warehouse_items_orders', 15);
 		Utils_RecordBrowserCommon::set_caption('premium_warehouse_items_orders', 'Items Transactions');
 //		Utils_RecordBrowserCommon::set_icon('premium_warehouse_items_orders', Base_ThemeCommon::get_template_filename('Premium/Warehouse/Items/Orders', 'icon.png'));
-		Utils_RecordBrowserCommon::set_access_callback('premium_warehouse_items_orders', 'Premium_Warehouse_Items_OrdersCommon', 'access_orders');
+		Utils_RecordBrowserCommon::set_access_callback('premium_warehouse_items_orders', array('Premium_Warehouse_Items_OrdersCommon', 'access_orders'));
 		Utils_RecordBrowserCommon::enable_watchdog('premium_warehouse_items_orders', array('Premium_Warehouse_Items_OrdersCommon','watchdog_label'));
-		Utils_RecordBrowserCommon::set_processing_method('premium_warehouse_items_orders', array('Premium_Warehouse_Items_OrdersCommon', 'submit_order'));
+		Utils_RecordBrowserCommon::set_processing_callback('premium_warehouse_items_orders', array('Premium_Warehouse_Items_OrdersCommon', 'submit_order'));
 			
 		$fields = array(
 			array('name'=>'Transaction ID', 	'type'=>'select', 'required'=>true, 'param'=>'premium_warehouse_items_orders::Transaction ID;Premium_Warehouse_Items_OrdersCommon::transactions_crits', 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_transaction_id_in_details')),
@@ -113,9 +113,9 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::set_recent('premium_warehouse_items_orders_details', 15);
 		Utils_RecordBrowserCommon::set_caption('premium_warehouse_items_orders_details', 'Items Order Details');
 		Utils_RecordBrowserCommon::set_icon('premium_warehouse_items_orders_details', Base_ThemeCommon::get_template_filename('Premium/Warehouse/Items/Orders', 'details_icon.png'));
-		Utils_RecordBrowserCommon::set_access_callback('premium_warehouse_items_orders_details', 'Premium_Warehouse_Items_OrdersCommon', 'access_order_details');
+		Utils_RecordBrowserCommon::set_access_callback('premium_warehouse_items_orders_details', array('Premium_Warehouse_Items_OrdersCommon', 'access_order_details'));
 //		Utils_RecordBrowserCommon::enable_watchdog('premium_warehouse_items_orders_details', array('Premium_Warehouse_Items_OrdersCommon','watchdog_label'));
-		Utils_RecordBrowserCommon::set_processing_method('premium_warehouse_items_orders_details', array('Premium_Warehouse_Items_OrdersCommon', 'submit_order_details'));
+		Utils_RecordBrowserCommon::set_processing_callback('premium_warehouse_items_orders_details', array('Premium_Warehouse_Items_OrdersCommon', 'submit_order_details'));
 
 // ************ addons ************** //
 		Utils_RecordBrowserCommon::new_addon('premium_warehouse_items_orders', 'Premium/Warehouse/Items/Orders', 'order_details_addon', 'Items');
@@ -126,7 +126,7 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::set_addon_pos('premium_warehouse_items', 'Premium/Warehouse/Items/Location', 'location_addon', 1);
 
 // ************ other ************** //
-		Utils_RecordBrowserCommon::set_access_callback('premium_warehouse_items', 'Premium_Warehouse_Items_OrdersCommon', 'access_items');
+		Utils_RecordBrowserCommon::set_access_callback('premium_warehouse_items', array('Premium_Warehouse_Items_OrdersCommon', 'access_items'));
 
 		Utils_CommonDataCommon::new_array('Premium_Items_Orders_Trans_Types',array(0=>'Purchase',1=>'Sale',2=>'Inventory Adjustment',3=>'Rental',4=>'Transfer'));
 		Utils_CommonDataCommon::new_array('Premium_Items_Orders_Payment_Types',array(0=>'Cash',1=>'Check'));
@@ -167,7 +167,7 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 	public function uninstall() {
 		DB::DropTable('premium_warehouse_location_orders_serial');
 		
-		Utils_RecordBrowserCommon::set_access_callback('premium_warehouse_items', 'Premium_Warehouse_ItemsCommon', 'access_items');
+		Utils_RecordBrowserCommon::set_access_callback('premium_warehouse_items', array('Premium_Warehouse_ItemsCommon', 'access_items'));
 
 		Utils_RecordBrowserCommon::delete_record_field('premium_warehouse_items','Reserved Qty');
 		Utils_RecordBrowserCommon::delete_record_field('premium_warehouse_items','Available Qty');

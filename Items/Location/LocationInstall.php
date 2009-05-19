@@ -35,8 +35,8 @@ class Premium_Warehouse_Items_LocationInstall extends ModuleInstall {
 //		Utils_RecordBrowserCommon::set_recent('premium_warehouse_location', 15);
 		Utils_RecordBrowserCommon::set_caption('premium_warehouse_location', 'Item Location');
 //		Utils_RecordBrowserCommon::set_icon('premium_warehouse_items_orders', Base_ThemeCommon::get_template_filename('Premium/Warehouse/Items/Orders', 'icon.png'));
-//		Utils_RecordBrowserCommon::set_access_callback('premium_warehouse_items_orders', 'Premium_Warehouse_Items_OrdersCommon', 'access_orders');
-//		Utils_RecordBrowserCommon::set_processing_method('premium_warehouse_location', array('Premium_Warehouse_Items_OrdersCommon', 'submit_order'));
+//		Utils_RecordBrowserCommon::set_access_callback('premium_warehouse_items_orders', array('Premium_Warehouse_Items_OrdersCommon', 'access_orders'));
+//		Utils_RecordBrowserCommon::set_processing_callback('premium_warehouse_location', array('Premium_Warehouse_Items_OrdersCommon', 'submit_order'));
 			
 // ************ addons ************** //
 //		Utils_RecordBrowserCommon::new_addon('premium_warehouse_location', 'Premium/Warehouse/Location', 'attachment_addon', 'Notes');
@@ -46,7 +46,7 @@ class Premium_Warehouse_Items_LocationInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::set_addon_pos('premium_warehouse', 'Premium/Warehouse/Items/Location', 'warehouse_item_list_addon', 1);
 
 // ************ other ************** //
-		Utils_RecordBrowserCommon::set_access_callback('premium_warehouse_location', 'Premium_Warehouse_Items_LocationCommon', 'access_location');
+		Utils_RecordBrowserCommon::set_access_callback('premium_warehouse_location', array('Premium_Warehouse_Items_LocationCommon', 'access_location'));
 		Utils_RecordBrowserCommon::set_display_method('premium_warehouse_items', 'Quantity on Hand', 'Premium_Warehouse_Items_LocationCommon', 'display_item_quantity');
 		
 		DB::CreateTable('premium_warehouse_location_serial',
