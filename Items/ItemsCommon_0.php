@@ -48,9 +48,9 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 		return $r['volume'].' '.Variable::get('premium_warehouse_volume_units');
 	}
 	
-	public static function display_weight($r, $nolink) {
-		if (!is_numeric($r['weight'])) return '--';
-		return $r['weight'].' '.Variable::get('premium_warehouse_weight_units');
+	public static function display_weight($r, $nolink,$x) {
+		if (!is_numeric($r[$x['id']])) return '--';
+		return $r[$x['id']].' '.Variable::get('premium_warehouse_weight_units');
 	}
 	
 	public static function display_gross_price($r, $nolink) {

@@ -54,6 +54,7 @@ class Products
 								d.f_page_title as sNameTitle, 
 								d.f_meta_description as sMetaDescription, 
 								d.f_keywords as sMetaKeywords,
+								it.f_weight as sWeight,
 								it.f_vendor,
 								loc.f_quantity
 					FROM premium_ecommerce_products_data_1 pr

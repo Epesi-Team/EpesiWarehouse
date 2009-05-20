@@ -330,7 +330,11 @@ class Orders
     if( isset( $aForm['sPaymentCarrier'] ) ){
       $aExp = explode( ';', $aForm['sPaymentCarrier'] );
       if( isset( $aExp[0] ) && isset( $aExp[1] ) )
-        $sPrice = $this->countPaymentPrice( $this->throwPaymentCarrierPrice( $aExp[0], $aExp[1] ) );
+//        $sPrice = $this->countPaymentPrice( $this->throwPaymentCarrierPrice( $aExp[0], $aExp[1] ) );
+//{ epesi
+        $sPrice = $this->throwPaymentCarrierPrice( $aExp[0], $aExp[1]);
+	if($sPrice===false) unset($sPrice);
+//} epesi
     }
     else{
       return false;
@@ -530,6 +534,7 @@ $oFF->save( DB_ORDERS, $aForm, null, 'rsort' );
 				    w.f_shipment_type as iCarrier,
 				    w.f_shipment_type,
 				    w.f_payment_type as iPayment,
+				    w.f_shipment_cost as sPaymentPrice,
 				    w.f_first_name as sFirstName,
 				    w.f_last_name as sLastName,
 				    w.f_company_name as sCompanyName,
@@ -550,7 +555,7 @@ $oFF->save( DB_ORDERS, $aForm, null, 'rsort' );
 	        $aShipments = $this->getShipments();
 		$aData['sCarrierName'] = $aShipments[$aData['f_shipment_type']];
 		$aData['sPaymentName'] = $aPayments[$aData['iPayment']];
-		$aData['sPaymentPrice'] = $this->throwPaymentCarrierPrice( $aData['f_shipment_type'], $aData['iPayment'] );
+		list($aData['sPaymentPrice']) = explode('_',$aData['sPaymentPrice']);
         	$aData['iTime'] = strtotime($aData['iTime']);
 	}
 	//} epesi
@@ -635,8 +640,19 @@ $this->aOrders[$iOrder] = $aData;
   */
   function throwPaymentCarrierPrice( $iCarrier, $iPayment ){
     // { epesi
+    if( isset( $GLOBALS['config']['delivery_free'] ) && $_SESSION['fOrderSummary'.LANGUAGE] >= $GLOBALS['config']['delivery_free'] ){
+      return 0;
+    }
     $currency = $this->getCurrencyId();
-    return DB::GetOne('SELECT f_price FROM premium_ecommerce_payments_carriers_data_1 WHERE f_payment=%d AND f_shipment=%d AND f_currency=%d',array($iPayment,$iCarrier,$currency));
+    $weight = $this->getWeight();
+    return DB::GetOne('SELECT f_price FROM premium_ecommerce_payments_carriers_data_1 WHERE active=1 AND f_payment=%d AND f_shipment=%d AND f_currency=%d
+    			AND (
+			f_max_weight=(SELECT MIN(f_max_weight) FROM premium_ecommerce_payments_carriers_data_1 WHERE active=1 AND f_currency=%s AND f_max_weight>=%f)
+			OR
+			(f_max_weight is null 
+			    AND
+			(SELECT 1 FROM premium_ecommerce_payments_carriers_data_1 WHERE active=1 AND f_currency=%s AND f_max_weight>=%f LIMIT 1) is null
+			))',array($iPayment,$iCarrier,$currency,$currency,$weight,$currency,$weight));
     // } epesi
 /*    $aFile = file( DB_CARRIERS_PAYMENTS );
     $iCount= count( $aFile );
@@ -709,15 +725,31 @@ $this->aOrders[$iOrder] = $aData;
 
       // { epesi
     $aOuterPayments = DB::GetAssoc('SELECT f_payment,f_relate_with FROM premium_ecommerce_payments_data_1 WHERE active=1');
+
+    $freeDelivery = false;
+    if( isset( $GLOBALS['config']['delivery_free'] ) && $_SESSION['fOrderSummary'.LANGUAGE] >= $GLOBALS['config']['delivery_free'] ){
+      $freeDelivery = true;
+    }
      
     $aPayments = $this->getPayments();
     $aShipments = $this->getShipments();
+    $weight = $this->getWeight();
     if( $aPayments && $aShipments ){
       $currency = $this->getCurrencyId();
       //get possible configurations
-      $ret = DB::Execute('SELECT f_payment,f_shipment,f_price FROM premium_ecommerce_payments_carriers_data_1 WHERE active=1 AND f_currency=%s',array($currency));
+      $ret = DB::Execute('SELECT f_payment,f_shipment,f_price FROM premium_ecommerce_payments_carriers_data_1 
+    			WHERE active=1 AND f_currency=%s AND (
+			f_max_weight=(SELECT MIN(f_max_weight) FROM premium_ecommerce_payments_carriers_data_1 WHERE active=1 AND f_currency=%s AND f_max_weight>=%f)
+			OR
+			(f_max_weight is null 
+			    AND
+			(SELECT 1 FROM premium_ecommerce_payments_carriers_data_1 WHERE active=1 AND f_currency=%s AND f_max_weight>=%f LIMIT 1) is null
+			))',array($currency,$currency,$weight,$currency,$weight));
       while($aExp = $ret->FetchRow()) {
-        $aPaymentsCarriers[$aExp['f_shipment']][$aExp['f_payment']] = $aExp['f_price'];
+        if($freeDelivery)
+    	    $aPaymentsCarriers[$aExp['f_shipment']][$aExp['f_payment']] = 0;
+	else
+    	    $aPaymentsCarriers[$aExp['f_shipment']][$aExp['f_payment']] = $aExp['f_price'];
       }
       foreach( $aShipments as $iCarrier => $carrier_name ) {
         if(!isset($aPaymentsCarriers[$iCarrier])) continue;
@@ -800,6 +832,18 @@ $this->aOrders[$iOrder] = $aData;
     }
     return $shipments;
   }
+
+  function getWeight() {
+    static $weight;
+    if( !isset( $weight ) ){
+	$weight = 0;
+	if(isset($this->aProducts))
+      foreach( $this->aProducts as $a ){
+	$weight += $a['iQuantity']*$GLOBALS['oProduct']->aProducts[$a['iProduct']]['sWeight'];
+      }
+    }
+    return $weight;
+  }
   
   // } epesi
 
@@ -859,13 +903,14 @@ $this->aOrders[$iOrder] = $aData;
     sendEmail( $aSend, null, $GLOBALS['config']['orders_email'] );
   } // end function sendEmailWithOrderDetails
 
+
   /**
   * Count carrier price using products weight etc.
   * @return float
   * @param mixed  $mPrice
   * @param string $sWeightRange
   */
-  function countCarrierPrice( $mPrice, $sWeightRange ){
+/*  function countCarrierPrice( $mPrice, $sWeightRange ){
 
     if( !isset( $this->sWeightSummary ) ){
       $this->sWeightSummary = 0;
@@ -924,13 +969,13 @@ $this->aOrders[$iOrder] = $aData;
       return $mPrice;
     }
   } // end function countCarrierPrice
-
+*/
   /**
   * Count payment price
   * @return mixed
   * @param mixed  $mPaymentPrice
   */
-  function countPaymentPrice( $mPaymentPrice ){
+/*  function countPaymentPrice( $mPaymentPrice ){
     if( isset( $this->bFreeDelivery ) )
       return normalizePrice( 0 );
     else{
@@ -943,6 +988,6 @@ $this->aOrders[$iOrder] = $aData;
       }
     }
   } // end function countPaymentPrice
-
+*/
 };
 ?>

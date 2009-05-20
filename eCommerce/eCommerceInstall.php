@@ -89,7 +89,8 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 			array('name'=>'Payment', 	'type'=>'commondata', 'required'=>true, 'extra'=>false, 'visible'=>true, 'param'=>array('order_by_key'=>true,'Premium_Items_Orders_Payment_Types')),
 			array('name'=>'Shipment', 	'type'=>'commondata', 'required'=>true, 'extra'=>false, 'visible'=>true, 'param'=>array('order_by_key'=>true,'Premium_Items_Orders_Shipment_Types')),
 			array('name'=>'Currency', 	'type'=>'integer', 'required'=>true, 'extra'=>false,'visible'=>true, 'display_callback'=>array($this->get_type().'Common', 'display_currency'),'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_currency')),
-			array('name'=>'Price', 		'type'=>'integer', 'required'=>true, 'extra'=>false,'visible'=>true)
+			array('name'=>'Price', 		'type'=>'integer', 'required'=>true, 'extra'=>false,'visible'=>true),
+			array('name'=>'Max Weight',	'type'=>'integer', 'required'=>false, 'extra'=>false,'visible'=>true, 'display_callback'=>array('Premium_Warehouse_ItemsCommon', 'display_weight'))
 		);
 		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_payments_carriers', $fields);
 
