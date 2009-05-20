@@ -590,9 +590,13 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
                 $h->setValue($default);
             if($mode=='add')
                 $form->addRule($field,'Field required','required');
-            eval_js('$("banner_upload_field").clonePosition("banner_upload_slot")');
+	    load_js('modules/Premium/Warehouse/eCommerce/banner.js');
         } else {
-            $form->addElement('static',$field,$label,'<img src="'.$default.'" style="max-width:300px;max-height:120px">');
+	    if(eregi('\.swf$',$default))
+		$r = '<object type="application/x-shockwave-flash" data="'.$default.'" width="300" height="120"><param name="movie" value="'.$default.'" /></object>';
+	    else
+		$r = '<img src="'.$default.'" style="max-width:300px;max-height:120px">';
+            $form->addElement('static',$field,$label,$r);
         }
 	}
 

@@ -59,13 +59,18 @@ if($doc['error']==UPLOAD_ERR_INI_SIZE || $doc['error']==UPLOAD_ERR_FORM_SIZE) {
 	</script>
 	<?php
 } else {
-    $dest_path .= '.'.$reqs[1];
+	$dest_path .= '.'.$reqs[1];
 	move_uploaded_file($doc['tmp_name'], $dest_path);
 	?>
 	<script type="text/javascript">
 	<!--
 	parent.$('banner_upload_file').value='<?php print($dest_path); ?>';
-	parent.$('banner_upload_info').innerHTML='<img src="<?php print($dest_path); ?>" style="max-width:300px;max-height:120px"><br><?php print($doc['name']); ?>';
+	parent.$('banner_upload_info').innerHTML='<?php
+	    if(strcasecmp($reqs[1],'swf')==0)
+		print('<object type="application/x-shockwave-flash" data="'.$dest_path.'" width="300" height="120"><param name="movie" value="'.$dest_path.'" /></object>');
+	    else
+		print('<img src="'.$dest_path.'" style="max-width:300px;max-height:120px">');
+	?>';
 	-->
 	</script>
 	<?php

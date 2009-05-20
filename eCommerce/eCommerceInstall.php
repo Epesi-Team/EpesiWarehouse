@@ -363,7 +363,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		//banners
 		$fields = array(
 			array('name'=>'File', 		'type'=>'text', 'param'=>128, 'required'=>true, 'extra'=>false, 'visible'=>true, 'display_callback'=>array($this->get_type().'Common', 'display_banner_file'),'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_banner_file')),
-			array('name'=>'Link', 		'type'=>'text', 'param'=>255, 'required'=>true, 'extra'=>false, 'visible'=>false),
+			array('name'=>'Link', 		'type'=>'text', 'param'=>255, 'required'=>true, 'extra'=>false, 'visible'=>false, 'display_callback'=>array('CRM_ContactsCommon', 'display_webaddress'), 'QFfield_callback'=>array('CRM_ContactsCommon', 'QFfield_webaddress')),
 			array('name'=>'Type',		'type'=>'integer',	'required'=>true, 'extra'=>false, 'visible'=>true,'display_callback'=>array($this->get_type().'Common', 'display_banner_type'),'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_banner_type')),
 			array('name'=>'Language', 	'type'=>'commondata', 'required'=>true, 'extra'=>false, 'param'=>array('Premium/Warehouse/eCommerce/Languages'), 'visible'=>true),
 			array('name'=>'Width',		'type'=>'integer',	'required'=>true, 'extra'=>false, 'visible'=>false),
@@ -540,6 +540,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 	public function requires($v) {
 		return array(
 			array('name'=>'Base','version'=>0),
+			array('name'=>'CRM/Contacts','version'=>0),
 			array('name'=>'Premium/Warehouse/Items','version'=>0),
 			array('name'=>'Premium/Warehouse/Items/Orders','version'=>0),
 			array('name'=>'Utils/CurrencyField','version'=>0),

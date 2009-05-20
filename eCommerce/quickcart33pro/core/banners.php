@@ -56,9 +56,8 @@ function throwBannersRand( $sFile, $aTypes = null ){
 				f_width as iWidth,
 				f_height as iHeight,
 				f_color as sColor
-				FROM premium_ecommerce_banners_data_1 WHERE active=1 AND f_publish=1 AND (f_views_limit=0 OR f_views<f_views_limit)');
+				FROM premium_ecommerce_banners_data_1 WHERE active=1 AND f_publish=1 AND (f_views_limit=0 OR f_views<f_views_limit) AND f_language="'.LANGUAGE.'"');
   while($row = $ret->FetchRow()) {
-    $row['sFile'] = 'epesi/banners/'.basename($row['sFile']);
     $aBanners[$row['iType']][] = $row;
   }
 //} epesi
@@ -71,7 +70,10 @@ function throwBannersRand( $sFile, $aTypes = null ){
           $aData = $aBanners[$i][rand( 0, $iCount - 1 )];
           //$aData['sExt'] = $oFF->throwExtOfFile( $aData['sFile'] );//epesi
 	  //{ epesi
+	  $aData['sFile'] = 'epesi/banners/'.basename($aData['sFile']);
 	  $aData['sExt'] = FileJobs::throwExtOfFile( $aData['sFile'] );
+	  if(!eregi('^http[s]?:\/\/',$aData['sLink']))
+	    $aData['sLink'] = 'http://'.$aData['sLink'];
 	  //} epesi
           if( $aData['sExt'] == 'swf' ){
             $sBlock = 'FLASH';
@@ -137,6 +139,8 @@ function goToBannerLink( $iBanner ){
   $link =  DB::GetOne('SELECT f_link FROM premium_ecommerce_banners_data_1 WHERE active=1 AND id=%d',array($iBanner));
   if($link) {
     DB::Execute('UPDATE premium_ecommerce_banners_data_1 SET f_clicks=f_clicks+1 WHERE id=%d',array($iBanner));
+    if(!eregi('^http[s]?:\/\/',$link))
+	    $link = 'http://'.$link;
     header( "Location: ".$link );
     exit;
   }
