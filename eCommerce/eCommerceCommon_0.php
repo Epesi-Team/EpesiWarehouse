@@ -172,21 +172,34 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 		));
 	}
 	
-	public static function copy_attachment($id,$rev,$file,$original) {
+	public static function get_quickcarts() {
 		static $qcs;
 		if(!isset($qcs))
-    		    $qcs = DB::GetRow('SELECT path FROM premium_ecommerce_quickcart');
+    		    $qcs = DB::GetCol('SELECT path FROM premium_ecommerce_quickcart');
+		return $qcs;
+	}
+
+	public static function copy_attachment($id,$rev,$file,$original) {
+		$qcs = self::get_quickcarts();
 		$ext = strrchr($original,'.');
 		if(eregi('^\.(jpg|jpeg|gif|png|bmp)$',$ext)) {
     		    $th1 = Utils_ImageCommon::create_thumb($file,100,100);
 		    $th2 = Utils_ImageCommon::create_thumb($file,200,200);
 		}
 		foreach($qcs as $q) {
-		    copy($file,$q.'/files/epesi/'.$id.'_'.$rev.$ext);
+		    @copy($file,$q.'/files/epesi/'.$id.'_'.$rev.$ext);
 		    if(isset($th1)) {
-    			copy($th1['thumb'],$q.'/files/100/epesi/'.$id.'_'.$rev.$ext);
-    			copy($th2['thumb'],$q.'/files/200/epesi/'.$id.'_'.$rev.$ext);
+    			@copy($th1['thumb'],$q.'/files/100/epesi/'.$id.'_'.$rev.$ext);
+    			@copy($th2['thumb'],$q.'/files/200/epesi/'.$id.'_'.$rev.$ext);
 		    }
+		}
+	}
+	
+	public static function copy_banner($file) {
+		$qcs = self::get_quickcarts();
+		$b = basename($file);
+		foreach($qcs as $q) {
+		    @copy($file,$q.'/files/epesi/banners/'.$b);
 		}
 	}
 	
@@ -547,6 +560,12 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 		return self::$banner_opts[$r['type']];
 	}
 
+  	public static function QFfield_freeze_int(&$form, $field, $label, $mode, $default,$args) {
+		$form->addElement('text', $field, $label)->freeze();
+		$form->addRule($field, Base_LangCommon::ts('Premium_Warehouse_eCommerce','Only numbers are allowed.'), 'numeric');
+		$form->setDefaults(array($args['id']=>$default));
+	}
+
 	public static function display_banner_file($r) {
 	    if(ereg('\.swf$',$r['file']))
 		    $ret = '<object type="application/x-shockwave-flash" data="'.$r['file'].'" width="'.$r['width'].'" height="'.$r['height'].'"><param name="bgcolor" value="'.$r['color'].'" /><param name="movie" value="'.$r['file'].'" /></object>';
@@ -584,6 +603,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
             rename($v['file'],$f);
             $v['file'] = $f;
         }
+	Premium_Warehouse_eCommerceCommon::copy_banner($f);
         //cleanup old files
         $ls = scandir(DATA_DIR.'/Premium_Warehouse_eCommerce/banners/tmp');
         $rt=microtime(true);

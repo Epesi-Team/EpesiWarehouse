@@ -109,10 +109,10 @@ class Premium_Warehouse_eCommerce extends Module {
 		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
 	
 		$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_banners');
-		$this->rb->set_defaults(array('publish'=>1,'views_limit'=>0,'width'=>480,'height'=>80,'color'=>'#000000','language'=>Base_LangCommon::get_lang_code()));
+		$this->rb->set_defaults(array('publish'=>1,'views_limit'=>0,'views'=>0,'clicks'=>0,'width'=>480,'height'=>80,'color'=>'#000000','language'=>Base_LangCommon::get_lang_code()));
 		$this->display_module($this->rb);
 
-        return true;
+    		return true;
 	}
 	
 	public function polls() {
@@ -394,6 +394,10 @@ class Premium_Warehouse_eCommerce extends Module {
 		    @mkdir($p.'/files/100/epesi');
 		    @mkdir($p.'/files/200/epesi');
 		    Utils_AttachmentCommon::call_user_func_on_file('Premium/Warehouse/eCommerce',array('Premium_Warehouse_eCommerceCommon','copy_attachment'));
+		    @mkdir($p.'/files/epesi/banners');
+		    $banners = DB::GetCol('SELECT f_file FROM premium_ecommerce_banners_data_1 WHERE active=1');
+		    foreach($banners as $b)
+			Premium_Warehouse_eCommerceCommon::copy_banner($b);
 		    return false;
 		} else $form->display();
 

@@ -369,7 +369,9 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 			array('name'=>'Width',		'type'=>'integer',	'required'=>true, 'extra'=>false, 'visible'=>false),
 			array('name'=>'Height',		'type'=>'integer',	'required'=>true, 'extra'=>false, 'visible'=>false),
 			array('name'=>'Color',		'type'=>'text',	'param'=>8,	'required'=>true, 'extra'=>false, 'visible'=>false),
-			array('name'=>'Views Limit',		'type'=>'integer',	'required'=>true, 'extra'=>false, 'visible'=>false),
+			array('name'=>'Views Limit',		'type'=>'integer',	'required'=>true, 'extra'=>false, 'visible'=>true),
+			array('name'=>'Views',		'type'=>'integer',	'required'=>false, 'extra'=>false, 'visible'=>true,'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_freeze_int')),
+			array('name'=>'Clicks',		'type'=>'integer',	'required'=>false, 'extra'=>false, 'visible'=>true,'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_freeze_int')),
 			array('name'=>'Publish', 	'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>true),
 		);
 		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_banners', $fields);

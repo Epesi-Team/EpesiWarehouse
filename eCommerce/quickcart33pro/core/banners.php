@@ -4,7 +4,7 @@
 * @return array
 * @param int  $iBanner
 */
-function throwBannersStats( $iBanner = null ){
+/*function throwBannersStats( $iBanner = null ){
   $oFF  =& FlatFiles::getInstance( );
 
   $aFile  = $oFF->throwFileArray( DB_BANNERS_STATS );
@@ -23,6 +23,7 @@ function throwBannersStats( $iBanner = null ){
   }
 } // end function throwBannersStats
 
+*/
 /**
 * Return random banners
 * @return array
@@ -44,7 +45,23 @@ function throwBannersRand( $sFile, $aTypes = null ){
       $aBanners[$aData['iType']][] = $aData;
     }
   }
-
+*/
+//{ epesi
+  $oTpl =& TplParser::getInstance( );
+  $aBanners = array();
+  $ret = DB::Execute('SELECT id as iBanner, 
+				f_file as sFile,
+				f_link as sLink,
+				f_type as iType,
+				f_width as iWidth,
+				f_height as iHeight,
+				f_color as sColor
+				FROM premium_ecommerce_banners_data_1 WHERE active=1 AND f_publish=1 AND (f_views_limit=0 OR f_views<f_views_limit)');
+  while($row = $ret->FetchRow()) {
+    $row['sFile'] = 'epesi/banners/'.basename($row['sFile']);
+    $aBanners[$row['iType']][] = $row;
+  }
+//} epesi
   if( isset( $aBanners ) ){
     $iCountTypes = count( $GLOBALS['aBannersTypes'] );
     for( $i = 0; $i < $iCountTypes; $i++ ){
@@ -52,7 +69,10 @@ function throwBannersRand( $sFile, $aTypes = null ){
         $iCount = count( $aBanners[$i] );
         if( $iCount > 0 ){
           $aData = $aBanners[$i][rand( 0, $iCount - 1 )];
-          $aData['sExt'] = $oFF->throwExtOfFile( $aData['sFile'] );
+          //$aData['sExt'] = $oFF->throwExtOfFile( $aData['sFile'] );//epesi
+	  //{ epesi
+	  $aData['sExt'] = FileJobs::throwExtOfFile( $aData['sFile'] );
+	  //} epesi
           if( $aData['sExt'] == 'swf' ){
             $sBlock = 'FLASH';
           }
@@ -75,12 +95,16 @@ function throwBannersRand( $sFile, $aTypes = null ){
     } // end for
 
     if( isset( $aId ) && is_array( $aId ) )
-      changeBannersStats( $aId, 'iViews' );
+//      changeBannersStats( $aId, 'iViews' );
+//{ epesi
+	foreach($aId as $iBanner)
+	    DB::Execute('UPDATE premium_ecommerce_banners_data_1 SET f_views=f_views+1 WHERE id=%d',array($iBanner));
+//} epesi
 
     if( isset( $aReturn ) && is_array( $aReturn ) ){
       return $aReturn;
     }
-  }*/
+  }
 } // end function throwBannersRand
 
 /**
@@ -88,23 +112,35 @@ function throwBannersRand( $sFile, $aTypes = null ){
 * @return array
 * @param int  $iBanner
 */
+/*
 function throwBanner( $iBanner ){
   $oFF =& FlatFiles::getInstance( );
   return $oFF->throwDataFromFiles( Array( DB_BANNERS, DB_BANNERS_STATS ), $iBanner, 'iBanner' );
 } // end function throwBanner
 
+*/
 /**
 * Redirect to banner link
 * @return void
 * @param int  $iBanner
 */
 function goToBannerLink( $iBanner ){
+/*
   $aData = throwBanner( $iBanner );
   if( isset( $aData ) && is_array( $aData ) && !empty( $aData['sLink'] ) ){
     changeBannersStats( Array( $iBanner ), 'iClicks' );
     header( "Location: ".$aData['sLink'] );
     exit;
   }
+  */
+  //{ epesi
+  $link =  DB::GetOne('SELECT f_link FROM premium_ecommerce_banners_data_1 WHERE active=1 AND id=%d',array($iBanner));
+  if($link) {
+    DB::Execute('UPDATE premium_ecommerce_banners_data_1 SET f_clicks=f_clicks+1 WHERE id=%d',array($iBanner));
+    header( "Location: ".$link );
+    exit;
+  }
+  //} epesi
 } // end function goToBannerLink
 
 /**
@@ -113,6 +149,7 @@ function goToBannerLink( $iBanner ){
 * @param array  $aId
 * @param string $sIndex
 */
+/*
 function changeBannersStats( $aId, $sIndex ){
   $oFF =& FlatFiles::getInstance( );
   $aStats = throwBannersStats( );
@@ -132,4 +169,5 @@ function changeBannersStats( $aId, $sIndex ){
     $oFF->save( DB_BANNERS_STATS, $aStats[$iBanner], $sParam );
   } // end foreach
 } // end function changeBannersStats
+*/
 ?>
