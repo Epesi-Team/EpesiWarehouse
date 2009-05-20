@@ -25,7 +25,7 @@ function addComment( $aForm, $iLink, $sFileDb = null ){
   */
   //{ epesi
   $aForm = changeMassTxt( $aForm, 'HLen', Array( 'sContent', 'HBrLen' ) );
-  DB::Execute('INSERT INTO premium_ecommerce_product_comments_data_1(created_on,f_name,f_content,f_time,f_product,f_ip,f_publish,f_language) VALUES (%T,%s,%s,%T,%d,%s,%b,%s)',
+  DB::Execute('INSERT INTO premium_ecommerce_product_comments_data_1(created_on,f_name,f_content,f_time,f_item_name,f_ip,f_publish,f_language) VALUES (%T,%s,%s,%T,%d,%s,%b,%s)',
 		array(time(),$aForm['sName'],$aForm['sContent'],time(),$iLink,$_SERVER['REMOTE_ADDR'],0,LANGUAGE));
   //} epesi
 
@@ -75,7 +75,7 @@ function listComments( $sFile, $iLink, $sFileDb = null ){
   $bPages = false;
   $fields = 'f_name as sName, f_content as sContent, f_time as iTime, f_ip as sIp, f_publish as iStatus';
   if( isset( $iLink ) && is_numeric( $iLink ) ){
-    $ret = DB::Execute('SELECT '.$fields.' FROM premium_ecommerce_product_comments_data_1 WHERE f_product=%d AND f_language=\''.LANGUAGE.'\' AND f_publish=1 AND active=1',array($iLink));
+    $ret = DB::Execute('SELECT '.$fields.' FROM premium_ecommerce_product_comments_data_1 WHERE f_item_name=%d AND f_language=\''.LANGUAGE.'\' AND f_publish=1 AND active=1',array($iLink));
   } else {
     $ret = DB::Execute('SELECT '.$fields.' FROM premium_ecommerce_product_comments_data_1 WHERE f_language=\''.LANGUAGE.'\' AND f_publish=1 AND active=1 LIMIT 50',array());
   }

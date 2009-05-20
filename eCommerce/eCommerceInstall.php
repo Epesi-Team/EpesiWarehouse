@@ -393,7 +393,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		
 		//comments
 		$fields = array(
-			array('name'=>'Product', 	'type'=>'select', 'param'=>'premium_warehouse_items::Item Name', 'required'=>true, 'extra'=>false),
+			array('name'=>'Item Name', 	'type'=>'select', 'param'=>'premium_warehouse_items::Item Name', 'required'=>true, 'extra'=>false),
 			array('name'=>'Language', 	'type'=>'commondata', 'required'=>true, 'extra'=>false, 'param'=>array('Premium/Warehouse/eCommerce/Languages'), 'visible'=>true),
 			array('name'=>'Name', 		'type'=>'long text', 'required'=>true, 'extra'=>false, 'visible'=>true),
 			array('name'=>'Content', 	'type'=>'long text', 'required'=>true, 'extra'=>false, 'visible'=>true),
