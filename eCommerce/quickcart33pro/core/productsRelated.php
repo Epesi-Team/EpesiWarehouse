@@ -62,6 +62,8 @@ function listProductsRelated( $sFile, $iProduct ){
   $aProducts = $oFF->throwFileArray( DB_PRODUCTS, 'checkIsProductRelated', Array( $aRelatedIds, $iStatus, $aCategories ) );//commented by epesi team
   */
 //{ epesi
+    $aProducts = array();
+    if($aRelatedIds) {
     global $config;
     $currency = DB::GetOne('SELECT id FROM utils_currency WHERE code=%s',array($config['currency_symbol']));
     if($currency===false) 
@@ -85,13 +87,13 @@ function listProductsRelated( $sFile, $iProduct ){
 					 WHERE pr.f_publish>=%d AND pr.active=1 AND pr.id in ('.implode($aRelatedIds,',').') 
 					 ORDER BY pr.f_position',array($iStatus));
     
-    $aProducts = array();
     while($row = $ret->FetchRow()) {
 	if($row['sName']=='') 
 		$row['sName'] = $row['sName2'];
 	if($row['sAvailable']=='') 
 		$row['sAvailable'] = $row['sAvailable2'];
 	$aProducts[] = $row;
+    }
     }
 //} epesi
 
@@ -193,7 +195,9 @@ function throwProductsRelated( $iProduct ){
     //{ epesi
     $aReturn  = array();
     $rel = array_filter(explode('__',DB::GetOne('SELECT f_related_products FROM premium_ecommerce_products_data_1 WHERE f_item_name=%d AND active=1',array($iProduct))));
-    return array_combine($rel,$rel);
+    if($rel)
+	return array_combine($rel,$rel);
+    return array();
     //} epesi
 } // end function
 
