@@ -49,6 +49,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	}
 
     public static function display_company_name($v, $nolink=false, $desc=null) {
+		if ($v['company']<=0) return $v[$desc['id']];
 		return Utils_RecordBrowserCommon::record_link_open_tag('company', $v['company'], $nolink).$v[$desc['id']].Utils_RecordBrowserCommon::record_link_close_tag();
 	}
 
