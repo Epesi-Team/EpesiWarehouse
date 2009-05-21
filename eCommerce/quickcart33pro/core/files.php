@@ -226,7 +226,7 @@ class Files
 
 	if( $photo ){
 	    //sticky image is default one
-            if( !isset( $this->aImagesDefault[$iKey][$product] ) && $row['sticky'] )
+            if( !isset( $this->aImagesDefault[$iKey][$product] ) || $row['sticky'] )
         	$this->aImagesDefault[$iKey][$product] = $row['id'];
 
             $this->aImages[$iKey][$product][] = $row['id'];

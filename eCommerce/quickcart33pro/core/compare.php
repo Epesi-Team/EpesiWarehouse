@@ -9,7 +9,7 @@
 function listProductsCompare( $sFile, $sBlock ){
   $oTpl   =& TplParser::getInstance( );
   $oFile  =& Files::getInstance( );
-  $oFF =& FlatFiles::getInstance( );
+  //$oFF =& FlatFiles::getInstance( );//epesi commented out
   $content= null;
   $sBlock = strtoupper( $sBlock );
 
@@ -20,7 +20,9 @@ function listProductsCompare( $sFile, $sBlock ){
     } // end foreach
   }
 
+  
   $sFeaturesBlock = $oTpl->tbHtml( $sFile, $sBlock.'_FEATURES' );
+  /*
   if( defined( 'DB_FEATURES' ) && is_file( DB_FEATURES ) && !empty( $sFeaturesBlock ) ){
     $aFeatures = $oFF->throwFileArraySmall( DB_FEATURES, 'iFeature', 'sName' );
     $aFeaturesProductsAll = $oFF->throwFileArray( DB_FEATURES_PRODUCTS, null );
@@ -34,13 +36,35 @@ function listProductsCompare( $sFile, $sBlock ){
   if( defined( 'DB_PRODUCERS' ) && is_file( DB_PRODUCERS ) ){
     $aProducers = $oFF->throwFileArraySmall( DB_PRODUCERS, 'iProducer', 'sName' );
   }
+  */
+  //{ epesi
+  if(!empty($sFeaturesBlock)) {
+    $ret2 = DB::Execute('SELECT pp.f_item_name as iProduct,
+				pp.f_value as sValue,
+				p.f_parameter_code as iFeature,
+				FROM premium_ecommerce_products_parameters_data_1 pp
+				INNER JOIN premium_ecommerce_parameters_data_1 p ON (p.id=pp.f_parameter)
+				WHERE pp.active=1 AND pp.f_language="'.LANGUAGE.'"');
+    while($row = $ret2->FetchRow())
+	$aFeaturesProducts[$row['iProduct']][$row['iFeature']] = $row['sValue'];
+  }
+  
+    $ret = DB::Execute('SELECT c.id, c.f_company_name
+			FROM premium_warehouse_items_data_1 i INNER JOIN (company_data_1 c,premium_ecommerce_products_data_1 d) 
+			ON (c.id=i.f_vendor AND d.f_item_name=i.id AND d.active=1)
+			WHERE i.active=1');
+    while($r = $ret->FetchRow()) {
+	    $id = $r['id']*4+1;
+    	    $aProducers[$id] = $r['f_company_name'];
+    }
+//} epesi
 
 
   if( isset( $aProducts ) ){
-    if( defined( 'DB_CATEGORIES_NOKAUT_NAMES' ) && $sBlock == 'NOKAUT' )
+/*    if( defined( 'DB_CATEGORIES_NOKAUT_NAMES' ) && $sBlock == 'NOKAUT' )
       $aCategoriesNokaut = throwCategoriesNokautNames( );
 
-    $aDescriptionFull = $oFF->throwFileArraySmall( DB_PRODUCTS_EXT, 'iProduct', 'sDescriptionFull' );
+    $aDescriptionFull = $oFF->throwFileArraySmall( DB_PRODUCTS_EXT, 'iProduct', 'sDescriptionFull' );*///epesi
 
     $iCount = count( $aProducts );
 
@@ -69,10 +93,18 @@ function listProductsCompare( $sFile, $sBlock ){
           $aData['sCategoryNokaut'] = null;
       }
 
+  /*
       if( empty( $aDescriptionFull[$aData['iProduct']] ) && !empty( $aData['sDescriptionShort'] ) )
         $aData['sDescriptionFull'] = $aData['sDescriptionShort'];
       else
         $aData['sDescriptionFull'] = ereg_replace( '\|n\|', '', $aDescriptionFull[$aData['iProduct']] );
+	*/
+      //{ epesi
+      if(empty( $aData['sDescriptionFull'] ) && !empty( $aData['sDescriptionShort'] ) )
+    	$aData['sDescriptionFull'] = $aData['sDescriptionShort'];
+      else
+        $aData['sDescriptionFull'] = ereg_replace( '\|n\|', '', $aData['sDescriptionFull'] );
+      //} epesi
 
       $aData['sFeatures'] = null;
       if( isset( $aFeaturesProducts[$aData['iProduct']] ) ){
@@ -157,17 +189,19 @@ function listSubPagesCompare( $sFile, $iPageParent ){
 * Zwraca nazwy kategorii nokaut
 * @return array
 */
+/*
 function throwCategoriesNokautNames( ){
   $oFF =& FlatFiles::getInstance( );
   return $oFF->throwFileArraySmall( DB_CATEGORIES_NOKAUT_NAMES, 'iCategory', 'sName' );
 } // end function throwCategoriesNokautNames
 
+*/
 /**
 * Throws minimal couriers price
 * @return float
 */
 function throwCourierMinPrice( ){
-  $oFF =& FlatFiles::getInstance( );
+  /*$oFF =& FlatFiles::getInstance( );
   $aData = $oFF->throwFileArray( DB_CARRIERS );
 
   $fMinPrice = null;
@@ -184,5 +218,15 @@ function throwCourierMinPrice( ){
   }
   else
     return null;
+    */
+    //{ epesi
+    global $config;
+
+    $currency = DB::GetOne('SELECT id FROM utils_currency WHERE code=%s',array($config['currency_symbol']));
+    if($currency===false) 
+    	die('Currency not defined in Epesi: '.$config['currency_symbol']);
+
+    return DB::GetOne('SELECT MIN(f_price) FROM premium_ecommerce_payments_carriers_data_1 WHERE active=1 AND f_currency=%d',array($currency));
+    //} epesi
 } // end function throwCourierMinPrice
 ?>

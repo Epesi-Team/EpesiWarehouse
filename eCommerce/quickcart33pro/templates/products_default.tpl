@@ -67,6 +67,11 @@ $sRecommended
 <!-- BEGIN IMAGES_FOOT_2 --></ul><!-- END IMAGES_FOOT_2 -->
 
 <!-- BEGIN FEATURES_LIST --><tr class="l$aData[iStyle]">
+<!--{ epesi -->
+  <th>
+    $aData[sGroup]
+  </th>
+<!--} epesi -->
   <th>
     $aData[sName]
   </th>
@@ -78,7 +83,8 @@ $sRecommended
 <table id="features" cellspacing="1">
   <thead>
     <tr>
-      <td colspan="2">
+<!-- epesi was <td colspan="2"> -->
+      <td colspan="3">
         $lang[Features]
       </td>
     </tr>

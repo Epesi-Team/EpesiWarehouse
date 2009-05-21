@@ -294,7 +294,7 @@ class Pages
 					d.f_page_title, d.f_meta_description, d.f_keywords, 
 					d.f_display_name, d.f_short_description, d.f_long_description,
 					c.f_position
-			FROM premium_warehouse_items_categories_data_1 c LEFT JOIN premium_ecommerce_cat_descriptions_data_1 d ON (c.id=d.f_category AND d.f_language="'.LANGUAGE.'") WHERE c.active=1';
+			FROM premium_warehouse_items_categories_data_1 c LEFT JOIN premium_ecommerce_cat_descriptions_data_1 d ON (c.id=d.f_category AND d.f_language="'.LANGUAGE.'" AND d.active=1) WHERE c.active=1';
 	$x = DB::GetAll($query.' ORDER BY c.f_parent_category,c.f_position');
 	foreach($x as $r) {
 		if(!$r['f_parent_category']) 
@@ -315,8 +315,8 @@ class Pages
 	//companies - id mod 4 == 1
 	$query = 'SELECT c.id, c.f_company_name
 			FROM premium_warehouse_items_data_1 i INNER JOIN (company_data_1 c,premium_ecommerce_products_data_1 d) 
-			ON (c.id=i.f_vendor AND d.f_item_name=i.id)
-			WHERE c.active=1';
+			ON (c.id=i.f_vendor AND d.f_item_name=i.id AND d.active=1)
+			WHERE i.active=1';
 			
 	$x = DB::GetAll($query);
 	foreach($x as $r) {
@@ -331,7 +331,7 @@ class Pages
 	$query = 'SELECT p.id, p.f_page_name, p.f_parent_page, p.f_type,
 					p.f_position, d.f_name, d.f_short_description, d.f_long_description, 
 					d.f_page_title, d.f_meta_description, d.f_keywords
-			FROM premium_ecommerce_pages_data_1 p INNER JOIN premium_ecommerce_pages_data_data_1 d ON (p.id=d.f_page AND d.f_language="'.LANGUAGE.'") WHERE p.active=1 AND p.f_publish=1 AND p.f_parent_page';
+			FROM premium_ecommerce_pages_data_1 p INNER JOIN premium_ecommerce_pages_data_data_1 d ON (p.id=d.f_page AND d.f_language="'.LANGUAGE.'" AND d.active=1) WHERE p.active=1 AND p.f_publish=1 AND p.f_parent_page';
 	$x = DB::GetAll($query.' is null');
 	while($i<count($x)) {
 		$ret = DB::Execute($query.'=%d',array($x[$i]['id']));
@@ -396,13 +396,13 @@ class Pages
 	
 	//sitemap
 	$id = 27;
-	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => 'site map', 'sNameTitle' => '', 'sDescriptionShort' => '', 'iStatus' => 1, 'iPosition' => 1000, 'iType' => 0, 'iSubpagesShow' => 1, 'iProducts' => 0, 'sDescriptionFull'=>'', 'sMetaDescription' => '', 'sMetaKeywords' =>'', 'sTags' => '', 'iTime' => 1207743540, 'iRss' => 0, 'iAdmin' => '', 'iAuthorized' => '', 'iCategoryNokaut' => '' );
+	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => 'site map', 'sNameTitle' => '', 'sDescriptionShort' => '', 'iStatus' => 1, 'iPosition' => 1000, 'iType' => 0, 'iSubpagesShow' => 1, 'iProducts' => 0, 'sDescriptionFull'=>'', 'sMetaDescription' => '', 'sMetaKeywords' =>'' );
 	$this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
 	$this->aPagesParentsTypes[1][] = $id;
 
 	//sitemap
 	$id = 31;
-	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => 'contact us', 'sNameTitle' => '', 'sDescriptionShort' => unserialize(DB::GetOne('SELECT value FROM variables WHERE name=%s',array('ecommerce_contactus'))), 'iStatus' => 1, 'iPosition' => 1000, 'iType' => 0, 'iSubpagesShow' => 1, 'iProducts' => 0, 'sDescriptionFull'=>'', 'sMetaDescription' => '', 'sMetaKeywords' =>'', 'sTags' => '', 'iTime' => 1207743540, 'iRss' => 0, 'iAdmin' => '', 'iAuthorized' => '', 'iCategoryNokaut' => '' );
+	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => 'contact us', 'sNameTitle' => '', 'sDescriptionShort' => unserialize(DB::GetOne('SELECT value FROM variables WHERE name=%s',array('ecommerce_contactus'))), 'iStatus' => 1, 'iPosition' => 1000, 'iType' => 0, 'iSubpagesShow' => 1, 'iProducts' => 0, 'sDescriptionFull'=>'', 'sMetaDescription' => '', 'sMetaKeywords' =>'');
 	$this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
 	$this->aPagesParentsTypes[2][] = $id;
 	//} epesi

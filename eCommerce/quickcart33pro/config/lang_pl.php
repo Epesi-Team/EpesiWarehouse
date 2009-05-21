@@ -20,7 +20,7 @@ $config['products_list'] = 3;
 $config['admin_list'] = 20;
 
 $config['delivery_free'] = '1000.00';
-$config['currency_symbol'] = "zł";
+$config['currency_symbol'] = "PLN";
 
 $config['inherit_from_parents'] = false;
 

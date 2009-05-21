@@ -32,6 +32,8 @@ class Premium_Warehouse_eCommerce extends Module {
 						'icon'=>null);
 		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'icecat')).'>'.$this->ht('Icecat').'</a>',
 						'icon'=>null);
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'compare_services')).'>'.$this->ht('Links for compare services').'</a>',
+						'icon'=>null);
 		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'pages')).'>'.$this->ht('Pages').'</a>',
 						'icon'=>null);
 		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'parameters')).'>'.$this->ht('Parameters').'</a>',
@@ -62,6 +64,27 @@ class Premium_Warehouse_eCommerce extends Module {
 		$this->rb->set_additional_actions_method($this, 'actions_for_position');
 		$this->rb->force_order(array('position'=>'ASC'));
 		$this->display_module($this->rb);
+	}
+	
+	public function compare_services() {
+		if($this->is_back()) return false;
+		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
+	
+ 		$m = & $this->init_module('Utils/GenericBrowser',null,'t1');
+ 		$m->set_table_columns(array(array('name'=>$this->t('Site'),'width'=>30),
+							  array('name'=>'Link','width'=>70)));
+		$site = $this->t('http://replace.with.quickcart.url/');
+		$m->add_row('Ceneo.pl',	$site.'?sLang=pl&p=compare-ceneo');
+		$m->add_row('Skapiec.pl', $site.'?sLang=pl&p=compare-skapiec');
+		$m->add_row('Handelo.pl', $site.'?sLang=pl&p=compare-handelo');
+		$m->add_row('Szoker.pl', $site.'?sLang=pl&p=compare-szoker');
+		$m->add_row('Cenus.pl', $site.'?sLang=pl&p=compare-cenus');
+		$m->add_row('Zakupy.Onet.pl', $site.'?sLang=pl&p=compare-onet');
+		$m->add_row('Froogle.com', $site.'?sLang=en&p=compare-froogle');
+		$m->add_row('Shopping.com', $site.'?sLang=en&p=compare-shopping');
+ 		$this->display_module($m);
+
+		return true;
 	}
 
 	public function parameters() {
