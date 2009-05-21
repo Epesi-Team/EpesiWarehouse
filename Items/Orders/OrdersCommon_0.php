@@ -555,7 +555,8 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 							return false;
 			case 'add':
 			case 'edit':	return ($i->acl_check('edit orders') && self::access_orders('edit', Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $param['transaction_id'])));
-			case 'delete':	return $i->acl_check('delete orders');
+			case 'delete':	if (Acl::get_user()==$param['created_by']) return true;
+							return $i->acl_check('delete orders');
 			case 'fields':	$ret = array();
 /*							if ($action_details=='new' && isset($param['item_sku'])) 
 								$ret = array(	'transaction_id'=>'read-only', 
@@ -616,10 +617,13 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 								($param['status']>=20
 								|| ($param['status']>=2 && $param['transaction_type']==0)
 								|| ($param['status']>=3 && $param['transaction_type']==1)
-								))
+								) &&
+								(time()-strtotime($param['transaction_date']) > 60*60*24*7 ||
+								Acl::get_user()!=$param['created_by']))
 								return false;
 							return $i->acl_check('edit orders');
-			case 'delete':	return $i->acl_check('delete orders');
+			case 'delete':	if (Acl::get_user()==$param['created_by']) return true;
+							return $i->acl_check('delete orders');
 			case 'fields':	$ret = array();
 							$ret['status'] = 'read-only';
 							$tt = $param['transaction_type'];
