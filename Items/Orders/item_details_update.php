@@ -43,7 +43,6 @@ if (!isset($location_id) || !$location_id)
 
 $js = '';
 $js .= '$("description").value="'.Epesi::escapeJS($rec['description']).'";';
-$js .= 'if($("description"))focus_by_id("description");';
 if ($trans['transaction_type']<2) {
 	$js .= 'if($("last_item_price"))$("last_item_price").value="'.$rec['last_purchase_price'].'";';
 	$js .= 'if($("tax_rate"))$("tax_rate").value="'.$rec['tax_rate'].'";';
