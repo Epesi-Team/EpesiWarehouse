@@ -25,6 +25,9 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			),
 						'Warehouse'=>array(
 				array('name'=>'display_qty','label'=>'Quantity Display','type'=>'select','values'=>array(0=>'Availble', 1=>'On Hand', 2=>'Both'),'default'=>2)
+			),
+						'Warehouse'=>array(
+				array('name'=>'filter_by_my_warehouse','label'=>'Filter items by my warehouse','type'=>'select','values'=>array(0=>'No', 1=>'Yes'),'default'=>1)
 			));
 	}
 	

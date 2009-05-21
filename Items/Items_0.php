@@ -45,7 +45,7 @@ class Premium_Warehouse_Items extends Module {
 		foreach ($warehouses as $v)
 			$opts[$v['id']] = $v['warehouse'];
 		$this->rb->set_custom_filter('sku',array('type'=>'select','label'=>$this->t('Warehouse'),'args'=>$opts,'trans_callback'=>array($this, 'trans_filter')));
-		$this->rb->set_filters_defaults(array('sku'=>$my_warehouse));
+		if (Base_User_SettingsCommon::get('Premium_Warehouse_Items_Orders', 'filter_by_my_warehouse')) $this->rb->set_filters_defaults(array('sku'=>$my_warehouse));
 		
 		$cols = array();
 		if (ModuleManager::is_installed('Premium_Warehouse_Items_Orders')!=-1) {
