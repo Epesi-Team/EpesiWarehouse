@@ -723,7 +723,7 @@ class Premium_Warehouse_eCommerce extends Module {
 	}
 	
 	public function products_stats_addon($arg) {
-		$this->stats_addon('products',$arg['product_name']);
+		$this->stats_addon('products',$arg['item_name']);
 	}
 	
 	private function stats_addon($tab,$id) {

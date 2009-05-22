@@ -141,6 +141,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		//parameter groups
 		$fields = array(
 			array('name'=>'Group Code', 'type'=>'text', 'param'=>128, 'required'=>true, 'extra'=>false, 'visible'=>true),
+			array('name'=>'Label', 			'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_eCommerceCommon','display_parameter_group_label')),
 			array('name'=>'Position', 		'type'=>'integer', 'required'=>true, 'extra'=>false,'visible'=>false)
 		);
 		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_parameter_groups', $fields);
@@ -406,7 +407,6 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 
 		Utils_RecordBrowserCommon::set_favorites('premium_ecommerce_product_comments', false);
 		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_product_comments', 'eCommerce - Product Comments');
-		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_product_comments', array('Premium_Warehouse_eCommerceCommon', 'access_parameters'));
 		
 		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_products', 'Premium/Warehouse/eCommerce', 'product_comments_addon', 'Comments');
 		
@@ -437,10 +437,10 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 				array('availability_code'=>'72h',
 					'position'=>0));
 
-		$this->add_aco('browse ecommerce',array('Employee'));
-		$this->add_aco('view ecommerce',array('Employee'));
-		$this->add_aco('edit ecommerce',array('Employee'));
-		$this->add_aco('delete ecommerce',array('Employee Manager'));
+		$this->add_aco('browse ecommerce',array('Employee Administrator'));
+		$this->add_aco('view ecommerce',array('Employee Administrator'));
+		$this->add_aco('edit ecommerce',array('Employee Administrator'));
+		$this->add_aco('delete ecommerce',array('Employee Administrator'));
 
 		$this->add_aco('view protected notes','Employee');
 		$this->add_aco('view public notes','Employee');
