@@ -1,6 +1,8 @@
 <br/>
 <font size=11><b><u>DO ZAPŁATY: {$total}.</u></b></font>
 <br/>
+<font size=7>SŁOWNIE: {$total_word}</font>
+<br/>
 <br/>
 <br/>
 <br/>

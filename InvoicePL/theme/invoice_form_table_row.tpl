@@ -27,7 +27,7 @@
 		</td>
 		<td width="45px" align="right">
 			<font size="7">
-				{$details.gross_price}&nbsp;
+				{$details.net_price}&nbsp;
 			</font>
 		</td>
 		<td width="32px" align="center">
