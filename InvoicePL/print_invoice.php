@@ -17,10 +17,12 @@ if (!is_numeric($order_id)) die('Invalid usage');
 define('CID', $cid);
 require_once('../../../../include.php');
 ModuleManager::load_modules();
+$order = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $order_id);
+
+if (!Acl::is_user() || !Utils_RecordBrowserCommon::get_access('premium_warehouse_items_orders', 'view', $order)) die('Unauthorized access');
 
 $tcpdf = Libs_TCPDFCommon::new_pdf();
 
-$order = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $order_id);
 $warehouse = Utils_RecordBrowserCommon::get_record('premium_warehouse', $order['warehouse']);
 $company = CRM_ContactsCommon::get_company(CRM_ContactsCommon::get_main_company());
 
@@ -153,6 +155,9 @@ foreach (array('shipment'=>'Koszt wysyłki', 'handling'=>'Opłata manipulacyjna'
 }
 
 /************************ summary **************************/
+$gross_total_sum_f = array();
+$net_total_sum_f = array();
+$tax_total_sum_f = array();
 foreach ($gross_total_sum as $k=>$v) {
 	$gross_total_sum_f[$k] = Utils_CurrencyFieldCommon::format($gross_total_sum[$k], $k);
 	$net_total_sum_f[$k] = Utils_CurrencyFieldCommon::format($net_total_sum[$k], $k);

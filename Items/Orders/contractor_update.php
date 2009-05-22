@@ -23,6 +23,9 @@ ModuleManager::load_modules();
 $tab = trim($_POST['parameters'], '"');
 $id = trim($_POST['rec_id'], '"');
 $rec = Utils_RecordBrowserCommon::get_record($tab,$id);
+
+if (!Acl::is_user() || !Utils_RecordBrowserCommon::get_access($tab, 'view', $rec)) die('Unauthorized access');
+
 if (!$rec || empty($rec)) return;
 $js = '';
 foreach ($rec as $k=>$v)

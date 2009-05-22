@@ -34,6 +34,9 @@ if (!is_numeric($id)) {
 }
 if (!is_numeric($trans_id)) die('');
 $rec = Utils_RecordBrowserCommon::get_record('premium_warehouse_items',$id);
+
+if (!Acl::is_user() || !Utils_RecordBrowserCommon::get_access('premium_warehouse_items', 'view', $rec)) die('Unauthorized access');
+
 $trans = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders',$trans_id);
 
 $location_id = Utils_RecordBrowserCommon::get_records('premium_warehouse_location',array('item_sku'=>$id,'warehouse'=>$trans['warehouse'],'!quantity'=>0));

@@ -20,6 +20,9 @@ require_once('../../../../../include.php');
 ModuleManager::load_modules();
 
 $trans = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $_GET['transaction_id']);
+
+if (!Acl::is_user() || !Utils_RecordBrowserCommon::get_access('premium_warehouse_items_orders', 'view', $trans)) die('Unauthorized access');
+
 $trans_type = $trans['transaction_type'];
 $qry = array();
 $vals = array();

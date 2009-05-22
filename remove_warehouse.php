@@ -10,10 +10,11 @@
 
 die();
 
-
 define('CID',false); //i know that i won't access $_SESSION['client']
 require_once('../../../include.php');
 ModuleManager::load_modules();
+
+if (!Base_AclCommon::i_am_admin()) die('Unauthorized access');
 
 DB::Execute('DELETE FROM modules WHERE name LIKE '.DB::Concat(DB::qstr('Premium_Warehouse'),DB::qstr('%')));
 DB::Execute('DELETE FROM recordbrowser_table_properties WHERE tab LIKE '.DB::Concat(DB::qstr('premium_warehouse'),DB::qstr('%')));

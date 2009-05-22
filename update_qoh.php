@@ -11,6 +11,8 @@ define('CID',false); //i know that i won't access $_SESSION['client']
 require_once('../../../include.php');
 ModuleManager::load_modules();
 
+if (!Base_AclCommon::i_am_admin()) die('Unauthorized access');
+
 $it = Utils_RecordBrowserCommon::get_records('premium_warehouse_items');
 foreach($it as $i) {
 	$locs = Utils_RecordBrowserCommon::get_records('premium_warehouse_location', array('item_sku'=>$i['id']));
