@@ -2,7 +2,7 @@
 	<tr>
 		<td>
 			<font size=8>
-				{$company.company_name}<br/>
+				{if isset($warehouse.invoice_display_name)}{$warehouse.invoice_display_name}{else}{$company.company_name}{/if}<br/>
 				{$warehouse.address_1}<br/>
 				{$warehouse.postal_code} {$warehouse.city}<br/>
 				{if $warehouse.phone}tel. {$warehouse.phone}<br/>{/if}

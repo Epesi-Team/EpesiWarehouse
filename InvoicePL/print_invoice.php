@@ -108,6 +108,50 @@ foreach ($items as $k=>$v) {
 	$lp++;
 }
 
+$additional_cost = array();
+$additional_cost['shipment'] = Utils_CurrencyFieldCommon::get_values($order['shipment_cost']);
+$additional_cost['handling'] = Utils_CurrencyFieldCommon::get_values($order['handling_cost']);
+
+foreach (array('shipment'=>'Koszt wysyłki', 'handling'=>'Opłata manipulacyjna') as $k=>$v) {
+	if ($additional_cost[$k][0]) {
+		$theme = Base_ThemeCommon::init_smarty();
+
+		$gross_val = $additional_cost[$k][0]; 
+		$net_val = round($additional_cost[$k][0]/1.22,2);
+		$tax_val = $gross_val-$net_val;
+		$tax = Utils_CurrencyFieldCommon::format($tax_val, $additional_cost[$k][1]);
+		$gross = Utils_CurrencyFieldCommon::format($gross_val, $additional_cost[$k][1]);
+		$net = Utils_CurrencyFieldCommon::format($net_val, $additional_cost[$k][1]);
+
+		if (!isset($gross_total_sum[$additional_cost[$k][1]])) $gross_total_sum[$additional_cost[$k][1]] = 0;
+		if (!isset($net_total_sum[$additional_cost[$k][1]])) $net_total_sum[$additional_cost[$k][1]] = 0;
+		if (!isset($tax_total_sum[$additional_cost[$k][1]])) $tax_total_sum[$additional_cost[$k][1]] = 0;
+
+		$gross_total_sum[$additional_cost[$k][1]] += $gross_val;
+		$net_total_sum[$additional_cost[$k][1]] += $net_val;
+		$tax_total_sum[$additional_cost[$k][1]] += $tax_val;
+
+		$details = array(
+				'item_details'=>array('item_name'=>$v),
+				'quantity'=>1,
+				'net_price'=>$net,
+				'tax_name'=>'22%',
+				'gross_total'=>$gross,
+				'net_total'=>$net,
+				'tax_total'=>$tax
+			);
+		$theme->assign('details', $details);
+		$theme->assign('lp', $lp);
+		ob_start();
+		Base_ThemeCommon::display_smarty($theme,'Premium_Warehouse_InvoicePL','invoice_form_table_row');
+		$html = ob_get_clean();
+		
+		$html = Libs_TCPDFCommon::stripHTML($html);
+		Libs_TCPDFCommon::writeHTML($tcpdf, $html);
+		$lp++;
+	}
+}
+
 /************************ summary **************************/
 foreach ($gross_total_sum as $k=>$v) {
 	$gross_total_sum_f[$k] = Utils_CurrencyFieldCommon::format($gross_total_sum[$k], $k);

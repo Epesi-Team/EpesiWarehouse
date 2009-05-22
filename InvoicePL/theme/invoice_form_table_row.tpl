@@ -12,7 +12,7 @@
 		</td>
 		<td width="45px">
 			<font size="7">
-				&nbsp;
+				&nbsp;{if isset($details.sww)}{$details.sww}{/if}
 			</font>
 		</td>
 		<td width="35px" align="center">

@@ -705,6 +705,17 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 								if ($tt==4) {
 									$ret['tax_value'] = 'hide';
 								}
+								if (isset($param['shipment_type']) && $param['shipment_type']==0) {
+									$ret['shipment_date'] = 'hide';
+									$ret['shipment_no'] = 'hide';
+									$ret['shipment_employee'] = 'hide';
+									$ret['shipment_eta'] = 'hide';
+									$ret['shipment_cost'] = 'hide';
+									$ret['tracking_info'] = 'hide';
+								}
+								if (isset($param['payment_type']) && $param['payment_type']==0) {
+									$ret['payment_no'] = 'hide';
+								}
 								if ($tt==0 && isset($param['status'])) {
 									if ($param['status']<4) {
 										$ret['shipment_date'] = 'hide';
