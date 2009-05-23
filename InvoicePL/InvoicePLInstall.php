@@ -30,6 +30,9 @@ class Premium_Warehouse_InvoicePLInstall extends ModuleInstall {
 
 		Utils_RecordBrowserCommon::set_processing_callback('premium_warehouse_items_orders', array('Premium_Warehouse_InvoicePLCommon', 'submit_order'));
 
+		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items_orders','Receipt','checkbox', true, false, '', '', false, false, 'Contact Details');
+		Utils_RecordBrowserCommon::set_QFfield_method('premium_warehouse_items_orders','Receipt','Premium_Warehouse_InvoicePLCommon', 'QFfield_receipt');
+
 		return true;
 	}
 	
@@ -42,6 +45,8 @@ class Premium_Warehouse_InvoicePLInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::delete_record_field('premium_warehouse','Invoice Display Name');
 
 		Utils_RecordBrowserCommon::delete_record_field('premium_warehouse_items_orders_details','SWW');
+
+		Utils_RecordBrowserCommon::delete_record_field('premium_warehouse_items_orders','Receipt');
 
 		return true;
 	}

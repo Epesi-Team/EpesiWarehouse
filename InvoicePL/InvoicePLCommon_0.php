@@ -18,7 +18,7 @@ class Premium_Warehouse_InvoicePLCommon extends ModuleCommon {
 	private static $rb_obj=null;
 	
 	public static function invoice_pl_addon_parameters($record) {
-		if ($record['transaction_type']<=1)
+		if ($record['transaction_type']<=1 && !$record['receipt'])
 			Base_ActionBarCommon::add('print', 'Print Invoice', 'href="modules/Premium/Warehouse/InvoicePL/print_invoice.php?'.http_build_query(array('record_id'=>$record['id'], 'cid'=>CID)).'"');
 		return array('show'=>false);
 	}
@@ -72,6 +72,22 @@ class Premium_Warehouse_InvoicePLCommon extends ModuleCommon {
 			return array('invoice_number'=>Base_LangCommon::ts('Premium_Warehouse_InvoicePL','Warning: duplicate number found'));
 		}
 		return true;
+	}
+
+	public static function QFfield_receipt(&$form, $field, $label, $mode, $default, $desc, $rb_obj) {
+		if ($mode!='view') {
+			$form->addElement('checkbox', $field, $label);
+			$form->setDefaults(array($field=>$default));
+		} else {
+			if ($default) {
+				$form->addElement('checkbox', $field, $label);
+				$form->freeze('checkbox');
+				$form->setDefaults(array($field=>$default));
+				eval_js('hide_rb_field=function(arg){if($("_"+arg+"__label"))$("_"+arg+"__label").parentNode.parentNode.style.display="none"}');
+				foreach(array('last_name','first_name','company_name','address_1','address_2','city','country','zone','postal_code','phone','tax_id') as $v)
+					eval_js('hide_rb_field("'.$v.'");');
+			}
+		}
 	}
 	
 	public static function QFfield_invoice_number(&$form, $field, $label, $mode, $default, $desc, $rb_obj) {
