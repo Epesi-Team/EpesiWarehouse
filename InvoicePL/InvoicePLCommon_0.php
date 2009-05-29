@@ -18,8 +18,13 @@ class Premium_Warehouse_InvoicePLCommon extends ModuleCommon {
 	private static $rb_obj=null;
 	
 	public static function invoice_pl_addon_parameters($record) {
-		if ($record['transaction_type']<=1 && !$record['receipt'])
-			Base_ActionBarCommon::add('print', 'Print Invoice', 'href="modules/Premium/Warehouse/InvoicePL/print_invoice.php?'.http_build_query(array('record_id'=>$record['id'], 'cid'=>CID)).'"');
+		if ($record['transaction_type']<=1 && !$record['receipt']) {
+			$href = 'href="modules/Premium/Warehouse/InvoicePL/print_invoice.php?'.http_build_query(array('record_id'=>$record['id'], 'cid'=>CID)).'"';
+			if (!$record['invoice_number'] && $record['transaction_type']==1) {
+				$href .= ' '.Utils_TooltipCommon::open_tag_attrs(Base_LangCommon::ts('Premium_Warehouse_InvoicePL','Invoice number is not defined<br>It will be assgined automatically upon print'), false);
+			}
+			Base_ActionBarCommon::add('print', 'Print Invoice', $href);
+		}
 		return array('show'=>false);
 	}
 
