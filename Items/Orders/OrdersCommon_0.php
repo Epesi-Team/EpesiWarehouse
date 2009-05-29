@@ -179,7 +179,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	public static function display_transaction_id($r, $nolink) {
 		$ret = Utils_RecordBrowserCommon::create_linked_label_r('premium_warehouse_items_orders', 'transaction_id', $r, $nolink);
 		if (!$nolink)	
-			$ret = '<span '.Utils_TooltipCommon::ajax_open_tag_attrs(array('Premium_Warehouse_Items_OrdersCommon','item_list_tooltip'), $r).'>'.$ret.'</span>';
+			$ret = '<span '.Utils_TooltipCommon::ajax_open_tag_attrs(array('Premium_Warehouse_Items_OrdersCommon','item_list_tooltip'), array($r), 700).'>'.$ret.'</span>';
 		return $ret;
 	}
 	
