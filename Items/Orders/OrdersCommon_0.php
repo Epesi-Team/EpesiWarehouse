@@ -349,25 +349,36 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	
 	public static function check_if_no_duplicate_company_contact($data) {
 		$ret = true;
-		if (!isset($data['company']) || $data['company']<=0) {
+		if ((!isset($data['company']) || $data['company']<=0) && $data['company_name']) {
 			$recs = Utils_RecordBrowserCommon::get_records('company', array('company_name'=>$data['company_name']));
 			if (!empty($recs)) {
 				$first = array_pop($recs);
 				eval_js('setTimeout(function(){$("company").value='.$first['id'].';$("company").fire(\'e_cs:load\');},100);');
-				$ret = array('company'=>'Warning: Company with that name was already found in the system.');
+				$ret = array('company'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Warning: Company with that name was already found in the system.'));
 			}
 		}
-		if (!isset($data['contact']) || $data['contact']<=0) {
+		if ((!isset($data['contact']) || $data['contact']<=0) && ($data['first_name'] || $data['last_name'])) {
 			$recs = Utils_RecordBrowserCommon::get_records('contact', array('first_name'=>$data['first_name'],'last_name'=>$data['last_name']));
 			if (!empty($recs)) {
 				$first = array_pop($recs);
 				eval_js('set_contact_duplicate=function(){if($("contact")){$("contact").value='.$first['id'].';}else setTimeout("set_contact_duplicate()", 300)};');
 				eval_js('setTimeout("set_contact_duplicate()", 1000);');
 				if (!is_array($ret)) $ret = array();
-				$ret['contact']='Warning: Contact with the same first and last name was already found in the system.';
+				$ret['contact']=Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Warning: Contact with the same first and last name was already found in the system.');
 			}
 		}
 		return $ret;
+	}
+	
+	public static function check_no_empty_invoice($data) {
+		if (isset($data['receipt']) && $data['receipt']) return true;
+		$ret = array();
+		if (!$data['last_name']) $ret['last_name'] = 'Field required for non-receipt transactions'; 
+		if (!$data['first_name']) $ret['first_name'] = 'Field required for non-receipt transactions'; 
+		if (!$data['address_1']) $ret['address_1'] = 'Field required for non-receipt transactions'; 
+		if (!$data['city']) $ret['city'] = 'Field required for non-receipt transactions'; 
+		foreach ($ret as $k=>$v) $ret[$k] = Base_LangCommon::ts('Premium_Warehouse_Items_Orders',$v);
+		return empty($ret)?true:$ret;
 	}
 	
 	public static function QFfield_receipt(&$form, $field, $label, $mode, $default, $desc, $rb_obj) {
@@ -389,6 +400,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	public static function QFfield_company_name(&$form, $field, $label, $mode, $default, $desc, $rb_obj){
 		if ($mode!='view') {
 			if ($mode=='add') $form->addFormRule(array('Premium_Warehouse_Items_OrdersCommon','check_if_no_duplicate_company_contact'));
+			$form->addFormRule(array('Premium_Warehouse_Items_OrdersCommon','check_no_empty_invoice'));
 			$form->addElement('text', $field, $label, array('id'=>$field));
 			$form->setDefaults(array($field=>$default));
 		} else {
