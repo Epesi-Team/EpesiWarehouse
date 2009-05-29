@@ -57,10 +57,12 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	}
 
     public static function display_first_name($v, $nolink=false, $desc=null) {
+		if (!$v['contact']) return $v[$desc['id']];
 		return Utils_RecordBrowserCommon::record_link_open_tag('contact', $v['contact'], $nolink).$v[$desc['id']].Utils_RecordBrowserCommon::record_link_close_tag();
 	}
 
     public static function display_last_name($v, $nolink=false, $desc=null) {
+		if (!$v['contact']) return $v[$desc['id']];
 		return Utils_RecordBrowserCommon::record_link_open_tag('contact', $v['contact'], $nolink).$v[$desc['id']].Utils_RecordBrowserCommon::record_link_close_tag();
 	}
 
