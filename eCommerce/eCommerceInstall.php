@@ -424,7 +424,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 
 // ************ other ************** //
 		Utils_RecordBrowserCommon::new_record_field('company','eCommerce Category','multiselect', false, false, 'premium_warehouse_items_categories::Category Name', '', false, false, 16);
-		Utils_RecordBrowserCommon::set_QFfield_method('company','eCommerce Category','Premium_Warehouse_ItemsCommon', 'QFfield_item_category');
+		Utils_RecordBrowserCommon::set_QFfield_callback('company','eCommerce Category',array('Premium_Warehouse_ItemsCommon', 'QFfield_item_category'));
 
 		Utils_CommonDataCommon::new_array('Premium/Warehouse/eCommerce/Languages',array('en'=>'English','pl'=>'Polish'));
 		Utils_RecordBrowserCommon::new_record('premium_ecommerce_availability',

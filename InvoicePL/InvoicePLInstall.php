@@ -21,17 +21,14 @@ class Premium_Warehouse_InvoicePLInstall extends ModuleInstall {
 
 		Utils_RecordBrowserCommon::new_addon('premium_warehouse_items_orders', 'Premium_Warehouse_InvoicePL', 'invoicepl', 'Premium_Warehouse_InvoicePLCommon::invoice_pl_addon_parameters');
 		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items_orders','Invoice Number','text', true, false, '32', 'integer', false, false);
-		Utils_RecordBrowserCommon::set_display_method('premium_warehouse_items_orders','Invoice Number','Premium_Warehouse_InvoicePLCommon', 'display_invoice_number');
-		Utils_RecordBrowserCommon::set_QFfield_method('premium_warehouse_items_orders','Invoice Number','Premium_Warehouse_InvoicePLCommon', 'QFfield_invoice_number');
+		Utils_RecordBrowserCommon::set_display_callback('premium_warehouse_items_orders','Invoice Number',array('Premium_Warehouse_InvoicePLCommon', 'display_invoice_number'));
+		Utils_RecordBrowserCommon::set_QFfield_callback('premium_warehouse_items_orders','Invoice Number',array('Premium_Warehouse_InvoicePLCommon', 'QFfield_invoice_number'));
 
 		Utils_RecordBrowserCommon::new_record_field('premium_warehouse','Invoice Display Name','text', false, false, '64', '', false, false);
 
 		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items_orders_details','SWW','text', true, false, '32', 'integer', false, false, 12);
 
 		Utils_RecordBrowserCommon::set_processing_callback('premium_warehouse_items_orders', array('Premium_Warehouse_InvoicePLCommon', 'submit_order'));
-
-		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items_orders','Receipt','checkbox', true, false, '', '', false, false, 'Contact Details');
-		Utils_RecordBrowserCommon::set_QFfield_method('premium_warehouse_items_orders','Receipt','Premium_Warehouse_InvoicePLCommon', 'QFfield_receipt');
 
 		return true;
 	}
@@ -45,8 +42,6 @@ class Premium_Warehouse_InvoicePLInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::delete_record_field('premium_warehouse','Invoice Display Name');
 
 		Utils_RecordBrowserCommon::delete_record_field('premium_warehouse_items_orders_details','SWW');
-
-		Utils_RecordBrowserCommon::delete_record_field('premium_warehouse_items_orders','Receipt');
 
 		return true;
 	}
