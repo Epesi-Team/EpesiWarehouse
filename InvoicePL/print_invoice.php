@@ -49,8 +49,6 @@ Libs_TCPDFCommon::add_page($tcpdf);
 
 $buffer = '';
 
-Base_ThemeCommon::install_default_theme('Premium_Warehouse_InvoicePL');
-
 $theme = Base_ThemeCommon::init_smarty();
 $theme->assign('order', $order);
 $theme->assign('warehouse', $warehouse);
