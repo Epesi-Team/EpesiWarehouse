@@ -19,7 +19,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 
 	public function body() {
 		$this->rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items_orders','premium_warehouse_items_orders');
-		$this->rb->set_default_order(array('transaction_date'=>'DESC'));
+		$this->rb->set_default_order(array('transaction_date'=>'DESC','transaction_id'=>'DESC'));
 		$me = CRM_ContactsCommon::get_my_record();
 		$defaults = array(	'country'=>Base_User_SettingsCommon::get('Base_RegionalSettings','default_country'),
 							'zone'=>Base_User_SettingsCommon::get('Base_RegionalSettings','default_state'),
