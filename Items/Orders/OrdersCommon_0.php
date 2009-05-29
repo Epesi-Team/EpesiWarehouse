@@ -346,6 +346,55 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		$opts = self::get_status_array($r);
 		return $opts[$r['status']];
 	}
+	
+	public static function check_if_no_duplicate_company_contact($data) {
+		$ret = true;
+		if (!isset($data['company']) || $data['company']<=0) {
+			$recs = Utils_RecordBrowserCommon::get_records('company', array('company_name'=>$data['company_name']));
+			if (!empty($recs)) {
+				$first = array_pop($recs);
+				eval_js('setTimeout(function(){$("company").value='.$first['id'].';$("company").fire(\'e_cs:load\');},100);');
+				$ret = array('company'=>'Warning: Company with that name was already found in the system.');
+			}
+		}
+		if (!isset($data['contact']) || $data['contact']<=0) {
+			$recs = Utils_RecordBrowserCommon::get_records('contact', array('first_name'=>$data['first_name'],'last_name'=>$data['last_name']));
+			if (!empty($recs)) {
+				$first = array_pop($recs);
+				eval_js('set_contact_duplicate=function(){if($("contact")){$("contact").value='.$first['id'].';}else setTimeout("set_contact_duplicate()", 300)};');
+				eval_js('setTimeout("set_contact_duplicate()", 1000);');
+				if (!is_array($ret)) $ret = array();
+				$ret['contact']='Warning: Contact with the same first and last name was already found in the system.';
+			}
+		}
+		return $ret;
+	}
+	
+	public static function QFfield_receipt(&$form, $field, $label, $mode, $default, $desc, $rb_obj) {
+		if ($mode!='view') {
+			$form->addElement('checkbox', $field, $label);
+			$form->setDefaults(array($field=>$default));
+		} else {
+			if ($default) {
+				$form->addElement('checkbox', $field, $label);
+				$form->freeze('checkbox');
+				$form->setDefaults(array($field=>$default));
+				eval_js('hide_rb_field=function(arg){if($("_"+arg+"__label"))$("_"+arg+"__label").parentNode.parentNode.style.display="none"}');
+				foreach(array('last_name','first_name','company_name','address_1','address_2','city','country','zone','postal_code','phone','tax_id') as $v)
+					eval_js('hide_rb_field("'.$v.'");');
+			}
+		}
+	}
+	
+	public static function QFfield_company_name(&$form, $field, $label, $mode, $default, $desc, $rb_obj){
+		if ($mode!='view') {
+			if ($mode=='add') $form->addFormRule(array('Premium_Warehouse_Items_OrdersCommon','check_if_no_duplicate_company_contact'));
+			$form->addElement('text', $field, $label, array('id'=>$field));
+			$form->setDefaults(array($field=>$default));
+		} else {
+			$form->addElement('static', $field, $label, self::display_company_name(Utils_RecordBrowser::$last_record, false, array('id'=>$field)));
+		}
+	}
 
 	public static function QFfield_status(&$form, $field, $label, $mode, $default, $desc, $rb_obj){
 		if ($mode!='view' && (Utils_RecordBrowser::$last_record['transaction_type']==0 || Utils_RecordBrowser::$last_record['transaction_type']==1)) {
@@ -487,16 +536,6 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		} else {
 			$form->addElement('static', $field, $label);
 			$form->setDefaults(array($field=>self::display_item_name(array('item_name'=>$default), null, array('id'=>'item_name'))));
-		}
-	}
-
-	public static function QFfield_company_name(&$form, $field, $label, $mode, $default){
-		if ($mode=='add' || $mode=='edit') {
-			$form->addElement('text', $field, $label);
-			if ($mode=='edit') $form->setDefaults(array($field=>$default));
-		} else {
-			$form->addElement('static', $field, $label);
-			$form->setDefaults(array($field=>self::display_company_name(array('company_name'=>$default), null, array('id'=>'company_name'))));
 		}
 	}
 
@@ -946,6 +985,37 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 				Base_ActionBarCommon::add($icon,$label,Module::create_href(array('premium_warehouse_change_active_order'=>$values['id'])));
 				return;
 			case 'add':
+				if ($values['company']<0 && $values['company_name']) {
+					$values['company'] = Utils_RecordBrowserCommon::new_record('company',
+						array(
+							'company_name'=>$values['company_name'],
+							'permission'=>0,
+							'address_1'=>$values['address_1'],
+							'address_2'=>$values['address_2'],
+							'city'=>$values['city'],
+							'country'=>$values['country'],
+							'zone'=>$values['zone'],
+							'postal_code'=>$values['postal_code'],
+							'phone'=>$values['phone'],
+							'tax_id'=>$values['tax_id']
+						));
+				}
+				if ($values['contact']==0 && $values['last_name']) {
+					$values['contact'] = Utils_RecordBrowserCommon::new_record('contact',
+						array(
+							'first_name'=>$values['first_name'],
+							'last_name'=>$values['last_name'],
+							'company_name'=>$values['company'],
+							'permission'=>0,
+							'address_1'=>$values['address_1'],
+							'address_2'=>$values['address_2'],
+							'city'=>$values['city'],
+							'country'=>$values['country'],
+							'zone'=>$values['zone'],
+							'postal_code'=>$values['postal_code'],
+							'work_phone'=>$values['phone']
+						));
+				}
 				return $values;
 			case 'edit':
 				$access = self::access_orders('fields', $values);
