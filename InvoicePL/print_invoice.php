@@ -15,6 +15,7 @@ $order_id = $_REQUEST['record_id'];
 
 if (!is_numeric($order_id)) die('Invalid usage');
 define('CID', $cid);
+define('READ_ONLY_SESSION',true);
 require_once('../../../../include.php');
 ModuleManager::load_modules();
 $order = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $order_id);
@@ -246,8 +247,6 @@ $html = Libs_TCPDFCommon::stripHTML($html);
 Libs_TCPDFCommon::writeHTML($tcpdf, $html);
 
 $buffer = Libs_TCPDFCommon::output($tcpdf);
-
-session_commit();
 
 header('Content-Type: application/pdf');
 header('Content-Length: '.strlen($buffer));
