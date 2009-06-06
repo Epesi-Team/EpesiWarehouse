@@ -16,8 +16,9 @@ class Premium_Warehouse_WholesaleInstall extends ModuleInstall {
 
 	public function install() {
 		Base_LangCommon::install_translations($this->get_type());
-		
 		Base_ThemeCommon::install_default_theme($this->get_type());
+		$this->create_data_dir();
+
 		$fields = array(
 			array('name'=>'Name', 			'type'=>'text', 'required'=>true, 'param'=>'128', 'extra'=>false, 'visible'=>true,'display_callback'=>array('Premium_Warehouse_WholesaleCommon', 'display_distributor')),
 			array('name'=>'Plugin', 		'type'=>'select', 'required'=>true, 'extra'=>false, 'QFfield_callback'=>array('Premium_Warehouse_WholesaleCommon','QFfield_plugin')),
@@ -70,10 +71,13 @@ class Premium_Warehouse_WholesaleInstall extends ModuleInstall {
 
 		DB::CreateTable('premium_warehouse_wholesale_items',
 						'item_id I4,'.
+						'internal_key C(32),'.
 						'distributor_id I4,'.
 						'quantity I4,'.
-						'quantity_info C(16)',
+						'quantity_info C(64)',
 						array('constraints'=>''));
+		DB::CreateIndex('premium_warehouse_wholesale_items__internal_key_distributor_id__idx', 'premium_warehouse_wholesale_items', array('internal_key','distributor_id'));
+		DB::CreateIndex('premium_warehouse_wholesale_items__item_id__idx', 'premium_warehouse_wholesale_items', 'item_id');
 
 		DB::Execute('UPDATE premium_warehouse_distributor_field SET param = 1 WHERE field = %s', array('Details'));
 

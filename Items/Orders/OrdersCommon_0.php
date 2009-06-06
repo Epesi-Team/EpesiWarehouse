@@ -966,7 +966,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 					eval_js('new ContractorUpdate()');
 				}
 			case 'editing':
-				return array('transaction_type'=>$values['transaction_type']);
+				break;
 			case 'delete':
 				$det = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$values['id']));
 				foreach ($det as $d)

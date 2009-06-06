@@ -58,6 +58,7 @@ class Premium_Warehouse_Items extends Module {
 						'quantity_on_hand'=>array('name'=>'On Hand', 'width'=>1, 'wrapmode'=>'nowrap'),
 						'quantity_en_route'=>array('name'=>'En Route', 'width'=>1, 'wrapmode'=>'nowrap'),
 						'available_qty'=>array('name'=>'Avail. Qty', 'width'=>1, 'wrapmode'=>'nowrap'),
+						'dist_qty'=>array('name'=>'Dist. Qty', 'width'=>1, 'wrapmode'=>'nowrap'),
 						'reserved_qty'=>array('name'=>'Res. Qty', 'width'=>1, 'wrapmode'=>'nowrap'),
 						'manufacturer_part_number'=>array('name'=>'Part Number', 'width'=>1, 'wrapmode'=>'nowrap'),
 						'item_type'=>array('width'=>1, 'wrapmode'=>'nowrap'),

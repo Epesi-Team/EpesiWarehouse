@@ -61,6 +61,10 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 		return Utils_RecordBrowserCommon::create_linked_label_r('premium_warehouse_distributor', 'Name', $v, $nolink);
 	}
 	
+    public static function display_distributor_qty($v, $nolink=false) {
+		return 0;
+	}
+	
 	public static function access_distributor($action, $param){
 		$i = self::Instance();
 		switch ($action) {
@@ -76,7 +80,14 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
     }
     
 	public static function scan_file_processing($data) {
-		self::$current_plugin->update_from_file($data);
+		load_js('modules/Premium/Warehouse/Wholesale/process_file.js');
+		eval_js('if($("wholesale_scan_file_form"))$("wholesale_scan_file_form").style.display="none";');
+		eval_js('if($("wholesale_scan_file_progress"))$("wholesale_scan_file_progress").style.display="block";');
+	    $time = time();	    
+		$dir = ModuleManager::get_data_dir('Premium_Warehouse_Wholesale');
+		$filename = $dir.'techdata_'.$time.'.tmp';
+		copy($data, $filename);
+		eval_js('wholesale_create_iframe('.Utils_RecordBrowser::$last_record['id'].',"'.$filename.'");');
     }
     
     public static function scan_file_leightbox($rb) {
@@ -86,11 +97,67 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 		ob_start();
 		$rb->display_module($form, array(array('Premium_Warehouse_WholesaleCommon','scan_file_processing')));
     	$form_html = ob_get_clean();
-		Libs_LeightboxCommon::display('wholesale_scan_file',$form_html,Base_LangCommon::ts('Premium_Warehouse_Wholesale','Upload a file for a scan'));
     	
-		Base_ActionBarCommon::add('folder', 'Scan new file', 'class="lbOn" rel="wholesale_scan_file"');
+		$theme = Base_ThemeCommon::init_smarty();
+		$fields = array(
+			'total'=>'Items in file:',
+			'scanned'=>'Items scanned:',
+			'available'=>'Items available:',
+			'item_exist'=>'Items found in the system:',
+			'link_exist'=>'Items scanned in the past:',
+			'new_items_added'=>'New items:',
+			'unknown'=>'Unknown'
+		);
+		foreach ($fields as $k=>$v) 
+			$theme->assign($k, Base_LangCommon::ts('Premium_Warehouse_Wholesale', $v));
+		
+		eval_js('update_wholesale_scan_status = function(total, scanned, available, item_exist, link_exist, new_items_added) {'.
+			'$("wholesale_scan_status_scanned").innerHTML=scanned;'.
+			'$("wholesale_scan_status_total").innerHTML=total;'.
+			'$("wholesale_scan_status_available").innerHTML=available;'.
+			'$("wholesale_scan_status_item_exist").innerHTML=item_exist;'.
+			'$("wholesale_scan_status_link_exist").innerHTML=link_exist;'.
+			'$("wholesale_scan_status_new_items_added").innerHTML=new_items_added;'.
+		'}');
+
+
+		ob_start();
+		Base_ThemeCommon::display_smarty($theme,'Premium_Warehouse_Wholesale','scan_status');
+		$html = ob_get_clean();
+
+		Libs_LeightboxCommon::display('wholesale_scan_file','<div id="wholesale_scan_file_progress" style="display:none;">'.$html.'</div><div id="wholesale_scan_file_form">'.$form_html.'</div>',Base_LangCommon::ts('Premium_Warehouse_Wholesale','Scan a file'));
+    	
+		Base_ActionBarCommon::add('folder', 'File scan', 'class="lbOn" rel="wholesale_scan_file"');
+    }
+    
+    public static function update_scan_status($total, $scanned, $available, $item_exist, $link_exist, $new_items_added) {
+		static $time = null;
+		if ($time===null) $time = microtime(true);
+		$new_time = microtime(true);
+		if ($new_time-$time>1.5 || $total==$scanned) {
+			$time = $new_time;
+			echo('<script>parent.update_wholesale_scan_status('.$total.','.$scanned.','.$available.','.$item_exist.','.$link_exist.','.$new_items_added.');</script>');
+			flush();
+			@ob_flush();
+		}
     }
 
+	public static function auto_update($dist) {
+		$plugin = self::get_plugin($dist['plugin']);
+		$params = $plugin->get_parameters();
+		$i = 1;
+		foreach ($params as $k=>$v) {
+			$params[$k] = $dist['param'.$i];
+			$i++;
+		}
+		$filename = $plugin->download_file($params, $dist);
+
+		eval_js('leightbox_activate(\'wholesale_scan_file\');');
+
+		self::scan_file_processing($filename);
+		return false;
+	}
+	
 	public static function submit_distributor($values, $mode, $recordset) {
 		if (isset($values['plugin']) && is_numeric($values['plugin'])) {
 			$plugin = self::get_plugin($values['plugin']);
@@ -133,20 +200,6 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 			$i++;
 		}
 		return $values;
-	}
-	
-	public static function auto_update($dist) {
-		print('Starting...<br>');
-		$plugin = self::get_plugin($dist['plugin']);
-		$params = $plugin->get_parameters();
-		$i = 1;
-		foreach ($params as $k=>$v) {
-			$params[$k] = $dist['param'.$i];
-			$i++;
-		}
-		$plugin->auto_update($params);
-		print('Update sucessful<br>');
-		return false;
 	}
 	
 	public static function get_change_parameters_labels_js($id) {
