@@ -29,11 +29,33 @@ interface Premium_Warehouse_Wholesale__Plugin {
 	public function get_parameters();
 
 	/**
-	 * Returns whether plugin supports auto-update feature
+	 * Returns whether plugin supports auto-download feature
 	 * 
 	 * @return bool support enabled
 	 */
-	public function is_auto_update();
+	public function is_auto_download();
+
+	/**
+	 * This method is called when user selects auto-update from the interface
+	 * It should download new file and return path and filename to downloaded file that is ready for parsing
+	 * (i.e. filename that would be a valid argument for update_from_file method)
+	 * 
+	 * @param array array of parameters for current distributor, with format {parameter name}=>{value} 
+	 * @param array distributor record (with necessary fields like 'id' and 'add_new_items'
+	 * @return string filename with its location
+	 */
+	public function download_file($parameters, $distributor);
+
+	/**
+	 * This method is called when a new file is given either via upload or auto-download method
+	 * It should parse the file and manipulate `premium_warehouse_wholesale_items` table to store results of the parsing
+	 * If distributor has set 'add_new_items' to true, this mthod can add items without match to the system (premium_warehouse_items recordSet)
+	 * 
+	 * @param string filename that should be parsed with its location 
+	 * @param array distributor record (with necessary fields like 'id' and 'add_new_items'
+	 * @return bool true if the update was successful, false otherwise
+	 */
+	public function update_from_file($filename, $distributor);
 }
 
 ?>

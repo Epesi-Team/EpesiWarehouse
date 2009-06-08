@@ -37,15 +37,17 @@ class Premium_Warehouse_Wholesale__Plugin_techdata implements Premium_Warehouse_
 	}
 
 	/**
-	 * Returns whether plugin supports auto-update feature
+	 * Returns whether plugin supports auto-download feature
 	 * 
 	 * @return bool support enabled
 	 */
-	public function is_auto_update() {
+	public function is_auto_download() {
 		return true;
 	}
 	
 	public function download_file($parameters, $distributor) {
+		$dir = ModuleManager::get_data_dir('Premium_Warehouse_Wholesale');
+
 	    $c = curl_init();
 	    $url = 'https://intouch.techdata.com/services/centrAuthentication.asp';
 
@@ -56,8 +58,8 @@ class Premium_Warehouse_Wholesale__Plugin_techdata implements Premium_Warehouse_
 		curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($c, CURLOPT_USERAGENT, "Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)");
 		curl_setopt($c, CURLOPT_FOLLOWLOCATION, true);
-		curl_setopt($c, CURLOPT_COOKIEFILE, "D:/cookiefile.cf");
-		curl_setopt($c, CURLOPT_COOKIEJAR, "D:/cookiefile.cf"); 
+		curl_setopt($c, CURLOPT_COOKIEFILE, $dir.'cookiefile.cf');
+		curl_setopt($c, CURLOPT_COOKIEJAR, $dir.'cookiefile.cf'); 
 
 	    curl_setopt($c, CURLOPT_POSTFIELDS, http_build_query(array(
 			'id'=>$parameters['Client number'],'name'=>$parameters['Login'],'pwd'=>$parameters['Password'],
@@ -78,20 +80,21 @@ class Premium_Warehouse_Wholesale__Plugin_techdata implements Premium_Warehouse_
 		
 		preg_match('/\"(\/download\.aspx.*?)\"/', $output, $match);
 	    
-	    // TODO: file location, perhaps requires update on daily basis
 		$url=htmlspecialchars_decode('http://www.techdata.pl'.$match[1]);
 		curl_setopt($c, CURLOPT_URL, $url);
 	    $output = curl_exec($c);
 	    $time = time();	    
 
-		$dir = ModuleManager::get_data_dir('Premium_Warehouse_Wholesale');
 		$zip_filename = $dir.'zip_techdata_'.$time.'.tmp';
 		$zip_extract_path = $dir.'zip_techdata_'.$time.'/';
 		file_put_contents($zip_filename, $output);
 
 		$zip = new ZipArchive;
-		if ($zip->open($zip_filename) == 1)
+		if ($zip->open($zip_filename) == 1) {
 			$zip->extractTo($zip_extract_path);
+		} else return false;
+
+		unlink($zip_filename);
 		
 		$dir = scandir($zip_extract_path);
 		$filename = '';
@@ -101,22 +104,13 @@ class Premium_Warehouse_Wholesale__Plugin_techdata implements Premium_Warehouse_
 				break;				
 			}
 			
-//		$this->update_from_file($zip_extract_path.$filename, $distributor);
-		
-		// TODO: clean up mess
-
 	    curl_close($c);
 	    
 	    return $zip_extract_path.$filename;
 	}
 
 	public function update_from_file($filename, $distributor) {
-		if (!is_callable('dbase_open')) {
-			$f = fopen($filename, 'r');
-			$header = fgets($f,387);
-		} else {
-			$d = dbase_open($filename, 0);
-		}
+		$d = dbase_open($filename, 0);
 
 		$total = 0;
 		$available = 0;
@@ -141,28 +135,21 @@ class Premium_Warehouse_Wholesale__Plugin_techdata implements Premium_Warehouse_
 
 		$index = 1;
 		$limit = dbase_numrecords($d);
-		while ((isset($d) && $index <= $limit) || (isset($f) && !feof($f))) {
+
+		$pln_id = Utils_CurrencyFieldCommon::get_id_by_code('PLN');
+		if ($pln_id===false || $pln_id===null)
+			return false;
+
+		while ($index <= $limit) {
 			Premium_Warehouse_WholesaleCommon::update_scan_status($limit, $total, $available, $item_exist, $link_exist, $new_items);
-			if (isset($d)) {
-				$row_parts = dbase_get_record_with_names($d, $index);
-				$index++;
-			} else {
-				$row = fgets($f,548);
-				$row_parts = array();
-				$last = 0;
-				foreach ($parts as $k=>$v) {
-					$row_parts[$k] = substr($row, $last, $v);
-					$last += $v;
-				}
-			}
+			$row_parts = dbase_get_record_with_names($d, $index);
+			$index++;
+
 			foreach ($row_parts as $k=>$v)
 				$row_parts[$k] = trim($v);
 
 			$total++;
 			$row_parts['W_MAG'] = strtolower(str_replace(' ','_',$row_parts['W_MAG']));
-			$pln_id = Utils_CurrencyFieldCommon::get_id_by_code('PLN');
-			if ($pln_id===false || $pln_id===null)
-				return false;
 			if ($row_parts['W_MAG']!='nie_ma' && $row_parts['NAZWA']) {
 				$available++;
 				/*** determine quantity and quantity info ***/
@@ -220,10 +207,7 @@ class Premium_Warehouse_Wholesale__Plugin_techdata implements Premium_Warehouse_
 			} 
 		}
 		Premium_Warehouse_WholesaleCommon::update_scan_status($limit, $total, $available, $item_exist, $link_exist, $new_items);
-		if (isset($d))
-			dbase_close($d);
-		else 
-			fclose($f);
+		dbase_close($d);
 		return true;
 	}
 }

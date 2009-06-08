@@ -24,5 +24,5 @@ if ($res===true) {
 	print('<script>parent.$("_last_update__data").innerHTML="'.Base_RegionalSettingsCommon::time2reg($time,'without_seconds').'";</script>');
 }
 
-// TODO: cleanup stuff
+// TODO: cleanup stuff (and do it safe way:S)
 ?>

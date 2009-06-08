@@ -78,7 +78,7 @@ class Premium_Warehouse_WholesaleInstall extends ModuleInstall {
 						'quantity I4,'.
 						'quantity_info C(64)',
 						array('constraints'=>''));
-		DB::CreateIndex('premium_warehouse_wholesale_items__internal_key_distributor_id__idx', 'premium_warehouse_wholesale_items', array('internal_key','distributor_id'));
+		DB::CreateIndex('premium_warehouse_wholesale_items__ik_di__idx', 'premium_warehouse_wholesale_items', array('internal_key','distributor_id'));
 		DB::CreateIndex('premium_warehouse_wholesale_items__item_id__idx', 'premium_warehouse_wholesale_items', 'item_id');
 
 		DB::Execute('UPDATE premium_warehouse_distributor_field SET param = 1 WHERE field = %s', array('Details'));

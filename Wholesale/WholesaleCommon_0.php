@@ -109,8 +109,9 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 		eval_js('if($("wholesale_scan_file_progress"))$("wholesale_scan_file_progress").style.display="block";');
 	    $time = time();	    
 		$dir = ModuleManager::get_data_dir('Premium_Warehouse_Wholesale');
-		$filename = $dir.'techdata_'.$time.'.tmp';
-		copy($data, $filename);
+		$filename = $dir.'current_scan_'.$time.'.tmp';
+		@copy($data, $filename);
+		@unlink($data);
 		eval_js('wholesale_create_iframe('.Utils_RecordBrowser::$last_record['id'].',"'.$filename.'");');
     }
     
@@ -159,6 +160,7 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 		$new_time = microtime(true);
 		if ($new_time-$time>1.5 || $total==$scanned) {
 			$time = $new_time;
+			if ($total===null) $total='"'.Base_LangCommon::ts('Premium_Warehouse_Wholesale','Unknown').'"';
 			echo('<script>parent.update_wholesale_scan_status('.$total.','.$scanned.','.$available.','.$item_exist.','.$link_exist.','.$new_items_added.');</script>');
 			flush();
 			@ob_flush();
@@ -198,7 +200,7 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 			case 'view':
 				if (isset($plugin)) {
 					self::$current_plugin = $plugin;
-					if ($plugin->is_auto_update()) {
+					if ($plugin->is_auto_download()) {
 						if (isset($_REQUEST['wholesale_module_auto_update']) && $_REQUEST['wholesale_module_auto_update']=$values['id'])
 							self::auto_update($values);
 						Base_ActionBarCommon::add('search','Auto-update', Module::create_href(array('wholesale_module_auto_update'=>$values['id'])));
