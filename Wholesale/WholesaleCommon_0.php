@@ -208,14 +208,16 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 			$plugin = self::get_plugin($id);
 			$params = $plugin->get_parameters();
 			foreach ($params as $k=>$v) {
-				$js .= '$("_param'.$i.'__label").innerHTML="'.Base_LangCommon::ts('Premium_Warehouse_Wholesale',$k).'";';
-				$js .= 'if($("param'.$i.'"))$("param'.$i.'").type="'.$v.'";';
-				$js .= '$("_param'.$i.'__label").parentNode.parentNode.style.display="";';
+				$js .= 	'if($("param'.$i.'"))$("param'.$i.'").type="'.$v.'";'.
+						'if($("_param'.$i.'__label")){'.
+							'$("_param'.$i.'__label").innerHTML="'.Base_LangCommon::ts('Premium_Warehouse_Wholesale',$k).'";'.
+							'$("_param'.$i.'__label").parentNode.parentNode.style.display="";'.
+						'}';
 				$i++;
 			}
 		}
 		while($i<=6) {
-			$js .= '$("_param'.$i.'__label").parentNode.parentNode.style.display="none";';
+			$js .= 'if($("_param'.$i.'__label"))$("_param'.$i.'__label").parentNode.parentNode.style.display="none";';
 			$i++;
 		}
 		return $js;

@@ -160,6 +160,9 @@ class Premium_Warehouse_Wholesale__Plugin_techdata implements Premium_Warehouse_
 
 			$total++;
 			$row_parts['W_MAG'] = strtolower(str_replace(' ','_',$row_parts['W_MAG']));
+			$pln_id = Utils_CurrencyFieldCommon::get_id_by_code('PLN');
+			if ($pln_id===false || $pln_id===null)
+				return false;
 			if ($row_parts['W_MAG']!='nie_ma' && $row_parts['NAZWA']) {
 				$available++;
 				/*** determine quantity and quantity info ***/
@@ -207,12 +210,12 @@ class Premium_Warehouse_Wholesale__Plugin_techdata implements Premium_Warehouse_
 						$item_exist++;
 					}
 					if ($w_item!==null) {
-						DB::Execute('INSERT INTO premium_warehouse_wholesale_items (item_id, internal_key, distributor_id, quantity, quantity_info) VALUES (%d, %s, %d, %d, %s)', array($w_item, $row_parts['KOD_TD'], $distributor['id'], $quantity, $quantity_info));
+						DB::Execute('INSERT INTO premium_warehouse_wholesale_items (item_id, internal_key, distributor_id, quantity, quantity_info, price, price_currency) VALUES (%d, %s, %d, %d, %s, %f, %d)', array($w_item, $row_parts['KOD_TD'], $distributor['id'], $quantity, $quantity_info, $row_parts['CENA_C'], $pln_id));
 					}
 				} else {
 					/*** there's an exact match in the system already ***/
 					$link_exist++;
-					DB::Execute('UPDATE premium_warehouse_wholesale_items SET quantity=%d, quantity_info=%s WHERE internal_key=%s AND distributor_id=%d', array($quantity, $quantity_info, $row_parts['KOD_TD'], $distributor['id']));
+					DB::Execute('UPDATE premium_warehouse_wholesale_items SET quantity=%d, quantity_info=%s, price=%f, price_currency=%d WHERE internal_key=%s AND distributor_id=%d', array($quantity, $quantity_info, $row_parts['CENA_C'], $pln_id, $row_parts['KOD_TD'], $distributor['id']));
 				}
 			} 
 		}

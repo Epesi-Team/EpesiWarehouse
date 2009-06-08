@@ -73,6 +73,8 @@ class Premium_Warehouse_WholesaleInstall extends ModuleInstall {
 						'item_id I4,'.
 						'internal_key C(32),'.
 						'distributor_id I4,'.
+						'price F,'.
+						'price_currency I4,'.
 						'quantity I4,'.
 						'quantity_info C(64)',
 						array('constraints'=>''));

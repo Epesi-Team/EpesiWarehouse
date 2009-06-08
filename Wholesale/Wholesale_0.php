@@ -29,6 +29,58 @@ class Premium_Warehouse_Wholesale extends Module {
 		$a->allow_public($this->acl_check('view public notes'),$this->acl_check('edit public notes'));
 		$this->display_module($a);
 	}
+	
+	public function items_addon($arg) {
+		$gb = $this->init_module('Utils/GenericBrowser', null, 'wholesale_items_addon');
+		$gb->set_table_columns(array(
+			array('name'=>$this->t('SKU'), 'width'=>1, 'wrapmode'=>'nowrap'),
+			array('name'=>$this->t('Item Name'), 'width'=>40, 'wrapmode'=>'nowrap'),
+			array('name'=>$this->t('Distributor Code'), 'width'=>7, 'wrapmode'=>'nowrap'),
+			array('name'=>$this->t('Price'), 'width'=>7, 'wrapmode'=>'nowrap'),
+			array('name'=>$this->t('Quantity'), 'width'=>7, 'wrapmode'=>'nowrap'),
+			array('name'=>$this->t('Quantity Details'), 'width'=>7, 'wrapmode'=>'nowrap')
+		));
+		$limit = $gb->get_limit(DB::GetOne('SELECT COUNT(*) FROM premium_warehouse_wholesale_items WHERE distributor_id=%d AND (quantity!=%d OR quantity_info!=%s)', array($arg['id'],0,'')));
+		$ret = DB::SelectLimit('SELECT * FROM premium_warehouse_wholesale_items WHERE distributor_id=%d AND (quantity!=%d OR quantity_info!=%s) ORDER BY item_id', $limit['numrows'], $limit['offset'], array($arg['id'],0,''));
+		while ($row=$ret->FetchRow()) {
+			$item = Utils_RecordBrowserCommon::get_record('premium_warehouse_items', $row['item_id']);
+			$gb->add_row(
+				Utils_RecordBrowserCommon::create_linked_label('premium_warehouse_items', 'sku', $item['id']),
+				$item['item_name'],
+				array('value'=>$row['internal_key'], 'style'=>'text-align:right;'),
+				array('value'=>Utils_CurrencyFieldCommon::format($row['price'],$row['price_currency']), 'style'=>'text-align:right;'),
+				array('value'=>$row['quantity'], 'style'=>'text-align:right;'),
+				$row['quantity_info']
+			);
+		}
+		$this->display_module($gb);
+	}
+
+	public function distributors_addon($arg) {
+		$gb = $this->init_module('Utils/GenericBrowser', null, 'wholesale_items_addon');
+		$gb->set_table_columns(array(
+			array('name'=>$this->t('Distributor'), 'width'=>40, 'wrapmode'=>'nowrap'),
+			array('name'=>$this->t('Distributor Code'), 'width'=>7, 'wrapmode'=>'nowrap'),
+			array('name'=>$this->t('Price'), 'width'=>7, 'wrapmode'=>'nowrap'),
+			array('name'=>$this->t('Quantity'), 'width'=>7, 'wrapmode'=>'nowrap'),
+			array('name'=>$this->t('Quantity Details'), 'width'=>7, 'wrapmode'=>'nowrap'),
+			array('name'=>$this->t('Last Update'), 'width'=>7, 'wrapmode'=>'nowrap')
+		));
+		$limit = $gb->get_limit(DB::GetOne('SELECT COUNT(*) FROM premium_warehouse_wholesale_items WHERE item_id=%d AND (quantity!=%d OR quantity_info!=%s)', array($arg['id'],0,'')));
+		$ret = DB::SelectLimit('SELECT * FROM premium_warehouse_wholesale_items WHERE item_id=%d AND (quantity!=%d OR quantity_info!=%s)', $limit['numrows'], $limit['offset'], array($arg['id'],0,''));
+		while ($row=$ret->FetchRow()) {
+			$dist = Utils_RecordBrowserCommon::get_record('premium_warehouse_distributor', $row['distributor_id']);
+			$gb->add_row(
+				$dist['name'],
+				array('value'=>$row['internal_key'], 'style'=>'text-align:right;'),
+				array('value'=>Utils_CurrencyFieldCommon::format($row['price'],$row['price_currency']), 'style'=>'text-align:right;'),
+				array('value'=>$row['quantity'], 'style'=>'text-align:right;'),
+				$row['quantity_info'],
+				Base_RegionalSettingsCommon::time2reg($dist['last_update'],'without_seconds')
+			);
+		}
+		$this->display_module($gb);
+	}
 
 	public function caption(){
 		if (isset($this->rb)) return $this->rb->caption();
