@@ -71,7 +71,7 @@ class Premium_Warehouse_Wholesale extends Module {
 		while ($row=$ret->FetchRow()) {
 			$dist = Utils_RecordBrowserCommon::get_record('premium_warehouse_distributor', $row['distributor_id']);
 			$gb->add_row(
-				$dist['name'],
+				Utils_RecordBrowserCommon::create_linked_label('premium_warehouse_distributor', 'name', $dist['id']),
 				array('value'=>$row['internal_key'], 'style'=>'text-align:right;'),
 				array('value'=>Utils_CurrencyFieldCommon::format($row['price'],$row['price_currency']), 'style'=>'text-align:right;'),
 				array('value'=>$row['quantity'], 'style'=>'text-align:right;'),

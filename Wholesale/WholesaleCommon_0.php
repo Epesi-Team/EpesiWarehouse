@@ -62,7 +62,31 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 	}
 	
     public static function display_distributor_qty($v, $nolink=false) {
-		return 0;
+    	$row = DB::GetRow('SELECT SUM(quantity) AS qty, MAX(quantity_info) AS qty_info FROM premium_warehouse_wholesale_items WHERE item_id=%d', array($v['id']));
+		return '<span '.Utils_TooltipCommon::ajax_open_tag_attrs(array('Premium_Warehouse_WholesaleCommon','dist_qty_tooltip'), array($v['id']),500).'>'.$row['qty'].($row['qty_info']?'*':'').'</span>';
+	}
+	
+	public static function dist_qty_tooltip($item_id) {
+    	$ret = DB::Execute('SELECT * FROM premium_warehouse_wholesale_items WHERE item_id=%d ORDER BY quantity', array($item_id));
+		$theme = Base_ThemeCommon::init_smarty();
+		$theme->assign('header', array(
+			'distributor'=>Base_LangCommon::ts('Premium_Warehouse_Wholesale','Distributor'),
+			'quantity'=>Base_LangCommon::ts('Premium_Warehouse_Wholesale','Quantity'),
+			'quantity_info'=>Base_LangCommon::ts('Premium_Warehouse_Wholesale','Qty Info'),
+			'price'=>Base_LangCommon::ts('Premium_Warehouse_Wholesale','Price')
+			));    	
+		$distros = array();
+    	while ($row = $ret->FetchRow()) {
+			$dist = Utils_RecordBrowserCommon::get_record('premium_warehouse_distributor', $row['distributor_id']);
+    		$distros[] = array(
+    			'distributor_name'=>$dist['name'],
+    			'quantity'=>$row['quantity'],
+    			'quantity_info'=>$row['quantity_info'],
+				'price'=>Utils_CurrencyFieldCommon::format($row['price'],$row['price_currency'])
+    		);
+    	}
+		$theme->assign('distros', $distros);
+		Base_ThemeCommon::display_smarty($theme,'Premium_Warehouse_Wholesale','dist_qty_tooltip');
 	}
 	
 	public static function access_distributor($action, $param){
