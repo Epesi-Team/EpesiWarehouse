@@ -221,6 +221,7 @@ class Premium_Warehouse_Wholesale__Plugin_techdata implements Premium_Warehouse_
 			dbase_close($d);
 		else 
 			fclose($f);
+		return true;
 	}
 }
 

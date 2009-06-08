@@ -16,7 +16,13 @@ if(!Acl::is_user()) die('Not logged in');
 $dist = Utils_RecordBrowserCommon::get_record('premium_warehouse_distributor', $_GET['id']);
 $plugin = Premium_Warehouse_WholesaleCommon::get_plugin($dist['plugin']);
 
-$plugin->update_from_file($_GET['file'], $dist);
+$res = $plugin->update_from_file($_GET['file'], $dist);
+
+if ($res===true) { 
+	$time = time();
+	Utils_RecordBrowserCommon::update_record('premium_warehouse_distributor', $_GET['id'], array('last_update'=>$time));
+	print('<script>parent.$("_last_update__data").innerHTML="'.Base_RegionalSettingsCommon::time2reg($time,'without_seconds').'";</script>');
+}
 
 // TODO: cleanup stuff
 ?>

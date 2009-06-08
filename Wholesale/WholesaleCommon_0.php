@@ -131,8 +131,7 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
     }
     
     public static function update_scan_status($total, $scanned, $available, $item_exist, $link_exist, $new_items_added) {
-		static $time = null;
-		if ($time===null) $time = microtime(true);
+		static $time = 0;
 		$new_time = microtime(true);
 		if ($new_time-$time>1.5 || $total==$scanned) {
 			$time = $new_time;
