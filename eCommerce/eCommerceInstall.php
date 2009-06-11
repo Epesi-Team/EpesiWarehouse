@@ -286,7 +286,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		$ret = DB::CreateTable('premium_ecommerce_products_stats','
 			obj I4 NOTNULL,
 			visited_on T DEFTIMESTAMP',
-			array('constraints'=>' , FOREIGN KEY (product) REFERENCES premium_warehouse_items_data_1(id)'));
+			array('constraints'=>' , FOREIGN KEY (obj) REFERENCES premium_warehouse_items_data_1(id)'));
 		if(!$ret){
 			print('Unable to create table premium_ecommerce_products_stats.<br>');
 			return false;
@@ -295,7 +295,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		$ret = DB::CreateTable('premium_ecommerce_pages_stats','
 			obj I4 NOTNULL,
 			visited_on T DEFTIMESTAMP',
-			array('constraints'=>' , FOREIGN KEY (page) REFERENCES premium_ecommerce_pages_data_1(id)'));
+			array('constraints'=>' , FOREIGN KEY (obj) REFERENCES premium_ecommerce_pages_data_1(id)'));
 		if(!$ret){
 			print('Unable to create table premium_ecommerce_pages_stats.<br>');
 			return false;
@@ -304,7 +304,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		$ret = DB::CreateTable('premium_ecommerce_categories_stats','
 			obj I4 NOTNULL,
 			visited_on T DEFTIMESTAMP',
-			array('constraints'=>' , FOREIGN KEY (page) REFERENCES premium_warehouse_items_categories_data_1(id)'));
+			array('constraints'=>' , FOREIGN KEY (obj) REFERENCES premium_warehouse_items_categories_data_1(id)'));
 		if(!$ret){
 			print('Unable to create table premium_ecommerce_categories_stats.<br>');
 			return false;
