@@ -459,10 +459,12 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 
 		$this->create_data_dir();
 		@mkdir($this->get_data_dir().'banners');
+		Base_ThemeCommon::install_default_theme('Premium/Warehouse/eCommerce');
 		return true;
 	}
 	
 	public function uninstall() {
+		Base_ThemeCommon::uninstall_default_theme('Premium/Warehouse/eCommerce');
 		DB::DropTable('premium_ecommerce_orders_temp');
 		DB::DropTable('premium_ecommerce_quickcart');
 		DB::DropTable('premium_ecommerce_products_stats');
@@ -531,6 +533,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_banners');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_product_comments');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_orders');
+		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_newsletter');
 		return true;
 	}
 	
