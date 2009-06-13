@@ -94,6 +94,7 @@ function listProductFeatures( $sFile = null, $iProduct = null ){
 	$oTpl =& TplParser::getInstance( );
 	$content = '';
 
+	if(isset($parameters[$iProduct]))
 	foreach($parameters[$iProduct] as $aData) {
     		$aData['iStyle'] = ( $i2 % 2 ) ? 0: 1;
     		$aData['sStyle'] = ( $i2 == ( $iCount - 1 ) ) ? 'L' : $i2 + 1;
