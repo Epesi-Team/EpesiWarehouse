@@ -814,9 +814,10 @@ $this->aOrders[$iOrder] = $aData;
      static $payments = null;
      if(!isset($payments)) {
         $payments_id = DB::GetOne('SELECT id FROM utils_commondata_tree WHERE akey="Premium_Items_Orders_Payment_Types"');
+        $currency = $this->getCurrencyId();
 	if($payments_id===false)
 	    die('Common data key "Premium_Items_Orders_Payment_Types" not defined.');
-	$payments = DB::GetAssoc('SELECT akey, value FROM utils_commondata_tree WHERE parent_id=%d ORDER BY akey',array($payments_id));
+	$payments = DB::GetAssoc('SELECT p.akey, p.value FROM utils_commondata_tree p WHERE p.parent_id=%d AND p.akey IN (SELECT f_payment FROM premium_ecommerce_payments_carriers_data_1 WHERE f_currency=%s AND active=1) ORDER BY akey',array($payments_id,$currency));
     }
     return $payments;
   }
