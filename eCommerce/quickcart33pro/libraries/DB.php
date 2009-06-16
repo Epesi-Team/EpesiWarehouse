@@ -9,7 +9,7 @@
 
 define('_VALID_ACCESS',1);
 require_once(EPESI_DATA_DIR.'/config.php');
-@include_once(EPESI_DATA_DIR.'/Base_Lang/'.self::get_lang_code().'.php');
+@include_once(EPESI_DATA_DIR.'/Base_Lang/'.LANGUAGE.'.php');
 global $translations;
 if(!is_array($translations))
 	$translations=array();

@@ -839,6 +839,7 @@ $this->aOrders[$iOrder] = $aData;
 	foreach($shipments as $k=>$v) {
 		if(isset($translations['Utils_CommonData'][$v]))
 			$shipments[$k] = $translations['Utils_CommonData'][$v];
+	}
     }
     return $shipments;
   }
