@@ -425,7 +425,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 		if($r['net_price']=='') return;
 		$price = Utils_CurrencyFieldCommon::get_values($r['net_price']);
 		if($price[0]=='') return;
-		$p = ($price[0]*(100+Data_TaxRatesCommon::get_tax_rate($r['tax_rate'])))/100;
+		$p = round(($price[0]*(100+Data_TaxRatesCommon::get_tax_rate($r['tax_rate'])))/100,Utils_CurrencyFieldCommon::get_precission($price[1]));
 		$c = $price[1];
 	        Utils_RecordBrowserCommon::new_record('premium_ecommerce_prices', array('item_name'=>$id, 'currency'=>$c, 'gross_price'=>$p,'tax_rate'=>$r['tax_rate']));
 	}
