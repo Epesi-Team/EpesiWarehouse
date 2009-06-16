@@ -2,6 +2,8 @@
 //error_reporting( E_ALL );
 unset( $config, $aMenuTypes, $aPhotoTypes, $lang, $aBanners, $aBoxes, $aUser );
 
+define('EPESI_DIR','../../../../../data/');
+
 /*
 * Directories
 */

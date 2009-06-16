@@ -76,7 +76,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		//payments and carriers
 		$fields = array(
 			array('name'=>'Payment', 	'type'=>'commondata', 'required'=>true, 'extra'=>false, 'visible'=>true, 'param'=>array('order_by_key'=>true,'Premium_Items_Orders_Payment_Types')),
-			array('name'=>'Relate with',		'type'=>'integer',	'required'=>true, 'extra'=>false, 'visible'=>true,'display_callback'=>array($this->get_type().'Common', 'display_payment_related_with'),'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_payment_related_with')),
+			array('name'=>'Relate with',		'type'=>'integer',	'required'=>false, 'extra'=>false, 'visible'=>true,'display_callback'=>array($this->get_type().'Common', 'display_payment_related_with'),'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_payment_related_with')),
 			array('name'=>'Description', 		'type'=>'long text', 'required'=>false, 'extra'=>false,'visible'=>true)
 		);
 		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_payments', $fields);

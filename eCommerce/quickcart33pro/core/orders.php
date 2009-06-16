@@ -818,6 +818,11 @@ $this->aOrders[$iOrder] = $aData;
 	if($payments_id===false)
 	    die('Common data key "Premium_Items_Orders_Payment_Types" not defined.');
 	$payments = DB::GetAssoc('SELECT p.akey, p.value FROM utils_commondata_tree p WHERE p.parent_id=%d AND p.akey IN (SELECT f_payment FROM premium_ecommerce_payments_carriers_data_1 WHERE f_currency=%s AND active=1) ORDER BY akey',array($payments_id,$currency));
+	global $translations;
+	foreach($payments as $k=>$v) {
+		if(isset($translations['Utils_CommonData'][$v]))
+			$payments[$k] = $translations['Utils_CommonData'][$v];
+	}
     }
     return $payments;
   }
@@ -830,6 +835,10 @@ $this->aOrders[$iOrder] = $aData;
 	if($shipments_id===false)
 	    die('Common data key "Premium_Items_Orders_Shipment_Types" not defined.');
 	$shipments = DB::GetAssoc('SELECT akey, value FROM utils_commondata_tree WHERE parent_id=%d ORDER BY akey',array($shipments_id));
+	global $translations;
+	foreach($shipments as $k=>$v) {
+		if(isset($translations['Utils_CommonData'][$v]))
+			$shipments[$k] = $translations['Utils_CommonData'][$v];
     }
     return $shipments;
   }

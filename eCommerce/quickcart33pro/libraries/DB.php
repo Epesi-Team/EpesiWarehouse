@@ -8,7 +8,11 @@
 */
 
 define('_VALID_ACCESS',1);
-require_once('../../../../../data/config.php');
+require_once(EPESI_DATA_DIR.'/config.php');
+@include_once(EPESI_DATA_DIR.'/Base_Lang/'.self::get_lang_code().'.php');
+global $translations;
+if(!is_array($translations))
+	$translations=array();
 require_once('adodb/adodb-errorhandler.inc.php');
 require_once('adodb/adodb.inc.php');
 
