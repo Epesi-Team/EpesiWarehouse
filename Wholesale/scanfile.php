@@ -24,5 +24,6 @@ if ($res===true) {
 	print('<script>parent.$("_last_update__data").innerHTML="'.Base_RegionalSettingsCommon::time2reg($time,'without_seconds').'";</script>');
 }
 
+print('<script>parent.$("premium_wholesale_scan_iframe").parentNode.removeChild(parent.$("premium_wholesale_scan_iframe"));</script>');
 // TODO: cleanup stuff (and do it safe way:S)
 ?>

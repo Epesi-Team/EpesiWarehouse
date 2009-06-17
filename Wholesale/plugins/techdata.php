@@ -68,6 +68,10 @@ class Premium_Warehouse_Wholesale__Plugin_techdata implements Premium_Warehouse_
 	    $output = curl_exec($c);
 
 		preg_match('/action=\"(.*?)\"/',$output,$match);
+		if (!isset($match[1])) {
+			Premium_Warehouse_WholesaleCommon::file_download_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Authentication failure, aborting.'), 2, true);
+			return false;
+		}
 	    $url=$match[1];
 		preg_match('/session\" value=\"([a-zA-Z0-9]*?)\"/',$output,$match);
 	    curl_setopt($c, CURLOPT_URL, $url);
@@ -92,19 +96,27 @@ class Premium_Warehouse_Wholesale__Plugin_techdata implements Premium_Warehouse_
 		$zip = new ZipArchive;
 		if ($zip->open($zip_filename) == 1) {
 			$zip->extractTo($zip_extract_path);
-		} else return false;
+		} else {
+			return false;
+		}
+		
+		$zip->close();
 
-		unlink($zip_filename);
+		@unlink($zip_filename);
 		
 		$dir = scandir($zip_extract_path);
 		$filename = '';
 		foreach ($dir as $file)
 			if ($file != basename($file, '.DBF')) {
 				$filename = $file;
-				break;				
+			} else {
+				unlink($file);
 			}
+		
 			
 	    curl_close($c);
+
+		Premium_Warehouse_WholesaleCommon::file_download_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','File downloaded.'), 1, true);
 	    
 	    return $zip_extract_path.$filename;
 	}
@@ -137,9 +149,12 @@ class Premium_Warehouse_Wholesale__Plugin_techdata implements Premium_Warehouse_
 		$limit = dbase_numrecords($d);
 
 		$pln_id = Utils_CurrencyFieldCommon::get_id_by_code('PLN');
-		if ($pln_id===false || $pln_id===null)
+		if ($pln_id===false || $pln_id===null) {
+			Premium_Warehouse_WholesaleCommon::file_scan_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Unable to find required currency (%s), aborting.', array('PLN')), 2, true);
 			return false;
+		}
 
+		Premium_Warehouse_WholesaleCommon::file_scan_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Scanning...'));
 		while ($index <= $limit) {
 			Premium_Warehouse_WholesaleCommon::update_scan_status($limit, $total, $available, $item_exist, $link_exist, $new_items);
 			$row_parts = dbase_get_record_with_names($d, $index);
@@ -169,18 +184,18 @@ class Premium_Warehouse_Wholesale__Plugin_techdata implements Premium_Warehouse_
 					/*** exact match not found, looking for candidates ***/
 					$matches = Utils_RecordBrowserCommon::get_records('premium_warehouse_items', array(
 						'(~"item_name'=>DB::Concat(DB::qstr('%'),DB::qstr($row_parts['NAZWA']),DB::qstr('%')),
-						'|product_code'=>$row_parts['SYMBOLPROD']
+						'|manufacturer_part_number'=>$row_parts['SYMBOLPROD']
 					));
 					if (!empty($matches))
 						if (count($matches)==1) {
 							/*** one candidate found, if product code is empty or matches, it's ok ***/
 							$v = array_pop($matches);
-							if ($v['product_code']==$row_parts['SYMBOLPROD'] || $v['product_code']=='')
+							if ($v['manufacturer_part_number']==$row_parts['SYMBOLPROD'] || $v['manufacturer_part_number']=='')
 								$w_item = $v['id'];
 						} else {
 							/*** found more candidates, only product code is important now ***/
 							foreach ($matches as $v)
-								if ($v['product_code']==$row_parts['SYMBOLPROD']) {
+								if ($v['manufacturer_part_number']==$row_parts['SYMBOLPROD']) {
 									$w_item = $v['id'];
 									break;
 								}
@@ -190,7 +205,7 @@ class Premium_Warehouse_Wholesale__Plugin_techdata implements Premium_Warehouse_
 						$new_items++;
 						if ($distributor['add_new_items']) {
 							$vendor = Utils_RecordBrowserCommon::get_id('company', 'company_name', $row_parts['VENDOR']);
-							$w_item = Utils_RecordBrowserCommon::new_record('premium_warehouse_items', array('item_name'=>$row_parts['NAZWA'], 'item_type'=>1, 'product_code'=>$row_parts['SYMBOLPROD'], 'vendor'=>$vendor));
+							$w_item = Utils_RecordBrowserCommon::new_record('premium_warehouse_items', array('item_name'=>$row_parts['NAZWA'], 'item_type'=>1, 'manufacturer_part_number'=>$row_parts['SYMBOLPROD'], 'vendor'=>$vendor));
 						}
 					} else {
 						/*** found match ***/
@@ -206,6 +221,7 @@ class Premium_Warehouse_Wholesale__Plugin_techdata implements Premium_Warehouse_
 				}
 			} 
 		}
+		Premium_Warehouse_WholesaleCommon::file_scan_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Scan complete.'), 1);
 		Premium_Warehouse_WholesaleCommon::update_scan_status($limit, $total, $available, $item_exist, $link_exist, $new_items);
 		dbase_close($d);
 		return true;

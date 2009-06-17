@@ -63,6 +63,7 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 	
     public static function display_distributor_qty($v, $nolink=false) {
     	$row = DB::GetRow('SELECT SUM(quantity) AS qty, MAX(quantity_info) AS qty_info FROM premium_warehouse_wholesale_items WHERE item_id=%d', array($v['id']));
+    	if (!$row['qty'] && !$row['qty_info']) return 0;
 		return '<span '.Utils_TooltipCommon::ajax_open_tag_attrs(array('Premium_Warehouse_WholesaleCommon','dist_qty_tooltip'), array($v['id']),500).'>'.$row['qty'].($row['qty_info']?'*':'').'</span>';
 	}
 	
@@ -103,10 +104,44 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 		return false;
     }
     
+    private static function get_processing_message_js($str, $type=0, $hide_details=false) {
+    	$class = 'notification';
+    	if ($type==1) $class = 'success';
+    	if ($type==2) $class = 'error';
+    	$det_disp = ($hide_details?'none':'block');
+    	return 'wholesale_processing_message("'.$str.'","'.$det_disp.'","'.$class.'");';
+    }
+    
+    /**
+     * Displays a message in file scan legihtbox
+     * Use this method in plugnis to inform the user or progress or errors encountered
+     * Notice: use this method during downloading process, for file scan process use file_scan_message() instead 
+     * 
+     * @param string message text (must be already translated)
+     * @param integer type of the message, 0 - notification, 1 - success announcement, 2 - error
+     * @param bool true to hide progress details (numbers), false to show them
+     */
+    public static function file_download_message($str, $type=0, $hide_details=false) {
+    	eval_js(self::get_processing_message_js($str, $type, $hide_details));
+    }
+
+    /**
+     * Displays a message in file scan legihtbox
+     * Use this method in plugnis to inform the user or progress or errors encountered
+     * Notice: use this method during file scan process, for download process use file_download_message() instead 
+     * 
+     * @param string message text (must be already translated)
+     * @param integer type of the message, 0 - notification, 1 - success announcement, 2 - error
+     * @param bool true to hide progress details (numbers), false to show them
+     */
+    public static function file_scan_message($str, $type=0, $hide_details=false) {
+    	print('<script>parent.'.self::get_processing_message_js($str, $type, $hide_details).'</script>');
+    	flush();
+    	@ob_flush();
+    }
+    
 	public static function scan_file_processing($data) {
-		load_js('modules/Premium/Warehouse/Wholesale/process_file.js');
-		eval_js('if($("wholesale_scan_file_form"))$("wholesale_scan_file_form").style.display="none";');
-		eval_js('if($("wholesale_scan_file_progress"))$("wholesale_scan_file_progress").style.display="block";');
+		eval_js('wholesale_leightbox_switch_to_info();');
 	    $time = time();	    
 		$dir = ModuleManager::get_data_dir('Premium_Warehouse_Wholesale');
 		$filename = $dir.'current_scan_'.$time.'.tmp';
@@ -136,15 +171,8 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 		foreach ($fields as $k=>$v) 
 			$theme->assign($k, Base_LangCommon::ts('Premium_Warehouse_Wholesale', $v));
 		
-		eval_js('update_wholesale_scan_status = function(total, scanned, available, item_exist, link_exist, new_items_added) {'.
-			'$("wholesale_scan_status_scanned").innerHTML=scanned;'.
-			'$("wholesale_scan_status_total").innerHTML=total;'.
-			'$("wholesale_scan_status_available").innerHTML=available;'.
-			'$("wholesale_scan_status_item_exist").innerHTML=item_exist;'.
-			'$("wholesale_scan_status_link_exist").innerHTML=link_exist;'.
-			'$("wholesale_scan_status_new_items_added").innerHTML=new_items_added;'.
-		'}');
-
+		load_js('modules/Premium/Warehouse/Wholesale/scan_file_progress_reporting.js');
+		load_js('modules/Premium/Warehouse/Wholesale/process_file.js');
 
 		ob_start();
 		Base_ThemeCommon::display_smarty($theme,'Premium_Warehouse_Wholesale','scan_status');
@@ -152,7 +180,7 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 
 		Libs_LeightboxCommon::display('wholesale_scan_file','<div id="wholesale_scan_file_progress" style="display:none;">'.$html.'</div><div id="wholesale_scan_file_form">'.$form_html.'</div>',Base_LangCommon::ts('Premium_Warehouse_Wholesale','Scan a file'));
     	
-		Base_ActionBarCommon::add('folder', 'File scan', 'class="lbOn" rel="wholesale_scan_file"');
+		Base_ActionBarCommon::add('folder', 'File scan', 'class="lbOn" rel="wholesale_scan_file" onmouseup="wholesale_leightbox_switch_to_form();"');
     }
     
     public static function update_scan_status($total, $scanned, $available, $item_exist, $link_exist, $new_items_added) {
@@ -179,7 +207,7 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 
 		eval_js('leightbox_activate(\'wholesale_scan_file\');');
 
-		self::scan_file_processing($filename);
+		if ($filename!==false) self::scan_file_processing($filename);
 		return false;
 	}
 	

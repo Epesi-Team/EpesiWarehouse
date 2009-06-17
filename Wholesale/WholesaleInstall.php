@@ -49,7 +49,7 @@ class Premium_Warehouse_WholesaleInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::new_addon('premium_warehouse_distributor', 'Premium/Warehouse/Wholesale', 'attachment_addon', 'Notes');
 
 // ************ other ************** //	
-		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items', 'Dist Qty', 'calculated', true, false, '', 'integer', false, false, 'Quantity on Hand');
+		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items', 'Dist Qty', 'calculated', true, false, '', 'integer', false, false, 'Reserved Qty');
 		Utils_RecordBrowserCommon::set_display_callback('premium_warehouse_items', 'Dist Qty', array('Premium_Warehouse_WholesaleCommon','display_distributor_qty'));
 
 		$this->add_aco('browse distributors',array('Employee'));

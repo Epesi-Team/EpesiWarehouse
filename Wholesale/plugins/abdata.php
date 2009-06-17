@@ -75,17 +75,26 @@ class Premium_Warehouse_Wholesale__Plugin_abdata implements Premium_Warehouse_Wh
 	    $output = curl_exec($c);
 
 		$url = 'http://dealer.ab.pl/cennik_gen3.php';
+		curl_setopt($c, CURLOPT_FOLLOWLOCATION, false);
 		curl_setopt($c, CURLOPT_URL, $url);
 	    curl_setopt($c, CURLOPT_POSTFIELDS, http_build_query(array(
 			'ctype'=>'csv','filtr_brak'=>1)));
 		$output = curl_exec($c);
+
+		if (!$output) {
+			Premium_Warehouse_WholesaleCommon::file_download_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Authentication failure, aborting.'), 2, true);
+			return false;
+		}
+
 		
-	    $time = time();	    
+	    $time = time();
 
 		$filename = $dir.'ab_data_'.$time.'.tmp';
 		file_put_contents($filename, $output);
 
 	    curl_close($c);
+
+		Premium_Warehouse_WholesaleCommon::file_download_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','File downloaded.'), 1, true);
 	    
 	    return $filename;
 	}
@@ -128,11 +137,12 @@ class Premium_Warehouse_Wholesale__Plugin_abdata implements Premium_Warehouse_Wh
 		);
 
 		$pln_id = Utils_CurrencyFieldCommon::get_id_by_code('PLN');
-		if ($pln_id===false || $pln_id===null)
+		if ($pln_id===false || $pln_id===null) {
+			Premium_Warehouse_WholesaleCommon::file_scan_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Unable to find required currency (%s), aborting.', array('PLN')), 2, true);
 			return false;
+		}
 
-		$mag_stan = array();
-
+		Premium_Warehouse_WholesaleCommon::file_scan_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Scanning...'));
 		while (!feof($f)) {
 			$row = fgetcsv($f,0,$delimiter);
 			if ($row===false) break;
@@ -159,18 +169,18 @@ class Premium_Warehouse_Wholesale__Plugin_abdata implements Premium_Warehouse_Wh
 					/*** exact match not found, looking for candidates ***/
 					$matches = Utils_RecordBrowserCommon::get_records('premium_warehouse_items', array(
 						'(~"item_name'=>DB::Concat(DB::qstr('%'),DB::qstr($row['nazwa']),DB::qstr('%')),
-						'|product_code'=>$row['indeks_p']
+						'|manufacturer_part_number'=>$row['indeks_p']
 					));
 					if (!empty($matches))
 						if (count($matches)==1) {
 							/*** one candidate found, if product code is empty or matches, it's ok ***/
 							$v = array_pop($matches);
-							if ($v['product_code']==$row['indeks_p'] || $v['product_code']=='')
+							if ($v['manufacturer_part_number']==$row['indeks_p'] || $v['manufacturer_part_number']=='')
 								$w_item = $v['id'];
 						} else {
 							/*** found more candidates, only product code is important now ***/
 							foreach ($matches as $v)
-								if ($v['product_code']==$row['indeks_p']) {
+								if ($v['manufacturer_part_number']==$row['indeks_p']) {
 									$w_item = $v['id'];
 									break;
 								}
@@ -180,7 +190,7 @@ class Premium_Warehouse_Wholesale__Plugin_abdata implements Premium_Warehouse_Wh
 						$new_items++;
 						if ($distributor['add_new_items']) {
 							$vendor = Utils_RecordBrowserCommon::get_id('company', 'company_name', $row['producent']);
-							$w_item = Utils_RecordBrowserCommon::new_record('premium_warehouse_items', array('item_name'=>$row['nazwa'], 'item_type'=>1, 'product_code'=>$row['indeks_p'], 'vendor'=>$vendor));
+							$w_item = Utils_RecordBrowserCommon::new_record('premium_warehouse_items', array('item_name'=>$row['nazwa'], 'item_type'=>1, 'manufacturer_part_number'=>$row['indeks_p'], 'vendor'=>$vendor));
 						}
 					} else {
 						/*** found match ***/
@@ -196,6 +206,7 @@ class Premium_Warehouse_Wholesale__Plugin_abdata implements Premium_Warehouse_Wh
 				}
 			} 
 		}
+		Premium_Warehouse_WholesaleCommon::file_scan_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Scan complete.'), 1);
 		Premium_Warehouse_WholesaleCommon::update_scan_status($scanned, $scanned, $available, $item_exist, $link_exist, $new_items);
 		fclose($f);
 		return true;
