@@ -1,0 +1,11 @@
+.error#wholesale_scan_status_message {
+	color: red;
+}
+
+.notification#wholesale_scan_status_message {
+	color: blue;
+}
+
+.success#wholesale_scan_status_message {
+	color: green;
+}
