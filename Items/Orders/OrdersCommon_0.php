@@ -373,17 +373,20 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	public static function check_no_empty_invoice($data) {
 		if (isset($data['receipt']) && $data['receipt']) return true;
 		$ret = array();
-		if (!$data['last_name']) $ret['last_name'] = 'Field required for non-receipt transactions'; 
-		if (!$data['first_name']) $ret['first_name'] = 'Field required for non-receipt transactions'; 
-		if (!$data['address_1']) $ret['address_1'] = 'Field required for non-receipt transactions'; 
-		if (!$data['city']) $ret['city'] = 'Field required for non-receipt transactions'; 
+		if (!isset($data['last_name']) || !$data['last_name']) $ret['last_name'] = 'Field required for non-receipt transactions'; 
+		if (!isset($data['first_name']) || !$data['first_name']) $ret['first_name'] = 'Field required for non-receipt transactions'; 
+		if (!isset($data['address_1']) || !$data['address_1']) $ret['address_1'] = 'Field required for non-receipt transactions'; 
+		if (!isset($data['city']) || !$data['city']) $ret['city'] = 'Field required for non-receipt transactions'; 
+		if (!isset($data['country']) || !$data['country']) $ret['country'] = 'Field required for non-receipt transactions'; 
 		foreach ($ret as $k=>$v) $ret[$k] = Base_LangCommon::ts('Premium_Warehouse_Items_Orders',$v);
 		return empty($ret)?true:$ret;
 	}
 	
 	public static function QFfield_receipt(&$form, $field, $label, $mode, $default, $desc, $rb_obj) {
 		if ($mode!='view') {
-			$form->addElement('checkbox', $field, $label);
+			load_js('modules/Premium/Warehouse/Items/Orders/order_disable_contact_details.js');
+			$form->addElement('checkbox', $field, $label, null, array('id'=>$field, 'onclick'=>'order_disable_contact_details(this.checked)'));
+			eval_js('order_disable_contact_details($("'.$field.'").checked);');
 			$form->setDefaults(array($field=>$default));
 		} else {
 			if ($default) {
