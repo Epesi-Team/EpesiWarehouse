@@ -43,8 +43,6 @@ class Premium_Warehouse_EmpSalesReport extends Module {
 		$this->rbr->set_format(array(	self::$cats[0]=>'numeric', 
 										self::$cats[1]=>'currency'
 									));
-		$this->rbr->set_data_records('premium_warehouse_items_orders');
-		$this->rbr->set_data_record_relation('premium_warehouse_items_orders', array('employee'=>':id'));
 		$header = array('Employee');
 		$this->dates = $date_range['dates'];
 		$this->range_type = $date_range['type'];
@@ -67,7 +65,7 @@ class Premium_Warehouse_EmpSalesReport extends Module {
 
 	
 /************************************************************************************/
-	public function display_cells($ref_rec, $records){
+	public function display_cells($ref_rec){
 		
 		$result = array();
 		$hash = array();
@@ -81,7 +79,10 @@ class Premium_Warehouse_EmpSalesReport extends Module {
 		}
 		
 		// transactions types: 0=>'Purchase',1=>'Sale',2=>'Inventory Adjustment',3=>'Rental',4=>'Warehouse Transfer
-		foreach ($records[0] as $v) {
+		
+		$records = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders', array('employee'=>$ref_rec['id']));
+		
+		foreach ($records as $v) {
 			$d = date($this->format,strtotime($v['transaction_date']));
 			if (isset($hash[$d])) {
 				// count no. of Sales/Purchase Transactions
