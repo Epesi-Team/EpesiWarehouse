@@ -229,7 +229,7 @@ class Premium_Warehouse_SalesReport extends Module {
 			}
 			$purchases = DB::Execute('SELECT * FROM premium_warehouse_items_orders_details_data_1 AS od LEFT JOIN premium_warehouse_items_orders_data_1 AS o ON o.id=od.f_transaction_id WHERE od.active=1 AND o.f_transaction_type=0 AND od.f_item_name=%d AND o.f_status=20 AND o.f_warehouse=%d ORDER BY o.f_transaction_date ASC', array($ref_rec['id'], $k));
 			$sales = DB::Execute('SELECT * FROM premium_warehouse_items_orders_details_data_1 AS od LEFT JOIN premium_warehouse_items_orders_data_1 AS o ON o.id=od.f_transaction_id WHERE od.active=1 AND o.f_transaction_type=1 AND od.f_item_name=%d AND o.f_status=20 AND o.f_warehouse=%d ORDER BY o.f_transaction_date ASC', array($ref_rec['id'], $k));
-			$earned = array();
+			$earned = array(0=>0);
 			$last_purchase_price = 0;
 			$sale = null;
 			$purchase = null;
