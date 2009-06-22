@@ -14,7 +14,7 @@ defined("_VALID_ACCESS") || die('Direct access forbidden');
 
 class Premium_Warehouse_SalesReportCommon extends ModuleCommon {
 		public function menu() {
-		return array('Warehouse'=>array('__submenu__'=>1, 'Reports'=>array('__submenu__'=>1, 'Sales by Warehouse'=>array())));	
+		return array('Reports'=>array('__submenu__'=>1, 'Sales by Warehouse'=>array('mode'=>'sales_by_warehouse'), 'Sales by Item'=>array('mode'=>'sales_by_item')));	
 	}
 }
 

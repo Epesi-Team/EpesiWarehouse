@@ -46,7 +46,7 @@ class Premium_Warehouse_EmpSalesReport extends Module {
 		$header = array('Employee');
 		$this->dates = $date_range['dates'];
 		$this->range_type = $date_range['type'];
-		$this->rbr->set_currency($this->currency);
+		$this->rbr->set_currency($this->currency); // TODO: this method was removed
 		switch ($date_range['type']) {
 			case 'day': $this->format ='d M Y'; break;
 			case 'week': $this->format ='W Y'; break;
