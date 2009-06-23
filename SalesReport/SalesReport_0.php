@@ -254,14 +254,15 @@ class Premium_Warehouse_SalesReport extends Module {
 				if (!$purchase || $purchase['f_quantity']==0) {
 					$purchase = $purchases->FetchRow();
 					if (!$purchase) {
-						$purchase_price = null;						
+						$purchase_price = null;
+						$purchase_currency = null;						
 					} else {
 						$purchase['f_net_price'] = Utils_CurrencyFieldCommon::get_values($purchase['f_net_price']);
 						$purchase_price = round((100+Data_TaxRatesCommon::get_tax_rate($purchase['f_tax_rate']))*$purchase['f_net_price'][0]/100, Utils_CurrencyFieldCommon::get_precission($purchase['f_net_price'][1]));
 						$purchase_currency = $purchase['f_net_price'][1]; 
 					}
 				}
-				if ($sale_currency!=$purchase_currency) {
+				if ($sale_currency!=$purchase_currency && $purchase_currency!==null) {
 					// TODO: currency conflict
 					$earned = 'Currencies mixed';
 					break;
