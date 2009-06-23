@@ -239,7 +239,7 @@ class Premium_Warehouse_SalesReport extends Module {
 			$purchases = DB::Execute('SELECT * FROM premium_warehouse_items_orders_details_data_1 AS od LEFT JOIN premium_warehouse_items_orders_data_1 AS o ON o.id=od.f_transaction_id WHERE od.active=1 AND o.f_transaction_type=0 AND od.f_item_name=%d AND o.f_status=20 AND o.f_warehouse=%d ORDER BY o.f_transaction_date ASC', array($ref_rec['id'], $k));
 			$sales = DB::Execute('SELECT * FROM premium_warehouse_items_orders_details_data_1 AS od LEFT JOIN premium_warehouse_items_orders_data_1 AS o ON o.id=od.f_transaction_id WHERE od.active=1 AND o.f_transaction_type=1 AND od.f_item_name=%d AND o.f_status=20 AND o.f_warehouse=%d ORDER BY o.f_transaction_date ASC', array($ref_rec['id'], $k));
 			$earned = array(0=>0);
-			$last_purchase_price = 0;
+			$purchase_price = 0;
 			$sale = null;
 			$purchase = null;
 			$qty_sold = 0;
@@ -251,32 +251,35 @@ class Premium_Warehouse_SalesReport extends Module {
 					$sale_price = round((100+Data_TaxRatesCommon::get_tax_rate($sale['f_tax_rate']))*$sale['f_net_price'][0]/100, Utils_CurrencyFieldCommon::get_precission($sale['f_net_price'][1]));
 					$sale_currency = $sale['f_net_price'][1]; 
 				}
-				if (!$purchase || $purchase['f_quantity']==0) {
+				if ($purchase_price!==null && (!$purchase || $purchase['f_quantity']==0)) {
 					$purchase = $purchases->FetchRow();
 					if (!$purchase) {
 						$purchase_price = null;
-						$purchase_currency = null;						
 					} else {
 						$purchase['f_net_price'] = Utils_CurrencyFieldCommon::get_values($purchase['f_net_price']);
 						$purchase_price = round((100+Data_TaxRatesCommon::get_tax_rate($purchase['f_tax_rate']))*$purchase['f_net_price'][0]/100, Utils_CurrencyFieldCommon::get_precission($purchase['f_net_price'][1]));
 						$purchase_currency = $purchase['f_net_price'][1]; 
 					}
 				}
-				if ($sale_currency!=$purchase_currency && $purchase_currency!==null) {
+				if ($sale_currency!=$purchase_currency) {
 					// TODO: currency conflict
 					$earned = 'Currencies mixed';
 					break;
 				}
-				if ($purchase['f_quantity']==0) $qty = $sale['f_quantity'];
-				else $qty = min($purchase['f_quantity'], $sale['f_quantity']);
-				
+				if ($purchase_price===null) {
+					$qty_sold += $sale['f_quantity'];
+					$sale['f_quantity'] = 0;
+					continue;
+				}
+				 
+				$qty = min($purchase['f_quantity'], $sale['f_quantity']);
 				$qty_sold += $qty;
 
 				$purchase['f_quantity'] -= $qty;
 				$sale['f_quantity'] -= $qty;
 				if (!isset($earned[$purchase_currency])) $earned[$purchase_currency] = 0;
 				if ($sale['f_transaction_date']>=$this->range_type['start'] && $sale['f_transaction_date']<=$this->range_type['end']) {
-					if ($purchase_price!==null) $earned[$purchase_currency] += ($sale_price - $purchase_price)*$qty;
+					$earned[$purchase_currency] += ($sale_price - $purchase_price)*$qty;
 				}
 			}
 			$ret[$i] = array(	$this->cats[0]=>$qty_sold,
