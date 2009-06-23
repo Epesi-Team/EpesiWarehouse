@@ -201,11 +201,16 @@ class Premium_Warehouse_SalesReport extends Module {
 		$form->setDefaults(array('method'=>'fifo','prices'=>'net'));
 		$this->cats = array('Qty Sold','Earnings');
 		$this->range_type = $this->rbr->display_date_picker(array(), $form);
-		$items_ids = DB::GetCol('SELECT od.f_item_name FROM premium_warehouse_items_orders_details_data_1 AS od LEFT JOIN premium_warehouse_items_orders_data_1 AS o ON o.id=od.f_transaction_id WHERE od.active=1 AND o.f_transaction_type=1 AND o.f_status=20 AND o.f_transaction_date>=%D AND o.f_transaction_date<=%D GROUP BY od.f_item_name', array($this->range_type['start'], $this->range_type['end']));
+		$items_ids = DB::GetCol('SELECT od.f_item_name FROM premium_warehouse_items_orders_details_data_1 AS od LEFT JOIN premium_warehouse_items_orders_data_1 AS o ON o.id=od.f_transaction_id WHERE od.active=1 AND o.f_transaction_type=1 AND o.f_status=20 AND o.f_transaction_date>=%D AND o.f_transaction_date<=%D GROUP BY od.f_item_name ORDER BY SUM(f_quantity) DESC', array($this->range_type['start'], $this->range_type['end']));
 		$warehouses = Utils_RecordBrowserCommon::get_records('premium_warehouse',array(),array(),array('warehouse'=>'ASC'));
 		$items_amount = Utils_RecordBrowserCommon::get_records_limit('premium_warehouse_items',array('id'=>$items_ids),array(),array('item_name'=>'ASC'));
 		$limit = $this->rbr->enable_paging($items_amount);
-		$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items',array('id'=>$items_ids),array(),array('item_name'=>'ASC'), $limit);
+		$items_ids = array_splice($items_ids, $limit['offset'], $limit['numrows']);
+		$items_recs = Utils_RecordBrowserCommon::get_records('premium_warehouse_items',array('id'=>$items_ids),array(),array('item_name'=>'ASC'));
+		$items = array();
+		foreach ($items_ids as $v) {
+			$items[$v] = $items_recs[$v];
+		}
 		$this->rbr->set_reference_records($items);
 		$this->rbr->set_reference_record_display_callback(array('Premium_Warehouse_ItemsCommon','display_item_name'));
 		$this->rbr->set_categories($this->cats);
