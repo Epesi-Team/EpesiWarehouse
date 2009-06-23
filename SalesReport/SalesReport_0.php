@@ -194,6 +194,8 @@ class Premium_Warehouse_SalesReport extends Module {
 	}
 
 	public function sales_by_item() {
+		print('<br><b>Please be aware that due to inventory adjustments and warehouse transfers, earning displayed may be calculated only on fraction of sold items.</b><br><br>');
+		$this->cats = array('Qty Sold','Earnings');
 		$this->range_type = $this->rbr->display_date_picker();
 		$items_ids = DB::GetCol('SELECT od.f_item_name FROM premium_warehouse_items_orders_details_data_1 AS od LEFT JOIN premium_warehouse_items_orders_data_1 AS o ON o.id=od.f_transaction_id WHERE od.active=1 AND o.f_transaction_type=1 AND o.f_status=20 AND o.f_transaction_date>=%D AND o.f_transaction_date<=%D GROUP BY od.f_item_name', array($this->range_type['start'], $this->range_type['end']));
 		$warehouses = Utils_RecordBrowserCommon::get_records('premium_warehouse',array(),array(),array('warehouse'=>'ASC'));
@@ -202,9 +204,12 @@ class Premium_Warehouse_SalesReport extends Module {
 		$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items',array('id'=>$items_ids),array(),array('item_name'=>'ASC'), $limit);
 		$this->rbr->set_reference_records($items);
 		$this->rbr->set_reference_record_display_callback(array('Premium_Warehouse_ItemsCommon','display_item_name'));
+		$this->rbr->set_categories($this->cats);
 		$this->rbr->set_summary('col', array('label'=>'Total'));
 		$this->rbr->set_summary('row', array('label'=>'Total'));
-		$this->rbr->set_format('currency');
+		$this->rbr->set_format(array(	$this->cats[0]=>'numeric', 
+										$this->cats[1]=>'currency'
+									));
 		$header = array('Item Name');
 		$this->columns = array();
 		foreach ($warehouses as $v) {
@@ -222,9 +227,12 @@ class Premium_Warehouse_SalesReport extends Module {
 	public function display_sales_by_item_cells($ref_rec) {
 		$ret = array();
 		$quantity_sold = DB::GetAssoc('SELECT o.f_warehouse, SUM(od.f_quantity) FROM premium_warehouse_items_orders_details_data_1 AS od LEFT JOIN premium_warehouse_items_orders_data_1 AS o ON o.id=od.f_transaction_id WHERE od.active=1 AND o.f_transaction_type=1 AND od.f_item_name=%d AND o.f_status=20 GROUP BY o.f_warehouse', array($ref_rec['id']));
+
+		$i = 0;
 		foreach ($this->columns as $k=>$v) {
 			if (!isset($quantity_sold[$k])) {
-				$ret[] = 0;
+				$ret[$i] = array(	$this->cats[0]=>0,
+									$this->cats[1]=>0);
 				continue;
 			}
 			$purchases = DB::Execute('SELECT * FROM premium_warehouse_items_orders_details_data_1 AS od LEFT JOIN premium_warehouse_items_orders_data_1 AS o ON o.id=od.f_transaction_id WHERE od.active=1 AND o.f_transaction_type=0 AND od.f_item_name=%d AND o.f_status=20 AND o.f_warehouse=%d ORDER BY o.f_transaction_date ASC', array($ref_rec['id'], $k));
@@ -233,6 +241,7 @@ class Premium_Warehouse_SalesReport extends Module {
 			$last_purchase_price = 0;
 			$sale = null;
 			$purchase = null;
+			$qty_sold = 0;
 			while (true) {
 				if (!$sale || $sale['f_quantity']==0) {
 					$sale = $sales->FetchRow();
@@ -259,21 +268,18 @@ class Premium_Warehouse_SalesReport extends Module {
 				if ($purchase['f_quantity']==0) $qty = $sale['f_quantity'];
 				else $qty = min($purchase['f_quantity'], $sale['f_quantity']);
 				
-//				print('<hr>');
-//				print('Amount: '.$qty.'<br>');
-//				print('Purchase price: '.$purchase_price.'<br>');
-//				print('Sale price: '.$sale_price.'<br>');
-//				print('Purchase transaction: '.$purchase['id'].'<br>');
-//				print('Sale transaction: '.$sale['id'].'<br>');
+				$qty_sold += $qty;
+
 				$purchase['f_quantity'] -= $qty;
 				$sale['f_quantity'] -= $qty;
 				if (!isset($earned[$purchase_currency])) $earned[$purchase_currency] = 0;
 				if ($sale['f_transaction_date']>=$this->range_type['start'] && $sale['f_transaction_date']<=$this->range_type['end']) {
-//					print('INCLUDED!<br>');
 					$earned[$purchase_currency] += ($sale_price - $purchase_price)*$qty;
 				}
 			}
-			$ret[] = $earned;
+			$ret[$i] = array(	$this->cats[0]=>$qty_sold,
+								$this->cats[1]=>$earned);
+			$i++;
 		}
 		return $ret;
 	}
