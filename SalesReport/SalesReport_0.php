@@ -194,7 +194,7 @@ class Premium_Warehouse_SalesReport extends Module {
 	}
 
 	public function sales_by_item() {
-		print('<br><b>Please be aware that due to inventory adjustments and warehouse transfers, earning displayed may be calculated only on fraction of sold items.</b><br><br>');
+		print('<br><b>Numbers in brackets indicate items sold that were omitted in earning calculation.</b><br><br>');
 		$this->cats = array('Qty Sold','Earnings');
 		$this->range_type = $this->rbr->display_date_picker();
 		$items_ids = DB::GetCol('SELECT od.f_item_name FROM premium_warehouse_items_orders_details_data_1 AS od LEFT JOIN premium_warehouse_items_orders_data_1 AS o ON o.id=od.f_transaction_id WHERE od.active=1 AND o.f_transaction_type=1 AND o.f_status=20 AND o.f_transaction_date>=%D AND o.f_transaction_date<=%D GROUP BY od.f_item_name', array($this->range_type['start'], $this->range_type['end']));
@@ -291,7 +291,10 @@ class Premium_Warehouse_SalesReport extends Module {
 					$earned[$purchase_currency] += ($sale_price - $purchase_price)*$qty;
 				}
 			}
-			$ret[$i] = array(	$this->cats[0]=>$qty_sold.($qty_with_uknwn_price!=0?' ('.($qty_sold-$qty_with_uknwn_price).')':''),
+			if ($qty_with_uknwn_price!=0) {
+				$qty_sold = ($qty_sold-$qty_with_uknwn_price).' ('.$qty_with_uknwn_price.')';
+			}
+			$ret[$i] = array(	$this->cats[0]=>$qty_sold,
 								$this->cats[1]=>$earned);
 		}
 		return $ret;
