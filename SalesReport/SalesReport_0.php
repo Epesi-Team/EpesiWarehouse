@@ -317,7 +317,7 @@ class Premium_Warehouse_SalesReport extends Module {
 				}
 			}
 			if ($qty_with_uknwn_price!=0) {
-				$qty_sold = ($qty_sold-$qty_with_uknwn_price).' ('.$qty_with_uknwn_price.')';
+				$qty_sold = $qty_sold.' ('.$qty_with_uknwn_price.')';
 			}
 			$ret[$i] = array(	$this->cats[0]=>$qty_sold,
 								$this->cats[1]=>$earned);
