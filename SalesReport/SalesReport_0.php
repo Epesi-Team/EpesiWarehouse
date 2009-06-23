@@ -215,7 +215,7 @@ class Premium_Warehouse_SalesReport extends Module {
 		$this->rbr->set_reference_record_display_callback(array('Premium_Warehouse_ItemsCommon','display_item_name'));
 		$this->rbr->set_categories($this->cats);
 		$this->rbr->set_summary('col', array('label'=>'Total'));
-		$this->rbr->set_summary('row', array('label'=>'Total'));
+		$this->rbr->set_summary('row', array('label'=>'Total', 'callback'=>array($this,'sales_by_item_row_total')));
 		$this->rbr->set_format(array(	$this->cats[0]=>'numeric', 
 										$this->cats[1]=>'currency'
 									));
@@ -232,6 +232,19 @@ class Premium_Warehouse_SalesReport extends Module {
 		$this->rbr->set_pdf_filename($this->t('Sales_Report_%s',array(date('Y_m_d__H_i_s'))));
 		$this->display_module($this->rbr);
 	}	
+	
+	public function sales_by_item_row_total($results, $total, $cat) {
+		if ($cat==$this->cats[1]) return $total;
+		$total = array(0=>0, 1=>0);
+		foreach ($results as $v) {
+			$val = explode('(',trim($v[$this->cats[0]],')'));
+			$total[0] += $val[0];
+			if (isset($val[1])) $total[1] += $val[1];
+		}
+		$total_disp = $total[0];
+		if ($total[1]!=0) $total_disp .= ' ('.$total[1].')';
+		return $total_disp;
+	}
 	
 	public function display_sales_by_item_cells($ref_rec) {
 		$ret = array();
