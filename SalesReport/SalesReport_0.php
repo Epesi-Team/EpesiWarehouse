@@ -243,6 +243,7 @@ class Premium_Warehouse_SalesReport extends Module {
 			$sale = null;
 			$purchase = null;
 			$qty_sold = 0;
+			$qty_with_uknwn_price = 0;
 			while (true) {
 				if (!$sale || $sale['f_quantity']==0) {
 					$sale = $sales->FetchRow();
@@ -261,8 +262,15 @@ class Premium_Warehouse_SalesReport extends Module {
 						$purchase_currency = $purchase['f_net_price'][1]; 
 					}
 				}
+				if ($sale['f_transaction_date']>=$this->range_type['start'] && $sale['f_transaction_date']<=$this->range_type['end'])
+					$include = true;
+				else
+					$include = false;
 				if ($purchase_price===null || (isset($purchase['f_transaction_date']) && $purchase['f_transaction_date']>$sale['f_transaction_date'])) {
-					$qty_sold += $sale['f_quantity'];
+					if ($include) {
+						$qty_sold += $sale['f_quantity'];
+						$qty_with_uknwn_price += $sale['f_quantity'];
+					}
 					$sale['f_quantity'] = 0;
 					continue;
 				}
@@ -274,16 +282,16 @@ class Premium_Warehouse_SalesReport extends Module {
 				}
 				 
 				$qty = min($purchase['f_quantity'], $sale['f_quantity']);
-				$qty_sold += $qty;
 
 				$purchase['f_quantity'] -= $qty;
 				$sale['f_quantity'] -= $qty;
 				if (!isset($earned[$purchase_currency])) $earned[$purchase_currency] = 0;
-				if ($sale['f_transaction_date']>=$this->range_type['start'] && $sale['f_transaction_date']<=$this->range_type['end']) {
+				if ($include) {
+					$qty_sold += $qty;
 					$earned[$purchase_currency] += ($sale_price - $purchase_price)*$qty;
 				}
 			}
-			$ret[$i] = array(	$this->cats[0]=>$qty_sold,
+			$ret[$i] = array(	$this->cats[0]=>$qty_sold.($qty_with_uknwn_price!=0?' ('.($qty_sold-$qty_with_uknwn_price).')':''),
 								$this->cats[1]=>$earned);
 		}
 		return $ret;
