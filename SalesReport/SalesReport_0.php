@@ -228,8 +228,9 @@ class Premium_Warehouse_SalesReport extends Module {
 		$ret = array();
 		$quantity_sold = DB::GetAssoc('SELECT o.f_warehouse, SUM(od.f_quantity) FROM premium_warehouse_items_orders_details_data_1 AS od LEFT JOIN premium_warehouse_items_orders_data_1 AS o ON o.id=od.f_transaction_id WHERE od.active=1 AND o.f_transaction_type=1 AND od.f_item_name=%d AND o.f_status=20 GROUP BY o.f_warehouse', array($ref_rec['id']));
 
-		$i = 0;
+		$i = -1;
 		foreach ($this->columns as $k=>$v) {
+			$i++;
 			if (!isset($quantity_sold[$k])) {
 				$ret[$i] = array(	$this->cats[0]=>0,
 									$this->cats[1]=>0);
@@ -253,7 +254,7 @@ class Premium_Warehouse_SalesReport extends Module {
 				if (!$purchase || $purchase['f_quantity']==0) {
 					$purchase = $purchases->FetchRow();
 					if (!$purchase) {
-						if (!$last_purchase_price) break;						
+						$purchase_price = null;						
 					} else {
 						$purchase['f_net_price'] = Utils_CurrencyFieldCommon::get_values($purchase['f_net_price']);
 						$purchase_price = round((100+Data_TaxRatesCommon::get_tax_rate($purchase['f_tax_rate']))*$purchase['f_net_price'][0]/100, Utils_CurrencyFieldCommon::get_precission($purchase['f_net_price'][1]));
@@ -274,12 +275,11 @@ class Premium_Warehouse_SalesReport extends Module {
 				$sale['f_quantity'] -= $qty;
 				if (!isset($earned[$purchase_currency])) $earned[$purchase_currency] = 0;
 				if ($sale['f_transaction_date']>=$this->range_type['start'] && $sale['f_transaction_date']<=$this->range_type['end']) {
-					$earned[$purchase_currency] += ($sale_price - $purchase_price)*$qty;
+					if ($purchase_price!==null) $earned[$purchase_currency] += ($sale_price - $purchase_price)*$qty;
 				}
 			}
 			$ret[$i] = array(	$this->cats[0]=>$qty_sold,
 								$this->cats[1]=>$earned);
-			$i++;
 		}
 		return $ret;
 	}
