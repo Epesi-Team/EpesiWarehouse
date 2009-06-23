@@ -195,8 +195,12 @@ class Premium_Warehouse_SalesReport extends Module {
 
 	public function sales_by_item() {
 		print('<br><b>Numbers in brackets indicate items sold that were omitted in earning calculation.</b><br><br>');
+		$form = $this->init_module('Libs/QuickForm');
+		$form->addElement('select', 'method', $this->t('Method'), array('fifo'=>$this->t('FIFO'), 'lifo'=>$this->t('LIFO')));
+		$form->addElement('select', 'prices', $this->t('Prices'), array('net'=>$this->t('Net'), 'gross'=>$this->t('Gross')));
+		$form->setDefaults(array('method'=>'fifo','prices'=>'net'));
 		$this->cats = array('Qty Sold','Earnings');
-		$this->range_type = $this->rbr->display_date_picker();
+		$this->range_type = $this->rbr->display_date_picker(array(), $form);
 		$items_ids = DB::GetCol('SELECT od.f_item_name FROM premium_warehouse_items_orders_details_data_1 AS od LEFT JOIN premium_warehouse_items_orders_data_1 AS o ON o.id=od.f_transaction_id WHERE od.active=1 AND o.f_transaction_type=1 AND o.f_status=20 AND o.f_transaction_date>=%D AND o.f_transaction_date<=%D GROUP BY od.f_item_name', array($this->range_type['start'], $this->range_type['end']));
 		$warehouses = Utils_RecordBrowserCommon::get_records('premium_warehouse',array(),array(),array('warehouse'=>'ASC'));
 		$items_amount = Utils_RecordBrowserCommon::get_records_limit('premium_warehouse_items',array('id'=>$items_ids),array(),array('item_name'=>'ASC'));
@@ -227,6 +231,7 @@ class Premium_Warehouse_SalesReport extends Module {
 	public function display_sales_by_item_cells($ref_rec) {
 		$ret = array();
 		$quantity_sold = DB::GetAssoc('SELECT o.f_warehouse, SUM(od.f_quantity) FROM premium_warehouse_items_orders_details_data_1 AS od LEFT JOIN premium_warehouse_items_orders_data_1 AS o ON o.id=od.f_transaction_id WHERE od.active=1 AND o.f_transaction_type=1 AND od.f_item_name=%d AND o.f_status=20 GROUP BY o.f_warehouse', array($ref_rec['id']));
+		$order_dir = $this->range_type['other']['method']=='fifo'?'ASC':'DESC';
 
 		$i = -1;
 		foreach ($this->columns as $k=>$v) {
@@ -236,8 +241,8 @@ class Premium_Warehouse_SalesReport extends Module {
 									$this->cats[1]=>0);
 				continue;
 			}
-			$purchases = DB::Execute('SELECT * FROM premium_warehouse_items_orders_details_data_1 AS od LEFT JOIN premium_warehouse_items_orders_data_1 AS o ON o.id=od.f_transaction_id WHERE od.active=1 AND o.f_transaction_type=0 AND od.f_item_name=%d AND o.f_status=20 AND o.f_warehouse=%d ORDER BY o.f_transaction_date ASC', array($ref_rec['id'], $k));
-			$sales = DB::Execute('SELECT * FROM premium_warehouse_items_orders_details_data_1 AS od LEFT JOIN premium_warehouse_items_orders_data_1 AS o ON o.id=od.f_transaction_id WHERE od.active=1 AND o.f_transaction_type=1 AND od.f_item_name=%d AND o.f_status=20 AND o.f_warehouse=%d ORDER BY o.f_transaction_date ASC', array($ref_rec['id'], $k));
+			$purchases = DB::Execute('SELECT * FROM premium_warehouse_items_orders_details_data_1 AS od LEFT JOIN premium_warehouse_items_orders_data_1 AS o ON o.id=od.f_transaction_id WHERE od.active=1 AND o.f_transaction_type=0 AND od.f_item_name=%d AND o.f_status=20 AND o.f_warehouse=%d ORDER BY o.f_transaction_date '.$order_dir, array($ref_rec['id'], $k));
+			$sales = DB::Execute('SELECT * FROM premium_warehouse_items_orders_details_data_1 AS od LEFT JOIN premium_warehouse_items_orders_data_1 AS o ON o.id=od.f_transaction_id WHERE od.active=1 AND o.f_transaction_type=1 AND od.f_item_name=%d AND o.f_status=20 AND o.f_warehouse=%d ORDER BY o.f_transaction_date '.$order_dir, array($ref_rec['id'], $k));
 			$earned = array(0=>0);
 			$purchase_price = 0;
 			$sale = null;
@@ -249,7 +254,8 @@ class Premium_Warehouse_SalesReport extends Module {
 					$sale = $sales->FetchRow();
 					if (!$sale) break; // This is the main exit from the loop
 					$sale['f_net_price'] = Utils_CurrencyFieldCommon::get_values($sale['f_net_price']);
-					$sale_price = round((100+Data_TaxRatesCommon::get_tax_rate($sale['f_tax_rate']))*$sale['f_net_price'][0]/100, Utils_CurrencyFieldCommon::get_precission($sale['f_net_price'][1]));
+					if ($this->range_type['other']['prices']=='net') $sale_price = $sale['f_net_price'][0];
+					else $sale_price = round((100+Data_TaxRatesCommon::get_tax_rate($sale['f_tax_rate']))*$sale['f_net_price'][0]/100, Utils_CurrencyFieldCommon::get_precission($sale['f_net_price'][1]));
 					$sale_currency = $sale['f_net_price'][1]; 
 				}
 				if ($purchase_price!==null && (!$purchase || $purchase['f_quantity']==0)) {
@@ -258,7 +264,8 @@ class Premium_Warehouse_SalesReport extends Module {
 						$purchase_price = null;
 					} else {
 						$purchase['f_net_price'] = Utils_CurrencyFieldCommon::get_values($purchase['f_net_price']);
-						$purchase_price = round((100+Data_TaxRatesCommon::get_tax_rate($purchase['f_tax_rate']))*$purchase['f_net_price'][0]/100, Utils_CurrencyFieldCommon::get_precission($purchase['f_net_price'][1]));
+						if ($this->range_type['other']['prices']=='net') $purchase_price = $purchase['f_net_price'][0];
+						else $purchase_price = round((100+Data_TaxRatesCommon::get_tax_rate($purchase['f_tax_rate']))*$purchase['f_net_price'][0]/100, Utils_CurrencyFieldCommon::get_precission($purchase['f_net_price'][1]));
 						$purchase_currency = $purchase['f_net_price'][1]; 
 					}
 				}

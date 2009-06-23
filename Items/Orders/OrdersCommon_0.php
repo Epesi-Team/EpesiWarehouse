@@ -348,6 +348,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	}
 	
 	public static function check_if_no_duplicate_company_contact($data) {
+		return true;
 		$ret = true;
 		if ((!isset($data['company']) || $data['company']<=0) && $data['company_name']) {
 			$recs = Utils_RecordBrowserCommon::get_records('company', array('company_name'=>$data['company_name']));
