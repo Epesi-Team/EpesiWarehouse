@@ -261,7 +261,7 @@ class Premium_Warehouse_SalesReport extends Module {
 						$purchase_currency = $purchase['f_net_price'][1]; 
 					}
 				}
-				if ($purchase_price===null) {
+				if ($purchase_price===null || (isset($purchase['f_transaction_date']) && $purchase['f_transaction_date']>$sale['f_transaction_date'])) {
 					$qty_sold += $sale['f_quantity'];
 					$sale['f_quantity'] = 0;
 					continue;
