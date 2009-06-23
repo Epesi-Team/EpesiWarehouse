@@ -261,15 +261,16 @@ class Premium_Warehouse_SalesReport extends Module {
 						$purchase_currency = $purchase['f_net_price'][1]; 
 					}
 				}
-				if ($sale_currency!=$purchase_currency) {
-					// TODO: currency conflict
-					$earned = 'Currencies mixed';
-					break;
-				}
 				if ($purchase_price===null) {
 					$qty_sold += $sale['f_quantity'];
 					$sale['f_quantity'] = 0;
 					continue;
+				}
+
+				if ($sale_currency!=$purchase_currency) {
+					// TODO: currency conflict
+					$earned = 'Currencies mixed';
+					break;
 				}
 				 
 				$qty = min($purchase['f_quantity'], $sale['f_quantity']);
