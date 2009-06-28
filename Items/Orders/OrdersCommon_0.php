@@ -639,6 +639,14 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 								$ret['return_date'] = 'hide';
 								$ret['returned'] = 'hide';
 							}
+							if ($trans['transaction_type']==4) {
+								$ret['net_price'] = 'hide';
+								$ret['net_total'] = 'hide';
+								$ret['tax_rate'] = 'hide';
+								$ret['tax_value'] = 'hide';
+								$ret['gross_price'] = 'hide';
+								$ret['gross_total'] = 'hide';
+							}
 							if ($trans['transaction_type']==3) {
 								$ret['transaction_date'] = 'hide';
 								$ret['transaction_type'] = 'hide';
@@ -737,6 +745,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 									$ret['tax_value'] = 'hide';
 								}
 								if ($tt==2 || $tt==4) {
+									$ret['receipt'] = 'hide';
 									$ret['company'] = 'hide';
 									$ret['contact'] = 'hide';
 									$ret['tax_id'] = 'hide';
@@ -982,6 +991,18 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 					Utils_RecordBrowserCommon::restore_record('premium_warehouse_items_orders_details', $d['id']);
 				return;
 			case 'view':
+				
+				if (Base_AclCommon::i_am_admin() && $values['transaction_type']==2) {
+					$debts = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$values['id'], '<quantity'=>0));
+					if (empty($debts)) {
+						Base_ActionBarCommon::add('attach',Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Turn into Purchase'),Module::create_href(array('premium_warehouse_turn_into_purchase'=>$values['id'])));
+						if (isset($_REQUEST['premium_warehouse_turn_into_purchase']) && $_REQUEST['premium_warehouse_turn_into_purchase']===$values['id']) {
+							Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $values['id'], array('transaction_type'=>0, 'status'=>20, 'receipt'=>1));
+							location(array());
+						}
+					}
+				}
+
 				$active = (Base_User_SettingsCommon::get('Premium_Warehouse_Items_Orders','my_transaction')==$values['id']);
 				if (!Utils_RecordBrowserCommon::get_access('premium_warehouse_items_orders','edit',$values)) {
 					if ($active) Base_User_SettingsCommon::save('Premium_Warehouse_Items_Orders','my_transaction','');
