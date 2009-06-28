@@ -256,15 +256,16 @@ class Premium_Warehouse_SalesReport extends Module {
 		foreach ($this->columns as $k=>$v) {
 			$ret[$i] = array(	$this->cats[0]=>0,
 								$this->cats[1]=>array());
-			$qty_with_unkn_price[$i] = 0;
+			$qty_with_unkn_price[$k] = 0;
 			$hash[$k] = $i;
 			$i++;
 		}
 		$trans_stack = array();
 		$transf_stack = array();
-		$transs = DB::Execute('SELECT * FROM premium_warehouse_items_orders_details_data_1 AS od LEFT JOIN premium_warehouse_items_orders_data_1 AS o ON o.id=od.f_transaction_id WHERE od.active=1 AND (o.f_transaction_type=0 OR o.f_transaction_type=1 OR o.f_transaction_type=4) AND od.f_item_name=%d AND o.f_status=20 ORDER BY o.f_transaction_date '.$order_dir, array($ref_rec['id']));
-		
+		$transs = DB::Execute('SELECT * FROM premium_warehouse_items_orders_details_data_1 AS od LEFT JOIN premium_warehouse_items_orders_data_1 AS o ON o.id=od.f_transaction_id WHERE od.active=1 AND (o.f_transaction_type=0 OR o.f_transaction_type=1 OR o.f_transaction_type=4) AND od.f_item_name=%d AND o.f_status=20 ORDER BY o.f_transaction_date '.$order_dir.', (-(o.f_transaction_type - 2.2)*(o.f_transaction_type - 2.2)) '.$order_dir, array($ref_rec['id']));
+		$debug = null;
 		while ($trans = $transs->FetchRow()) {
+			if ($debug==$ref_rec['id']) print('New transaction '.$trans['id'].' of type '.$trans['f_transaction_type'].' at '.$trans['f_transaction_date'].' from  '.$this->columns[$trans['f_warehouse']].' warehouse<br>');
 			if ($trans['f_transaction_type']==4) {
 				array_unshift($transf_stack, $trans);
 				continue;
@@ -277,6 +278,7 @@ class Premium_Warehouse_SalesReport extends Module {
 			}
 			if (!$fifo && $trans['f_transaction_type']==1) {
 				array_unshift($trans_stack, $trans);
+			// I need to catch other transactions on that day for LIFO
 				continue;
 			}
 			
@@ -284,7 +286,7 @@ class Premium_Warehouse_SalesReport extends Module {
 			
 			while ($trans['f_quantity']>0) {
 				if (!isset($trans_stack[$trans_s_i])) {
-					if ($fifo) $qty_with_unkn_price[$trans['f_warehouse']] = $trans['f_quantity'];
+					if ($fifo) $qty_with_unkn_price[$trans['f_warehouse']] += $trans['f_quantity'];
 					// Here I skip some transes
 					break;
 				}
@@ -300,10 +302,10 @@ class Premium_Warehouse_SalesReport extends Module {
 				if ($sale['f_warehouse'] == $purchase['f_warehouse']) { 
 					$link_it = true;
 				} else {
-					// Here we -prolly- definetly need to switch some stuff for FIFO
 					$transf_s_i = 0;
 					$possible_w = array();
-					while (	isset($transf_stack[$transf_s_i]) && 
+					while (	$qty==0 &&
+							isset($transf_stack[$transf_s_i]) && 
 							$transf_stack[$transf_s_i]['f_transaction_date']>=$purchase['f_transaction_date'] &&
 							$transf_stack[$transf_s_i]['f_transaction_date']<=$sale['f_transaction_date']) {
 						$transf = $transf_stack[$transf_s_i];
@@ -317,7 +319,6 @@ class Premium_Warehouse_SalesReport extends Module {
 								unset($transf_stack[$transf_s_i]);
 								$transf_stack = array_values($transf_stack);
 							}
-							break;
 						}
 						$transf_s_i++;
 					}
@@ -344,6 +345,8 @@ class Premium_Warehouse_SalesReport extends Module {
 					else $purchase_price = round((100+Data_TaxRatesCommon::get_tax_rate($purchase['f_tax_rate']))*$purchase['f_price'][0]/100, Utils_CurrencyFieldCommon::get_precission($purchase['f_price'][1]));
 					$purchase_currency = $purchase['f_price'][1]; 
 
+					if ($ref_rec['id']==$debug) print('Sale transaction '.$sale['id'].' was matched with '.$purchase['id'].' for amount of '.$qty.' from  '.$this->columns[$sale['f_warehouse']].' warehouse<br>');
+
 					$idx = $hash[$sale['f_warehouse']];
 					if ($sale_currency!=$purchase_currency) {
 						// TODO: currency conflict
@@ -363,12 +366,12 @@ class Premium_Warehouse_SalesReport extends Module {
 			}
 		}
 		if (!$fifo) {
-			while ($trans = array_pop($trans_stack)) 
-				$qty_with_unkn_price[$trans['f_warehouse']] = $trans['f_quantity'];
+			while ($trans = array_pop($trans_stack))
+				$qty_with_unkn_price[$trans['f_warehouse']] += $trans['f_quantity'];
 		}
 		foreach ($this->columns as $k=>$v) { 
 			if (isset($qty_with_unkn_price[$k]) && $qty_with_unkn_price[$k]!=0) {
-				$ret[$hash[$k]][$this->cats[0]] = $ret[$hash[$k]][$this->cats[0]].' ('.$qty_with_unkn_price[$k].')';
+				$ret[$hash[$k]][$this->cats[0]] = ($ret[$hash[$k]][$this->cats[0]]+$qty_with_unkn_price[$k]).' ('.$qty_with_unkn_price[$k].')';
 			}
 		}
 		return $ret;
