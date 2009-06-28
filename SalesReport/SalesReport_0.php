@@ -264,14 +264,35 @@ class Premium_Warehouse_SalesReport extends Module {
 		$transf_stack = array();
 		$transs = DB::Execute('SELECT * FROM premium_warehouse_items_orders_details_data_1 AS od LEFT JOIN premium_warehouse_items_orders_data_1 AS o ON o.id=od.f_transaction_id WHERE od.active=1 AND (o.f_transaction_type=0 OR o.f_transaction_type=1 OR o.f_transaction_type=4) AND od.f_item_name=%d AND o.f_status=20 ORDER BY o.f_transaction_date '.$order_dir.', (-(o.f_transaction_type - 2.2)*(o.f_transaction_type - 2.2)) '.$order_dir, array($ref_rec['id']));
 		$debug = null;
+		$fifo = ($this->range_type['other']['method']=='fifo');		
 		while ($trans = $transs->FetchRow()) {
 			if ($debug==$ref_rec['id']) print('New transaction '.$trans['id'].' of type '.$trans['f_transaction_type'].' at '.$trans['f_transaction_date'].' from  '.$this->columns[$trans['f_warehouse']].' warehouse<br>');
 			if ($trans['f_transaction_type']==4) {
-				array_unshift($transf_stack, $trans);
+				if (!$fifo) {
+					array_unshift($transf_stack, $trans);
+				} else {
+					$trans_s_i = 0;
+					while ($trans['f_quantity']>0 && isset($trans_stack[$trans_s_i])) {
+						if ($trans['f_warehouse'] == $trans_stack[$trans_s_i]['f_warehouse']) {
+							$qty = min($trans['f_quantity'], $trans_stack[$trans_s_i]['f_quantity']);
+							$new_purchase = $trans_stack[$trans_s_i];
+							$trans_stack[$trans_s_i]['f_quantity'] -= $qty;
+							$trans['f_quantity'] -= $qty;
+							$new_purchase['f_quantity'] = $qty;
+							$new_purchase['f_warehouse'] = $trans['f_target_warehouse'];
+							array_push($trans_stack, $new_purchase);
+							if ($trans_stack[$trans_s_i]['f_quantity'] == 0) {
+								unset($trans_stack[$trans_s_i]);
+								$trans_stack = array_values($trans_stack);
+								$trans_s_i--;
+							}
+						}
+						$trans_s_i++;
+					}
+				}
 				continue;
 			}
 			
-			$fifo = ($this->range_type['other']['method']=='fifo');		
 			if ($fifo && $trans['f_transaction_type']==0) {
 				array_push($trans_stack, $trans);
 				continue;
@@ -286,16 +307,7 @@ class Premium_Warehouse_SalesReport extends Module {
 			
 			while ($trans['f_quantity']>0) {
 				if (!isset($trans_stack[$trans_s_i])) {
-					if ($debug==$ref_rec['id']) {
-						print('Dammit!'.$trans_s_i.'<hr>');
-						print_r($transf_stack);
-						print('Dammit!<hr>');
-						print_r($trans_stack);
-						print('Dammit!<hr>');
-						print_r($trans);
-					}
 					if ($fifo) $qty_with_unkn_price[$trans['f_warehouse']] += $trans['f_quantity'];
-					// Here I skip some trans'
 					break;
 				}
 				$link_it = false;
