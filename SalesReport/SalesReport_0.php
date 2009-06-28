@@ -286,8 +286,16 @@ class Premium_Warehouse_SalesReport extends Module {
 			
 			while ($trans['f_quantity']>0) {
 				if (!isset($trans_stack[$trans_s_i])) {
+					if ($debug==$ref_rec['id']) {
+						print('Dammit!'.$trans_s_i.'<hr>');
+						print_r($transf_stack);
+						print('Dammit!<hr>');
+						print_r($trans_stack);
+						print('Dammit!<hr>');
+						print_r($trans);
+					}
 					if ($fifo) $qty_with_unkn_price[$trans['f_warehouse']] += $trans['f_quantity'];
-					// Here I skip some transes
+					// Here I skip some trans'
 					break;
 				}
 				$link_it = false;
@@ -303,7 +311,6 @@ class Premium_Warehouse_SalesReport extends Module {
 					$link_it = true;
 				} else {
 					$transf_s_i = 0;
-					$possible_w = array();
 					while (	$qty==0 &&
 							isset($transf_stack[$transf_s_i]) && 
 							$transf_stack[$transf_s_i]['f_transaction_date']>=$purchase['f_transaction_date'] &&
