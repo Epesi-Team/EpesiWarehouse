@@ -25,7 +25,7 @@ class Premium_Warehouse_SalesReport extends Module {
 
 /************************************************************************************/
 	public function body() {
-		if (!Base_AclCommon::i_am_admin() || !Base_AclCommon::i_am_sa()) {
+		if (!Base_AclCommon::i_am_admin()) {
 			print($this->t('You don\'t have permission to access this module'));
 			return;
 		}
