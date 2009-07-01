@@ -263,8 +263,8 @@ class Premium_Warehouse_SalesReport extends Module {
 		$trans_stack = array();
 		$transf_stack = array();
 		$transs = DB::Execute('SELECT * FROM premium_warehouse_items_orders_details_data_1 AS od LEFT JOIN premium_warehouse_items_orders_data_1 AS o ON o.id=od.f_transaction_id WHERE od.active=1 AND (o.f_transaction_type=0 OR o.f_transaction_type=1 OR o.f_transaction_type=4) AND od.f_item_name=%d AND o.f_status=20 ORDER BY o.f_transaction_date '.$order_dir.', (-(o.f_transaction_type - 2.2)*(o.f_transaction_type - 2.2)) '.$order_dir, array($ref_rec['id']));
-		$debug = null;
-		$fifo = ($this->range_type['other']['method']=='fifo');		
+		$debug = false;
+		$fifo = ($this->range_type['other']['method']=='fifo');
 		while ($trans = $transs->FetchRow()) {
 			if ($debug==$ref_rec['id']) print('New transaction '.$trans['id'].' of type '.$trans['f_transaction_type'].' at '.$trans['f_transaction_date'].' from  '.$this->columns[$trans['f_warehouse']].' warehouse<br>');
 			if ($trans['f_transaction_type']==4) {
@@ -307,7 +307,7 @@ class Premium_Warehouse_SalesReport extends Module {
 			
 			while ($trans['f_quantity']>0) {
 				if (!isset($trans_stack[$trans_s_i])) {
-					if ($fifo) $qty_with_unkn_price[$trans['f_warehouse']] += $trans['f_quantity'];
+					if ($fifo && $trans['f_transaction_date']>=$this->range_type['start'] && $trans['f_transaction_date']<=$this->range_type['end']) $qty_with_unkn_price[$trans['f_warehouse']] += $trans['f_quantity'];
 					break;
 				}
 				$link_it = false;
@@ -346,7 +346,7 @@ class Premium_Warehouse_SalesReport extends Module {
 					if ($qty==0) $qty = min($sale['f_quantity'], $purchase['f_quantity']);
 
 					$include = ($sale['f_transaction_date']>=$this->range_type['start'] && $sale['f_transaction_date']<=$this->range_type['end']);
-		
+
 					$trans_stack[$trans_s_i]['f_quantity'] -= $qty;
 					$trans['f_quantity'] -= $qty;
 
@@ -374,6 +374,7 @@ class Premium_Warehouse_SalesReport extends Module {
 					
 					if (!isset($earned[$purchase_currency])) $earned[$purchase_currency] = 0;
 					if ($include) {
+						if ($debug==$ref_rec['id']) print('INCLUDED transaction '.$trans['id'].' of type '.$trans['f_transaction_type'].' at '.$trans['f_transaction_date'].' from  '.$this->columns[$trans['f_warehouse']].' warehouse for quantity of '.$qty.'<br>');
 						if (!isset($ret[$idx][$this->cats[1]][$purchase_currency])) $ret[$idx][$this->cats[1]][$purchase_currency] = 0;
 						$ret[$idx][$this->cats[0]] += $qty;
 						if (is_array($ret[$idx][$this->cats[1]])) $ret[$idx][$this->cats[1]][$purchase_currency] += ($sale_price - $purchase_price)*$qty;
@@ -385,8 +386,10 @@ class Premium_Warehouse_SalesReport extends Module {
 			}
 		}
 		if (!$fifo) {
-			while ($trans = array_pop($trans_stack))
-				$qty_with_unkn_price[$trans['f_warehouse']] += $trans['f_quantity'];
+			while ($trans = array_pop($trans_stack)) {
+				if ($trans['f_transaction_date']>=$this->range_type['start'] && $trans['f_transaction_date']<=$this->range_type['end'])
+					$qty_with_unkn_price[$trans['f_warehouse']] += $trans['f_quantity'];
+			}
 		}
 		foreach ($this->columns as $k=>$v) { 
 			if (isset($qty_with_unkn_price[$k]) && $qty_with_unkn_price[$k]!=0) {
