@@ -33,7 +33,7 @@ class Premium_Warehouse_Wholesale extends Module {
 	public function items_addon($arg) {
 		$gb = $this->init_module('Utils/GenericBrowser', null, 'wholesale_items_addon');
 		$gb->set_table_columns(array(
-			array('name'=>$this->t('SKU'), 'width'=>1, 'wrapmode'=>'nowrap'),
+			array('name'=>$this->t('SKU'), 'width'=>6, 'wrapmode'=>'nowrap'),
 			array('name'=>$this->t('Item Name'), 'width'=>40, 'wrapmode'=>'nowrap'),
 			array('name'=>$this->t('Distributor Code'), 'width'=>7, 'wrapmode'=>'nowrap'),
 			array('name'=>$this->t('Price'), 'width'=>7, 'wrapmode'=>'nowrap'),
@@ -43,10 +43,32 @@ class Premium_Warehouse_Wholesale extends Module {
 		$limit = $gb->get_limit(DB::GetOne('SELECT COUNT(*) FROM premium_warehouse_wholesale_items WHERE distributor_id=%d AND (quantity!=%d OR quantity_info!=%s)', array($arg['id'],0,'')));
 		$ret = DB::SelectLimit('SELECT * FROM premium_warehouse_wholesale_items WHERE distributor_id=%d AND (quantity!=%d OR quantity_info!=%s) ORDER BY item_id', $limit['numrows'], $limit['offset'], array($arg['id'],0,''));
 		while ($row=$ret->FetchRow()) {
-			$item = Utils_RecordBrowserCommon::get_record('premium_warehouse_items', $row['item_id']);
+			if ($row['item_id']) {
+//				$item = Utils_RecordBrowserCommon::get_record('premium_warehouse_items', $row['item_id']);
+				$sku = Utils_RecordBrowserCommon::create_linked_label('premium_warehouse_items', 'sku', $row['item_id']); 
+			} else {
+				$form = $this->init_module('Libs/QuickForm');
+				$field = 'link_it_'.$row['id'];
+				$form->addElement('autocomplete', $field, '', array($this->get_type().'Common', 'item_match_autocomplete'), array($row['distributor_id']));
+				$form->addElement('submit', 'submit', '');
+				$theme = $this->init_module('Base/Theme');
+				$form->assign_theme('form', $theme);
+				$theme->assign('field_name', $field);
+				ob_start();
+				$theme->display('match_form');
+				if ($form->validate()) {
+					$sku = $form->exportValue($field);
+					$item_id = Utils_RecordBrowserCommon::get_id('premium_warehouse_items', 'sku', $sku);
+					DB::Execute('UPDATE premium_warehouse_wholesale_items SET item_id=%d WHERE id=%d', array($item_id, $row['id']));
+					location(array());
+				} else {
+					$sku = ob_get_clean();
+				}
+			}
 			$gb->add_row(
-				Utils_RecordBrowserCommon::create_linked_label('premium_warehouse_items', 'sku', $item['id']),
-				$item['item_name'],
+				$sku,
+//				$item['item_name'],
+				$row['distributor_item_name'],
 				array('value'=>$row['internal_key'], 'style'=>'text-align:right;'),
 				array('value'=>Utils_CurrencyFieldCommon::format($row['price'],$row['price_currency']), 'style'=>'text-align:right;'),
 				array('value'=>$row['quantity'], 'style'=>'text-align:right;'),

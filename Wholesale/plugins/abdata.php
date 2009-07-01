@@ -164,7 +164,7 @@ class Premium_Warehouse_Wholesale__Plugin_abdata implements Premium_Warehouse_Wh
 
 				/*** check for exact match ***/
 				$w_item = DB::GetOne('SELECT item_id FROM premium_warehouse_wholesale_items WHERE internal_key=%s AND distributor_id=%d', array($row['indeks'], $distributor['id']));
-				if ($w_item===false || $w_item===null) {
+				if (($w_item===false || $w_item===null) && $row['indeks_p']) {
 					$w_item = null;
 					/*** exact match not found, looking for candidates ***/
 					$matches = Utils_RecordBrowserCommon::get_records('premium_warehouse_items', array(
@@ -197,7 +197,9 @@ class Premium_Warehouse_Wholesale__Plugin_abdata implements Premium_Warehouse_Wh
 						$item_exist++;
 					}
 					if ($w_item!==null) {
-						DB::Execute('INSERT INTO premium_warehouse_wholesale_items (item_id, internal_key, distributor_id, quantity, quantity_info, price, price_currency) VALUES (%d, %s, %d, %d, %s, %f, %d)', array($w_item, $row['indeks'], $distributor['id'], $quantity, $quantity_info, $row['cena_netto'], $pln_id));
+						DB::Execute('INSERT INTO premium_warehouse_wholesale_items (item_id, internal_key, distributor_item_name, distributor_id, quantity, quantity_info, price, price_currency) VALUES (%d, %s, %s, %d, %d, %s, %f, %d)', array($w_item, $row['indeks'], $row['nazwa'], $distributor['id'], $quantity, $quantity_info, $row['cena_netto'], $pln_id));
+					} else {
+						DB::Execute('INSERT INTO premium_warehouse_wholesale_items (internal_key, distributor_item_name, distributor_id, quantity, quantity_info, price, price_currency) VALUES (%s, %s, %d, %d, %s, %f, %d)', array($row['indeks'], $row['nazwa'], $distributor['id'], $quantity, $quantity_info, $row['cena_netto'], $pln_id));
 					}
 				} else {
 					/*** there's an exact match in the system already ***/

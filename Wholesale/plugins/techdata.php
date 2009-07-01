@@ -104,21 +104,21 @@ class Premium_Warehouse_Wholesale__Plugin_techdata implements Premium_Warehouse_
 
 		@unlink($zip_filename);
 		
-		$dir = scandir($zip_extract_path);
+		$sdir = scandir($zip_extract_path);
 		$filename = '';
-		foreach ($dir as $file)
+		foreach ($sdir as $file)
 			if ($file != basename($file, '.DBF')) {
 				$filename = $file;
-			} else {
-				unlink($file);
 			}
+		copy($zip_extract_path.$filename, $dir.$filename);
+		recursive_rmdir($zip_extract_path);
 		
 			
 	    curl_close($c);
 
 		Premium_Warehouse_WholesaleCommon::file_download_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','File downloaded.'), 1, true);
 	    
-	    return $zip_extract_path.$filename;
+	    return $dir.$filename;
 	}
 
 	public function update_from_file($filename, $distributor) {
@@ -179,7 +179,7 @@ class Premium_Warehouse_Wholesale__Plugin_techdata implements Premium_Warehouse_
 				}
 				/*** check for exact match ***/
 				$w_item = DB::GetOne('SELECT item_id FROM premium_warehouse_wholesale_items WHERE internal_key=%s AND distributor_id=%d', array($row_parts['KOD_TD'], $distributor['id']));
-				if ($w_item===false || $w_item===null) {
+				if (($w_item===false || $w_item===null) && $row_parts['SYMBOLPROD']) {
 					$w_item = null;
 					/*** exact match not found, looking for candidates ***/
 					$matches = Utils_RecordBrowserCommon::get_records('premium_warehouse_items', array(
@@ -212,7 +212,9 @@ class Premium_Warehouse_Wholesale__Plugin_techdata implements Premium_Warehouse_
 						$item_exist++;
 					}
 					if ($w_item!==null) {
-						DB::Execute('INSERT INTO premium_warehouse_wholesale_items (item_id, internal_key, distributor_id, quantity, quantity_info, price, price_currency) VALUES (%d, %s, %d, %d, %s, %f, %d)', array($w_item, $row_parts['KOD_TD'], $distributor['id'], $quantity, $quantity_info, $row_parts['CENA_C'], $pln_id));
+						DB::Execute('INSERT INTO premium_warehouse_wholesale_items (item_id, internal_key, distributor_item_name, distributor_id, quantity, quantity_info, price, price_currency) VALUES (%d, %s, %s, %d, %d, %s, %f, %d)', array($w_item, $row_parts['KOD_TD'], $row_parts['NAZWA'], $distributor['id'], $quantity, $quantity_info, $row_parts['CENA_C'], $pln_id));
+					} else {
+						DB::Execute('INSERT INTO premium_warehouse_wholesale_items (internal_key, distributor_item_name, distributor_id, quantity, quantity_info, price, price_currency) VALUES (%s, %s, %d, %d, %s, %f, %d)', array($row_parts['KOD_TD'], $row_parts['NAZWA'], $distributor['id'], $quantity, $quantity_info, $row_parts['CENA_C'], $pln_id));
 					}
 				} else {
 					/*** there's an exact match in the system already ***/

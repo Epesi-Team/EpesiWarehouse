@@ -24,6 +24,11 @@ if ($res===true) {
 	print('<script>parent.$("_last_update__data").innerHTML="'.Base_RegionalSettingsCommon::time2reg($time,'without_seconds').'";</script>');
 }
 
+$matches = array();
+preg_match('/scan\_([0-9]+)\.tmp/', $_GET['file'], $matches);
+$dir = ModuleManager::get_data_dir('Premium_Warehouse_Wholesale');
+unlink($dir.'current_scan_'.$matches[1].'.tmp');
+
 print('<script>parent.$("premium_wholesale_scan_iframe").parentNode.removeChild(parent.$("premium_wholesale_scan_iframe"));</script>');
-// TODO: cleanup stuff (and do it safe way:S)
+
 ?>

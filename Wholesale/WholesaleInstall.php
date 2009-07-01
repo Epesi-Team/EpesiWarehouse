@@ -70,8 +70,10 @@ class Premium_Warehouse_WholesaleInstall extends ModuleInstall {
 						array('constraints'=>''));
 
 		DB::CreateTable('premium_warehouse_wholesale_items',
+						'id I4 AUTO KEY,'.
 						'item_id I4,'.
 						'internal_key C(32),'.
+						'distributor_item_name C(64),'.
 						'distributor_id I4,'.
 						'price F,'.
 						'price_currency I4,'.

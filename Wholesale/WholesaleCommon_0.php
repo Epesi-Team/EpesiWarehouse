@@ -303,6 +303,19 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 		}
 	}
 
+	public function item_match_autocomplete($str) {
+		$ret = '<ul>';
+		$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items', array('~"item_name'=>DB::Concat(DB::qstr('%'),DB::qstr($str),DB::qstr('%'))), array(), array('item_name'=>'ASC'), 10);
+		foreach ($items as $k=>$v) {
+			$ret .= '<li>';
+			$ret .= '<span style="display:none;">'.$v['sku'].'</span>';
+			$ret .= '<span class="informal">'.$v['sku'].': '.$v['item_name'].'</span>';
+			$ret .= '</li>';
+		}
+		$ret .= '</ul>';
+		return $ret;
+	}
+	
     public static function menu() {
 		return array('Warehouse'=>array('__submenu__'=>1,'Distributors'=>array()));
 	}
