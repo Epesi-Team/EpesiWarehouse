@@ -246,7 +246,7 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 						Base_ActionBarCommon::add($icon,$label,Utils_RecordBrowserCommon::create_new_record_href('premium_warehouse_items_orders_details', $defaults,'add_to_order'));
 					}
 				}
-				return;
+				return $values;
 			case 'edit':
 				$values['sku'] = self::generate_id($values['id']);
 				break;

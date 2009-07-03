@@ -1011,7 +1011,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 				$active = (Base_User_SettingsCommon::get('Premium_Warehouse_Items_Orders','my_transaction')==$values['id']);
 				if (!Utils_RecordBrowserCommon::get_access('premium_warehouse_items_orders','edit',$values)) {
 					if ($active) Base_User_SettingsCommon::save('Premium_Warehouse_Items_Orders','my_transaction','');
-					return;
+					return $values;
 				}
 				if (isset($_REQUEST['premium_warehouse_change_active_order']) && $_REQUEST['premium_warehouse_change_active_order']===$values['id']) {
 					Base_User_SettingsCommon::save('Premium_Warehouse_Items_Orders','my_transaction',$active?'':$values['id']);
@@ -1025,7 +1025,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 					$label = Base_LangCommon::ts('Utils_Watchdog','Use this Trans.');
 				}
 				Base_ActionBarCommon::add($icon,$label,Module::create_href(array('premium_warehouse_change_active_order'=>$values['id'])));
-				return;
+				return $values;
 			case 'add':
 				if ($values['company']<0 && $values['company_name']) {
 					$values['company'] = Utils_RecordBrowserCommon::new_record('company',
@@ -1123,7 +1123,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 				self::change_total_qty($values, 'add');
 				return $values;
 			case 'view':
-				return;
+				return $values;
 			case 'edit':
 				self::change_total_qty($values, 'edit');
 				return $values;
