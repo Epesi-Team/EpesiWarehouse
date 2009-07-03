@@ -572,7 +572,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 
 	public static function check_qty_on_hand($data){
 		self::get_trans();
-		if (isset($data['quantity']) && intval($data['quantity'])!=$data['quantity']) return array('item_name'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders', 'Invallid amount.'));
+		if (isset($data['quantity']) && intval($data['quantity'])!=$data['quantity']) return array('item_name'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders', 'Invallid amount'));
 		if (self::$trans['transaction_type']==0) return true;
 		if (!isset($data['item_name'])) {
 			$data['item_name'] = Utils_RecordBrowser::$last_record['item_name'];
@@ -592,6 +592,15 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 //			}
 //			if ($data['quantity']>$location_id['quantity']) return array('quantity'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders', 'Amount not available'));
 //		}
+		if (self::$trans['transaction_type']==4) {
+			if ($data['quantity']<0) return array('item_name'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders', 'Invallid amount'));
+			$location_id = Utils_RecordBrowserCommon::get_records('premium_warehouse_location',array('item_sku'=>$data['item_name'],'warehouse'=>self::$trans['warehouse'],'!quantity'=>0));
+			$location_id = array_shift($location_id);
+			if (!isset($location_id) || !$location_id) {
+				return array('item_name'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders', 'Amount not available'));
+			}
+			if ($data['quantity']>$location_id['quantity']) return array('item_name'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders', 'Amount not available'));
+		}
 		if (self::$trans['transaction_type']==2) {
 			if (!isset($data['order_details_debit'])) return true;
 			if ($data['order_details_debit']<0 ||
@@ -606,7 +615,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 				if ($data['order_details_debit']>$location_id['quantity']) return array('item_name'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders', 'Amount not available'));
 			}
 		}
-			return true;
+		return true;
 	} 
 	
 	public static function access_order_details($action, $param, $action_details=null){
@@ -893,7 +902,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 
 		if ($order['transaction_type']==0 && $action=='change_delivered') $action=($order['status']!=20?'add':'delete'); 
 		if ($order['transaction_type']==1 && $action=='change_delivered') $action=(in_array($order['status'], array(6,7,20,22))?'delete':'add');			
-					
+
 		if ($action!=='add') $old_details = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders_details', $details['id']);
 		if ($action!=='add' && $action!=='restore') {
 			$location_id = Utils_RecordBrowserCommon::get_id('premium_warehouse_location',array('item_sku','warehouse'),array($item_id,$order['warehouse']));
