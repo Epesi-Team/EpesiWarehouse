@@ -65,8 +65,6 @@ if ($trans['transaction_type']<2) {
 	}
 }
 if ($trans['transaction_type']==2) {
-	$js .= '$("'.Utils_RecordBrowserCommon::get_calculated_id('premium_warehouse_items_orders_details', 'credit', null).'").innerHTML="'.Epesi::escapeJS('<input type="text" name="order_details_credit" id="order_details_credit" value="" onkeyup="if(this.value)$(\'order_details_debit\').style.display=\'none\';else $(\'order_details_debit\').style.display=\'inline\';" />').'";';
-	$js .= '$("'.Utils_RecordBrowserCommon::get_calculated_id('premium_warehouse_items_orders_details', 'debit', null).'").innerHTML="'.Epesi::escapeJS('<input type="text" name="order_details_debit" id="order_details_debit" value="" onkeyup="if(this.value)$(\'order_details_credit\').style.display=\'none\';else $(\'order_details_credit\').style.display=\'inline\';" />').'";';
 	if ($location_id!==null) $js .= '$("order_details_debit").style.display="inline";';
 	else $js .= '$("order_details_debit").style.display="none";';
 }
