@@ -15,7 +15,11 @@ defined("_VALID_ACCESS") || die('Direct access forbidden');
 class Premium_Warehouse_SalesReportCommon extends ModuleCommon {
 	public function menu() {
 		if (!Base_AclCommon::i_am_admin()) return;
-		return array('Reports'=>array('__submenu__'=>1, 'Sales by Warehouse'=>array('mode'=>'sales_by_warehouse'), 'Sales by Item'=>array('mode'=>'sales_by_item')));	
+		return array('Reports'=>array('__submenu__'=>1, 
+			'Sales by Warehouse'=>array('mode'=>'sales_by_warehouse'), 
+			'Sales by Item'=>array('mode'=>'sales_by_item')	
+//			'Sales by Transaction'=>array('mode'=>'sales_by_transaction')	
+		));	
 	}
 }
 

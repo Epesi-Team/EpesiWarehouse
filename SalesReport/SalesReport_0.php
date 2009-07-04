@@ -36,6 +36,7 @@ class Premium_Warehouse_SalesReport extends Module {
 		switch ($mode) {
 			case 'sales_by_warehouse': $this->sales_by_warehouse(); break;
 			case 'sales_by_item': $this->sales_by_item(); break;
+			case 'sales_by_transaction': $this->sales_by_transaction(); break;
 			default: print($this->t('Unknown mode'));
 		}
 	}
@@ -58,7 +59,6 @@ class Premium_Warehouse_SalesReport extends Module {
 		$header = array('Warehouse');
 		$this->columns = $date_range['dates'];
 		$this->range_type = $date_range['type'];
-		$this->rbr->set_currency($this->currency);
 		switch ($date_range['type']) {
 			case 'day': $this->format ='d M Y'; break;
 			case 'week': $this->format ='W Y'; break;
@@ -84,13 +84,14 @@ class Premium_Warehouse_SalesReport extends Module {
 		foreach ($this->columns as $v) {
 		// all $cats must be initialized here individually to avoid: "Message: Undefined index: Purchase Volume" error - see private static $cats = array(... above
 			$result[$i] = array(	$this->cats[0]=>0,
-									$this->cats[1]=>0,
+									$this->cats[1]=>array(),
 									$this->cats[2]=>0,
-									$this->cats[3]=>0,
-									$this->cats[4]=>0);
+									$this->cats[3]=>array(),
+									$this->cats[4]=>array());
 			$hash[date($this->format, $v)] = $i;
 			$i++;
 		}
+		$currency = 1;
 		
 		$records = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders', array('warehouse'=>$ref_rec['id']));
 		// TODO: transaction status filter
@@ -112,10 +113,14 @@ class Premium_Warehouse_SalesReport extends Module {
 						if ($v['status']==20) {
 							$result[$hash[$d]][$this->cats[2]]++;
 							$purchase_amount=Premium_Warehouse_Items_OrdersCommon::calculate_tax_and_total_value($v,'total');
-							if (!isset($purchase_amount[$this->currency])) break;
-							$result[$hash[$d]][$this->cats[3]]+=$purchase_amount[$this->currency];
-							// Net loss/profit - Decrease - note -=
-							$result[$hash[$d]][$this->cats[4]] -= $purchase_amount[$this->currency];
+//							if (!isset($purchase_amount[$currency])) break;
+							foreach ($purchase_amount as $c=>$v) {
+								if (!isset($result[$hash[$d]][$this->cats[3]][$c])) $result[$hash[$d]][$this->cats[3]][$c] = 0;
+								if (!isset($result[$hash[$d]][$this->cats[4]][$c])) $result[$hash[$d]][$this->cats[4]][$c] = 0;
+								$result[$hash[$d]][$this->cats[3]][$c] += $v;
+								// Net loss/profit - Decrease - note -=
+								$result[$hash[$d]][$this->cats[4]][$c] -= $v;
+							}
 							}
 						break;
 					/********************** Sale *******************/
@@ -124,10 +129,14 @@ class Premium_Warehouse_SalesReport extends Module {
 						if ($v['status']==7 || $v['status']==20) {
 							$result[$hash[$d]][$this->cats[0]]++;
 							$sale_amount=Premium_Warehouse_Items_OrdersCommon::calculate_tax_and_total_value($v,'total');
-							if (!isset($sale_amount[$this->currency])) break;
-							$result[$hash[$d]][$this->cats[1]]+=$sale_amount[$this->currency];
-							// Net loss/profit - Increase - note +=
-							$result[$hash[$d]][$this->cats[4]] += $sale_amount[$this->currency];
+//							if (!isset($sale_amount[$currency])) break;
+							foreach ($sale_amount as $c=>$v) {
+								if (!isset($result[$hash[$d]][$this->cats[1]][$c])) $result[$hash[$d]][$this->cats[1]][$c] = 0;
+								if (!isset($result[$hash[$d]][$this->cats[4]][$c])) $result[$hash[$d]][$this->cats[4]][$c] = 0;
+								$result[$hash[$d]][$this->cats[1]][$c] += $v;
+								// Net loss/profit - Increase - note +=
+								$result[$hash[$d]][$this->cats[4]][$c] += $v;
+							}
 						}
 						break;
 						/********************** Inventory Adjustment *******************/
@@ -136,10 +145,14 @@ class Premium_Warehouse_SalesReport extends Module {
 						if ($v['status']==20) {
 							$result[$hash[$d]][$this->cats[2]]++;
 							$purchase_amount=Premium_Warehouse_Items_OrdersCommon::calculate_tax_and_total_value($v,'total');
-							if (!isset($purchase_amount[$this->currency])) break;
-							$result[$hash[$d]][$this->cats[3]]+=$purchase_amount[$this->currency];
-							// Net loss/profit - Decrease - note -=
-							$result[$hash[$d]][$this->cats[4]] -= $purchase_amount[$this->currency];
+//							if (!isset($purchase_amount[$currency])) break;
+							foreach ($purchase_amount as $c=>$v) {
+								if (!isset($result[$hash[$d]][$this->cats[3]][$c])) $result[$hash[$d]][$this->cats[3]][$c] = 0;
+								if (!isset($result[$hash[$d]][$this->cats[4]][$c])) $result[$hash[$d]][$this->cats[4]][$c] = 0;
+								$result[$hash[$d]][$this->cats[3]][$c] += $v;
+								// Net loss/profit - Decrease - note -=
+								$result[$hash[$d]][$this->cats[4]][$c] -= $v;
+							}
 							}
 						break;
 						/********************** WAREHOUSE TRANSFER *******************/
@@ -203,8 +216,48 @@ class Premium_Warehouse_SalesReport extends Module {
 		$this->range_type = $this->rbr->display_date_picker(array(), $form);
 		$items_ids = DB::GetCol('SELECT od.f_item_name FROM premium_warehouse_items_orders_details_data_1 AS od LEFT JOIN premium_warehouse_items_orders_data_1 AS o ON o.id=od.f_transaction_id WHERE od.active=1 AND o.f_transaction_type=1 AND o.f_status=20 AND o.f_transaction_date>=%D AND o.f_transaction_date<=%D GROUP BY od.f_item_name ORDER BY SUM(f_quantity) DESC', array($this->range_type['start'], $this->range_type['end']));
 		$warehouses = Utils_RecordBrowserCommon::get_records('premium_warehouse',array(),array(),array('warehouse'=>'ASC'));
-		$items_amount = Utils_RecordBrowserCommon::get_records_limit('premium_warehouse_items',array('id'=>$items_ids),array(),array('item_name'=>'ASC'));
+		$items_amount = Utils_RecordBrowserCommon::get_records_limit('premium_warehouse_items',array('id'=>$items_ids));
 		$limit = $this->rbr->enable_paging($items_amount);
+		$items_ids = array_splice($items_ids, $limit['offset'], $limit['numrows']);
+		$items_recs = Utils_RecordBrowserCommon::get_records('premium_warehouse_items',array('id'=>$items_ids),array(),array('item_name'=>'ASC'));
+		$items = array();
+		foreach ($items_ids as $v) {
+			$items[$v] = $items_recs[$v];
+		}
+		$this->rbr->set_reference_records($items);
+		$this->rbr->set_reference_record_display_callback(array('Premium_Warehouse_ItemsCommon','display_item_name'));
+		$this->rbr->set_categories($this->cats);
+		$this->rbr->set_summary('col', array('label'=>'Total'));
+		$this->rbr->set_summary('row', array('label'=>'Total', 'callback'=>array($this,'sales_by_item_row_total')));
+		$this->rbr->set_format(array(	$this->cats[0]=>'numeric', 
+										$this->cats[1]=>'currency'
+									));
+		$header = array('Item Name');
+		$this->columns = array();
+		foreach ($warehouses as $v) {
+			$header[] = $v['warehouse'];
+			$this->columns[$v['id']] = $v['warehouse'];
+		}
+		$this->rbr->set_table_header($header);
+		$this->rbr->set_display_cell_callback(array($this, 'display_sales_by_item_cells'));
+		$this->rbr->set_pdf_title($this->t('Sales Report, %s',array(date('Y-m-d H:i:s'))));
+		$this->rbr->set_pdf_subject($this->rbr->pdf_subject_date_range());
+		$this->rbr->set_pdf_filename($this->t('Sales_Report_%s',array(date('Y_m_d__H_i_s'))));
+		$this->display_module($this->rbr);
+	}	
+
+	public function sales_by_transaction() {
+//		print('<br><b>Numbers in brackets indicate items sold that were omitted in earning calculation.</b><br><br>');
+		$form = $this->init_module('Libs/QuickForm');
+		$form->addElement('select', 'method', $this->t('Method'), array('fifo'=>$this->t('FIFO'), 'lifo'=>$this->t('LIFO')));
+		$form->addElement('select', 'prices', $this->t('Prices'), array('net'=>$this->t('Net'), 'gross'=>$this->t('Gross')));
+		$form->setDefaults(array('method'=>'fifo','prices'=>'net'));
+		$this->cats = array('Qty Sold','Earnings');
+		$this->range_type = $this->rbr->display_date_picker(array(), $form);
+//		$items_ids = DB::GetCol('SELECT od.f_item_name FROM premium_warehouse_items_orders_details_data_1 AS od LEFT JOIN premium_warehouse_items_orders_data_1 AS o ON o.id=od.f_transaction_id WHERE od.active=1 AND o.f_transaction_type=1 AND o.f_status=20 AND o.f_transaction_date>=%D AND o.f_transaction_date<=%D GROUP BY od.f_item_name ORDER BY SUM(f_quantity) DESC', array($this->range_type['start'], $this->range_type['end']));
+		$warehouses = Utils_RecordBrowserCommon::get_records('premium_warehouse',array(),array(),array('warehouse'=>'ASC'));
+		$transactions_count = Utils_RecordBrowserCommon::get_records_limit('premium_warehouse_items_orders', array('transaction_type'=>1));
+		$limit = $this->rbr->enable_paging($transactions_count);
 		$items_ids = array_splice($items_ids, $limit['offset'], $limit['numrows']);
 		$items_recs = Utils_RecordBrowserCommon::get_records('premium_warehouse_items',array('id'=>$items_ids),array(),array('item_name'=>'ASC'));
 		$items = array();
