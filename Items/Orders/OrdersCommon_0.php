@@ -69,7 +69,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
     public static function display_warehouse($v, $nolink=false, $desc=null) {
 		$ret = Utils_RecordBrowserCommon::create_linked_label('premium_warehouse', 'warehouse', $v[$desc['id']], $nolink);
 		if ($v['target_warehouse'] && $desc['id']!='target_warehouse')
-			$ret .= ' -> '.Utils_RecordBrowserCommon::create_linked_label('premium_warehouse', 'warehouse', $v['target_warehouse'], $nolink);
+			$ret .= '&nbsp;-> '.Utils_RecordBrowserCommon::create_linked_label('premium_warehouse', 'warehouse', $v['target_warehouse'], $nolink);
 		return $ret;
 
 		$ret = Utils_RecordBrowserCommon::create_linked_label('premium_warehouse', 'Warehouse', $v[$desc['id']], $nolink);
@@ -230,7 +230,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		$ret = Utils_RecordBrowserCommon::create_linked_label('premium_warehouse', 'warehouse', Utils_RecordBrowserCommon::get_value('premium_warehouse_items_orders', $r['transaction_id'], 'warehouse'), $nolink);
 		$t_w = Utils_RecordBrowserCommon::get_value('premium_warehouse_items_orders', $r['transaction_id'], 'target_warehouse');
 		if ($t_w)
-			$ret .= ' -> '.Utils_RecordBrowserCommon::create_linked_label('premium_warehouse', 'warehouse', $t_w, $nolink);
+			$ret .= '&nbsp;-> '.Utils_RecordBrowserCommon::create_linked_label('premium_warehouse', 'warehouse', $t_w, $nolink);
 		return $ret;
 	}
 	
