@@ -36,6 +36,11 @@ class Premium_Warehouse_Items_Orders extends Module {
 			$this->t('Warehouse Transfer')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'warehouse_transfer.png'), 'defaults'=>array_merge($defaults,array('transaction_type'=>4)))
 			), true);
 		$my_warehouse = Base_User_SettingsCommon::get('Premium_Warehouse','my_warehouse');
+		$warehouses = Utils_RecordBrowserCommon::get_records('premium_warehouse');
+		$opts = array('__NULL__'=>'---');
+		foreach ($warehouses as $v)
+			$opts[$v['id']] = $v['warehouse'];
+		$this->rb->set_custom_filter('warehouse',array('type'=>'select','label'=>$this->t('Warehouse'),'args'=>$opts,'trans_callback'=>array($this, 'warehouse_filter')));
 		$this->rb->set_filters_defaults(array('warehouse'=>$my_warehouse));
 
 		$this->rb->set_header_properties(array(
@@ -48,6 +53,11 @@ class Premium_Warehouse_Items_Orders extends Module {
 		));
 		$this->display_module($this->rb);
 	}
+
+	public function warehouse_filter($choice) {
+		if ($choice=='__NULL__') return array();
+		return array('(warehouse'=>$choice, '|target_warehouse'=>$choice);
+	}	
 
 	public function applet($conf,$opts) {
 		$opts['go'] = true; // enable full screen

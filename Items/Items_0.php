@@ -40,7 +40,6 @@ class Premium_Warehouse_Items extends Module {
 			
 		$warehouses = Utils_RecordBrowserCommon::get_records('premium_warehouse');
 		$opts = array('__NULL__'=>'---');
-		$trans = array();
 		$my_warehouse = Base_User_SettingsCommon::get('Premium_Warehouse','my_warehouse');
 		foreach ($warehouses as $v)
 			$opts[$v['id']] = $v['warehouse'];

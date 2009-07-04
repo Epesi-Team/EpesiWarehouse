@@ -23,7 +23,7 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 		$fields = array(
 			array('name'=>'Transaction ID', 'type'=>'calculated', 'required'=>false, 'param'=>Utils_RecordBrowserCommon::actual_db_type('text',16), 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon','display_transaction_id')),
 			array('name'=>'Transaction Type','type'=>'commondata', 'required'=>true, 'extra'=>false, 'visible'=>true, 'param'=>array('order_by_key'=>true,'Premium_Items_Orders_Trans_Types')),
-			array('name'=>'Warehouse', 		'type'=>'select', 'required'=>false, 'extra'=>false, 'visible'=>true, 'param'=>'premium_warehouse::Warehouse;::', 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_warehouse')),
+			array('name'=>'Warehouse', 		'type'=>'select', 'required'=>false, 'extra'=>false, 'filter'=>true, 'visible'=>true, 'param'=>'premium_warehouse::Warehouse;::', 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_warehouse')),
 			array('name'=>'Target Warehouse','type'=>'select', 'required'=>true, 'extra'=>false, 'visible'=>false, 'param'=>'premium_warehouse::Warehouse;::', 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_warehouse')),
 			array('name'=>'Ref No', 		'type'=>'text', 'param'=>'64', 'required'=>false, 'extra'=>false, 'visible'=>true),
 			array('name'=>'Employee', 		'type'=>'crm_contact', 'filter'=>true, 'param'=>array('field_type'=>'select','crits'=>array('Premium_Warehouse_ItemsCommon','employee_crits'), 'format'=>array('CRM_ContactsCommon','contact_format_no_company')), 'required'=>false, 'extra'=>false, 'visible'=>true),
