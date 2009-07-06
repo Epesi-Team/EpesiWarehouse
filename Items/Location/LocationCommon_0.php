@@ -64,7 +64,9 @@ class Premium_Warehouse_Items_LocationCommon extends ModuleCommon {
 			case 'view':	return true;
 			case 'edit':	return true;
 			case 'delete':	return false;
-			case 'fields':	return array('item_sku'=>'read-only', 'quantity'=>'read-only', 'warehouse'=>'read-only');
+			case 'fields':	$ret = array('item_sku'=>'read-only', 'warehouse'=>'read-only');
+							if (!Base_AclCommon::i_am_sa()) $ret['quantity'] = 'read-only';
+							return $ret;
 		}
 		return false;
     }

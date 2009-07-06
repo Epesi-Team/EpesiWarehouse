@@ -242,12 +242,15 @@ class Premium_Warehouse_Items_Orders extends Module {
 		$items_check = $this->init_module('Libs/QuickForm'); 
 		$items_check->addElement('static', 'item_header', '', $this->t('The following items are unavailable'));
 		$items_available = true;
+		$quantities = array();
 		foreach ($items as $v) {
+			if (!isset($quantities[$v['item_name']])) $quantities[$v['item_name']]=0;
+			$quantities[$v['item_name']] += $v['quantity'];
 			$loc_id = Utils_RecordBrowserCommon::get_id('premium_warehouse_location', array('item_sku', 'warehouse'), array($v['item_name'], $trans['warehouse']));
 			if (is_numeric($loc_id)) $qty = Utils_RecordBrowserCommon::get_value('premium_warehouse_location', $loc_id, 'quantity');
 			else $qty = 0;
-			if ($qty<$v['quantity'] && Utils_RecordBrowserCommon::get_value('premium_warehouse_items', $v['item_name'], 'item_type')<2) {
-				$items_check->addElement('static', 'item_'.$v['id'], Premium_Warehouse_Items_OrdersCommon::display_item_name($v, true), '<span style="color:red;">'.$qty.' / '.$v['quantity'].'</span>');
+			if ($qty<$quantities[$v['item_name']] && Utils_RecordBrowserCommon::get_value('premium_warehouse_items', $v['item_name'], 'item_type')<2) {
+				$items_check->addElement('static', 'item_'.$v['id'], Premium_Warehouse_Items_OrdersCommon::display_item_name($v, true), '<span style="color:red;">'.$qty.' / '.$quantities[$v['item_name']].'</span>');
 				$items_available = false;
 			}
 		}
@@ -673,8 +676,8 @@ class Premium_Warehouse_Items_Orders extends Module {
 						if ($v['login']==Acl::get_user()) $my_id = $v['id'];
 						$emps[$v['id']] = CRM_ContactsCommon::contact_format_no_company($v,true);
 					}
-					$ship_received->addElement('datepicker', 'shipment_date', $this->t('Shipment - receive date'));
-					$ship_received->addElement('select', 'shipment_employee', $this->t('Shipment - received by'), $emps);
+					$ship_received->addElement('datepicker', 'shipment_date', $this->t('Shipment - send date'));
+					$ship_received->addElement('select', 'shipment_employee', $this->t('Shipment - sent by'), $emps);
 					$ship_received->addElement('datepicker', 'shipment_eta', $this->t('Shipment - ETA'));
 					$ship_received->addElement('text', 'shipment_no', $this->t('Shipment No.'));
 					$ship_received->addElement('text', 'tracking_info', $this->t('Shipment - Tracking Info'));
@@ -845,8 +848,8 @@ class Premium_Warehouse_Items_Orders extends Module {
 						if ($v['login']==Acl::get_user()) $my_id = $v['id'];
 						$emps[$v['id']] = CRM_ContactsCommon::contact_format_no_company($v,true);
 					}
-					$ship_received->addElement('datepicker', 'shipment_date', 'Shipment - receive date');
-					$ship_received->addElement('select', 'shipment_employee', 'Shipment - received by', $emps);
+					$ship_received->addElement('datepicker', 'shipment_date', 'Shipment - send date');
+					$ship_received->addElement('select', 'shipment_employee', 'Shipment - sent by', $emps);
 					$ship_received->addElement('datepicker', 'shipment_eta', 'Shipment - ETA');
 					$ship_received->addElement('text', 'tracking_info', 'Shipment - Tracking Info');
 					$ship_received->setDefaults(array('shipment_date'=>date('Y-m-d'), 'shipment_employee'=>$my_id));
