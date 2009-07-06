@@ -18,6 +18,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	public static $trans = null;
 	private static $new_status = null;
 	public static $key = null;
+	private static $status_blocked = null;
 	
 	public static function user_settings() {
 		return array(	'Transaction'=>array(
@@ -422,6 +423,13 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			$form->addElement('static', $field, $label, self::display_company_name(Utils_RecordBrowser::$last_record, false, array('id'=>$field)));
 		}
 	}
+	
+	public static function check_if_warehouse_set($data) {
+		if (!isset($data['status'])) return true;
+		if ($data['status']>=2 && !$data['warehouse'])
+			return array('warehouse'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Unable to change status - select warehouse first'));
+		return true;
+	}
 
 	public static function QFfield_status(&$form, $field, $label, $mode, $default, $desc, $rb_obj){
 		if ($mode!='view' && (Utils_RecordBrowser::$last_record['transaction_type']==0 || Utils_RecordBrowser::$last_record['transaction_type']==1)) {
@@ -432,6 +440,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		if ($mode=='edit') {
 			$form->addElement('select', $field, $label, $opts, array('id'=>'status'));
 			$form->setDefaults(array($field=>$default));
+			$form->addFormRule(array('Premium_Warehouse_Items_OrdersCommon','check_if_warehouse_set'));
 		} else {
 			$obj = $rb_obj->init_module('Premium/Warehouse/Items/Orders');
 			$rb_obj->display_module($obj, array(Utils_RecordBrowser::$last_record, $default), 'change_status_leightbox');
@@ -1020,7 +1029,8 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 					Utils_RecordBrowserCommon::restore_record('premium_warehouse_items_orders_details', $d['id']);
 				return;
 			case 'view':
-				
+				if (self::$status_blocked)
+					print('<b>'.Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Warning: status change impossible - select warehouse first.').'</b>');
 				if (Base_AclCommon::i_am_admin() && $values['transaction_type']==2) {
 					$debts = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$values['id'], '<quantity'=>0));
 					if (empty($debts)) {
@@ -1084,8 +1094,10 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 				}
 				return $values;
 			case 'edit':
-				$access = self::access_orders('fields', $values);
-				if (isset($access['warehouse']) && $access['warehouse']=='read-only' && !$values['warehouse']) $values['status'] = Utils_RecordBrowserCommon::get_value('premium_warehouse_items_orders', $values['id'], 'status');
+				if (!$values['warehouse'] && $values['status']>=2) {
+					self::$status_blocked = true;
+					$values['status'] = Utils_RecordBrowserCommon::get_value('premium_warehouse_items_orders', $values['id'], 'status');
+				}
 				$values['transaction_id'] = self::generate_id($values['id']);
 				$old_values = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $values['id']);
 				$det = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$values['id']));
