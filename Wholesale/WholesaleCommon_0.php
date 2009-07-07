@@ -31,11 +31,14 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 			$filename = $arg;
 			$id = DB::GetOne('SELECT id FROM premium_warehouse_wholesale_plugin WHERE filename=%s', array($arg));
 		}
-		require_once(self::$plugin_path.basename($filename).'.php');
-		$class = 'Premium_Warehouse_Wholesale__Plugin_'.$filename;
-		if (!class_exists($class))
-			trigger_error('Warning: invalid plugin in file '.$filename.'.php<br>', E_USER_ERROR);
-		return $plugins[$id] = $plugins[$filename] = new $class();
+		if (is_file(self::$plugin_path.basename($filename).'.php')) {
+			require_once(self::$plugin_path.basename($filename).'.php');
+			$class = 'Premium_Warehouse_Wholesale__Plugin_'.$filename;
+			if (!class_exists($class))
+				trigger_error('Warning: invalid plugin in file '.$filename.'.php<br>', E_USER_ERROR);
+			return $plugins[$id] = $plugins[$filename] = new $class();
+		}
+		return null;
 	}
 	
 	public static function scan_for_plugins() {
@@ -45,12 +48,14 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 			if ($file=='..' || $file=='.' || $file=='interface.php') continue;
 			$filename = basename($file, '.php');
 			$plugin = self::get_plugin($filename);
-			$name = $plugin->get_name();
-			$id = DB::GetOne('SELECT id FROM premium_warehouse_wholesale_plugin WHERE filename=%s', array($filename));
-			if ($id===false || $id==null) {
-				DB::Execute('INSERT INTO premium_warehouse_wholesale_plugin (name, filename, active) VALUES (%s, %s, 1)', array($name, $filename));
-			} else {
-				DB::Execute('UPDATE premium_warehouse_wholesale_plugin SET active=1, name=%s WHERE id=%d', array($name, $id));
+			if ($plugin) {
+				$name = $plugin->get_name();
+				$id = DB::GetOne('SELECT id FROM premium_warehouse_wholesale_plugin WHERE filename=%s', array($filename));
+				if ($id===false || $id==null) {
+					DB::Execute('INSERT INTO premium_warehouse_wholesale_plugin (name, filename, active) VALUES (%s, %s, 1)', array($name, $filename));
+				} else {
+					DB::Execute('UPDATE premium_warehouse_wholesale_plugin SET active=1, name=%s WHERE id=%d', array($name, $id));
+				}
 			}
 		}
 		DB::Execute('UPDATE premium_warehouse_wholesale_plugin SET active=0 WHERE active=2');

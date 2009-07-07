@@ -143,8 +143,6 @@ class Premium_Warehouse_Wholesale__Plugin_techdata implements Premium_Warehouse_
 			'OPIS1'=>170,
 			'OPIS2'=>170);
 			
-		DB::Execute('UPDATE premium_warehouse_wholesale_items SET quantity=%d, quantity_info=%s WHERE distributor_id=%d', array(0, '', $distributor['id']));
-
 		$index = 1;
 		$limit = dbase_numrecords($d);
 
@@ -153,6 +151,8 @@ class Premium_Warehouse_Wholesale__Plugin_techdata implements Premium_Warehouse_
 			Premium_Warehouse_WholesaleCommon::file_scan_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Unable to find required currency (%s), aborting.', array('PLN')), 2, true);
 			return false;
 		}
+
+		DB::Execute('UPDATE premium_warehouse_wholesale_items SET quantity=%d, quantity_info=%s WHERE distributor_id=%d', array(0, '', $distributor['id']));
 
 		Premium_Warehouse_WholesaleCommon::file_scan_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Scanning...'));
 		while ($index <= $limit) {
@@ -178,8 +178,8 @@ class Premium_Warehouse_Wholesale__Plugin_techdata implements Premium_Warehouse_
 					case 'jutro': $quantity_info='Tomorrow';break;
 				}
 				/*** check for exact match ***/
-				$w_item = DB::GetOne('SELECT item_id FROM premium_warehouse_wholesale_items WHERE internal_key=%s AND distributor_id=%d', array($row_parts['KOD_TD'], $distributor['id']));
-				if (($w_item===false || $w_item===null) && $row_parts['SYMBOLPROD']) {
+				$internal_key = DB::GetOne('SELECT internal_key FROM premium_warehouse_wholesale_items WHERE internal_key=%s AND distributor_id=%d', array($row_parts['KOD_TD'], $distributor['id']));
+				if (($internal_key===false || $internal_key===null) && $row_parts['SYMBOLPROD']) {
 					$w_item = null;
 					/*** exact match not found, looking for candidates ***/
 					$matches = Utils_RecordBrowserCommon::get_records('premium_warehouse_items', array(
