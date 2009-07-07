@@ -246,46 +246,6 @@ class Premium_Warehouse_SalesReport extends Module {
 		$this->display_module($this->rbr);
 	}	
 
-	public function sales_by_transaction() {
-//		print('<br><b>Numbers in brackets indicate items sold that were omitted in earning calculation.</b><br><br>');
-		$form = $this->init_module('Libs/QuickForm');
-		$form->addElement('select', 'method', $this->t('Method'), array('fifo'=>$this->t('FIFO'), 'lifo'=>$this->t('LIFO')));
-		$form->addElement('select', 'prices', $this->t('Prices'), array('net'=>$this->t('Net'), 'gross'=>$this->t('Gross')));
-		$form->setDefaults(array('method'=>'fifo','prices'=>'net'));
-		$this->cats = array('Qty Sold','Earnings');
-		$this->range_type = $this->rbr->display_date_picker(array(), $form);
-//		$items_ids = DB::GetCol('SELECT od.f_item_name FROM premium_warehouse_items_orders_details_data_1 AS od LEFT JOIN premium_warehouse_items_orders_data_1 AS o ON o.id=od.f_transaction_id WHERE od.active=1 AND o.f_transaction_type=1 AND o.f_status=20 AND o.f_transaction_date>=%D AND o.f_transaction_date<=%D GROUP BY od.f_item_name ORDER BY SUM(f_quantity) DESC', array($this->range_type['start'], $this->range_type['end']));
-		$warehouses = Utils_RecordBrowserCommon::get_records('premium_warehouse',array(),array(),array('warehouse'=>'ASC'));
-		$transactions_count = Utils_RecordBrowserCommon::get_records_limit('premium_warehouse_items_orders', array('transaction_type'=>1));
-		$limit = $this->rbr->enable_paging($transactions_count);
-		$items_ids = array_splice($items_ids, $limit['offset'], $limit['numrows']);
-		$items_recs = Utils_RecordBrowserCommon::get_records('premium_warehouse_items',array('id'=>$items_ids),array(),array('item_name'=>'ASC'));
-		$items = array();
-		foreach ($items_ids as $v) {
-			$items[$v] = $items_recs[$v];
-		}
-		$this->rbr->set_reference_records($items);
-		$this->rbr->set_reference_record_display_callback(array('Premium_Warehouse_ItemsCommon','display_item_name'));
-		$this->rbr->set_categories($this->cats);
-		$this->rbr->set_summary('col', array('label'=>'Total'));
-		$this->rbr->set_summary('row', array('label'=>'Total', 'callback'=>array($this,'sales_by_item_row_total')));
-		$this->rbr->set_format(array(	$this->cats[0]=>'numeric', 
-										$this->cats[1]=>'currency'
-									));
-		$header = array('Item Name');
-		$this->columns = array();
-		foreach ($warehouses as $v) {
-			$header[] = $v['warehouse'];
-			$this->columns[$v['id']] = $v['warehouse'];
-		}
-		$this->rbr->set_table_header($header);
-		$this->rbr->set_display_cell_callback(array($this, 'display_sales_by_item_cells'));
-		$this->rbr->set_pdf_title($this->t('Sales Report, %s',array(date('Y-m-d H:i:s'))));
-		$this->rbr->set_pdf_subject($this->rbr->pdf_subject_date_range());
-		$this->rbr->set_pdf_filename($this->t('Sales_Report_%s',array(date('Y_m_d__H_i_s'))));
-		$this->display_module($this->rbr);
-	}	
-	
 	public function sales_by_item_row_total($results, $total, $cat) {
 		if ($cat==$this->cats[1]) return $total;
 		$total = array(0=>0, 1=>0);
@@ -313,6 +273,201 @@ class Premium_Warehouse_SalesReport extends Module {
 			$hash[$k] = $i;
 			$i++;
 		}
+		$trans_stack = array();
+		$transf_stack = array();
+		$transs = DB::Execute('SELECT * FROM premium_warehouse_items_orders_details_data_1 AS od LEFT JOIN premium_warehouse_items_orders_data_1 AS o ON o.id=od.f_transaction_id WHERE od.active=1 AND (o.f_transaction_type=0 OR o.f_transaction_type=1 OR o.f_transaction_type=4) AND od.f_item_name=%d AND o.f_status=20 ORDER BY o.f_transaction_date '.$order_dir.', (-(o.f_transaction_type - 2.2)*(o.f_transaction_type - 2.2)) '.$order_dir, array($ref_rec['id']));
+		$debug = false;
+		$fifo = ($this->range_type['other']['method']=='fifo');
+		while ($trans = $transs->FetchRow()) {
+			if ($debug==$ref_rec['id']) print('New transaction '.$trans['id'].' of type '.$trans['f_transaction_type'].' at '.$trans['f_transaction_date'].' from  '.$this->columns[$trans['f_warehouse']].' warehouse<br>');
+			if ($trans['f_transaction_type']==4) {
+				if (!$fifo) {
+					array_unshift($transf_stack, $trans);
+				} else {
+					$trans_s_i = 0;
+					while ($trans['f_quantity']>0 && isset($trans_stack[$trans_s_i])) {
+						if ($trans['f_warehouse'] == $trans_stack[$trans_s_i]['f_warehouse']) {
+							$qty = min($trans['f_quantity'], $trans_stack[$trans_s_i]['f_quantity']);
+							$new_purchase = $trans_stack[$trans_s_i];
+							$trans_stack[$trans_s_i]['f_quantity'] -= $qty;
+							$trans['f_quantity'] -= $qty;
+							$new_purchase['f_quantity'] = $qty;
+							$new_purchase['f_warehouse'] = $trans['f_target_warehouse'];
+							array_push($trans_stack, $new_purchase);
+							if ($trans_stack[$trans_s_i]['f_quantity'] == 0) {
+								unset($trans_stack[$trans_s_i]);
+								$trans_stack = array_values($trans_stack);
+								$trans_s_i--;
+							}
+						}
+						$trans_s_i++;
+					}
+				}
+				continue;
+			}
+			
+			if ($fifo && $trans['f_transaction_type']==0) {
+				array_push($trans_stack, $trans);
+				continue;
+			}
+			if (!$fifo && $trans['f_transaction_type']==1) {
+				array_unshift($trans_stack, $trans);
+			// I need to catch other transactions on that day for LIFO
+				continue;
+			}
+			
+			$trans_s_i = 0;
+			
+			while ($trans['f_quantity']>0) {
+				if (!isset($trans_stack[$trans_s_i])) {
+					if ($fifo && $trans['f_transaction_date']>=$this->range_type['start'] && $trans['f_transaction_date']<=$this->range_type['end']) $qty_with_unkn_price[$trans['f_warehouse']] += $trans['f_quantity'];
+					break;
+				}
+				$link_it = false;
+				$qty = 0;
+				if (!$fifo) {
+					$sale = $trans_stack[$trans_s_i];
+					$purchase = $trans; 
+				} else {
+					$sale = $trans;
+					$purchase = $trans_stack[$trans_s_i];
+				}
+				if ($sale['f_warehouse'] == $purchase['f_warehouse']) { 
+					$link_it = true;
+				} else {
+					$transf_s_i = 0;
+					while (	$qty==0 &&
+							isset($transf_stack[$transf_s_i]) && 
+							$transf_stack[$transf_s_i]['f_transaction_date']>=$purchase['f_transaction_date'] &&
+							$transf_stack[$transf_s_i]['f_transaction_date']<=$sale['f_transaction_date']) {
+						$transf = $transf_stack[$transf_s_i];
+						// For now I'll just check for direct transfers - path algorithm would be needed
+						if ($transf['f_target_warehouse']==$sale['f_warehouse'] &&
+							$transf['f_warehouse']==$purchase['f_warehouse']) {
+							$qty = min($trans['f_quantity'], $trans_stack[$trans_s_i]['f_quantity'], $transf['f_quantity']);
+							$transf_stack[$transf_s_i]['f_quantity'] -= $qty;
+							$link_it = true;
+							if ($transf_stack[$transf_s_i]['f_quantity']==0) {
+								unset($transf_stack[$transf_s_i]);
+								$transf_stack = array_values($transf_stack);
+							}
+						}
+						$transf_s_i++;
+					}
+				}
+				if ($link_it) {					
+					if ($qty==0) $qty = min($sale['f_quantity'], $purchase['f_quantity']);
+
+					$include = ($sale['f_transaction_date']>=$this->range_type['start'] && $sale['f_transaction_date']<=$this->range_type['end']);
+
+					$trans_stack[$trans_s_i]['f_quantity'] -= $qty;
+					$trans['f_quantity'] -= $qty;
+
+					if ($trans_stack[$trans_s_i]['f_quantity']==0) {
+						unset($trans_stack[$trans_s_i]);
+						$trans_stack = array_values($trans_stack);
+					}
+
+					$sale['f_price'] = Utils_CurrencyFieldCommon::get_values($sale['f_net_price']);
+					if ($this->range_type['other']['prices']=='net') $sale_price = $sale['f_price'][0];
+					else $sale_price = round((100+Data_TaxRatesCommon::get_tax_rate($sale['f_tax_rate']))*$sale['f_price'][0]/100, Utils_CurrencyFieldCommon::get_precission($sale['f_price'][1]));
+					$sale_currency = $sale['f_price'][1]; 
+					$purchase['f_price'] = Utils_CurrencyFieldCommon::get_values($purchase['f_net_price']);
+					if ($this->range_type['other']['prices']=='net') $purchase_price = $purchase['f_price'][0];
+					else $purchase_price = round((100+Data_TaxRatesCommon::get_tax_rate($purchase['f_tax_rate']))*$purchase['f_price'][0]/100, Utils_CurrencyFieldCommon::get_precission($purchase['f_price'][1]));
+					$purchase_currency = $purchase['f_price'][1]; 
+
+					if ($ref_rec['id']==$debug) print('Sale transaction '.$sale['id'].' was matched with '.$purchase['id'].' for amount of '.$qty.' from  '.$this->columns[$sale['f_warehouse']].' warehouse<br>');
+
+					$idx = $hash[$sale['f_warehouse']];
+					if ($sale_currency!=$purchase_currency) {
+						// TODO: currency conflict
+						$ret[$idx][$this->cats[1]] = 'Currencies mixed';
+					}
+					
+					if (!isset($earned[$purchase_currency])) $earned[$purchase_currency] = 0;
+					if ($include) {
+						if ($debug==$ref_rec['id']) print('INCLUDED transaction '.$trans['id'].' of type '.$trans['f_transaction_type'].' at '.$trans['f_transaction_date'].' from  '.$this->columns[$trans['f_warehouse']].' warehouse for quantity of '.$qty.'<br>');
+						if (!isset($ret[$idx][$this->cats[1]][$purchase_currency])) $ret[$idx][$this->cats[1]][$purchase_currency] = 0;
+						$ret[$idx][$this->cats[0]] += $qty;
+						if (is_array($ret[$idx][$this->cats[1]])) $ret[$idx][$this->cats[1]][$purchase_currency] += ($sale_price - $purchase_price)*$qty;
+					}
+					$trans_s_i = 0;
+				} else {
+					$trans_s_i++;
+				}
+			}
+		}
+		if (!$fifo) {
+			while ($trans = array_pop($trans_stack)) {
+				if ($trans['f_transaction_date']>=$this->range_type['start'] && $trans['f_transaction_date']<=$this->range_type['end'])
+					$qty_with_unkn_price[$trans['f_warehouse']] += $trans['f_quantity'];
+			}
+		}
+		foreach ($this->columns as $k=>$v) { 
+			if (isset($qty_with_unkn_price[$k]) && $qty_with_unkn_price[$k]!=0) {
+				$ret[$hash[$k]][$this->cats[0]] = ($ret[$hash[$k]][$this->cats[0]]+$qty_with_unkn_price[$k]).' ('.$qty_with_unkn_price[$k].')';
+			}
+		}
+		return $ret;
+	}
+	
+	public function sales_by_transaction() {
+//		print('<br><b>Numbers in brackets indicate items sold that were omitted in earning calculation.</b><br><br>');
+		$form = $this->init_module('Libs/QuickForm');
+		$form->addElement('select', 'method', $this->t('Method'), array('fifo'=>$this->t('FIFO'), 'lifo'=>$this->t('LIFO')));
+		$form->addElement('select', 'prices', $this->t('Prices'), array('net'=>$this->t('Net'), 'gross'=>$this->t('Gross')));
+		$warehouses = Utils_RecordBrowserCommon::get_records('premium_warehouse',array(),array(),array('warehouse'=>'ASC'));
+		$warehouse_choice = array();
+		$my_warehouse = Base_User_SettingsCommon::get('Premium_Warehouse','my_warehouse');
+		foreach ($warehouses as $k=>$v) {
+			if ($my_warehouse) $my_warehouse = $v['id'];
+			$warehouse_choice[$v['id']] = $v['warehouse'];
+		}
+		$form->addElement('select', 'warehouse', $this->t('Warehouse'), $warehouse_choice);
+		$form->setDefaults(array('method'=>'fifo','prices'=>'net', 'warehouse'=>$my_warehouse));
+		$this->cats = array('Qty Sold','Earnings');
+		$this->range_type = $this->rbr->display_date_picker(array(), $form);
+		$transactions_count = Utils_RecordBrowserCommon::get_records_limit('premium_warehouse_items_orders', array('transaction_type'=>1));
+		$limit = $this->rbr->enable_paging($transactions_count);
+		$start = $limit['offset'];
+		$end = $limit['offset']+$limit['numrows']-1;
+		if ($end>$transactions_count-1) $end = $transactions_count-1;
+		$this->rbr->set_reference_records(range($start, $end));
+		$this->rbr->set_reference_record_display_callback(array($this,'display_transaction_id_span'));
+		$this->rbr->set_categories($this->cats);
+		$this->rbr->set_summary('col', array('label'=>'Total'));
+		$this->rbr->set_summary('row', array('label'=>'Total', 'callback'=>array($this,'sales_by_item_row_total')));
+		$this->rbr->set_format(array(	$this->cats[0]=>'numeric', 
+										$this->cats[1]=>'currency'
+									));
+		$header = array('Transaction', $warehouses[$my_warehouse]['warehouse']);
+		$this->rbr->set_table_header($header);
+		$this->rbr->set_display_cell_callback(array($this, 'display_sales_by_transaction_cells'));
+//		$this->rbr->set_pdf_title($this->t('Sales Report, %s',array(date('Y-m-d H:i:s'))));
+//		$this->rbr->set_pdf_subject($this->rbr->pdf_subject_date_range());
+//		$this->rbr->set_pdf_filename($this->t('Sales_Report_%s',array(date('Y_m_d__H_i_s'))));
+		$this->display_module($this->rbr);
+	}	
+	
+	public function display_transaction_id_span($r) {
+		return '<span id="reports_transaction_label__'.$r.'"></span>';
+	}
+	
+	public function display_sales_by_transaction_cells($counter) {
+		$ret = array();
+		$order_dir = $this->range_type['other']['method']=='fifo'?'ASC':'DESC';
+		
+		eval_js('$("reports_transaction_label__'.$counter.'").innerHTML="YEAH";');
+
+		$i = 0;
+		$hash = array();
+		$qty_with_unkn_price = array();
+		$ret[$i] = array(	$this->cats[0]=>$counter,
+							$this->cats[1]=>array());
+		$qty_with_unkn_price = 0;
+		$hash = $i;
+		return $ret;
 		$trans_stack = array();
 		$transf_stack = array();
 		$transs = DB::Execute('SELECT * FROM premium_warehouse_items_orders_details_data_1 AS od LEFT JOIN premium_warehouse_items_orders_data_1 AS o ON o.id=od.f_transaction_id WHERE od.active=1 AND (o.f_transaction_type=0 OR o.f_transaction_type=1 OR o.f_transaction_type=4) AND od.f_item_name=%d AND o.f_status=20 ORDER BY o.f_transaction_date '.$order_dir.', (-(o.f_transaction_type - 2.2)*(o.f_transaction_type - 2.2)) '.$order_dir, array($ref_rec['id']));

@@ -17,8 +17,8 @@ class Premium_Warehouse_SalesReportCommon extends ModuleCommon {
 		if (!Base_AclCommon::i_am_admin()) return;
 		return array('Reports'=>array('__submenu__'=>1, 
 			'Sales by Warehouse'=>array('mode'=>'sales_by_warehouse'), 
+//			'Sales by Transaction'=>array('mode'=>'sales_by_transaction'),	
 			'Sales by Item'=>array('mode'=>'sales_by_item')	
-//			'Sales by Transaction'=>array('mode'=>'sales_by_transaction')	
 		));	
 	}
 }
