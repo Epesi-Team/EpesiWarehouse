@@ -131,7 +131,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	}
 	
 	public static function display_total_value($r, $nolink=false) {
-		if ($r['transaction_type']==2 || ($r['transaction_type']==3 && !$r['payment']))
+		if ($r['transaction_type']==4 || $r['transaction_type']==2 || ($r['transaction_type']==3 && !$r['payment']))
 			return '---';
 		$ret = array();
 		$vals = self::calculate_tax_and_total_value($r, 'total');
@@ -146,7 +146,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	}
 	
 	public static function display_tax_value($r, $nolink=false) {
-		if ($r['transaction_type']==2 || ($r['transaction_type']==3 && !$r['payment']))
+		if ($r['transaction_type']==4 || $r['transaction_type']==2 || ($r['transaction_type']==3 && !$r['payment']))
 			return '---';
 		$ret = array();
 		$vals = self::calculate_tax_and_total_value($r, 'tax');
@@ -426,8 +426,15 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	
 	public static function check_if_warehouse_set($data) {
 		if (!isset($data['status'])) return true;
-		if ($data['status']>=2 && !$data['warehouse'])
+		if (isset($data['warehouse']))
+			$warehouse = $data['warehouse'];
+		else
+			$warehouse = utils_RecordBrowser::$last_record['warehouse'];
+		
+		if ($data['status']>=2 && !$warehouse)
 			return array('warehouse'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Unable to change status - select warehouse first'));
+		if (isset($data['target_warehouse']) && $data['target_warehouse'] && $warehouse==$data['target_warehouse'])
+			return array('warehouse'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Source and target warehouses must be different'));
 		return true;
 	}
 

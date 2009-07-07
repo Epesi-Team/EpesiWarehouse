@@ -25,12 +25,12 @@ class Premium_Warehouse_Items_Orders extends Module {
 							'zone'=>Base_User_SettingsCommon::get('Base_RegionalSettings','default_state'),
 							'transaction_date'=>date('Y-m-d'),
 							'employee'=>$me['id'],
-							'warehouse'=>Base_User_SettingsCommon::get('Premium_Warehouse','my_warehouse'),
-							'terms'=>0);
+							'warehouse'=>Base_User_SettingsCommon::get('Premium_Warehouse','my_warehouse')
+							);
 		$this->rb->set_defaults(array(
-			$this->t('Purchase')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'purchase.png'), 'defaults'=>array_merge($defaults,array('transaction_type'=>0))),
-			$this->t('Sales Quote')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'sale.png'), 'defaults'=>array_merge($defaults,array('transaction_type'=>1))),
-			$this->t('Sale')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'quick_sale.png'), 'defaults'=>array_merge($defaults,array('transaction_type'=>1, 'status'=>2, 'payment_type'=>0, 'shipment_type'=>0))),
+			$this->t('Purchase')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'purchase.png'), 'defaults'=>array_merge($defaults,array('transaction_type'=>0,'terms'=>0))),
+			$this->t('Sales Quote')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'sale.png'), 'defaults'=>array_merge($defaults,array('transaction_type'=>1,'terms'=>0))),
+			$this->t('Sale')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'quick_sale.png'), 'defaults'=>array_merge($defaults,array('transaction_type'=>1, 'status'=>2, 'payment_type'=>0, 'shipment_type'=>0,'terms'=>0))),
 			$this->t('Inv. Adjustment')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'inv_adj.png'), 'defaults'=>array_merge($defaults,array('transaction_type'=>2))),
 //			$this->t('Rental')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'rental.png'), 'defaults'=>array_merge($defaults,array('transaction_type'=>3))),
 			$this->t('Warehouse Transfer')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'warehouse_transfer.png'), 'defaults'=>array_merge($defaults,array('transaction_type'=>4)))
@@ -784,6 +784,10 @@ class Premium_Warehouse_Items_Orders extends Module {
 					break;
 				case 2:
 					$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$trans['id']));
+					if (empty($items)) {
+						$this->href = Utils_TooltipCommon::open_tag_attrs(Base_LangCommon::ts('Premium_Warehouse_Items_Orders','No items were saved in this transaction, cannot proceed with processing.'),false);
+						break;
+					}
 					$items_unavailable = $this->check_if_items_available($trans, $items);
 					$lp->add_option('available', $this->t('Items Available'), null, $items_unavailable);
 					// check items qty
@@ -909,8 +913,12 @@ class Premium_Warehouse_Items_Orders extends Module {
 		} elseif ($trans['transaction_type']==2) {
 			switch ($status) {			
 				case '':
+					$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$trans['id']));
+					if (empty($items)) {
+						$this->href = Utils_TooltipCommon::open_tag_attrs(Base_LangCommon::ts('Premium_Warehouse_Items_Orders','No items were saved in this transaction, cannot proceed with processing.'),false);
+						break;
+					}
 					$lp->add_option('yes', $this->t('Yes'), null, null);
-
 					$lp->add_option('no', $this->t('No'), null, null);
 					
 					$this->display_module($lp, array($this->t('Close Inv. Adjustment. Are you sure?')));
