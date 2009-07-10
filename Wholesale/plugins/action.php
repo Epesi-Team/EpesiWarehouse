@@ -105,7 +105,7 @@ class Premium_Warehouse_Wholesale__Plugin_action implements Premium_Warehouse_Wh
 
 		$output = curl_exec($c);
 		
-		if (!$output) {
+		if (!$output || strlen($output)<20000) {
 			Premium_Warehouse_WholesaleCommon::file_download_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Authentication failure, aborting.'), 2, true);
 			return false;
 		}
