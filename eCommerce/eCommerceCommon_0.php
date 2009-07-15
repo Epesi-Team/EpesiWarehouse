@@ -265,6 +265,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 		unset($parameter_groups_tmp);
 
 
+		$got_data = false;
 		set_time_limit(count($langs)*60);
 		foreach($langs as $code=>$name) {
 		    $url = 'http://data.icecat.biz/xml_s3/xml_server3.cgi?'.http_build_query($query_arr+array('lang'=>$code,'output'=>'productxml'));
@@ -280,6 +281,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 			return false;
 		    }
 		    if($output) {
+			$got_data = true;
 			$obj = simplexml_load_string($output);
 			
 			//description
@@ -372,6 +374,10 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 			}
 		    }
 		}
+		if($got_data)
+			Epesi::alert("Successfully downloaded product data.");
+		else
+			Epesi::alert("There is no product data on icecat server.");
 	}
 	
 	public static function icecat_addon_parameters($r) {
