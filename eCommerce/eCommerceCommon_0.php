@@ -375,7 +375,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 		    }
 		}
 		if($got_data)
-			Epesi::alert("Successfully downloaded product data.");
+			Epesi::alert("Successfully downloaded product data from icecat server.");
 		else
 			Epesi::alert("There is no product data on icecat server.");
 	}
