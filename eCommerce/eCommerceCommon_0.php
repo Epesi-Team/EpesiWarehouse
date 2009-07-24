@@ -17,15 +17,16 @@ defined("_VALID_ACCESS") || die('Direct access forbidden');
 class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 	private static $curr_opts;
 
-	public static function access_parameters($action, $param){
+	public static function access_parameters($action, $param=null){
 		$i = self::Instance();
 		switch ($action) {
-			case 'browse':	return $i->acl_check('browse ecommerce');
-			case 'view':	return $i->acl_check('view ecommerce');
+			case 'browse_crits':	return $i->acl_check('browse ecommerce');
+			case 'browse':	return true;
+			case 'view':	if (!$i->acl_check('view ecommerce')) return false;
+							return array('position'=>false);
 			case 'add':
 			case 'edit':	return $i->acl_check('edit ecommerce');
 			case 'delete':	return $i->acl_check('delete ecommerce');
-			case 'fields':	return array('position'=>'hide');
 		}
 		return false;
     }

@@ -667,87 +667,169 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		return true;
 	} 
 	
-	public static function access_order_details($action, $param, $action_details=null){
+	public static function access_order_details($action, $param=null){
 		$i = self::Instance();
+		$ret = array();
+		if (isset($param['transaction_id'])) {
+			$trans_id = $param['transaction_id'];
+			$trans = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $trans_id);
+		}
 		switch ($action) {
 			case 'browse':	return $i->acl_check('browse orders');
-			case 'view':	if($i->acl_check('view orders')) return true;
-							return false;
-			case 'add':
-			case 'edit':	return ($i->acl_check('edit orders') && self::access_orders('edit', Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $param['transaction_id'])));
-			case 'delete':	if (Acl::get_user()==$param['created_by']) return true;
-							return $i->acl_check('delete orders');
-			case 'fields':	$ret = array();
-/*							if ($action_details=='new' && isset($param['item_sku'])) 
-								$ret = array(	'transaction_id'=>'read-only', 
-												'item_sku'=>'read-only',
-												'transaction_type'=>'hide',
-												'transaction_date'=>'hide',
-												'warehouse'=>'hide',
-												'net_total'=>'hide',
-												'tax_value'=>'hide',
-												'gross_total'=>'hide',
-												'quantity_on_hand'=>'hide',
-												'quantity'=>$param['single_pieces']?'read-only':'full');*/
-							if (isset($param['transaction_id']) && is_numeric($param['transaction_id']))
-								$trans_id = $param['transaction_id'];
-							elseif (isset($action_details['transaction_id']) && is_numeric($action_details['transaction_id']))
-								$trans_id = $action_details['transaction_id'];
-							if (!isset($trans_id)) return array();
-							$trans = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $trans_id);
-							if (is_array($param)) {
-								$ret = array('item_name'=>'read-only','transaction_id'=>'read-only');
-							}
+			case 'view':	if (!$i->acl_check('view orders')) return false;
 							if ($trans['transaction_type']!=3) {
-								$ret['return_date'] = 'hide';
-								$ret['returned'] = 'hide';
+								$ret['return_date'] = false;
+								$ret['returned'] = false;
 							}
 							if ($trans['transaction_type']==4) {
-								$ret['net_price'] = 'hide';
-								$ret['net_total'] = 'hide';
-								$ret['tax_rate'] = 'hide';
-								$ret['tax_value'] = 'hide';
-								$ret['gross_price'] = 'hide';
-								$ret['gross_total'] = 'hide';
+								$ret['net_price'] = false;
+								$ret['net_total'] = false;
+								$ret['tax_rate'] = false;
+								$ret['tax_value'] = false;
+								$ret['gross_price'] = false;
+								$ret['gross_total'] = false;
 							}
 							if ($trans['transaction_type']==3) {
-								$ret['transaction_date'] = 'hide';
-								$ret['transaction_type'] = 'hide';
-								$ret['warehouse'] = 'hide';
-								$ret['debit'] = 'hide';
-								$ret['credit'] = 'hide';
-								$ret['net_price'] = 'hide';
-								$ret['net_total'] = 'hide';
-								$ret['tax_rate'] = 'hide';
-								$ret['tax_value'] = 'hide';
-								$ret['gross_price'] = 'hide';
-								$ret['gross_total'] = 'hide';
-								$ret['quantity_on_hand'] = 'hide';
-								$ret['returned'] = 'read-only';
+								$ret['transaction_date'] = false;
+								$ret['transaction_type'] = false;
+								$ret['warehouse'] = false;
+								$ret['debit'] = false;
+								$ret['credit'] = false;
+								$ret['net_price'] = false;
+								$ret['net_total'] = false;
+								$ret['tax_rate'] = false;
+								$ret['tax_value'] = false;
+								$ret['gross_price'] = false;
+								$ret['gross_total'] = false;
+								$ret['quantity_on_hand'] = false;
 							}
 							if ($trans['transaction_type']!=2) {
-								$ret['credit'] = 'hide';
-								$ret['debit'] = 'hide';
+								$ret['credit'] = false;
+								$ret['debit'] = false;
 							} else {
-								$ret['net_price'] = 'hide';
-								$ret['net_total'] = 'hide';
-								$ret['tax_rate'] = 'hide';
-								$ret['tax_value'] = 'hide';
-								$ret['gross_price'] = 'hide';
-								$ret['gross_total'] = 'hide';
-								$ret['quantity'] = 'hide';
+								$ret['net_price'] = false;
+								$ret['net_total'] = false;
+								$ret['tax_rate'] = false;
+								$ret['tax_value'] = false;
+								$ret['gross_price'] = false;
+								$ret['gross_total'] = false;
+								$ret['quantity'] = false;
 							}
 							return $ret;
+			case 'add':
+			case 'edit':	if (!$i->acl_check('edit orders') || !self::access_orders('edit', Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $param['transaction_id']))) return false;
+							$ret = array('item_name'=>false,'transaction_id'=>false);
+							if ($trans['transaction_type']==3)
+								$ret['returned'] = false;
+							return $ret;
+			case 'delete':	if (Acl::get_user()==$param['created_by']) return true;
+							return $i->acl_check('delete orders');
 		}
 		return false;
 	}
-	public static function access_orders($action, $param, $action_details=null){
+	public static function access_orders($action, $param=null){
 		$i = self::Instance();
+		$ret = array();
+		$tt = isset($param['transaction_type'])?$param['transaction_type']:null;
 		switch ($action) {
+			case 'browse_crits':	return $i->acl_check('browse orders');
+			case 'browse':	return array('target_warehouse'=>false);
+			case 'view':	if (!$i->acl_check('view orders')) return false;
+							if (Utils_RecordBrowser::$mode=='view') {
+								$ret['company'] = false;
+								$ret['contact'] = false;
+								if ($tt==3 && isset($param['payment']) && !$param['payment']) {
+									$ret['payment_type'] = false;
+									$ret['payment_no'] = false;
+									$ret['shipment_type'] = false;
+									$ret['shipment_no'] = false;
+									$ret['terms'] = false;
+									$ret['total_value'] = false;
+									$ret['tax_value'] = false;
+								}
+							}
+							if ($tt!=4 || Utils_RecordBrowser::$mode=='view') {
+								$ret['target_warehouse'] = false;
+							}
+							if ($tt!=3) {
+								$ret['payment'] = false;
+								$ret['return_date'] = false;
+							}
+							if ($tt==2 || $tt==4) {
+								$ret['receipt'] = false;
+								$ret['company'] = false;
+								$ret['contact'] = false;
+								$ret['tax_id'] = false;
+								$ret['company_name'] = false;
+								$ret['first_name'] = false;
+								$ret['last_name'] = false;
+								$ret['address_1'] = false;
+								$ret['address_2'] = false;
+								$ret['city'] = false;
+								$ret['country'] = false;
+								$ret['zone'] = false;
+								$ret['postal_code'] = false;
+								$ret['phone'] = false;
+								$ret['payment_type'] = false;
+								$ret['payment_no'] = false;
+								$ret['terms'] = false;
+								$ret['total_value'] = false;
+								$ret['tax_value'] = false;
+							}
+							if ($tt==4) {
+								$ret['tax_value'] = false;
+							}
+							if (isset($param['shipment_type']) && $param['shipment_type']===0) {
+								$ret['shipment_date'] = false;
+								$ret['shipment_no'] = false;
+								$ret['shipment_employee'] = false;
+								$ret['shipment_eta'] = false;
+								$ret['shipment_cost'] = false;
+								$ret['tracking_info'] = false;
+							}
+							if (isset($param['payment_type']) && $param['payment_type']===0) {
+								$ret['payment_no'] = false;
+							}
+							if ($tt==0 && isset($param['status'])) {
+								if ($param['status']<4) {
+									$ret['shipment_date'] = false;
+									$ret['shipment_no'] = false;
+									$ret['shipment_employee'] = false;
+									$ret['shipment_eta'] = false;
+									$ret['shipment_cost'] = false;
+									$ret['handling_cost'] = false;
+									$ret['tracking_info'] = false;
+								}
+								if ($param['status']<2) {
+									$ret['payment_no'] = false;
+									$ret['payment_type'] = false;
+									$ret['shipment_type'] = false;
+									$ret['terms'] = false;
+									$ret['total_value'] = false;
+									$ret['tax_value'] = false;
+								} elseif ($param['status']<20) { 
+									$ret['shipment_no'] = false;
+								}
+								if ($param['status']!=1) $ret['expiration_date'] = false;
+							}
+							if ($tt==1 && isset($param['status'])) {
+								if ($param['status']<7) {
+									$ret['shipment_date'] = false;
+									$ret['shipment_employee'] = false;
+									$ret['shipment_no'] = false;
+								}
+								if ($param['status']<2) {
+									$ret['payment_no'] = false;
+									$ret['payment_type'] = false;
+									$ret['shipment_type'] = false;
+									$ret['terms'] = false;
+									$ret['total_value'] = false;
+									$ret['tax_value'] = false;
+								}
+								if ($param['status']!=1) $ret['expiration_date'] = false;
+							}
+							return $ret;
 			case 'add':
-			case 'browse':	return $i->acl_check('browse orders');
-			case 'view':	if($i->acl_check('view orders')) return true;
-							return false;
 			case 'edit':	if (!Base_AclCommon::i_am_admin() &&
 								($param['status']>=20
 								|| ($param['status']>=2 && $param['transaction_type']==0)
@@ -756,157 +838,30 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 								(time()-strtotime($param['transaction_date']) > 60*60*24*7 ||
 								Acl::get_user()!=$param['created_by']))
 								return false;
-							return $i->acl_check('edit orders');
+							if (!$i->acl_check('edit orders')) return false;
+							if ((($tt!=0 && $tt!=1) || (isset($param['status']) && $param['status']>=2)) && $param['warehouse']) 
+								$ret['warehouse'] = false;
+							$ret['status'] = false;
+							$ret['transaction_type'] = false;
+							return $ret;
 			case 'delete':	if (Acl::get_user()==$param['created_by']) return true;
 							return $i->acl_check('delete orders');
-			case 'fields':	$ret = array();
-//							$ret['status'] = 'read-only';
-							$tt = $param['transaction_type'];
-							if (is_array($param)) {
-								if ((($tt!=0 && $tt!=1) || (isset($param['status']) && $param['status']>=2)) && $param['warehouse']) $ret['warehouse'] = 'read-only';
-								if ($action_details=='view') {
-									$ret['company'] = 'hide';
-									$ret['contact'] = 'hide';
-								}
-							}
-							if ($action_details=='new')
-								$ret = array('status'=>'hide');
-							$ret['transaction_type'] = 'read-only';
-							if ($tt==3 && $action_details!='view') {
-								$opts_pay = self::get_status_array($param,true);
-								$opts_no_pay = self::get_status_array($param,false);
-								eval_js(
-								'trans_rental_disable = function(){'.
-									'arg=!$(\'payment\').checked;'.
-									'if ($(\'paid\')) $(\'paid\').disabled = arg;'.
-									'$(\'payment_type\').disabled = arg;'.
-									'$(\'payment_no\').disabled = arg;'.
-									'$(\'shipment_type\').disabled = arg;'.
-									'$(\'shipment_no\').disabled = arg;'.
-									'$(\'terms\').disabled = arg;'.
-									'if($(\'status\')){'.
-										'if(arg)'.
-											'new_opts = '.json_encode($opts_no_pay).';'.
-										'else '.
-											'new_opts = '.json_encode($opts_pay).';'.
-										'var obj=$(\'status\');'.
-										'var opts=obj.options;'.
-										'opts.length=0;'.
-										'for(y in new_opts) {'.
-											'opts[opts.length] = new Option(new_opts[y],y);'.
-										'}'.
-									'}'.
-								'};'.
-								'trans_rental_disable();'.
-								'Event.observe(\'payment\', \'change\', trans_rental_disable)');
-							}
-							if ($param!='browse') {
-								if ($tt!=3) {
-									$ret['payment'] = 'hide';
-									$ret['return_date'] = 'hide';
-								}
-								if ($tt==3 && isset($param['payment']) && !$param['payment'] && $action_details=='view') {
-									$ret['payment_type'] = 'hide';
-									$ret['payment_no'] = 'hide';
-									$ret['shipment_type'] = 'hide';
-									$ret['shipment_no'] = 'hide';
-									$ret['terms'] = 'hide';
-									$ret['total_value'] = 'hide';
-									$ret['tax_value'] = 'hide';
-								}
-								if ($tt==2 || $tt==4) {
-									$ret['receipt'] = 'hide';
-									$ret['company'] = 'hide';
-									$ret['contact'] = 'hide';
-									$ret['tax_id'] = 'hide';
-									$ret['company_name'] = 'hide';
-									$ret['first_name'] = 'hide';
-									$ret['last_name'] = 'hide';
-									$ret['address_1'] = 'hide';
-									$ret['address_2'] = 'hide';
-									$ret['city'] = 'hide';
-									$ret['country'] = 'hide';
-									$ret['zone'] = 'hide';
-									$ret['postal_code'] = 'hide';
-									$ret['phone'] = 'hide';
-									$ret['payment_type'] = 'hide';
-									$ret['payment_no'] = 'hide';
-									$ret['terms'] = 'hide';
-									$ret['total_value'] = 'hide';
-									$ret['tax_value'] = 'hide';
-								}
-								if ($tt!=4 || $action_details=='view') {
-									$ret['target_warehouse'] = 'hide';
-								}
-								if ($tt==4) {
-									$ret['tax_value'] = 'hide';
-								}
-								if (isset($param['shipment_type']) && $param['shipment_type']===0) {
-									$ret['shipment_date'] = 'hide';
-									$ret['shipment_no'] = 'hide';
-									$ret['shipment_employee'] = 'hide';
-									$ret['shipment_eta'] = 'hide';
-									$ret['shipment_cost'] = 'hide';
-									$ret['tracking_info'] = 'hide';
-								}
-								if (isset($param['payment_type']) && $param['payment_type']===0) {
-									$ret['payment_no'] = 'hide';
-								}
-								if ($tt==0 && isset($param['status'])) {
-									if ($param['status']<4) {
-										$ret['shipment_date'] = 'hide';
-										$ret['shipment_no'] = 'hide';
-										$ret['shipment_employee'] = 'hide';
-										$ret['shipment_eta'] = 'hide';
-										$ret['shipment_cost'] = 'hide';
-										$ret['handling_cost'] = 'hide';
-										$ret['tracking_info'] = 'hide';
-									}
-									if ($param['status']<2) {
-										$ret['payment_no'] = 'hide';
-										$ret['payment_type'] = 'hide';
-										$ret['shipment_type'] = 'hide';
-										$ret['terms'] = 'hide';
-										$ret['total_value'] = 'hide';
-										$ret['tax_value'] = 'hide';
-									} elseif ($param['status']<20) { 
-										$ret['shipment_no'] = 'hide';
-									}
-									if ($param['status']!=1) $ret['expiration_date'] = 'hide';
-								}
-								if ($tt==1 && isset($param['status'])) {
-									if ($param['status']<7) {
-										$ret['shipment_date'] = 'hide';
-										$ret['shipment_employee'] = 'hide';
-										$ret['shipment_no'] = 'hide';
-									}
-									if ($param['status']<2) {
-										$ret['payment_no'] = 'hide';
-										$ret['payment_type'] = 'hide';
-										$ret['shipment_type'] = 'hide';
-										$ret['terms'] = 'hide';
-										$ret['total_value'] = 'hide';
-										$ret['tax_value'] = 'hide';
-									}
-									if ($param['status']!=1) $ret['expiration_date'] = 'hide';
-								}
-							}
-							return $ret;
 		}
 		return false;
     }
 
-	public static function access_items($action, $param, $defaults){
+	public static function access_items($action, $param=null){
 		$i = Premium_Warehouse_ItemsCommon::Instance();
 		switch ($action) {
+			case 'browse_crits':	return $i->acl_check('browse items');
+			case 'browse':	return true;
+			case 'view':	if (!$i->acl_check('view items')) return false;
+							if ($param['item_type']==2 || $param['item_type']==3) return array('reorder_point'=>false,'quantity_on_hand'=>false,'upc'=>false,'manufacturer_part_number'=>false, 'quantity_en_route'=>false);
+							return array('quantity_sold'=>false);
 			case 'add':
-			case 'browse':	return $i->acl_check('browse items');
-			case 'view':	if($i->acl_check('view items')) return true;
-							return false;
-			case 'edit':	return $i->acl_check('edit items');
+			case 'edit':	if (!$i->acl_check('edit items')) return false;
+							return array('quantity_on_hand'=>false,'item_type'=>false);	
 			case 'delete':	return $i->acl_check('delete items');
-			case 'fields':	if ($param['item_type']==2 || $param['item_type']==3) return array('reorder_point'=>'hide','quantity_on_hand'=>'hide','item_type'=>'read-only','upc'=>'hide','manufacturer_part_number'=>'hide', 'quantity_en_route'=>'hide');
-							return array('quantity_on_hand'=>'read-only','item_type'=>'read-only','quantity_sold'=>'hide');
 		}
 		return false;
     }
@@ -1024,6 +979,34 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 					eval_js('new ContractorUpdate()');
 				}
 			case 'editing':
+				if ($values['transaction_type']==3) {
+					$opts_pay = self::get_status_array($values,true);
+					$opts_no_pay = self::get_status_array($values,false);
+					eval_js(
+					'trans_rental_disable = function(){'.
+						'arg=!$(\'payment\').checked;'.
+						'if ($(\'paid\')) $(\'paid\').disabled = arg;'.
+						'$(\'payment_type\').disabled = arg;'.
+						'$(\'payment_no\').disabled = arg;'.
+						'$(\'shipment_type\').disabled = arg;'.
+						'$(\'shipment_no\').disabled = arg;'.
+						'$(\'terms\').disabled = arg;'.
+						'if($(\'status\')){'.
+							'if(arg)'.
+								'new_opts = '.json_encode($opts_no_pay).';'.
+							'else '.
+								'new_opts = '.json_encode($opts_pay).';'.
+							'var obj=$(\'status\');'.
+							'var opts=obj.options;'.
+							'opts.length=0;'.
+							'for(y in new_opts) {'.
+								'opts[opts.length] = new Option(new_opts[y],y);'.
+							'}'.
+						'}'.
+					'};'.
+					'trans_rental_disable();'.
+					'Event.observe(\'payment\', \'change\', trans_rental_disable)');
+				}
 				break;
 			case 'delete':
 				$det = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$values['id']));

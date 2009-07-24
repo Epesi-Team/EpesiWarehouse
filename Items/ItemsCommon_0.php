@@ -72,30 +72,31 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 		return '--';
 	}
 	
-	public static function access_items($action, $param){
+	public static function access_items($action, $param=null){
 		$i = self::Instance();
 		switch ($action) {
-			case 'add':
+			case 'browse_crits':	return $i->acl_check('browse items');
 			case 'browse':	return $i->acl_check('browse items');
 			case 'view':	if($i->acl_check('view items')) return true;
 							return false;
-			case 'edit':	return $i->acl_check('edit items');
+			case 'add':
+			case 'edit':	if (!$i->acl_check('edit items')) return false;
+							return array('item_type'=>false);
 			case 'delete':	return $i->acl_check('delete items');
-			case 'fields':	return array('item_type'=>'read-only');
 		}
 		return false;
     }
 
-	public static function access_items_categories($action, $param){
+	public static function access_items_categories($action, $param=null){
 		$i = self::Instance();
 		switch ($action) {
+			case 'browse_crits':	return $i->acl_check('browse items');
+			case 'browse':	return true;
+			case 'view':	if (!$i->acl_check('view items')) return false;
+							return array('position'=>false,'parent_category'=>false);
 			case 'add':
-			case 'browse':	return $i->acl_check('browse items');
-			case 'view':	if($i->acl_check('view items')) return true;
-							return false;
 			case 'edit':	return $i->acl_check('edit items');
 			case 'delete':	return $i->acl_check('delete items');
-			case 'fields':	return array('position'=>'hide','parent_category'=>'hide');
 		}
 		return false;
     }

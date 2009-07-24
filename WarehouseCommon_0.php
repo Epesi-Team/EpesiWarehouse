@@ -44,10 +44,10 @@ class Premium_WarehouseCommon extends ModuleCommon {
 	public static function access_warehouse($action, $param){
 		$i = self::Instance();
 		switch ($action) {
-			case 'add':
+			case 'browse_crits': return $i->acl_check('browse warehouses');
 			case 'browse':	return $i->acl_check('browse warehouses');
-			case 'view':	if($i->acl_check('view warehouses')) return true;
-							return false;
+			case 'view':	return $i->acl_check('view warehouses');
+			case 'add':
 			case 'edit':	return $i->acl_check('edit warehouses');
 			case 'delete':	return $i->acl_check('delete warehouses');
 		}

@@ -59,14 +59,14 @@ class Premium_Warehouse_Items_LocationCommon extends ModuleCommon {
 	public static function access_location($action, $param){
 		$i = self::Instance();
 		switch ($action) {
-			case 'add':
+			case 'browse_crits':	return $i->acl_check('browse location');
 			case 'browse':	return $i->acl_check('browse location');
 			case 'view':	return true;
-			case 'edit':	return true;
-			case 'delete':	return false;
-			case 'fields':	$ret = array('item_sku'=>'read-only', 'warehouse'=>'read-only');
-							if (!Base_AclCommon::i_am_sa()) $ret['quantity'] = 'read-only';
+			case 'add':
+			case 'edit':	$ret = array('item_sku'=>false, 'warehouse'=>false);
+							if (!Base_AclCommon::i_am_sa()) $ret['quantity'] = false;
 							return $ret;
+			case 'delete':	return false;
 		}
 		return false;
     }

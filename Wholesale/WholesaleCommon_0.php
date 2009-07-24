@@ -98,13 +98,13 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 	public static function access_distributor($action, $param){
 		$i = self::Instance();
 		switch ($action) {
+			case 'browse_crits':	return $i->acl_check('browse distributors');
+			case 'browse':	return true;
+			case 'view':	return $i->acl_check('view distributors');
 			case 'add':
-			case 'browse':	return $i->acl_check('browse distributors');
-			case 'view':	if($i->acl_check('view distributors')) return true;
-							return false;
-			case 'edit':	return $i->acl_check('edit distributors');
+			case 'edit':	if(!$i->acl_check('edit distributors')) return false;
+							return array('last_update'=>false);
 			case 'delete':	return $i->acl_check('delete distributors');
-			case 'fields':	return array('last_update'=>'read-only');
 		}
 		return false;
     }
