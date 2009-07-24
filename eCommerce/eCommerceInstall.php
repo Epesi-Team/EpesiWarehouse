@@ -88,9 +88,9 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		$fields = array(
 			array('name'=>'Payment', 	'type'=>'commondata', 'required'=>true, 'extra'=>false, 'visible'=>true, 'param'=>array('order_by_key'=>true,'Premium_Items_Orders_Payment_Types')),
 			array('name'=>'Shipment', 	'type'=>'commondata', 'required'=>true, 'extra'=>false, 'visible'=>true, 'param'=>array('order_by_key'=>true,'Premium_Items_Orders_Shipment_Types')),
-			array('name'=>'Currency', 	'type'=>'integer', 'required'=>true, 'extra'=>false,'visible'=>true, 'display_callback'=>array($this->get_type().'Common', 'display_currency'),'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_currency')),
+			array('name'=>'Currency', 	'type'=>'float', 'required'=>true, 'extra'=>false,'visible'=>true, 'display_callback'=>array($this->get_type().'Common', 'display_currency'),'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_currency')),
 			array('name'=>'Price', 		'type'=>'integer', 'required'=>true, 'extra'=>false,'visible'=>true),
-			array('name'=>'Max Weight',	'type'=>'integer', 'required'=>false, 'extra'=>false,'visible'=>true, 'display_callback'=>array('Premium_Warehouse_ItemsCommon', 'display_weight'))
+			array('name'=>'Max Weight',	'type'=>'float', 'required'=>false, 'extra'=>false,'visible'=>true, 'display_callback'=>array('Premium_Warehouse_ItemsCommon', 'display_weight'))
 		);
 		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_payments_carriers', $fields);
 
@@ -102,7 +102,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		$fields = array(
 			array('name'=>'Item Name', 	'type'=>'select', 'required'=>true, 'param'=>'premium_warehouse_items::Item Name;Premium_Warehouse_Items_OrdersCommon::products_crits', 'extra'=>false, 'visible'=>true, 'display_callback'=>array($this->get_type().'Common', 'display_item_name')),
 			array('name'=>'Currency', 	'type'=>'integer', 'required'=>true, 'extra'=>false,'visible'=>true, 'display_callback'=>array($this->get_type().'Common', 'display_currency'),'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_currency')),
-			array('name'=>'Gross Price','type'=>'integer', 'required'=>true, 'extra'=>false,'visible'=>true),
+			array('name'=>'Gross Price','type'=>'float', 'required'=>true, 'extra'=>false,'visible'=>true),
 			array('name'=>'Tax Rate', 	'type'=>'select', 'required'=>true, 'extra'=>false, 'visible'=>true, 'param'=>'data_tax_rates::Name', 'style'=>'integer')
 		);
 		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_prices', $fields);

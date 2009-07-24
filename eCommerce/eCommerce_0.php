@@ -234,7 +234,7 @@ class Premium_Warehouse_eCommerce extends Module {
 		    $gb_row->add_action(Module::create_href(array('pos_action'=>$r['id'],'old'=>$r['position'],'new'=>$r['position']-1)),'move-up');
 		static $max;
 		if(!isset($max))
-		    $max = Utils_RecordBrowserCommon::get_records_limit($tab);
+		    $max = Utils_RecordBrowserCommon::get_records_count($tab);
 		if($r['position']<$max-1)
     		    $gb_row->add_action(Module::create_href(array('pos_action'=>$r['id'],'old'=>$r['position'],'new'=>$r['position']+1)),'move-down');
 	}

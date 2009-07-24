@@ -411,7 +411,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 		switch ($mode) {
 			case 'add':
 			case 'restore':
-			    $values['position'] = Utils_RecordBrowserCommon::get_records_limit($recordset);
+			    $values['position'] = Utils_RecordBrowserCommon::get_records_count($recordset);
 			    break;
 			case 'delete':
 			    DB::Execute('UPDATE '.$recordset.'_data_1 SET f_position=f_position-1 WHERE f_position>%d',array($values['position']));

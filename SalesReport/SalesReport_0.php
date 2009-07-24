@@ -216,7 +216,7 @@ class Premium_Warehouse_SalesReport extends Module {
 		$this->range_type = $this->rbr->display_date_picker(array(), $form);
 		$items_ids = DB::GetCol('SELECT od.f_item_name FROM premium_warehouse_items_orders_details_data_1 AS od LEFT JOIN premium_warehouse_items_orders_data_1 AS o ON o.id=od.f_transaction_id WHERE od.active=1 AND o.f_transaction_type=1 AND o.f_status=20 AND o.f_transaction_date>=%D AND o.f_transaction_date<=%D GROUP BY od.f_item_name ORDER BY SUM(f_quantity) DESC', array($this->range_type['start'], $this->range_type['end']));
 		$warehouses = Utils_RecordBrowserCommon::get_records('premium_warehouse',array(),array(),array('warehouse'=>'ASC'));
-		$items_amount = Utils_RecordBrowserCommon::get_records_limit('premium_warehouse_items',array('id'=>$items_ids));
+		$items_amount = Utils_RecordBrowserCommon::get_records_count('premium_warehouse_items',array('id'=>$items_ids));
 		$limit = $this->rbr->enable_paging($items_amount);
 		$items_ids = array_splice($items_ids, $limit['offset'], $limit['numrows']);
 		$items_recs = Utils_RecordBrowserCommon::get_records('premium_warehouse_items',array('id'=>$items_ids),array(),array('item_name'=>'ASC'));
@@ -428,7 +428,7 @@ class Premium_Warehouse_SalesReport extends Module {
 		$form->setDefaults(array('method'=>'fifo','prices'=>'net', 'warehouse'=>$my_warehouse));
 		$this->cats = array('Qty Sold','Earnings');
 		$this->range_type = $this->rbr->display_date_picker(array(), $form);
-		$transactions_count = Utils_RecordBrowserCommon::get_records_limit('premium_warehouse_items_orders', array('transaction_type'=>1));
+		$transactions_count = Utils_RecordBrowserCommon::get_records_count('premium_warehouse_items_orders', array('transaction_type'=>1));
 		$limit = $this->rbr->enable_paging($transactions_count);
 		$start = $limit['offset'];
 		$end = $limit['offset']+$limit['numrows']-1;
