@@ -360,27 +360,19 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	}
 	
 	public static function check_if_no_duplicate_company_contact($data) {
+		if (((!isset($data['company']) || $data['company']<=0) && $data['company_name']) ||
+			((!isset($data['contact']) || $data['contact']<=0) && ($data['first_name'] || $data['last_name']))) {
+			eval_js('contact_duplicate_fill_order = function (cont_id, comp_id) {'.
+						'$("company").value=comp_id;'.
+						'$("company").fire("e_cs:load");'.
+						'$("company").fire("native:change");'.
+						'setTimeout(function(){$("contact").value=cont_id;$("contact").fire("native:change");},1000);'. // TODO: poor solution
+					'}');
+			$ret = CRM_ContactsCommon::check_for_duplicates($data,'contact_duplicate_fill_order');
+			if ($ret==false) return true;
+			return array('company'=>'Found duplicate company/contact entry');
+		}
 		return true;
-		$ret = true;
-		if ((!isset($data['company']) || $data['company']<=0) && $data['company_name']) {
-			$recs = Utils_RecordBrowserCommon::get_records('company', array('company_name'=>$data['company_name']));
-			if (!empty($recs)) {
-				$first = array_pop($recs);
-				eval_js('setTimeout(function(){$("company").value='.$first['id'].';$("company").fire(\'e_cs:load\');},100);');
-				$ret = array('company'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Warning: Company with that name was already found in the system.'));
-			}
-		}
-		if ((!isset($data['contact']) || $data['contact']<=0) && ($data['first_name'] || $data['last_name'])) {
-			$recs = Utils_RecordBrowserCommon::get_records('contact', array('first_name'=>$data['first_name'],'last_name'=>$data['last_name']));
-			if (!empty($recs)) {
-				$first = array_pop($recs);
-				eval_js('set_contact_duplicate=function(){if($("contact")){$("contact").value='.$first['id'].';}else setTimeout("set_contact_duplicate()", 300)};');
-				eval_js('setTimeout("set_contact_duplicate()", 1000);');
-				if (!is_array($ret)) $ret = array();
-				$ret['contact']=Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Warning: Contact with the same first and last name was already found in the system.');
-			}
-		}
-		return $ret;
 	}
 	
 	public static function check_no_empty_invoice($data) {

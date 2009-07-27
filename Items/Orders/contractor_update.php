@@ -46,10 +46,8 @@ $js .= '$("postal_code").value="'.$rec['postal_code'].'";';
 $js .= '$("country").value="'.$rec['country'].'";';
 
 $js .= '$("country").fire(\'e_u_cd:load\');';
-$js .= 'zone=$("zone");';
 $js .= 'setTimeout("'.
-			'k=0;while(k<zone.options.length)if(zone.options[k].value==\''.$rec['zone'].'\')break;else k++;'.
-			'$(zone).selectedIndex=k;'.
-		'",900);';
+			'$(\'zone\').value=\''.$rec['zone'].'\';'.
+		'",1000);';
 print($js);
 ?>

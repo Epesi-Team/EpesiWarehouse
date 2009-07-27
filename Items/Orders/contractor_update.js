@@ -9,6 +9,8 @@ ContractorUpdate.prototype = {
 		this.request_by_contact_f= this.request_by_contact.bindAsEventListener(this);
 		Event.observe('company','change',this.request_by_company_f);
 		Event.observe('contact','change',this.request_by_contact_f);
+		Event.observe('company','native:change',this.request_by_company_f);
+		Event.observe('contact','native:change',this.request_by_contact_f);
 		this.stop_f= this.stop.bindAsEventListener(this);
 		Event.observe(document,'e:load',this.stop_f);
 	},
