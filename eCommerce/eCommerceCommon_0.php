@@ -407,6 +407,19 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 	    }
 	    return array('show'=>true, 'label'=>'eCommerce');
 	}
+	
+	public static function submit_products_position($values, $mode) {
+		return self::submit_position($values, $mode, 'premium_ecommerce_products');
+	}
+	public static function submit_parameters_position($values, $mode) {
+		return self::submit_position($values, $mode, 'premium_ecommerce_parameters');
+	}
+	public static function submit_parameter_groups_position($values, $mode) {
+		return self::submit_position($values, $mode, 'premium_ecommerce_parameter_groups');
+	}
+	public static function submit_availability_position($values, $mode) {
+		return self::submit_position($values, $mode, 'premium_ecommerce_availability');
+	}
 
 	public static function submit_position($values, $mode, $recordset) {
 		switch ($mode) {
