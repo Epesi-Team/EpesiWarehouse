@@ -283,8 +283,8 @@ class Premium_Warehouse_SalesReport extends Module {
 			$qty_with_unkn_price[$w] += $trans['f_quantity']-$trans['quantity_'.$this->range_type['other']['method']];
 		}
 		foreach ($this->columns as $k=>$v) { 
-			if (isset($qty_with_unkn_price[$k]) && $qty_with_unkn_price[$k]!=0) {
-				$ret[$hash[$k]][$this->cats[0]] = $ret[$hash[$k]][$this->cats[0]].' ('.$qty_with_unkn_price[$k].')';
+			if (isset($qty_with_unkn_price[$hash[$k]]) && $qty_with_unkn_price[$hash[$k]]!=0) {
+				$ret[$hash[$k]][$this->cats[0]] = $ret[$hash[$k]][$this->cats[0]].' ('.$qty_with_unkn_price[$hash[$k]].')';
 			}
 		}
 		return $ret;
