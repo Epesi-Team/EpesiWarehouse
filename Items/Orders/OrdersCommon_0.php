@@ -712,7 +712,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 								$ret['quantity'] = false;
 							}
 							return $ret;
-			case 'add':		if (!$i->acl_check('edit orders') || !self::access_orders('edit', Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $param['transaction_id']))) return false;
+			case 'add':		if (!$i->acl_check('edit orders') || !self::access_orders('add')) return false;
 							$ret = array('transaction_id'=>false);
 							if ($trans['transaction_type']==3)
 								$ret['returned'] = false;
@@ -832,7 +832,10 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 								if ($param['status']!=1) $ret['expiration_date'] = false;
 							}
 							return $ret;
-			case 'add':		
+			case 'add':		if (!$i->acl_check('edit orders')) return false;
+							$ret['status'] = false;
+							$ret['transaction_type'] = false;
+							return $ret;
 			case 'edit':	if (!Base_AclCommon::i_am_admin() &&
 								($param['status']>=20
 								|| ($param['status']>=2 && $param['transaction_type']==0)
