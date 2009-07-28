@@ -15,10 +15,41 @@ defined("_VALID_ACCESS") || die('Direct access forbidden');
 class Premium_Warehouse_SalesReportInstall extends ModuleInstall {
 
 	public function install() {
+		DB::CreateTable('premium_warehouse_sales_report_earning',
+						'order_details_id I4 KEY,'.
+						'quantity_lifo I4,'.
+						'quantity_fifo I4,'.
+						'g_earning_lifo I4,'.
+						'g_earning_fifo I4,'.
+						'n_earning_lifo I4,'.
+						'n_earning_fifo I4',
+						array('constraints'=>'')
+		);
+		DB::CreateTable('premium_warehouse_sales_report_purchase_fifo_tmp',
+						'id I4 KEY,'.
+						'item_id I4,'.
+						'quantity I4,'.
+						'warehouse I4,'.
+						'net_price I4,'.
+						'gross_price I4',
+						array('constraints'=>'')
+		);
+		DB::CreateTable('premium_warehouse_sales_report_purchase_lifo_tmp',
+						'id I4 KEY,'.
+						'item_id I4,'.
+						'quantity I4,'.
+						'warehouse I4,'.
+						'net_price I4,'.
+						'gross_price I4',
+						array('constraints'=>'')
+		);
 		return true;
 	}
 	
 	public function uninstall() {
+		DB::DropTable('premium_warehouse_sales_report_earning');
+		DB::DropTable('premium_warehouse_sales_report_purchase_fifo_tmp');
+		DB::DropTable('premium_warehouse_sales_report_purchase_lifo_tmp');
 		return true;
 	}
 	

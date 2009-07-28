@@ -360,6 +360,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	}
 	
 	public static function check_if_no_duplicate_company_contact($data) {
+		if (isset($data['receipt']) && $data['receipt']) return true;
 		if (((!isset($data['company']) || $data['company']<=0) && $data['company_name']) ||
 			((!isset($data['contact']) || $data['contact']<=0) && ($data['first_name'] || $data['last_name']))) {
 			eval_js('contact_duplicate_fill_order = function (cont_id, comp_id) {'.
@@ -667,7 +668,8 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			$trans = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $trans_id);
 		}
 		switch ($action) {
-			case 'browse':	return $i->acl_check('browse orders');
+			case 'browse_crits':	return $i->acl_check('browse orders');
+			case 'browse':	return true;
 			case 'view':	if (!$i->acl_check('view orders')) return false;
 							if ($trans['transaction_type']!=3) {
 								$ret['return_date'] = false;
@@ -708,7 +710,11 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 								$ret['quantity'] = false;
 							}
 							return $ret;
-			case 'add':
+			case 'add':		if (!$i->acl_check('edit orders') || !self::access_orders('edit', Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $param['transaction_id']))) return false;
+							$ret = array('transaction_id'=>false);
+							if ($trans['transaction_type']==3)
+								$ret['returned'] = false;
+							return $ret;
 			case 'edit':	if (!$i->acl_check('edit orders') || !self::access_orders('edit', Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $param['transaction_id']))) return false;
 							$ret = array('item_name'=>false,'transaction_id'=>false);
 							if ($trans['transaction_type']==3)
@@ -723,11 +729,14 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		$i = self::Instance();
 		$ret = array();
 		$tt = isset($param['transaction_type'])?$param['transaction_type']:null;
+		if (class_exists('Utils_RecordBrowser') && isset(Utils_RecordBrowser::$mode)) $mode = Utils_RecordBrowser::$mode;
+		else $mode = 'view';
 		switch ($action) {
 			case 'browse_crits':	return $i->acl_check('browse orders');
 			case 'browse':	return array('target_warehouse'=>false);
 			case 'view':	if (!$i->acl_check('view orders')) return false;
-							if (Utils_RecordBrowser::$mode=='view') {
+							if ($mode=='add') $ret['status'] = false;
+							if ($mode=='view') {
 								$ret['company'] = false;
 								$ret['contact'] = false;
 								if ($tt==3 && isset($param['payment']) && !$param['payment']) {
@@ -740,7 +749,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 									$ret['tax_value'] = false;
 								}
 							}
-							if ($tt!=4 || Utils_RecordBrowser::$mode=='view') {
+							if ($tt!=4 || $mode=='view') {
 								$ret['target_warehouse'] = false;
 							}
 							if ($tt!=3) {
@@ -821,7 +830,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 								if ($param['status']!=1) $ret['expiration_date'] = false;
 							}
 							return $ret;
-			case 'add':
+			case 'add':		
 			case 'edit':	if (!Base_AclCommon::i_am_admin() &&
 								($param['status']>=20
 								|| ($param['status']>=2 && $param['transaction_type']==0)
@@ -831,7 +840,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 								Acl::get_user()!=$param['created_by']))
 								return false;
 							if (!$i->acl_check('edit orders')) return false;
-							if ((($tt!=0 && $tt!=1) || (isset($param['status']) && $param['status']>=2)) && $param['warehouse']) 
+							if ((($tt!=0 && $tt!=1) || (isset($param['status']) && $param['status']>=2)) && $param['warehouse'] && $action=='edit') 
 								$ret['warehouse'] = false;
 							$ret['status'] = false;
 							$ret['transaction_type'] = false;
