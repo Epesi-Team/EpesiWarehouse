@@ -55,6 +55,7 @@ class Premium_Warehouse_SalesReportCommon extends ModuleCommon {
 						DB::Execute('UPDATE premium_warehouse_sales_report_purchase_fifo_tmp SET quantity=%d WHERE id=%d', array($item['quantity']-$qty, $item['id']));
 						DB::Execute('UPDATE premium_warehouse_sales_report_purchase_fifo_tmp SET id=id+1 WHERE id>%d ORDER BY id DESC', array($item['id']));
 						DB::Execute('INSERT INTO premium_warehouse_sales_report_purchase_fifo_tmp VALUES (%d, %d, %d, %d, %d, %d)', array($item['id']+1, $item['item_id'], $qty, $trans['f_target_warehouse'], $item['net_price'], $item['gross_price']));
+						$id++;
 					} else {
 						DB::Execute('UPDATE premium_warehouse_sales_report_purchase_fifo_tmp SET warehouse=%d WHERE id=%d', array($trans['f_target_warehouse'], $item['id']));
 					}
@@ -69,6 +70,7 @@ class Premium_Warehouse_SalesReportCommon extends ModuleCommon {
 						DB::Execute('UPDATE premium_warehouse_sales_report_purchase_lifo_tmp SET quantity=%d WHERE id=%d', array($item['quantity']-$qty, $item['id']));
 						DB::Execute('UPDATE premium_warehouse_sales_report_purchase_lifo_tmp SET id=id+1 WHERE id>%d ORDER BY id DESC', array($item['id']));
 						DB::Execute('INSERT INTO premium_warehouse_sales_report_purchase_lifo_tmp VALUES (%d, %d, %d, %d, %d, %d)', array($item['id']+1, $item['item_id'], $qty, $trans['f_target_warehouse'], $item['net_price'], $item['gross_price']));
+						$id++;
 					} else {
 						DB::Execute('UPDATE premium_warehouse_sales_report_purchase_lifo_tmp SET warehouse=%d WHERE id=%d', array($trans['f_target_warehouse'], $item['id']));
 					}
