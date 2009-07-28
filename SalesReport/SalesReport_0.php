@@ -324,7 +324,9 @@ class Premium_Warehouse_SalesReport extends Module {
 		else $order = $order.'lifo';
 		if ($this->range_type['other']['prices']=='net') $order = 'n'.$order;
 		else $order = 'g'.$order;
-		$trans_ids = DB::GetCol('SELECT o.id FROM (premium_warehouse_items_orders_details_data_1 AS od LEFT JOIN premium_warehouse_items_orders_data_1 AS o ON o.id=od.f_transaction_id) LEFT JOIN premium_warehouse_sales_report_earning AS se ON se.order_details_id=od.id WHERE od.active=1 AND o.f_transaction_type=1 AND o.f_status=20 AND o.f_transaction_date>=%D AND o.f_transaction_date<=%D GROUP BY od.f_item_name ORDER BY SUM('.$order.') DESC', array($this->range_type['start'], $this->range_type['end']));
+		$trans_ids_tmp = DB::SelectLimit('SELECT o.id FROM (premium_warehouse_items_orders_details_data_1 AS od LEFT JOIN premium_warehouse_items_orders_data_1 AS o ON o.id=od.f_transaction_id) LEFT JOIN premium_warehouse_sales_report_earning AS se ON se.order_details_id=od.id WHERE od.active=1 AND o.f_transaction_type=1 AND o.f_status=20 AND o.f_transaction_date>=%D AND o.f_transaction_date<=%D GROUP BY o.id ORDER BY SUM('.$order.') DESC', $limit['numrows'], $limit['offset'], array($this->range_type['start'], $this->range_type['end']));
+		$trans_ids = array();
+		while ($x=$trans_ids_tmp->FetchRow()) $trans_ids[] = $x['id'];
 		$trans_recs = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders',array('id'=>$trans_ids));
 		$transactions = array();
 		foreach ($trans_ids as $v) {
