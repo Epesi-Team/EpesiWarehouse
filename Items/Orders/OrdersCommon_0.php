@@ -714,8 +714,8 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 							return $ret;
 			case 'add':		if (!$i->acl_check('edit orders') || !self::access_orders('add')) return false;
 							$ret = array('transaction_id'=>false);
-							if ($trans['transaction_type']==3)
-								$ret['returned'] = false;
+//							if ($trans['transaction_type']==3)
+//								$ret['returned'] = false;
 							return $ret;
 			case 'edit':	if (!$i->acl_check('edit orders') || !self::access_orders('edit', Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $param['transaction_id']))) return false;
 							$ret = array('item_name'=>false,'transaction_id'=>false);
