@@ -319,7 +319,17 @@ class Premium_Warehouse_SalesReport extends Module {
 		$this->range_type = $this->rbr->display_date_picker(array(), $form);
 		$transactions_count = Utils_RecordBrowserCommon::get_records_count('premium_warehouse_items_orders', array('>=transaction_date'=>$this->range_type['start'], '<=transaction_date'=>$this->range_type['end'], 'transaction_type'=>1, 'warehouse'=>$this->range_type['other']['warehouse']));
 		$limit = $this->rbr->enable_paging($transactions_count);
-		$transactions = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders', array('>=transaction_date'=>$this->range_type['start'], '<=transaction_date'=>$this->range_type['end'], 'transaction_type'=>1, 'warehouse'=>$this->range_type['other']['warehouse']), array(), array(), $limit);
+		$order = '_earning_';
+		if ($this->range_type['other']['method']=='fifo') $order = $order.'fifo';
+		else $order = $order.'lifo';
+		if ($this->range_type['other']['prices']=='net') $order = 'n'.$order;
+		else $order = 'g'.$order;
+		$trans_ids = DB::GetCol('SELECT o.id FROM (premium_warehouse_items_orders_details_data_1 AS od LEFT JOIN premium_warehouse_items_orders_data_1 AS o ON o.id=od.f_transaction_id) LEFT JOIN premium_warehouse_sales_report_earning AS se ON se.order_details_id=od.id WHERE od.active=1 AND o.f_transaction_type=1 AND o.f_status=20 AND o.f_transaction_date>=%D AND o.f_transaction_date<=%D GROUP BY od.f_item_name ORDER BY SUM('.$order.') DESC', array($this->range_type['start'], $this->range_type['end']));
+		$trans_recs = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders',array('id'=>$trans_ids));
+		$transactions = array();
+		foreach ($trans_ids as $v) {
+			$transactions[$v] = $trans_recs[$v];
+		}
 		$this->rbr->set_reference_records($transactions);
 		$this->rbr->set_reference_record_display_callback(array($this,'display_transaction_id'));
 		$this->rbr->set_categories($this->cats);
