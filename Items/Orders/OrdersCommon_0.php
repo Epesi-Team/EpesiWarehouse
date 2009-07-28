@@ -194,11 +194,13 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		if (empty($items)) return Base_LangCommon::ts('Premium_Warehouse_Items_Orders','There are no items saved in this transaction');
 		$theme = Base_ThemeCommon::init_smarty();
 		foreach ($items as $k=>$v) {
+			$net = Utils_CurrencyFieldCommon::get_values($v['net_price']);
+			$v['gross_price'] = round((100+Data_TaxRatesCommon::get_tax_rate($v['tax_rate']))*$net[0]/100, Utils_CurrencyFieldCommon::get_precission($net[1]));
 			$item = Utils_RecordBrowserCommon::get_record('premium_warehouse_items', $v['item_name']);
 			$items[$k]['sku'] = $item['sku'];
 			$items[$k]['item_name'] = $item['item_name'];
 			$items[$k]['net_price'] = Utils_CurrencyFieldCommon::format($v['net_price']);
-			$items[$k]['gross_price'] = Utils_CurrencyFieldCommon::format($v['gross_price']);
+			$items[$k]['gross_price'] = Utils_CurrencyFieldCommon::format($v['gross_price'], $net[1]);
 			$items[$k]['tax'] = Data_TaxRatesCommon::get_tax_name($v['tax_rate']);
 		}
 		$theme->assign('header', array(
