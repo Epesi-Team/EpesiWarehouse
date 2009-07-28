@@ -356,7 +356,7 @@ class Premium_Warehouse_SalesReport extends Module {
 			$qty_with_unkn_price += $trans['f_quantity']-$trans['quantity_'.$this->range_type['other']['method']];
 		}
 		if ($qty_with_unkn_price!=0) {
-			$ret[0][$this->cats[0]] = $ret[0][$this->cats[0]].' ('.$qty_with_unkn_price[0].')';
+			$ret[0][$this->cats[0]] = $ret[0][$this->cats[0]].' ('.$qty_with_unkn_price.')';
 		}
 		return $ret;
 	}
