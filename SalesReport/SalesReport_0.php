@@ -310,7 +310,7 @@ class Premium_Warehouse_SalesReport extends Module {
 		$warehouse_choice = array();
 		$my_warehouse = Base_User_SettingsCommon::get('Premium_Warehouse','my_warehouse');
 		foreach ($warehouses as $k=>$v) {
-			if ($my_warehouse) $my_warehouse = $v['id'];
+			if (!$my_warehouse) $my_warehouse = $v['id'];
 			$warehouse_choice[$v['id']] = $v['warehouse'];
 		}
 		$form->addElement('select', 'warehouse', $this->t('Warehouse'), $warehouse_choice);
