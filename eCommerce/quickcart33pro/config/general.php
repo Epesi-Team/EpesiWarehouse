@@ -69,7 +69,7 @@ $config['time_diff'] = 0;
 /*
 * Default language
 */
-$config['default_lang'] = "pl";
+$config['default_lang'] = "en";
 
 /*
 * If should be use wysiwyg editor or default

@@ -265,7 +265,8 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 		return Utils_RecordBrowserCommon::record_link_open_tag('premium_warehouse_items', $row['id']).Base_LangCommon::ts('Premium_Warehouse_Items', 'Item in warehouse (attachment) #%d, %s %s', array($row['sku'], $row['item_type'], $row['item_name'])).Utils_RecordBrowserCommon::record_link_close_tag();
 	}
 
-	public static function submit_position($values, $mode, $recordset) {
+	public static function submit_position($values, $mode) {
+		$recordset = 'premium_warehouse_items_categories';
 		switch ($mode) {
 			case 'add':
 			case 'restore':

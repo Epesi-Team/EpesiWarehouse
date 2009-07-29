@@ -88,7 +88,6 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 	}
 	
 	public function items_crits() {
-		Utils_RecordBrowserCommon::get_records();
 		return array();
 	}
 
@@ -410,6 +409,15 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 	
 	public static function submit_products_position($values, $mode) {
 		return self::submit_position($values, $mode, 'premium_ecommerce_products');
+	}
+	public static function submit_boxes_position($values, $mode) {
+		return self::submit_position($values, $mode, 'premium_ecommerce_boxes');
+	}
+	public static function submit_pages_position($values, $mode) {
+		return self::submit_position($values, $mode, 'premium_ecommerce_pages');
+	}
+	public static function submit_polls_position($values, $mode) {
+		return self::submit_position($values, $mode, 'premium_ecommerce_polls');
 	}
 	public static function submit_parameters_position($values, $mode) {
 		return self::submit_position($values, $mode, 'premium_ecommerce_parameters');
