@@ -41,7 +41,11 @@ if( isset( $aActions['a'] ) && is_numeric( $aActions['a'] ) ){
       $aData['sDescriptionFull'] = $aData['sDescriptionShort'];
     $aData['sDescriptionFull'] = changeTxt( $aData['sDescriptionFull'], 'nlNds' );
 
-    $aData['sPages'] = $oProduct->throwProductsPagesTree( $iProduct );
+    $product = $oProduct->getProduct($iProduct);
+    if($product)
+	    $aData['sPages'] = $oProduct->throwProductsPagesTree( $product['aCategories'] );
+    else
+	    $aData['sPages'] = null;
 
     $sTxtSize   = ( $config['text_size'] == true ) ? $oTpl->tbHtml( $aData['sTemplate'], 'TXT_SIZE' ) : null;
     $sAvailable = !empty( $aData['sAvailable'] ) ? $oTpl->tbHtml( $aData['sTemplate'], 'AVAILABLE' ) : null;

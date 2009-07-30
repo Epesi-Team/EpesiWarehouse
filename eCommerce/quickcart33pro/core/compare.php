@@ -13,13 +13,7 @@ function listProductsCompare( $sFile, $sBlock ){
   $content= null;
   $sBlock = strtoupper( $sBlock );
 
-  if( isset( $GLOBALS['oProduct']->aProducts ) ){
-    foreach( $GLOBALS['oProduct']->aProducts as $iProduct => $aData ){
-      if( is_numeric( $aData['fPrice'] ) )
-        $aProducts[] = $iProduct;
-    } // end foreach
-  }
-
+  $aProducts = $GLOBALS['oProduct']->getProducts(' AND pri.f_gross_price=concat(\'\', 0+pri.f_gross_price)');
   
   $sFeaturesBlock = $oTpl->tbHtml( $sFile, $sBlock.'_FEATURES' );
   /*
@@ -66,13 +60,9 @@ function listProductsCompare( $sFile, $sBlock ){
 
     $aDescriptionFull = $oFF->throwFileArraySmall( DB_PRODUCTS_EXT, 'iProduct', 'sDescriptionFull' );*///epesi
 
-    $iCount = count( $aProducts );
-
-    for( $i = 0; $i < $iCount; $i++ ){
-      $aData = $GLOBALS['oProduct']->aProducts[$aProducts[$i]];
-
-      $aData['sPages'] = ereg_replace( '&nbsp;&raquo;&nbsp;', '/', strip_tags( $GLOBALS['oProduct']->throwProductsPagesTree( $aData['iProduct'] ) ) );
-      $aData['sPagesOnet'] = ereg_replace( '&nbsp;&raquo;&nbsp;', ' &gt; ', strip_tags( $GLOBALS['oProduct']->throwProductsPagesTree( $aData['iProduct'] ) ) );
+    foreach($aProducts as $aData){
+      $aData['sPages'] = ereg_replace( '&nbsp;&raquo;&nbsp;', '/', strip_tags( $GLOBALS['oProduct']->throwProductsPagesTree( $aData['aCategories'] ) ) );
+      $aData['sPagesOnet'] = ereg_replace( '&nbsp;&raquo;&nbsp;', ' &gt; ', strip_tags( $GLOBALS['oProduct']->throwProductsPagesTree( $aData['aCategories'] ) ) );
       $aData['sDescriptionShort'] = changeTxt( $aData['sDescriptionShort'], 'nlNds' );
 
       if( isset( $oFile->aImagesDefault[2][$aData['iProduct']] ) ){
@@ -83,7 +73,7 @@ function listProductsCompare( $sFile, $sBlock ){
       else
         $aData['sImage'] = null;
 
-      $aPages = array_keys( $GLOBALS['oProduct']->aProductsPages[$aData['iProduct']] );
+      $aPages = array_keys( $aData['aCategories'] );
       $aData['iPage'] = $aPages[0];
       if( isset( $aCategoriesNokaut ) ){
         $iCategoryNokaut = $GLOBALS['oPage']->aPages[$aPages[0]]['iCategoryNokaut'];

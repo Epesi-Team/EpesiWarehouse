@@ -39,7 +39,7 @@ $config['contact_page']	= 31; //epesi required id
 $config['email'] = "";
 
 $config['site_map'] = 27; //epesi required id
-$config['site_map_products'] = null;
+$config['site_map_products'] = true;
 
 $aMenuTypes[1] = 'Top menu above logo';
 $aMenuTypes[2] = 'Top menu under logo';

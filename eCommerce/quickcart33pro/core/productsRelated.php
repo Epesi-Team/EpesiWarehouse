@@ -55,13 +55,6 @@ function listProductsRelated( $sFile, $iProduct ){
   if( !isset( $aRelatedIds ) )
     return null;
   $iStatus = throwStatus( );
-/*  if( $iStatus !== 0 )
-    $aCategories = $GLOBALS['oProduct']->aProductsPages;
-  else
-    $aCategories = null;
-  $aProducts = $oFF->throwFileArray( DB_PRODUCTS, 'checkIsProductRelated', Array( $aRelatedIds, $iStatus, $aCategories ) );//commented by epesi team
-  */
-//{ epesi
     $aProducts = array();
     if($aRelatedIds) {
     global $config;
@@ -95,7 +88,6 @@ function listProductsRelated( $sFile, $iProduct ){
 	$aProducts[] = $row;
     }
     }
-//} epesi
 
   $iColumns = 3;
   $i2       = 0;
