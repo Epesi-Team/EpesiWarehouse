@@ -75,13 +75,15 @@ class Products
 								d.f_keywords as sMetaKeywords,
 								it.f_weight as sWeight,
 								it.f_vendor as iProducer,
-								loc.f_quantity
+								loc.f_quantity,
+								dist.quantity as distributorQuantity
 					FROM premium_ecommerce_products_data_1 pr
 					INNER JOIN (premium_warehouse_items_data_1 it,premium_ecommerce_availability_data_1 av) ON (pr.f_item_name=it.id AND av.id=pr.f_available)
 					LEFT JOIN premium_ecommerce_prices_data_1 pri ON (pri.f_item_name=it.id AND pri.active=1 AND pri.f_currency='.$currency.')
 					LEFT JOIN premium_ecommerce_descriptions_data_1 d ON (d.f_item_name=it.id AND d.f_language="'.LANGUAGE.'" AND d.active=1)
 					LEFT JOIN premium_ecommerce_availability_labels_data_1 avl ON (pr.f_available=avl.f_availability AND avl.f_language="'.LANGUAGE.'" AND avl.active=1) 
 					LEFT JOIN premium_warehouse_location_data_1 loc ON (loc.f_item_sku=it.id AND loc.f_quantity>0 AND loc.active=1)
+					LEFT JOIN premium_warehouse_wholesale_items dist ON (dist.item_id=it.id AND dist.quantity>0)
 					 WHERE pr.f_publish>=%d AND pr.active=1 '.($where?' AND ('.$where.')':'').' ORDER BY pr.f_position'.($limit!==null?' LIMIT '.(int)$limit.($offset!==null?' OFFSET '.(int)$offset:''):''),array($iStatus));
 
 	while($aExp = $ret->FetchRow()) {
@@ -89,7 +91,7 @@ class Products
 			$aExp['sName'] = $aExp['sName2'];
 		if($aExp['sAvailable']=='') 
 			$aExp['sAvailable'] = $aExp['sAvailable2'];
-		if(!$aExp['f_quantity'])
+		if(!$aExp['f_quantity'] && !$aExp['distributorQuantity'])
 			unset($aExp['fPrice']);
 		$aExp['iComments'] = 1;
 		unset($aExp['sName2']);

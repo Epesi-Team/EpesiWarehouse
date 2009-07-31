@@ -57,36 +57,8 @@ function listProductsRelated( $sFile, $iProduct ){
   $iStatus = throwStatus( );
     $aProducts = array();
     if($aRelatedIds) {
-    global $config;
-    $currency = DB::GetOne('SELECT id FROM utils_currency WHERE code=%s',array($config['currency_symbol']));
-    if($currency===false) 
-	die('Currency not defined in Epesi: '.$config['currency_symbol']);
-    $ret = DB::Execute('SELECT 	it.id as iProduct, 
-								it.f_item_name as sName2, 
-								pri.f_gross_price as fPrice, 
-								pr.f_publish as iStatus, 
-								pr.f_position as iPosition, 
-								av.f_availability_code as sAvailable2, 
-								avl.f_label as sAvailable, 
-								d.f_display_name as sName,
-								d.f_short_description as sDescriptionShort,
-								\'\' as sWeight
-					FROM premium_ecommerce_products_data_1 pr
-					INNER JOIN (premium_warehouse_items_data_1 it,premium_ecommerce_availability_data_1 av) ON (pr.f_item_name=it.id AND av.id=pr.f_available)
-					LEFT JOIN premium_ecommerce_prices_data_1 pri ON (pri.f_item_name=it.id AND pri.active=1 AND pri.f_currency='.$currency.')
-					LEFT JOIN premium_ecommerce_descriptions_data_1 d ON (d.f_item_name=it.id AND d.f_language="'.LANGUAGE.'" AND d.active=1)
-					LEFT JOIN premium_ecommerce_availability_labels_data_1 avl ON (pr.f_available=avl.f_availability AND avl.f_language="'.LANGUAGE.'" AND avl.active=1) 
-					LEFT JOIN premium_warehouse_location_data_1 loc ON (loc.f_item_sku=it.id AND loc.f_quantity>0 AND loc.active=1)
-					 WHERE pr.f_publish>=%d AND pr.active=1 AND pr.id in ('.implode($aRelatedIds,',').') 
-					 ORDER BY pr.f_position',array($iStatus));
-    
-    while($row = $ret->FetchRow()) {
-	if($row['sName']=='') 
-		$row['sName'] = $row['sName2'];
-	if($row['sAvailable']=='') 
-		$row['sAvailable'] = $row['sAvailable2'];
-	$aProducts[] = $row;
-    }
+	    $oProduct =& Products::getInstance( );
+	    $aProducts = $oProduct->getProducts('pr.id in ('.implode($aRelatedIds,',').')');
     }
 
   $iColumns = 3;
@@ -96,12 +68,10 @@ function listProductsRelated( $sFile, $iProduct ){
   if( function_exists( 'throwSpecialProductPrice' ) )
     $bDiscount = true;
 
-  $iCount       = count( $aProducts );
   $content      = null;
-  for( $i = 0; $i < $iCount; $i++ ){
-    $aData = $aProducts[$i];
+  foreach($aProducts as $aData){
     $aData['iWidth'] = $iWidth;
-    if( $i % 2 )
+    if( $i2 % 2 )
       $aData['iStyle'] = 0;
     else
       $aData['iStyle'] = 1;

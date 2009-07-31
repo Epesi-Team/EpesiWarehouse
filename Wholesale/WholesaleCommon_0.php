@@ -216,7 +216,7 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 		return false;
 	}
 	
-	public static function submit_distributor($values, $mode, $recordset) {
+	public static function submit_distributor($values, $mode) {
 		if (isset($values['plugin']) && is_numeric($values['plugin'])) {
 			$plugin = self::get_plugin($values['plugin']);
 			$params = $plugin->get_parameters();
