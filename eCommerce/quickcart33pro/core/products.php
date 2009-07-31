@@ -74,8 +74,10 @@ class Products
 								d.f_meta_description as sMetaDescription, 
 								d.f_keywords as sMetaKeywords,
 								it.f_weight as sWeight,
-								it.f_vendor as iProducer,
+								it.f_manufacturer as iProducer,
 								loc.f_quantity,
+								it.f_net_price fPrice2,
+								it.f_tax_rate tax2,
 								dist.quantity as distributorQuantity
 					FROM premium_ecommerce_products_data_1 pr
 					INNER JOIN (premium_warehouse_items_data_1 it,premium_ecommerce_availability_data_1 av) ON (pr.f_item_name=it.id AND av.id=pr.f_available)
@@ -92,7 +94,8 @@ class Products
 		if($aExp['sAvailable']=='') 
 			$aExp['sAvailable'] = $aExp['sAvailable2'];
 		if(!$aExp['f_quantity'] && !$aExp['distributorQuantity'])
-			unset($aExp['fPrice']);
+			$aExp['fPrice']='';
+		if(!$aExp['fPrice'])
 		$aExp['iComments'] = 1;
 		unset($aExp['sName2']);
 		$cats = array_filter(explode('__',$aExp['f_category']));
@@ -109,12 +112,12 @@ class Products
 			$pages[$last_cat] = $last_cat;
 		    }
 		}
+		if(empty($pages))
+			$pages[23] = 23; //uncategorized
 		if($aExp['iProducer']!==null && $aExp['iProducer']!=='') {
 			$aExp['iProducer'] = $aExp['iProducer']*4+1;
 			$pages[$aExp['iProducer']] = $aExp['iProducer'];
 		}
-		if(empty($pages))
-			$pages[23] = 23; //uncategorized
 
     		$products[$aExp['iProduct']] = $aExp;
 	        $products[$aExp['iProduct']]['sLinkName'] = '?'.$aExp['iProduct'].','.change2Url( $products[$aExp['iProduct']]['sName'] );
@@ -161,7 +164,7 @@ class Products
       else{
 	if($iContent==23) {
     	    $query .= 'it.f_category is null';
-	} else {
+	} elseif($iContent%4==0) {
             if( DISPLAY_SUBCATEGORY_PRODUCTS === true ){
 	      // return all pages and subpages
     	      $aData = $oPage->throwAllChildrens( $iContent );
@@ -172,6 +175,8 @@ class Products
               }
 	    }
     	    $query .= 'it.f_category LIKE \'%__'.($iContent/4).'__%\' OR it.f_category LIKE \'%/'.($iContent/4).'__%\'';
+	} else {
+    	    $query .= 'it.f_manufacturer='.(($iContent-1)/4);	
 	}
       }
     } elseif(!empty($aProducts)) {

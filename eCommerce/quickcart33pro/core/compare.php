@@ -29,7 +29,7 @@ function listProductsCompare( $sFile, $sBlock ){
   
     $ret = DB::Execute('SELECT c.id, c.f_company_name
 			FROM premium_warehouse_items_data_1 i INNER JOIN (company_data_1 c,premium_ecommerce_products_data_1 d) 
-			ON (c.id=i.f_vendor AND d.f_item_name=i.id AND d.active=1)
+			ON (c.id=i.f_manufacturer AND d.f_item_name=i.id AND d.active=1)
 			WHERE i.active=1');
     while($r = $ret->FetchRow()) {
 	    $id = $r['id']*4+1;
