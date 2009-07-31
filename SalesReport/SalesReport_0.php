@@ -307,24 +307,30 @@ class Premium_Warehouse_SalesReport extends Module {
 		$form->addElement('select', 'method', $this->t('Method'), array('fifo'=>$this->t('FIFO'), 'lifo'=>$this->t('LIFO')));
 		$form->addElement('select', 'prices', $this->t('Prices'), array('net'=>$this->t('Net'), 'gross'=>$this->t('Gross')));
 		$warehouses = Utils_RecordBrowserCommon::get_records('premium_warehouse',array(),array(),array('warehouse'=>'ASC'));
-		$warehouse_choice = array();
+		$warehouse_choice = array(''=>Base_LangCommon::ts('Premium_Warehouse_SalesReport','[all]'));
 		$my_warehouse = Base_User_SettingsCommon::get('Premium_Warehouse','my_warehouse');
-		foreach ($warehouses as $k=>$v) {
-			if (!$my_warehouse) $my_warehouse = $v['id'];
+		if (!$my_warehouse) $my_warehouse = '';
+		foreach ($warehouses as $k=>$v)
 			$warehouse_choice[$v['id']] = $v['warehouse'];
-		}
 		$form->addElement('select', 'warehouse', $this->t('Warehouse'), $warehouse_choice);
 		$form->setDefaults(array('method'=>'fifo','prices'=>'net', 'warehouse'=>$my_warehouse));
 		$this->cats = array('Qty Sold','Earnings');
 		$this->range_type = $this->rbr->display_date_picker(array(), $form);
-		$transactions_count = Utils_RecordBrowserCommon::get_records_count('premium_warehouse_items_orders', array('>=transaction_date'=>$this->range_type['start'], '<=transaction_date'=>$this->range_type['end'], 'transaction_type'=>1, 'warehouse'=>$this->range_type['other']['warehouse']));
+		$crits = array('>=transaction_date'=>$this->range_type['start'], '<=transaction_date'=>$this->range_type['end'], 'transaction_type'=>1);
+		if ($this->range_type['other']['warehouse']!='') {
+			$crits['warehouse'] = $this->range_type['other']['warehouse'];
+			$warehouse_sql = 'AND o.f_warehouse=%d '; 
+		} else {
+			$warehouse_sql = ''; 
+		}
+		$transactions_count = Utils_RecordBrowserCommon::get_records_count('premium_warehouse_items_orders', $crits);
 		$limit = $this->rbr->enable_paging($transactions_count);
 		$order = '_earning_';
 		if ($this->range_type['other']['method']=='fifo') $order = $order.'fifo';
 		else $order = $order.'lifo';
 		if ($this->range_type['other']['prices']=='net') $order = 'n'.$order;
 		else $order = 'g'.$order;
-		$trans_ids_tmp = DB::SelectLimit('SELECT o.id FROM (premium_warehouse_items_orders_details_data_1 AS od LEFT JOIN premium_warehouse_items_orders_data_1 AS o ON o.id=od.f_transaction_id) LEFT JOIN premium_warehouse_sales_report_earning AS se ON se.order_details_id=od.id WHERE od.active=1 AND o.f_transaction_type=1 AND o.f_status=20 AND o.f_transaction_date>=%D AND o.f_transaction_date<=%D GROUP BY o.id ORDER BY SUM('.$order.') DESC', $limit['numrows'], $limit['offset'], array($this->range_type['start'], $this->range_type['end']));
+		$trans_ids_tmp = DB::SelectLimit('SELECT o.id FROM (premium_warehouse_items_orders_details_data_1 AS od LEFT JOIN premium_warehouse_items_orders_data_1 AS o ON o.id=od.f_transaction_id) LEFT JOIN premium_warehouse_sales_report_earning AS se ON se.order_details_id=od.id WHERE od.active=1 AND o.f_transaction_type=1 AND o.f_status=20 AND o.f_transaction_date>=%D AND o.f_transaction_date<=%D '.$warehouse_sql.'GROUP BY o.id ORDER BY SUM('.$order.') DESC', $limit['numrows'], $limit['offset'], array_merge(array($this->range_type['start'], $this->range_type['end']),$this->range_type['other']['warehouse']==''?array():array($this->range_type['other']['warehouse'])));
 		$trans_ids = array();
 		while ($x=$trans_ids_tmp->FetchRow()) $trans_ids[] = $x['id'];
 		$trans_recs = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders',array('id'=>$trans_ids));
@@ -336,11 +342,11 @@ class Premium_Warehouse_SalesReport extends Module {
 		$this->rbr->set_reference_record_display_callback(array($this,'display_transaction_id'));
 		$this->rbr->set_categories($this->cats);
 		$this->rbr->set_summary('col', array('label'=>'Total'));
-		$this->rbr->set_summary('row', array('label'=>'Total', 'callback'=>array($this,'sales_by_item_row_total')));
+//		$this->rbr->set_summary('row', array('label'=>'Total', 'callback'=>array($this,'sales_by_item_row_total')));
 		$this->rbr->set_format(array(	$this->cats[0]=>'numeric', 
 										$this->cats[1]=>'currency'
 									));
-		$header = array('Transaction', $warehouses[$my_warehouse]['warehouse']);
+		$header = array('Transaction', 'Earnings');
 		$this->rbr->set_table_header($header);
 		$this->rbr->set_display_cell_callback(array($this, 'display_sales_by_transaction_cells'));
 //		$this->rbr->set_pdf_title($this->t('Sales Report, %s',array(date('Y-m-d H:i:s'))));
