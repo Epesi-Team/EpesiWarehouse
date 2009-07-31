@@ -70,8 +70,9 @@ class Premium_Warehouse_ItemsInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::new_addon('premium_warehouse_items_categories', 'Premium/Warehouse/Items', 'subcategories_addon', 'Subcategories');
 
 // ************ other ************** //	
-		Utils_CommonDataCommon::new_array('Premium_Warehouse_Items_Type',array(0=>'Inventory Item', 1=>'Serialized Item', 2=>'Non-Inventory Item', 3=>'Service')); 
+		Utils_CommonDataCommon::new_array('Premium_Warehouse_Items_Type',array(0=>'Inventory Item', 1=>'Serialized Item', 2=>'Non-Inventory Item', 3=>'Service'));
 		Utils_CommonDataCommon::new_array('Premium_Warehouse_Items_Categories',array());
+		Utils_CommonDataCommon::extend_array('Companies_Groups',array('manufacturer'=>'Manufacturer'));
 
 		$this->add_aco('browse items',array('Employee'));
 		$this->add_aco('view items',array('Employee'));

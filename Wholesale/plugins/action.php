@@ -213,7 +213,7 @@ class Premium_Warehouse_Wholesale__Plugin_action implements Premium_Warehouse_Wh
 						$new_items++;
 						if ($distributor['add_new_items']) {
 							$vendor = Utils_RecordBrowserCommon::get_id('company', 'company_name', $row['Producent']);
-							$w_item = Utils_RecordBrowserCommon::new_record('premium_warehouse_items', array('item_name'=>$row['Nazwa produktu'], 'item_type'=>1, 'manufacturer_part_number'=>$row['Kod producenta'], 'vendor'=>$vendor));
+							$w_item = Utils_RecordBrowserCommon::new_record('premium_warehouse_items', array('item_name'=>$row['Nazwa produktu'], 'item_type'=>1, 'manufacturer_part_number'=>$row['Kod producenta'], 'manufacturer'=>$vendor));
 						}
 					} else {
 						/*** found match ***/

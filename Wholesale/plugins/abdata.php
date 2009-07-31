@@ -192,7 +192,7 @@ class Premium_Warehouse_Wholesale__Plugin_abdata implements Premium_Warehouse_Wh
 						$new_items++;
 						if ($distributor['add_new_items']) {
 							$vendor = Utils_RecordBrowserCommon::get_id('company', 'company_name', $row['producent']);
-							$w_item = Utils_RecordBrowserCommon::new_record('premium_warehouse_items', array('item_name'=>$row['nazwa'], 'item_type'=>1, 'manufacturer_part_number'=>$row['indeks_p'], 'vendor'=>$vendor));
+							$w_item = Utils_RecordBrowserCommon::new_record('premium_warehouse_items', array('item_name'=>$row['nazwa'], 'item_type'=>1, 'manufacturer_part_number'=>$row['indeks_p'], 'manufacturer'=>$vendor));
 						}
 					} else {
 						/*** found match ***/

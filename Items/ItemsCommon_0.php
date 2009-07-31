@@ -27,6 +27,10 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 		return array('group'=>'vendor');
 	}
 	
+	public static function manufacturer_crits() {
+		return array('group'=>'manufacturer');
+	}
+	
 	public static function employee_crits() {
 		return array('group'=>'office');
 	}
