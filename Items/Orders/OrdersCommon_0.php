@@ -650,6 +650,8 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			if (!isset($data['debit'])) return true;
 			if ($data['debit']<0 ||
 				$data['credit']<0) return array('item_name'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders', 'Invallid amount'));
+			if (!$data['debit']>0 &&
+				!$data['credit']>0) return array('item_name'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders', 'Non-zero amount must be entered'));
 			if ($data['debit']>0) {
 				$location_id = Utils_RecordBrowserCommon::get_records('premium_warehouse_location',array('item_sku'=>$data['item_name'],'warehouse'=>self::$trans['warehouse'],'!quantity'=>0));
 				$location_id = array_shift($location_id);
@@ -778,6 +780,17 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 								$ret['terms'] = false;
 								$ret['total_value'] = false;
 								$ret['tax_value'] = false;
+							}
+							if ($tt==2) {
+								$ret['shipment_type'] = false;
+								$ret['shipment_date'] = false;
+								$ret['shipment_no'] = false;
+								$ret['shipment_employee'] = false;
+								$ret['shipment_eta'] = false;
+								$ret['shipment_cost'] = false;
+								$ret['tracking_info'] = false;
+								$ret['expiration_date'] = false;
+								$ret['handling_cost'] = false;
 							}
 							if ($tt==4) {
 								$ret['tax_value'] = false;

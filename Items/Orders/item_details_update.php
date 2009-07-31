@@ -65,8 +65,9 @@ if ($trans['transaction_type']<2) {
 	}
 }
 if ($trans['transaction_type']==2) {
-	if ($location_id!==null) $js .= '$("debit").style.display="inline";';
+	if ($location_id!==null) $js .= 'if(!$("credit").value)$("debit").style.display="inline";';
 	else $js .= '$("debit").style.display="none";';
+	$js .= 'if(!$("debit").value)$("credit").style.display="inline";';
 }
 if ($trans['transaction_type']==3) {
 	$js .= 'var new_opts={';
