@@ -226,8 +226,6 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 				return;
 			case 'restore':
 				return;
-			case 'add':
-				return $values;
 			case 'view':
 				if (ModuleManager::is_installed('Premium_Warehouse_Items_Orders')>=0) {
 					$my_trans = Base_User_SettingsCommon::get('Premium_Warehouse_Items_Orders','my_transaction');
@@ -254,6 +252,8 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 				return $values;
 			case 'edit':
 				$values['sku'] = self::generate_id($values['id']);
+			case 'add':
+				if (!isset($values['reorder_point']) || !$values['reorder_point']) $values['reorder_point']=0;
 				break;
 			case 'added':
 				Utils_RecordBrowserCommon::update_record('premium_warehouse_items',$values['id'],array('sku'=>self::generate_id($values['id'])), false, null, true);
