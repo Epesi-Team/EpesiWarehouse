@@ -274,7 +274,7 @@ class Premium_Warehouse_SalesReport extends Module {
 		$prec = Utils_CurrencyFieldCommon::get_precission($currency);
 		$multip = pow(10,$prec);
 		
-		$transs = DB::Execute('SELECT * FROM (premium_warehouse_items_orders_details_data_1 AS od LEFT JOIN premium_warehouse_items_orders_data_1 AS o ON o.id=od.f_transaction_id) LEFT JOIN premium_warehouse_sales_report_earning AS se ON se.order_details_id=od.id WHERE od.active=1 AND o.f_transaction_type=1 AND od.f_item_name=%d AND o.f_status=20', array($ref_rec['id']));
+		$transs = DB::Execute('SELECT * FROM (premium_warehouse_items_orders_details_data_1 AS od LEFT JOIN premium_warehouse_items_orders_data_1 AS o ON o.id=od.f_transaction_id) LEFT JOIN premium_warehouse_sales_report_earning AS se ON se.order_details_id=od.id WHERE od.active=1 AND o.f_transaction_type=1 AND od.f_item_name=%d AND o.f_status=20 AND o.f_transaction_date>=%D AND o.f_transaction_date<=%D', array($ref_rec['id'], $this->range_type['start'], $this->range_type['end']));
 		$ret = array();
 		$i=0;
 		$hash = array();
