@@ -248,7 +248,8 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 			price C(128) NOTNULL,
 			tax C(64) NOTNULL,
 			name C(128) NOTNULL,
-			created_on T DEFTIMESTAMP',
+			created_on T DEFTIMESTAMP,
+			weight F',
 			array('constraints'=>' ,PRIMARY KEY(customer,product)'));
 		if(!$ret){
 			print('Unable to create table premium_ecommerce_orders_temp.<br>');

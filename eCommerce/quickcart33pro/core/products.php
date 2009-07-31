@@ -2,8 +2,8 @@
 class Products
 {
 
-  var $aProducts = null;
-  var $aProductsPages = null;
+  //var $aProducts = null;
+  //var $aProductsPages = null;
   var $mData = null;
 
   function &getInstance( ){
@@ -19,24 +19,25 @@ class Products
   * @return void
   */
   function Products( ){
-    $this->generateCache( );
-  } // end function Pages
+//    $this->generateCache( );
+	$iStatus    = throwStatus( );
+	$uncategorized = DB::GetOne('SELECT 1 FROM premium_ecommerce_products_data_1 pr
+					INNER JOIN (premium_warehouse_items_data_1 it,premium_ecommerce_availability_data_1 av) ON (pr.f_item_name=it.id AND av.id=pr.f_available)
+					 WHERE pr.f_publish>=%d AND pr.active=1 AND it.f_category is NULL',array($iStatus));
 
-  function generateCache() {
-	$this->aProductsPages = array();
-	$this->aProducts = $this->getProducts();
-	$uncategorized = false;
-	foreach($this->aProducts as &$p) {
-		if(empty($p['aCategories'])) {
-			$p['aCategories'][23] = 23; //uncategorized
-		        $uncategorized = true;
-		}
-		$this->aProductsPages[$p['iProduct']] = $p['aCategories'];
-	}
 	if(!$uncategorized) {//remove uncategorized category
 	    unset(Pages::getInstance()->aPages[23]);
 	}
+  } // end function Pages
+/*
+  function generateCache() {
+	$this->aProductsPages = array();
+	$this->aProducts = $this->getProducts();
+	foreach($this->aProducts as &$p) {
+		$this->aProductsPages[$p['iProduct']] = $p['aCategories'];
+	}
   }
+  */
   
   function getProduct($id) {
 	$arr = $this->getProducts('it.id='.(int)$id);
@@ -106,13 +107,16 @@ class Products
 			$pages[$last_cat] = $last_cat;
 		    }
 		}
-		if($aExp['iProducer']!=='') {
+		if($aExp['iProducer']!==null && $aExp['iProducer']!=='') {
 			$aExp['iProducer'] = $aExp['iProducer']*4+1;
 			$pages[$aExp['iProducer']] = $aExp['iProducer'];
 		}
-        $products[$aExp['iProduct']] = $aExp;
-        $products[$aExp['iProduct']]['sLinkName'] = '?'.$aExp['iProduct'].','.change2Url( $products[$aExp['iProduct']]['sName'] );
-	$products[$aExp['iProduct']]['aCategories'] = $pages;
+		if(empty($pages))
+			$pages[23] = 23; //uncategorized
+
+    		$products[$aExp['iProduct']] = $aExp;
+	        $products[$aExp['iProduct']]['sLinkName'] = '?'.$aExp['iProduct'].','.change2Url( $products[$aExp['iProduct']]['sName'] );
+		$products[$aExp['iProduct']]['aCategories'] = $pages;
 	}
 	
 	return $products;
@@ -153,17 +157,20 @@ class Products
         $sUrlExt .= ((defined( 'FRIENDLY_LINKS' ) && FRIENDLY_LINKS == true)?null:'&amp;').'sPhrase='.$GLOBALS['sPhrase'];
       }
       else{
-	$query = '';
-        if( DISPLAY_SUBCATEGORY_PRODUCTS === true ){
-          // return all pages and subpages
-          $aData = $oPage->throwAllChildrens( $iContent );
-          if( isset( $aData ) ){
-            foreach( $aData as $iValue ){
-	      $query .= 'it.f_category LIKE \'%__'.($iValue/4).'__%\' OR it.f_category LIKE \'%/'.($iValue/4).'__%\' OR ';
-            }
-          }
-        }
-        $query .= 'it.f_category LIKE \'%__'.($iContent/4).'__%\' OR it.f_category LIKE \'%/'.($iContent/4).'__%\'';
+	if($iContent==23) {
+    	    $query .= 'it.f_category is null';
+	} else {
+            if( DISPLAY_SUBCATEGORY_PRODUCTS === true ){
+	      // return all pages and subpages
+    	      $aData = $oPage->throwAllChildrens( $iContent );
+              if( isset( $aData ) ){
+	        foreach( $aData as $iValue ){
+	          $query .= 'it.f_category LIKE \'%__'.($iValue/4).'__%\' OR it.f_category LIKE \'%/'.($iValue/4).'__%\' OR ';
+        	}
+              }
+	    }
+    	    $query .= 'it.f_category LIKE \'%__'.($iContent/4).'__%\' OR it.f_category LIKE \'%/'.($iContent/4).'__%\'';
+	}
       }
     } elseif(!empty($aProducts)) {
 	$query = '0';
@@ -343,50 +350,18 @@ class Products
   * @param int    $iProduct
   */
   function listProductsCrossSell( $sFile, $iProduct ){
-    $iMax   = 5;
     $content= null;
-    $sLang  = strtolower( LANGUAGE );
     $oTpl   =& TplParser::getInstance( );
+    
+    $products = DB::GetAssoc('SELECT or_det.f_item_name,count(or_det.f_item_name) FROM premium_warehouse_items_orders_details_data_1 or_det 
+			    WHERE or_det.f_item_name!=%d AND or_det.f_transaction_id IN 
+			    (SELECT ord.f_transaction_id FROM premium_warehouse_items_orders_details_data_1 or_det2 
+			    INNER JOIN premium_ecommerce_orders_data_1 ord ON ord.f_transaction_id=or_det2.f_transaction_id
+			    WHERE ord.f_language=%s AND or_det2.f_item_name=%d) GROUP BY or_det.f_item_name ORDER BY count(or_det.f_item_name) DESC LIMIT 5',array($iProduct,LANGUAGE,$iProduct));
 
-    $aFile = file( DB_ORDERS );
-    $iCount= count( $aFile );
-    for( $i = 1; $i < $iCount; $i++ ){
-      $aExp = explode( '$', $aFile[$i], 3 );
-      if( $aExp[1] == $sLang )
-        $aOrdersLang[$aExp[0]] = true;
-    } // end for
 
-    if( isset( $aOrdersLang ) ){
-      $aFile  = file( DB_ORDERS_PRODUCTS );
-      $iCount = count( $aFile );
-      for( $i = 1; $i < $iCount; $i++ ){
-        $aExp =  explode( '$', $aFile[$i], 4 );
-        if( $aExp[2] == $iProduct && isset( $aOrdersLang[$aExp[1]] ) ){
-          $aOrders[$aExp[1]] = true;
-        }
-      } // end for
-    }
-
-    if( isset( $aOrders ) ){
-      for( $i = 1; $i < $iCount; $i++ ){
-        $aExp =  explode( '$', $aFile[$i], 5 );
-        if( isset( $this->aProducts[$aExp[2]] ) && isset( $aOrders[$aExp[1]] ) && $aExp[2] != $iProduct ){
-          if( !isset( $aSort[$aExp[2]][0] ) ){
-            $aSort[$aExp[2]][0] = 0;
-            $aSort[$aExp[2]][1] = $aExp[2];
-          }
-          $aSort[$aExp[2]][0] += $aExp[3];
-        }
-      } // end for
-
-      if( isset( $aSort ) ){
-        rsort( $aSort );
-        $iCount = count( $aSort );
-        if( $iCount > $iMax )
-          $iCount = $iMax;
-
-        for( $i = 0; $i < $iCount; $i++ ){
-          $aData = $this->aProducts[$aSort[$i][1]];
+    foreach($products as $p=>$num) {
+          $aData = $this->getProduct($p);
           $aData['iQuantity'] = $aSort[$i][0];
           $aData['iStyle'] = ( $i % 2 ) ? 0: 1;
           $aData['sStyle'] = ( $i == ( $iCount - 1 ) ) ? 'L': $i + 1;
@@ -407,8 +382,6 @@ class Products
 
         if( isset( $content ) )
           return $oTpl->tbHtml( $sFile, 'CROSS_SELL_HEAD' ).$content.$oTpl->tbHtml( $sFile, 'CROSS_SELL_FOOT' );
-      }
-    }
   } // end function listProductsCrossSell
 }
 ?>

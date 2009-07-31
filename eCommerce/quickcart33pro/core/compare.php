@@ -13,25 +13,9 @@ function listProductsCompare( $sFile, $sBlock ){
   $content= null;
   $sBlock = strtoupper( $sBlock );
 
-  $aProducts = $GLOBALS['oProduct']->getProducts(' AND pri.f_gross_price=concat(\'\', 0+pri.f_gross_price)');
+  $aProducts = $GLOBALS['oProduct']->getProducts('pri.f_gross_price=concat(\'\', 0+pri.f_gross_price)');
   
   $sFeaturesBlock = $oTpl->tbHtml( $sFile, $sBlock.'_FEATURES' );
-  /*
-  if( defined( 'DB_FEATURES' ) && is_file( DB_FEATURES ) && !empty( $sFeaturesBlock ) ){
-    $aFeatures = $oFF->throwFileArraySmall( DB_FEATURES, 'iFeature', 'sName' );
-    $aFeaturesProductsAll = $oFF->throwFileArray( DB_FEATURES_PRODUCTS, null );
-    if( isset( $aFeaturesProductsAll ) && is_array( $aFeaturesProductsAll ) ){
-      $iCount   = count( $aFeaturesProductsAll );
-      for( $i = 0; $i < $iCount; $i++ ){
-        $aFeaturesProducts[$aFeaturesProductsAll[$i]['iProduct']][$aFeaturesProductsAll[$i]['iFeature']] = $aFeaturesProductsAll[$i]['sValue'];
-      } // end for
-    }
-  }
-  if( defined( 'DB_PRODUCERS' ) && is_file( DB_PRODUCERS ) ){
-    $aProducers = $oFF->throwFileArraySmall( DB_PRODUCERS, 'iProducer', 'sName' );
-  }
-  */
-  //{ epesi
   if(!empty($sFeaturesBlock)) {
     $ret2 = DB::Execute('SELECT pp.f_item_name as iProduct,
 				pp.f_value as sValue,
@@ -51,15 +35,9 @@ function listProductsCompare( $sFile, $sBlock ){
 	    $id = $r['id']*4+1;
     	    $aProducers[$id] = $r['f_company_name'];
     }
-//} epesi
 
 
   if( isset( $aProducts ) ){
-/*    if( defined( 'DB_CATEGORIES_NOKAUT_NAMES' ) && $sBlock == 'NOKAUT' )
-      $aCategoriesNokaut = throwCategoriesNokautNames( );
-
-    $aDescriptionFull = $oFF->throwFileArraySmall( DB_PRODUCTS_EXT, 'iProduct', 'sDescriptionFull' );*///epesi
-
     foreach($aProducts as $aData){
       $aData['sPages'] = ereg_replace( '&nbsp;&raquo;&nbsp;', '/', strip_tags( $GLOBALS['oProduct']->throwProductsPagesTree( $aData['aCategories'] ) ) );
       $aData['sPagesOnet'] = ereg_replace( '&nbsp;&raquo;&nbsp;', ' &gt; ', strip_tags( $GLOBALS['oProduct']->throwProductsPagesTree( $aData['aCategories'] ) ) );
@@ -83,18 +61,10 @@ function listProductsCompare( $sFile, $sBlock ){
           $aData['sCategoryNokaut'] = null;
       }
 
-  /*
-      if( empty( $aDescriptionFull[$aData['iProduct']] ) && !empty( $aData['sDescriptionShort'] ) )
-        $aData['sDescriptionFull'] = $aData['sDescriptionShort'];
-      else
-        $aData['sDescriptionFull'] = ereg_replace( '\|n\|', '', $aDescriptionFull[$aData['iProduct']] );
-	*/
-      //{ epesi
       if(empty( $aData['sDescriptionFull'] ) && !empty( $aData['sDescriptionShort'] ) )
     	$aData['sDescriptionFull'] = $aData['sDescriptionShort'];
       else
         $aData['sDescriptionFull'] = ereg_replace( '\|n\|', '', $aData['sDescriptionFull'] );
-      //} epesi
 
       $aData['sFeatures'] = null;
       if( isset( $aFeaturesProducts[$aData['iProduct']] ) ){

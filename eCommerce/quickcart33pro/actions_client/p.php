@@ -128,7 +128,8 @@ if( isset( $iContent ) && is_numeric( $iContent ) ){
         $iProductAdd = $_POST['iProductAdd'];
         $iQuantity = $_POST['iQuantity'];
       }
-      if( isset( $iProductAdd ) && is_numeric( $iProductAdd ) && isset( $iQuantity ) && is_numeric( $iQuantity ) && $iQuantity > 0 && $iQuantity < 10000 && isset( $oProduct->aProducts[$iProductAdd] ) && is_numeric( $oProduct->aProducts[$iProductAdd]['fPrice'] ) ){
+      $prod = $oProduct->getProduct($iProductAdd);
+      if( isset( $iProductAdd ) && is_numeric( $iProductAdd ) && isset( $iQuantity ) && is_numeric( $iQuantity ) && $iQuantity > 0 && $iQuantity < 10000 && $prod && is_numeric( $prod['fPrice'] ) ){
         // add product to basket
         $oOrder->addToBasket( $iProductAdd, $iQuantity );
         header( 'Location: '.REDIRECT.$aData['sLinkName'] );

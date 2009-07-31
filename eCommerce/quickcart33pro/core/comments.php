@@ -83,7 +83,12 @@ function listComments( $sFile, $iLink, $sFileDb = null ){
   while($aData = $ret->FetchRow()) {
 	$aData['iTime'] = strtotime($aData['iTime']);
   //} epesi
-      $aData['sLinkName'] = isset( $bPages ) ? $GLOBALS['oPage']->aPages[$aData['iLink']]['sName'] : $GLOBALS['oProduct']->aProducts[$aData['iLink']]['sName'];
+      if(isset( $bPages )) {
+    	    $aData['sLinkName'] = $GLOBALS['oPage']->aPages[$aData['iLink']]['sName'];
+      } else {
+    	    $prod = $GLOBALS['oProduct']->getProduct($aData['iLink']);
+    	    $aData['sLinkName'] = $prod['sName'];
+      }
       $aData['iStyle']  = ( $i % 2 ) ? 0: 1;
       $aData['sStyle']  = ( $i == ( $iCount - 1 ) ) ? 'L': $i + 1;
       $aData['sDate']   = date( 'Y-m-d H:i', $aData['iTime'] );

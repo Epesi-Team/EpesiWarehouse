@@ -264,8 +264,9 @@ function generateSiteMap2Xml( $sFile ){
     } // end foreach
   }
 
-  if( isset( $GLOBALS['oProduct']->aProducts ) ){
-    foreach( $GLOBALS['oProduct']->aProducts as $iProduct => $aData ){
+  $products = $GLOBALS['oProduct']->getProducts();
+  if( $products ){
+    foreach( $products as $iProduct => $aData ){
       $aData['sDescriptionShort'] = changeTxt( $aData['sDescriptionShort'], 'nlNds' );
       $aData['sSiteUrl']          = $sSiteUrl;
       $oTpl->setVariables( 'aData', $aData );

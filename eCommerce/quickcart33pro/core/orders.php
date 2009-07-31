@@ -91,7 +91,7 @@ class Orders
 		
 		$ret = DB::Execute('SELECT * FROM premium_ecommerce_orders_temp WHERE customer=%s',array($_SESSION['iCustomer'.LANGUAGE]));
 		while($row = $ret->FetchRow()) {
-	        $this->aProducts[$row['product']] = Array( 'iCustomer' => $row['customer'], 'iProduct' => $row['product'], 'iQuantity' => $row['quantity'], 'fPrice' => $row['price'], 'sName' => $row['name'], 'tax'=>$row['tax'] );
+	        $this->aProducts[$row['product']] = Array( 'iCustomer' => $row['customer'], 'iProduct' => $row['product'], 'iQuantity' => $row['quantity'], 'fPrice' => $row['price'], 'sName' => $row['name'], 'tax'=>$row['tax'], 'weight'=>$row['weight'] );
 	        $this->aProducts[$row['product']]['sLinkName'] = '?'.$row['product'].','.change2Url( $this->aProducts[$row['product']]['sName'] );
 	        $this->aProducts[$row['product']]['fSummary'] = normalizePrice( $this->aProducts[$row['product']]['fPrice'] * $this->aProducts[$row['product']]['iQuantity']);
 	        $_SESSION['iOrderQuantity'.LANGUAGE] += $row['quantity'];
@@ -269,7 +269,8 @@ class Orders
 		DB::Execute('UPDATE premium_ecommerce_orders_temp SET quantity=%d WHERE product=%d AND customer=%s',array($iQuantity,$iProduct,$iOrder));
 	} else {
 		$oProduct =& Products::getInstance( );
-		DB::Execute('INSERT INTO premium_ecommerce_orders_temp(customer,product,quantity,price,name,tax) VALUES (%s,%d,%d,%s,%s,%s)',array($iOrder,$iProduct,$iQuantity,$oProduct->aProducts[$iProduct]['fPrice'],$oProduct->aProducts[$iProduct]['sName'],$oProduct->aProducts[$iProduct]['tax']));
+		$prod = $oProduct->getProduct($iProduct);
+		DB::Execute('INSERT INTO premium_ecommerce_orders_temp(customer,product,quantity,price,name,tax,weight) VALUES (%s,%d,%d,%s,%s,%s,%s)',array($iOrder,$iProduct,$iQuantity,$prod['fPrice'],$prod['sName'],$prod['tax'],$prod['sWeight']));
 	}
 	//} epesi
 /*    if( !isset( $iOrder ) ){
@@ -822,7 +823,7 @@ $this->aOrders[$iOrder] = $aData;
 	$payments = DB::GetAssoc('SELECT p.akey, p.value FROM utils_commondata_tree p WHERE p.parent_id=%d AND p.akey IN (SELECT f_payment FROM premium_ecommerce_payments_carriers_data_1 WHERE f_currency=%s AND active=1) ORDER BY akey',array($payments_id,$currency));
 	global $translations;
 	foreach($payments as $k=>$v) {
-		if(isset($translations['Utils_CommonData'][$v]))
+		if(isset($translations['Utils_CommonData'][$v]) && $translations['Utils_CommonData'][$v])
 			$payments[$k] = $translations['Utils_CommonData'][$v];
 	}
     }
@@ -839,7 +840,7 @@ $this->aOrders[$iOrder] = $aData;
 	$shipments = DB::GetAssoc('SELECT akey, value FROM utils_commondata_tree WHERE parent_id=%d ORDER BY akey',array($shipments_id));
 	global $translations;
 	foreach($shipments as $k=>$v) {
-		if(isset($translations['Utils_CommonData'][$v]))
+		if(isset($translations['Utils_CommonData'][$v]) && $translations['Utils_CommonData'][$v])
 			$shipments[$k] = $translations['Utils_CommonData'][$v];
 	}
     }
@@ -852,7 +853,7 @@ $this->aOrders[$iOrder] = $aData;
 	$weight = 0;
 	if(isset($this->aProducts))
       foreach( $this->aProducts as $a ){
-	$weight += $a['iQuantity']*$GLOBALS['oProduct']->aProducts[$a['iProduct']]['sWeight'];
+	$weight += $a['iQuantity']*$a['weight'];
       }
     }
     return $weight;
