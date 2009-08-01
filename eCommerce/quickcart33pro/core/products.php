@@ -92,6 +92,9 @@ class Products
 					 WHERE pr.f_publish>=%d AND pr.active=1 '.($where?' AND ('.$where.')':'').' ORDER BY pr.f_position'.($limit!==null?' LIMIT '.(int)$limit.($offset!==null?' OFFSET '.(int)$offset:''):''),array($iStatus));
 
         $taxes = DB::GetAssoc('SELECT id, f_percentage FROM data_tax_rates_data_1 WHERE active=1');
+	$autoprice = getVariable('ecommerce_autoprice');
+	$minimal = getVariable('ecommerce_minimal_profit');
+	$percentage = getVariable('ecommerce_percentage_profit');
 	
 	while($aExp = $ret->FetchRow()) {
 		if($aExp['sName']=='') 
@@ -100,14 +103,20 @@ class Products
 			$aExp['sAvailable'] = $aExp['sAvailable2'];
 		if(!$aExp['f_quantity'] && !$aExp['distributorQuantity'])
 			$aExp['fPrice']='';
-		if(!$aExp['fPrice']) {
+		if($autoprice && !$aExp['fPrice']) {
 			$rr = explode('__',$aExp['fPrice2']);
 			if($rr && $rr[1]==$currency) {
-				$gross = number_format((float)$rr[0]*(100+$taxes[$aExp['tax2']])/100,2);
+				$netto = $rr[0];
+				$profit = $netto*$percentage/100;
+				if($profit<$minimal) $profit = $minimal;
+				$gross = number_format((float)($netto+$profit)*(100+$taxes[$aExp['tax2']])/100,2);
 				$aExp['fPrice'] = $gross;
 				$aExp['tax'] = $aExp['tax2'];
 			} elseif($aExp['fPrice3'] && $aExp['price_currency']==$currency) {
-				$gross = number_format((float)$aExp['fPrice3']*(100+$taxes[$aExp['tax3']])/100,2);
+				$netto = $aExp['fPrice3'];
+				$profit = $netto*$percentage/100;
+				if($profit<$minimal) $profit = $minimal;
+				$gross = number_format((float)($netto+$profit)*(100+$taxes[$aExp['tax3']])/100,2);
 				$aExp['fPrice'] = $gross;
 				$aExp['tax'] = $aExp['tax3'];
 			}

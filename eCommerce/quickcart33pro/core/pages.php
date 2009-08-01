@@ -371,13 +371,13 @@ class Pages
     $this->aPagesParentsTypes[5][] = $id;
 	//start page
 	$id = 11;
-	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => 'Start', 'sNameTitle' => '', 'sDescriptionShort' => unserialize(DB::GetOne('SELECT value FROM variables WHERE name=%s',array('ecommerce_start_page'))), 'iStatus' => 1, 'iPosition' => 0,
+	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => 'Start', 'sNameTitle' => '', 'sDescriptionShort' => getVariable('ecommerce_start_page'), 'iStatus' => 1, 'iPosition' => 0,
 					 'iType' => 2, 'iSubpagesShow' => 1, 'iProducts' => 0);
     $this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
     $this->aPagesParentsTypes[2][] = $id;
 	//rules and policies
 	$id = 15;
-	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => 'Rules and Policies', 'sNameTitle' => '', 'sDescriptionShort' => unserialize(DB::GetOne('SELECT value FROM variables WHERE name=%s',array('ecommerce_rules'))), 'iStatus' => 1, 'iPosition' => 1,
+	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => 'Rules and Policies', 'sNameTitle' => '', 'sDescriptionShort' => getVariable('ecommerce_rules'), 'iStatus' => 1, 'iPosition' => 1,
 					 'iType' => 2, 'iSubpagesShow' => 1, 'iProducts' => 0);
     $this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
     $this->aPagesParentsTypes[2][] = $id;
@@ -402,7 +402,7 @@ class Pages
 
 	//sitemap
 	$id = 31;
-	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => 'contact us', 'sNameTitle' => '', 'sDescriptionShort' => unserialize(DB::GetOne('SELECT value FROM variables WHERE name=%s',array('ecommerce_contactus'))), 'iStatus' => 1, 'iPosition' => 1000, 'iType' => 0, 'iSubpagesShow' => 1, 'iProducts' => 0, 'sDescriptionFull'=>'', 'sMetaDescription' => '', 'sMetaKeywords' =>'');
+	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => 'contact us', 'sNameTitle' => '', 'sDescriptionShort' => getVariable('ecommerce_contactus'), 'iStatus' => 1, 'iPosition' => 1000, 'iType' => 0, 'iSubpagesShow' => 1, 'iProducts' => 0, 'sDescriptionFull'=>'', 'sMetaDescription' => '', 'sMetaKeywords' =>'');
 	$this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
 	$this->aPagesParentsTypes[2][] = $id;
 	//} epesi

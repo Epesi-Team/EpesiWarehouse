@@ -1,4 +1,17 @@
 <?php
+
+function getVariable($name) {
+	static $variables;
+	if(!isset($variables)) {
+		$variables = array();
+		$ret = DB::Execute("SELECT name,value FROM variables");
+		while($row = $ret->FetchRow())
+			$variables[$row['name']] = unserialize($row['value']);
+	}
+
+	return $variables[$name];
+}
+
 /**
 * Return status limit
 * @return int

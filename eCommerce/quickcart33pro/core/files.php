@@ -204,7 +204,7 @@ class Files
 			INNER JOIN utils_attachment_file f ON (f.attach_id=ual.id AND f.revision=(SELECT max(revision) FROM utils_attachment_file WHERE attach_id=ual.id)) 
 			INNER JOIN utils_attachment_note d ON (d.attach_id=ual.id AND d.revision=(SELECT max(revision) FROM utils_attachment_note WHERE attach_id=ual.id)) 
 			WHERE ual.deleted=0 AND ual.local LIKE \'Premium/Warehouse/eCommerce/%\'');
-    $th_size = unserialize(DB::GetOne('SELECT value FROM variables WHERE name=%s',array('quickcart_thumbnail_size')));
+    $th_size = getVariable('quickcart_thumbnail_size');
     
     while($row = $ret->FetchRow()) {
 	$ext = strrchr($row['original'],'.');
