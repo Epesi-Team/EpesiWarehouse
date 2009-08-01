@@ -78,16 +78,21 @@ class Products
 								loc.f_quantity,
 								it.f_net_price fPrice2,
 								it.f_tax_rate tax2,
-								dist.quantity as distributorQuantity
+								dist.quantity as distributorQuantity,
+								dist.price fPrice3,
+								dist.price_currency,
+								distributor.f_tax_rate tax3
 					FROM premium_ecommerce_products_data_1 pr
 					INNER JOIN (premium_warehouse_items_data_1 it,premium_ecommerce_availability_data_1 av) ON (pr.f_item_name=it.id AND av.id=pr.f_available)
 					LEFT JOIN premium_ecommerce_prices_data_1 pri ON (pri.f_item_name=it.id AND pri.active=1 AND pri.f_currency='.$currency.')
 					LEFT JOIN premium_ecommerce_descriptions_data_1 d ON (d.f_item_name=it.id AND d.f_language="'.LANGUAGE.'" AND d.active=1)
 					LEFT JOIN premium_ecommerce_availability_labels_data_1 avl ON (pr.f_available=avl.f_availability AND avl.f_language="'.LANGUAGE.'" AND avl.active=1) 
 					LEFT JOIN premium_warehouse_location_data_1 loc ON (loc.f_item_sku=it.id AND loc.f_quantity>0 AND loc.active=1)
-					LEFT JOIN premium_warehouse_wholesale_items dist ON (dist.item_id=it.id AND dist.quantity>0)
+					LEFT JOIN (premium_warehouse_wholesale_items dist, premium_warehouse_distributor_data_1 distributor) ON (dist.item_id=it.id AND dist.quantity>0 AND distributor.id=dist.distributor_id)
 					 WHERE pr.f_publish>=%d AND pr.active=1 '.($where?' AND ('.$where.')':'').' ORDER BY pr.f_position'.($limit!==null?' LIMIT '.(int)$limit.($offset!==null?' OFFSET '.(int)$offset:''):''),array($iStatus));
 
+        $taxes = DB::GetAssoc('SELECT id, f_percentage FROM data_tax_rates_data_1 WHERE active=1');
+	
 	while($aExp = $ret->FetchRow()) {
 		if($aExp['sName']=='') 
 			$aExp['sName'] = $aExp['sName2'];
@@ -95,7 +100,18 @@ class Products
 			$aExp['sAvailable'] = $aExp['sAvailable2'];
 		if(!$aExp['f_quantity'] && !$aExp['distributorQuantity'])
 			$aExp['fPrice']='';
-		if(!$aExp['fPrice'])
+		if(!$aExp['fPrice']) {
+			$rr = explode('__',$aExp['fPrice2']);
+			if($rr && $rr[1]==$currency) {
+				$gross = number_format((float)$rr[0]*(100+$taxes[$aExp['tax2']])/100,2);
+				$aExp['fPrice'] = $gross;
+				$aExp['tax'] = $aExp['tax2'];
+			} elseif($aExp['fPrice3'] && $aExp['price_currency']==$currency) {
+				$gross = number_format((float)$aExp['fPrice3']*(100+$taxes[$aExp['tax3']])/100,2);
+				$aExp['fPrice'] = $gross;
+				$aExp['tax'] = $aExp['tax3'];
+			}
+		}
 		$aExp['iComments'] = 1;
 		unset($aExp['sName2']);
 		$cats = array_filter(explode('__',$aExp['f_category']));

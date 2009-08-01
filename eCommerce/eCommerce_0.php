@@ -22,6 +22,8 @@ class Premium_Warehouse_eCommerce extends Module {
 	public function admin() {
 		$buttons = array();
 //		$icon = Base_ThemeCommon::get_template_file($name,'icon.png');
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'prices')).'>'.$this->ht('Automatic prices').'</a>',
+						'icon'=>null);
 		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'availability')).'>'.$this->ht('Availability').'</a>',
 						'icon'=>null);
 		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'banners')).'>'.$this->ht('Banners').'</a>',
@@ -417,6 +419,43 @@ class Premium_Warehouse_eCommerce extends Module {
 		    foreach($banners as $b)
 			Premium_Warehouse_eCommerceCommon::copy_banner($b);
 		    return false;
+		} else $form->display();
+
+		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
+		Base_ActionBarCommon::add('save', 'Save', $form->get_submit_form_href(true,$this->t('creating thumbnails, please wait')));
+		
+    		return true;
+	}
+	
+	public function prices() {
+		if($this->is_back()) return false;
+	
+		$form = & $this->init_module('Libs/QuickForm');
+
+		$form->addElement('header', null, $this->t('Automatic prices'));
+		
+		eval_js_once("ecommerce_autoprices = function() {
+		
+		}");
+
+		$form->addElement('checkbox', 'enabled', $this->t('Enabled'),'',array('onChange'=>'ecommerce_autoprices(this.value)'));
+		$enabled = $form->exportValue('enabled');
+
+		$form->addElement('text', 'minimal', $this->t('Minimal profit margin'),array());
+		$form->addElement('text', 'margin', $this->t('Percentage profit margin'));
+		
+		$form->setDefaults(array('enabled'=>Variable::get('ecommerce_autoprice'),'minimal'=>Variable::get('ecommerce_minimal_profit')
+				    ,'margin'=>Variable::get('ecommerce_percentage_profit')));
+		if($enabled) {
+			$form->addRule('minimal', $this->t('This should be numeric value'),'numeric');
+			$form->addRule('margin', $this->t('This should be numeric value'),'numeric');
+		}
+
+		if($form->validate()) {
+			$vals = $this->exportValues();
+			Variable::set('ecommerce_autoprice',(isset($vals['enabled']) && $vals['enabled'])?true:false);
+			Variable::set('ecommerce_minimal_profit',$vals['minimal']);
+			Variable::set('ecommerce_percentage_profit',$vals['margin']);
 		} else $form->display();
 
 		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
