@@ -434,28 +434,37 @@ class Premium_Warehouse_eCommerce extends Module {
 
 		$form->addElement('header', null, $this->t('Automatic prices'));
 		
-		eval_js_once("ecommerce_autoprices = function() {
-		
+		eval_js_once("ecommerce_autoprices = function(val) {
+			if(val) {
+				$('ecommerce_minimal').enable();
+				$('ecommerce_margin').enable();
+			} else {
+				$('ecommerce_minimal').disable();
+				$('ecommerce_margin').disable();
+			}
 		}");
 
-		$form->addElement('checkbox', 'enabled', $this->t('Enabled'),'',array('onChange'=>'ecommerce_autoprices(this.value)'));
-		$enabled = $form->exportValue('enabled');
-
-		$form->addElement('text', 'minimal', $this->t('Minimal profit margin'),array());
-		$form->addElement('text', 'margin', $this->t('Percentage profit margin'));
-		
 		$form->setDefaults(array('enabled'=>Variable::get('ecommerce_autoprice'),'minimal'=>Variable::get('ecommerce_minimal_profit')
 				    ,'margin'=>Variable::get('ecommerce_percentage_profit')));
+
+		$form->addElement('checkbox', 'enabled', $this->t('Enabled'),'',array('onChange'=>'ecommerce_autoprices(this.checked)'));
+		$enabled = $form->exportValue('enabled');
+		eval_js('ecommerce_autoprices('.$enabled.')');
+
+		$form->addElement('text', 'minimal', $this->t('Minimal profit margin'),array('id'=>'ecommerce_minimal'));
+		$form->addElement('text', 'margin', $this->t('Percentage profit margin'),array('id'=>'ecommerce_margin'));
+		
 		if($enabled) {
 			$form->addRule('minimal', $this->t('This should be numeric value'),'numeric');
 			$form->addRule('margin', $this->t('This should be numeric value'),'numeric');
 		}
 
 		if($form->validate()) {
-			$vals = $this->exportValues();
+			$vals = $form->exportValues();
 			Variable::set('ecommerce_autoprice',(isset($vals['enabled']) && $vals['enabled'])?true:false);
 			Variable::set('ecommerce_minimal_profit',$vals['minimal']);
 			Variable::set('ecommerce_percentage_profit',$vals['margin']);
+			return false;
 		} else $form->display();
 
 		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
