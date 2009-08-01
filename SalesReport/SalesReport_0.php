@@ -46,11 +46,17 @@ class Premium_Warehouse_SalesReport extends Module {
 	}
 	
 	public function sales_by_warehouse() {
-		$this->cats = array('Sales Trans.','Sales Volume','Purchase Trans.','Purchase Volume','Net Profit');
+		$this->cats = array('Sales Trans.','Sales Volume','Purchase Trans.','Purchase Volume','Net Profit','Sales Earnings');
 		$recs = Utils_RecordBrowserCommon::get_records('premium_warehouse',array(),array(),array('warehouse'=>'ASC'));
 		$this->rbr->set_reference_records($recs);
 		$this->rbr->set_reference_record_display_callback(array('Premium_WarehouseCommon','display_warehouse'));
-		$date_range = $this->rbr->display_date_picker();
+
+		$form = $this->init_module('Libs/QuickForm');
+		$form->addElement('select', 'method', $this->t('Method'), array('fifo'=>$this->t('FIFO'), 'lifo'=>$this->t('LIFO')));
+		$form->addElement('select', 'prices', $this->t('Prices'), array('net'=>$this->t('Net'), 'gross'=>$this->t('Gross')));
+		$form->setDefaults(array('method'=>'fifo','prices'=>'net'));
+
+		$this->range_type = $this->rbr->display_date_picker(array(), $form);
 		$this->rbr->set_categories($this->cats);
 		$this->rbr->set_summary('col', array('label'=>'Total'));
 		$this->rbr->set_summary('row', array('label'=>'Total'));
@@ -58,12 +64,12 @@ class Premium_Warehouse_SalesReport extends Module {
 										$this->cats[1]=>'currency',
 										$this->cats[2]=>'numeric',
 										$this->cats[3]=>'currency',
-										$this->cats[4]=>'currency'
+										$this->cats[4]=>'currency',
+										$this->cats[5]=>'currency'
 									));
 		$header = array('Warehouse');
-		$this->columns = $date_range['dates'];
-		$this->range_type = $date_range['type'];
-		switch ($date_range['type']) {
+		$this->columns = $this->range_type['dates'];
+		switch ($this->range_type['type']) {
 			case 'day': $this->format ='d M Y'; break;
 			case 'week': $this->format ='W Y'; break;
 			case 'month': $this->format ='M Y'; break;
@@ -82,6 +88,10 @@ class Premium_Warehouse_SalesReport extends Module {
 	
 /************************************************************************************/
 	public function display_sales_by_warehouse_cells($ref_rec){
+		$currency = 1;
+		$prec = Utils_CurrencyFieldCommon::get_precission($currency);
+		$multip = pow(10,$prec);
+
 		$result = array();
 		$hash = array();
 		$i = 0;
@@ -91,11 +101,18 @@ class Premium_Warehouse_SalesReport extends Module {
 									$this->cats[1]=>array(),
 									$this->cats[2]=>0,
 									$this->cats[3]=>array(),
-									$this->cats[4]=>array());
+									$this->cats[4]=>array(),
+									$this->cats[5]=>array($currency=>0));
 			$hash[date($this->format, $v)] = $i;
 			$i++;
 		}
-		$currency = 1;
+
+		$transs = DB::Execute('SELECT * FROM (premium_warehouse_items_orders_details_data_1 AS od LEFT JOIN premium_warehouse_items_orders_data_1 AS o ON o.id=od.f_transaction_id) LEFT JOIN premium_warehouse_sales_report_earning AS se ON se.order_details_id=od.id WHERE od.active=1 AND o.f_transaction_type=1 AND o.f_status=20 AND o.f_transaction_date>=%D AND o.f_transaction_date<=%D AND o.f_warehouse=%s', array($this->range_type['start'], $this->range_type['end'], $ref_rec['id']));
+		while ($v = $transs->FetchRow()) {
+			$d = date($this->format,strtotime($v['f_transaction_date']));
+			if (isset($hash[$d]))
+				$result[$hash[$d]][$this->cats[5]][$currency] += $v[$this->range_type['other']['prices'][0].'_earning_'.$this->range_type['other']['method']]/$multip;
+		}
 		
 		$records = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders', array('warehouse'=>$ref_rec['id']));
 		// TODO: transaction status filter
@@ -179,7 +196,7 @@ class Premium_Warehouse_SalesReport extends Module {
 		
 		$i = 0;
 		foreach ($this->columns as $v) {
-			switch ($this->range_type) {
+			switch ($this->range_type['type']) {
 				case 'day':		$start = date('Y-m-d',$v);
 								$end = date('Y-m-d',$v);
 								break;
