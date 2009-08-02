@@ -333,14 +333,12 @@ class Premium_Warehouse_SalesReport extends Module {
 		$form->setDefaults(array('method'=>'fifo','prices'=>'net', 'warehouse'=>$my_warehouse));
 		$this->cats = array('Qty Sold','Earnings');
 		$this->range_type = $this->rbr->display_date_picker(array(), $form);
-		$crits = array('>=transaction_date'=>$this->range_type['start'], '<=transaction_date'=>$this->range_type['end'], 'transaction_type'=>1);
 		if ($this->range_type['other']['warehouse']!='') {
-			$crits['warehouse'] = $this->range_type['other']['warehouse'];
 			$warehouse_sql = 'AND o.f_warehouse=%d '; 
 		} else {
 			$warehouse_sql = ''; 
 		}
-		$transactions_count = Utils_RecordBrowserCommon::get_records_count('premium_warehouse_items_orders', $crits);
+		$transactions_count = DB::GetOne('SELECT COUNT(*) FROM (SELECT o.id FROM (premium_warehouse_items_orders_details_data_1 AS od LEFT JOIN premium_warehouse_items_orders_data_1 AS o ON o.id=od.f_transaction_id) LEFT JOIN premium_warehouse_sales_report_earning AS se ON se.order_details_id=od.id WHERE od.active=1 AND o.f_transaction_type=1 AND o.f_status=20 AND o.f_transaction_date>=%D AND o.f_transaction_date<=%D '.$warehouse_sql.'GROUP BY o.id) AS tmp', array_merge(array($this->range_type['start'], $this->range_type['end']),$this->range_type['other']['warehouse']==''?array():array($this->range_type['other']['warehouse'])));
 		$limit = $this->rbr->enable_paging($transactions_count);
 		$order = '_earning_';
 		if ($this->range_type['other']['method']=='fifo') $order = $order.'fifo';
