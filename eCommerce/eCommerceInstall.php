@@ -458,6 +458,10 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Variable::set('icecat_pass','');
 		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_products', 'Premium_Warehouse_eCommerce', 'icecat_addon', 'Premium_Warehouse_eCommerceCommon::icecat_addon_parameters');
 
+		Variable::set('ecommerce_autoprice',false);
+		Variable::set('ecommerce_minimal_profit','');
+		Variable::set('ecommerce_percentage_profit','');
+
 		$this->create_data_dir();
 		@mkdir($this->get_data_dir().'banners');
 		Base_ThemeCommon::install_default_theme('Premium/Warehouse/eCommerce');
@@ -482,6 +486,9 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Variable::delete('ecommerce_rules');
 		Variable::delete('ecommerce_contactus');
 		Variable::delete('quickcart_thumbnail_size');
+		Variable::delete('ecommerce_autoprice');
+		Variable::delete('ecommerce_minimal_profit');
+		Variable::delete('ecommerce_percentage_profit');
 
 		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_products', 'Premium_Warehouse_eCommerce', 'icecat_addon');
 		Variable::delete('icecat_user');
