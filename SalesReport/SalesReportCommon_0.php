@@ -23,7 +23,7 @@ class Premium_Warehouse_SalesReportCommon extends ModuleCommon {
 	}
 	
 	public static function currency_exchange($val, $c1, $c2) {
-		return $val;// TODO
+		return 0;// TODO
 	} 
 	
 	public static function recalculate() {
