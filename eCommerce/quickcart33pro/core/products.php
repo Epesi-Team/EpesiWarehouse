@@ -76,7 +76,7 @@ class Products
 								it.f_weight as sWeight,
 								it.f_manufacturer as iProducer,
 								loc.f_quantity,
-								it.f_net_price fPrice2,
+								it.f_cost fPrice2,
 								it.f_tax_rate tax2,
 								dist.quantity as distributorQuantity,
 								dist.price fPrice3,
@@ -105,7 +105,7 @@ class Products
 			$aExp['fPrice']='';
 		if($autoprice && !$aExp['fPrice']) {
 			$rr = explode('__',$aExp['fPrice2']);
-			if($rr && $rr[1]==$currency) {
+			if($rr && $rr[0] && $rr[1]==$currency) {
 				$netto = $rr[0];
 				$profit = $netto*$percentage/100;
 				if($profit<$minimal) $profit = $minimal;
