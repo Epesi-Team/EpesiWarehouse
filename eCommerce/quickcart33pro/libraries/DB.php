@@ -16,6 +16,8 @@ if(!is_array($translations))
 require_once('adodb/adodb-errorhandler.inc.php');
 require_once('adodb/adodb.inc.php');
 
+error_reporting(E_ERROR | E_PARSE | E_CORE_ERROR | E_COMPILE_ERROR | E_USER_ERROR);
+
 /**
  * This class maintains database connection.
  * @package epesi-base

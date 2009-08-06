@@ -1,5 +1,4 @@
 <?php
-//error_reporting( E_ALL );
 unset( $config, $aMenuTypes, $aPhotoTypes, $lang, $aBanners, $aBoxes, $aUser );
 
 define('EPESI_DATA_DIR','../../../../../data/');
