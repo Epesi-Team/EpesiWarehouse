@@ -451,18 +451,16 @@ $oFF->save( DB_ORDERS, $aForm, null, 'rsort' );
 
     $aPayment = $this->throwPayment( $payment );
 
-    $payment_channel_tag = '%?';
     if( isset( $aPayment['iOuterSystem'] ) ){
       $aForm['iPaymentSystem'] = $aPayment['iOuterSystem'];
       $payment_system_tag = '%d';
       if( isset( $aForm['aPaymentChannel'][$aPayment['iPayment']] ) ) {
         $aForm['mPaymentChannel'] = $aForm['aPaymentChannel'][$aPayment['iPayment']];
-	$payment_channel_tag = '%s';
       } else
         $aForm['mPaymentChannel'] = null;
     }
     else{
-      $payment_system_tag = '%?';
+      $payment_system_tag = '%s';
       $aForm['iPaymentSystem'] = null;
       $aForm['mPaymentChannel'] = null;
     }
@@ -482,7 +480,7 @@ $oFF->save( DB_ORDERS, $aForm, null, 'rsort' );
 
 	DB::Execute('INSERT INTO premium_ecommerce_orders_data_1(f_transaction_id, f_language, f_email, f_ip, f_comment, f_invoice, f_payment_system, 
 						f_payment_channel,f_payment_realized,created_on) VALUES
-						(%d,%s,%s,%s,%s,%b,'.$payment_system_tag.','.$payment_channel_tag.',%b,%T)',
+						(%d,%s,%s,%s,%s,%b,'.$payment_system_tag.',%s,%b,%T)',
 					array($id,LANGUAGE,$aForm['sEmail'],$_SERVER['REMOTE_ADDR'],$aForm['sComment'],$aForm['iInvoice']?true:false,
 					$aForm['iPaymentSystem'],$aForm['mPaymentChannel'],$aForm['iPaymentRealized'],time()));
 

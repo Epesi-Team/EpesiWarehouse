@@ -99,7 +99,7 @@ class DB {
 
 
 	public static function TypeControl($sql, & $arr) {
-		$x = preg_split('/(%[%DTdsbf?])/', $sql, -1, PREG_SPLIT_DELIM_CAPTURE);
+		$x = preg_split('/(%[%DTdsbf])/', $sql, -1, PREG_SPLIT_DELIM_CAPTURE);
 
 		if (isset($arr) && !is_array($arr))
 			$arr = array($arr);
@@ -109,6 +109,7 @@ class DB {
 		foreach($x as $y) {
 			switch ($y) {
 				case '%d' :
+					if (is_null($arr[$j])) $arr[$j] = 0;
 					if (!is_numeric($arr[$j]))
 						trigger_error('Argument '.$j.' is not number('.$y.'): <ul><li>'.$sql.'</li><li>'.print_r($arr,true).'</li></ul>',E_USER_ERROR);
 					$arr[$j] = (int)($arr[$j]);
@@ -116,6 +117,7 @@ class DB {
 					$ret .= '?';
 					break;
 				case '%f' :
+					if (is_null($arr[$j])) $arr[$j] = 0;
 					if (!is_numeric($arr[$j]))
 						trigger_error('Argument '.$j.' is not number('.$y.'): <ul><li>'.$sql.'</li><li>'.print_r($arr,true).'</li></ul>',E_USER_ERROR);
 					$arr[$j] = (float)($arr[$j]);
@@ -123,6 +125,7 @@ class DB {
 					$ret .= '?';
 					break;
 				case '%s' :
+					if (is_null($arr[$j])) $arr[$j] = '';
 					$arr[$j] = (string)$arr[$j];
 					$j++;
 					$ret .= '?';
@@ -139,10 +142,6 @@ class DB {
 					break;
 				case '%b' :
 					$arr[$j] = (boolean) $arr[$j]?1:0;
-					$j++;
-					$ret .= '?';
-					break;
-				case '%?' :
 					$j++;
 					$ret .= '?';
 					break;
