@@ -110,9 +110,9 @@ class DB {
 			switch ($y) {
 				case '%d' :
 					if (!is_null($arr[$j])) {
-					if (!is_numeric($arr[$j]))
-						trigger_error('Argument '.$j.' is not number('.$y.'): <ul><li>'.$sql.'</li><li>'.print_r($arr,true).'</li></ul>',E_USER_ERROR);
-					$arr[$j] = (int)($arr[$j]);
+						if (!is_numeric($arr[$j]))
+							trigger_error('Argument '.$j.' is not number('.$y.'): <ul><li>'.$sql.'</li><li>'.print_r($arr,true).'</li></ul>',E_USER_ERROR);
+						$arr[$j] = (int)($arr[$j]);
 					}
 					$j++;
 					$ret .= '?';
@@ -120,7 +120,7 @@ class DB {
 				case '%f' :
 					if (!is_null($arr[$j])) {
 						if (!is_numeric($arr[$j]))
-						trigger_error('Argument '.$j.' is not number('.$y.'): <ul><li>'.$sql.'</li><li>'.print_r($arr,true).'</li></ul>',E_USER_ERROR);
+							trigger_error('Argument '.$j.' is not number('.$y.'): <ul><li>'.$sql.'</li><li>'.print_r($arr,true).'</li></ul>',E_USER_ERROR);
 						$arr[$j] = (float)($arr[$j]);
 					}
 					$j++;
