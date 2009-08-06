@@ -74,7 +74,7 @@ class Premium_Warehouse_WholesaleInstall extends ModuleInstall {
 						'id I4 AUTO KEY,'.
 						'item_id I4,'.
 						'internal_key C(32),'.
-						'distributor_item_name C(64),'.
+						'distributor_item_name C(128),'.
 						'distributor_id I4,'.
 						'price F,'.
 						'price_currency I4,'.
