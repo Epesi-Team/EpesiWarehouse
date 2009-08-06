@@ -152,6 +152,8 @@ class Premium_Warehouse_Wholesale__Plugin_abdata implements Premium_Warehouse_Wh
 			$scanned++;
 			
 			foreach ($row as $k=>$v) $row[$keys[$k]] = $v;
+			$row['nazwa'] = mb_convert_encoding($row['nazwa'],"ISO-8859-1","UTF-8");
+			if (strlen($row['nazwa'])>127) $row['nazwa'] = substr($row['nazwa'],0,127);
 			
 			if ($row['magazyn_stan']=='jest') {
 				$available++;

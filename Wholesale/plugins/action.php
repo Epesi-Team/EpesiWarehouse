@@ -173,6 +173,8 @@ class Premium_Warehouse_Wholesale__Plugin_action implements Premium_Warehouse_Wh
 			$scanned++;
 			
 			foreach ($row as $k=>$v) $row[$keys[$k]] = $v;
+			$row['Nazwa produktu'] = mb_convert_encoding($row['Nazwa produktu'],"ISO-8859-1","UTF-8");
+			if (strlen($row['Nazwa produktu'])>127) $row['Nazwa produktu'] = substr($row['Nazwa produktu'],0,127);
 			
 			if ($row['Stan mag']!=0) {
 				$available++;

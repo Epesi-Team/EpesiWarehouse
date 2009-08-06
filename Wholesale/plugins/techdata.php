@@ -166,6 +166,8 @@ class Premium_Warehouse_Wholesale__Plugin_techdata implements Premium_Warehouse_
 
 			foreach ($row_parts as $k=>$v)
 				$row_parts[$k] = trim($v);
+			$row['NAZWA'] = mb_convert_encoding($row['NAZWA'],"ISO-8859-1","UTF-8");
+			if (strlen($row['NAZWA'])>127) $row['NAZWA'] = substr($row['NAZWA'],0,127);
 
 			$total++;
 			$row_parts['W_MAG'] = strtolower(str_replace(' ','_',$row_parts['W_MAG']));
