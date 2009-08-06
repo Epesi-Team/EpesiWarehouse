@@ -81,8 +81,12 @@ class Premium_Warehouse_Wholesale__Plugin_techdata implements Premium_Warehouse_
 		$url = 'http://www.techdata.pl/pliki/cenniki/?OID=3385';
 		curl_setopt($c, CURLOPT_URL, $url);
 		$output = curl_exec($c);
-		
+
 		preg_match('/\"(\/download\.aspx.*?)\"/', $output, $match);
+		if (!isset($match[1])) {
+			Premium_Warehouse_WholesaleCommon::file_download_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Unable to locate file to download.'), 2, true);
+			return false;
+		}
 	    
 		$url=htmlspecialchars_decode('http://www.techdata.pl'.$match[1]);
 		curl_setopt($c, CURLOPT_URL, $url);
