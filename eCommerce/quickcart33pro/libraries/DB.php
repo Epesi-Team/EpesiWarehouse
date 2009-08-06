@@ -109,24 +109,26 @@ class DB {
 		foreach($x as $y) {
 			switch ($y) {
 				case '%d' :
-					if (is_null($arr[$j])) $arr[$j] = 0;
+					if (!is_null($arr[$j])) {
 					if (!is_numeric($arr[$j]))
 						trigger_error('Argument '.$j.' is not number('.$y.'): <ul><li>'.$sql.'</li><li>'.print_r($arr,true).'</li></ul>',E_USER_ERROR);
 					$arr[$j] = (int)($arr[$j]);
+					}
 					$j++;
 					$ret .= '?';
 					break;
 				case '%f' :
-					if (is_null($arr[$j])) $arr[$j] = 0;
-					if (!is_numeric($arr[$j]))
+					if (!is_null($arr[$j])) {
+						if (!is_numeric($arr[$j]))
 						trigger_error('Argument '.$j.' is not number('.$y.'): <ul><li>'.$sql.'</li><li>'.print_r($arr,true).'</li></ul>',E_USER_ERROR);
-					$arr[$j] = (float)($arr[$j]);
+						$arr[$j] = (float)($arr[$j]);
+					}
 					$j++;
 					$ret .= '?';
 					break;
 				case '%s' :
-					if (is_null($arr[$j])) $arr[$j] = '';
-					$arr[$j] = (string)$arr[$j];
+					if (!is_null($arr[$j]))
+						$arr[$j] = (string)$arr[$j];
 					$j++;
 					$ret .= '?';
 					break;
