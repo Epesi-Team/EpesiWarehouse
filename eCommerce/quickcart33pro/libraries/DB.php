@@ -99,11 +99,11 @@ class DB {
 
 
 	public static function TypeControl($sql, & $arr) {
-		$x = preg_split('/(%[%DTdsbf])/', $sql, -1, PREG_SPLIT_DELIM_CAPTURE);
+		$x = preg_split('/(%[%DTdsbf?])/', $sql, -1, PREG_SPLIT_DELIM_CAPTURE);
 
 		if (isset($arr) && !is_array($arr))
 			$arr = array($arr);
-	
+
 		$ret = '';
 		$j=0;
 		foreach($x as $y) {
@@ -139,6 +139,10 @@ class DB {
 					break;
 				case '%b' :
 					$arr[$j] = (boolean) $arr[$j]?1:0;
+					$j++;
+					$ret .= '?';
+					break;
+				case '%?' :
 					$j++;
 					$ret .= '?';
 					break;
