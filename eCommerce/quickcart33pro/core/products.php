@@ -101,8 +101,6 @@ class Products
 			$aExp['sName'] = $aExp['sName2'];
 		if($aExp['sAvailable']=='') 
 			$aExp['sAvailable'] = $aExp['sAvailable2'];
-		if(!$aExp['f_quantity'] && !$aExp['distributorQuantity'])
-			$aExp['fPrice']='';
 		if($autoprice && !$aExp['fPrice']) {
 			$rr = explode('__',$aExp['fPrice2']);
 			if($rr && $rr[0] && $rr[1]==$currency) {
@@ -121,6 +119,8 @@ class Products
 				$aExp['tax'] = $aExp['tax3'];
 			}
 		}
+		if(!$aExp['f_quantity'] && !$aExp['distributorQuantity'])
+			$aExp['fPrice']='';
 		$aExp['iComments'] = 1;
 		unset($aExp['sName2']);
 		$cats = array_filter(explode('__',$aExp['f_category']));
