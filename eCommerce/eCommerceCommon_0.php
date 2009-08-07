@@ -231,14 +231,14 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
     				Epesi::alert("Missing product code or manufacturer part number.");
 			return false;		
 		    }
-		    if(!$item['vendor']) {
+		    if(!$item['manufacturer']) {
 			if($verbose)
-				Epesi::alert("Missing product vendor.");
+				Epesi::alert("Missing product manufacturer.");
 			return false;		
 		    }
-		    $vendor = CRM_ContactsCommon::get_company($item['vendor']);
+		    $manufacturer = CRM_ContactsCommon::get_company($item['manufacturer']);
 		    $query_arr['prod_id'] = $prod_id;
-		    $query_arr['vendor'] = $vendor['company_name'];
+		    $query_arr['manufacturer'] = $manufacturer['company_name'];
 		}
 		
 		$langs = Utils_CommonDataCommon::get_array('Premium/Warehouse/eCommerce/Languages');
