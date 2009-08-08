@@ -40,6 +40,10 @@
           </div>
         </fieldset>
         <fieldset id="setExtend">
+          <div id="country">
+            <label for="oCountry">$lang[Country]</label>
+            <input type="text" name="sCountry" value="$aUser[sCountry]" maxlength="40" class="input" onblur="saveUserData( this.name, this.value )" id="oCountry" alt="simple" />
+          </div>
           <div id="phone">
             <label for="oPhone">$lang[Telephone]</label>
             <input type="text" name="sPhone" value="$aUser[sPhone]" maxlength="40" class="input" onblur="saveUserData( this.name, this.value )" id="oPhone" alt="simple" />

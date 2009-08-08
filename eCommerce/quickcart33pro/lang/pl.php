@@ -315,6 +315,7 @@ $lang['Your_email'] = 'Twój email';
 $lang['Topic'] = 'Temat';
 $lang['Name_and_surname'] = 'Imię i nazwisko';
 $lang['Phone'] = 'Telefon';
+$lang['Country'] = 'Kraj';
 $lang['Content_mail'] = 'Treść';
 $lang['Mail_send_correct'] = 'Email został wysłany';
 $lang['Mail_send_error'] = 'Problem z wysłaniem e-maila';

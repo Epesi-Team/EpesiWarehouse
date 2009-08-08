@@ -15,6 +15,7 @@
     <dt class="street">$lang[Street]:</dt><dd class="street">$aOrder[sStreet]</dd>
     <dt class="zipCode">$lang[Zip_code]:</dt><dd class="zipCode">$aOrder[sZipCode]</dd>
     <dt class="city">$lang[City]:</dt><dd class="city">$aOrder[sCity]</dd>
+    <dt class="country">$lang[Country]:</dt><dd class="country">$aOrder[sCountry]</dd>
     <dt class="phone">$lang[Telephone]:</dt><dd class="phone">$aOrder[sPhone]</dd>
     <dt class="email">$lang[Email]:</dt><dd class="email">$aOrder[sEmail]</dd>
     <dt class="orderDate">$lang[Date]:</dt><dd class="orderDate">$aOrder[sDate]</dd>

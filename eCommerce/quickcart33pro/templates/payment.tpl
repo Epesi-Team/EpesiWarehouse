@@ -20,7 +20,7 @@
     <input type="hidden" name="street_n2" value="$aStreet[sStreetNumber2]" />
     <input type="hidden" name="city" value="$aOrder[sCity]" />
     <input type="hidden" name="postcode" value="$aOrder[sZipCode]" />
-    <input type="hidden" name="country" value="" />
+    <input type="hidden" name="country" value="$aOrder[sCountry]" />
     <input type="hidden" name="email" value="$aOrder[sEmail]" />
     <input type="hidden" name="phone" value="$aOrder[sPhone]" />
   </fieldset>
@@ -83,7 +83,7 @@
     <input type="hidden" name="street_an" value="$aStreet[sStreetNumber2]" />
     <input type="hidden" name="city" value="$aOrder[sCity]" />
     <input type="hidden" name="post_code" value="$aOrder[sZipCode]" />
-    <input type="hidden" name="country" value="" />
+    <input type="hidden" name="country" value="$aOrder[sCountry]" />
     <input type="hidden" name="email" value="$aOrder[sEmail]" />
     <input type="hidden" name="phone" value="$aOrder[sPhone]" />
     <input type="hidden" name="language" value="PL" />
