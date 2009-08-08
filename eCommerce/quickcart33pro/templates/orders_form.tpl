@@ -42,7 +42,9 @@
         <fieldset id="setExtend">
           <div id="country">
             <label for="oCountry">$lang[Country]</label>
-            <input type="text" name="sCountry" value="$aUser[sCountry]" maxlength="40" class="input" onblur="saveUserData( this.name, this.value )" id="oCountry" alt="simple" />
+            <select name="sCountry" value="$aUser[sCountry]" class="input" onblur="saveUserData( this.name, this.value )" id="oCountry" alt="simple" />
+	    $countriesList
+	    </select>
           </div>
           <div id="phone">
             <label for="oPhone">$lang[Telephone]</label>

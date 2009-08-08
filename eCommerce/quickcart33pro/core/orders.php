@@ -348,6 +348,7 @@ class Orders
       && throwStrLen( $aForm['sZipCode'] ) > 2
       && throwStrLen( $aForm['sCity'] ) > 2
       && throwStrLen( $aForm['sPhone'] ) > 2
+      && throwStrLen( $aForm['sCountry'] ) > 2
       && checkEmail( $aForm['sEmail'] )
       && isset( $sPrice )
       && ( ( isset( $aForm['iRules'] ) && isset( $aForm['iRulesAccept'] ) ) || !isset( $aForm['iRules'] ) )
@@ -469,9 +470,9 @@ $oFF->save( DB_ORDERS, $aForm, null, 'rsort' );
     DB::Execute('INSERT INTO premium_warehouse_items_orders_data_1(f_transaction_type,f_transaction_date,f_status,
 						f_company_name,f_last_name,f_first_name,f_address_1,f_city,f_postal_code,f_phone,f_country,f_zone,f_memo,created_on,
 						f_shipment_type,f_shipment_cost,f_payment,f_payment_type,f_tax_id) VALUES 
-						(1,%D,"-1",%s,%s,%s,%s,%s,%s,%s,"","",%s,%T,%s,%s,1,%s,%s)',
+						(1,%D,"-1",%s,%s,%s,%s,%s,%s,%s,%s,"",%s,%T,%s,%s,1,%s,%s)',
 					array($t,$aForm['sCompanyName'],$aForm['sLastName'],$aForm['sFirstName'],$aForm['sStreet'],$aForm['sCity'],
-					$aForm['sZipCode'],$aForm['sPhone'],$memo,$t,$carrier,$price.'_'.$currency,$payment,$aForm['sNip']));
+					$aForm['sZipCode'],$aForm['sPhone'],$aForm['sCountry'],$memo,$t,$carrier,$price.'_'.$currency,$payment,$aForm['sNip']));
     $id = DB::Insert_ID('premium_warehouse_items_orders_data_1','id');
     $trans_id = '#'.str_pad($id, 6, '0', STR_PAD_LEFT);
     DB::Execute('UPDATE premium_warehouse_items_orders_data_1 SET f_transaction_id=%s WHERE id=%d',array($trans_id,$id));
@@ -542,6 +543,7 @@ $oFF->save( DB_ORDERS, $aForm, null, 'rsort' );
 				    w.f_address_1 as sStreet,
 				    w.f_postal_code as sZipCode,
 				    w.f_city as sCity,
+				    w.f_country as sCountry,
 				    w.f_phone as sPhone,
 				    o.f_comment as sComment,
 				    o.f_ip as sIp,

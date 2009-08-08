@@ -191,6 +191,22 @@ if( isset( $iContent ) && is_numeric( $iContent ) ){
           $sOrderProducts = $oOrder->listProducts( 'orders_form.tpl', null, 'ORDER_PRODUCTS_' );
           $sPaymentCarriers = $oOrder->listCarriersPayments( 'orders_form.tpl' );
           $oTpl->unsetVariables( );
+	  
+	  $countries_id = DB::GetOne('SELECT id FROM utils_commondata_tree WHERE akey="Countries"');
+	  if($countries_id===false)
+		die('Common data key "Countries" not defined.');
+	  $countries = DB::GetAssoc('SELECT p.akey, p.value FROM utils_commondata_tree p WHERE p.parent_id=%d ORDER BY akey',array($countries_id));
+	  global $translations;
+	  foreach($countries as $k=>$v) {
+		if(isset($translations['Utils_CommonData'][$v]) && $translations['Utils_CommonData'][$v])
+			$countries[$k] = $translations['Utils_CommonData'][$v];
+	  }
+	  $countriesList = '';
+	  foreach($countries as $k=>$v) {
+		$countriesList .= '<option value="'.$k.'" '.(strtolower($k)==LANGUAGE?'selected="1"':'').'>'.$v.'</option>';
+	  }
+	  
+	  $oTpl->setVariables('countriesList',$countriesList);
           $sOrder = $oTpl->tbHtml( 'orders_form.tpl', 'ORDER_FORM' );
         }
       }
