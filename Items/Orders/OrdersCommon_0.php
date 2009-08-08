@@ -836,8 +836,10 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 								}
 								if ($param['status']<2) {
 									$ret['payment_no'] = false;
-									$ret['payment_type'] = false;
-									$ret['shipment_type'] = false;
+									if($param['status']>=0) {
+    										$ret['payment_type'] = false;
+										$ret['shipment_type'] = false;
+									}
 									$ret['terms'] = false;
 									$ret['total_value'] = false;
 									$ret['tax_value'] = false;
