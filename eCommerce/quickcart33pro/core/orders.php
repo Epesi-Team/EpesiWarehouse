@@ -545,6 +545,7 @@ $oFF->save( DB_ORDERS, $aForm, null, 'rsort' );
 				    w.f_city as sCity,
 				    w.f_country as sCountry,
 				    w.f_phone as sPhone,
+				    w.f_tax_id as sNip,
 				    o.f_comment as sComment,
 				    o.f_ip as sIp,
 				    o.f_email as sEmail,
