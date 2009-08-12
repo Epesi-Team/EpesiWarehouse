@@ -70,7 +70,7 @@ $config['time_diff'] = 0;
 */
 $config['default_lang'] = "pl";
 
-$config['available_lang'] = array("pl","gb");
+$config['available_lang'] = array("pl","en");
 
 /*
 * If should be use wysiwyg editor or default
