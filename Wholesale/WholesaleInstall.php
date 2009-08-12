@@ -50,6 +50,8 @@ class Premium_Warehouse_WholesaleInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::new_addon('premium_warehouse_distributor', 'Premium/Warehouse/Wholesale', 'attachment_addon', 'Notes');
 
 // ************ other ************** //	
+		Utils_RecordBrowserCommon::set_display_callback('premium_warehouse_items', 'Quantity on Hand', array('Premium_Warehouse_WholesaleCommon', 'display_item_quantity'));
+		Utils_RecordBrowserCommon::set_display_callback('premium_warehouse_items', 'Available Qty', array('Premium_Warehouse_WholesaleCommon', 'display_available_qty'));
 		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items', 'Dist Qty', 'calculated', true, false, '', 'integer', false, false, 'Reserved Qty');
 		Utils_RecordBrowserCommon::set_display_callback('premium_warehouse_items', 'Dist Qty', array('Premium_Warehouse_WholesaleCommon','display_distributor_qty'));
 
@@ -90,6 +92,8 @@ class Premium_Warehouse_WholesaleInstall extends ModuleInstall {
 	}
 	
 	public function uninstall() {
+		Utils_RecordBrowserCommon::set_display_callback('premium_warehouse_items', 'Quantity on Hand', array('Premium_Warehouse_Items_LocationCommon', 'display_item_quantity'));
+		Utils_RecordBrowserCommon::set_display_callback('premium_warehouse_items', 'Available Qty', array('Premium_Warehouse_Items_OrdersCommon', 'display_available_qty'));
 		Base_ThemeCommon::uninstall_default_theme($this->get_type());
 		DB::DropTable('premium_warehouse_wholesale_plugin');
 		DB::DropTable('premium_warehouse_wholesale_items');

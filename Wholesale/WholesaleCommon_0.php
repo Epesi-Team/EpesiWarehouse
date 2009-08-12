@@ -321,6 +321,34 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 		return $ret;
 	}
 	
+	public static function add_dest_qty_info($r, $str) {
+		static $calculated = array();
+		if (isset($calculated[$r['id']])) return $str;
+		$calculated[$r['id']] = true;
+		$d_qty = DB::GetAll('SELECT * FROM premium_warehouse_wholesale_items WHERE item_id=%d AND (quantity!=0 OR quantity_info!=%s)', array($r['id'], ''));
+		if (empty($d_qty)) return $str;
+		$tip = '<hr><table border=0 width="100%">';
+		foreach ($d_qty as $v) {
+			$dist_name = Utils_RecordBrowserCommon::get_value('premium_warehouse_distributor', $v['distributor_id'], 'name');
+			$tip .= '<tr><td>'.$dist_name.'</td>'.
+					'<td bgcolor="#FFFFFF" WIDTH=50 style="text-align:right;">'.
+					$v['quantity'].($v['quantity_info']?' ('.$v['quantity_info'].')':'').
+					'</td></tr>';
+		}
+		$str = preg_replace('/(tip=\".*?)(\")/', '$1'.htmlspecialchars($tip).'$2', $str);
+		return '* '.$str;
+	}
+	
+	public static function display_item_quantity($r, $nolink=false) {
+		$res = Premium_Warehouse_Items_Location_Common::display_item_quantity($r, $nolink);
+		return self::add_dest_qty_info($r, $res);
+	}
+	
+	public static function display_available_qty($r, $nolink=false) {
+		$res = Premium_Warehouse_Items_OrdersCommon::display_available_qty($r, $nolink);
+		return self::add_dest_qty_info($r, $res);
+	}
+	
     public static function menu() {
 		return array('Warehouse'=>array('__submenu__'=>1,'Distributors'=>array()));
 	}
