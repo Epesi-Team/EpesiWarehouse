@@ -39,6 +39,7 @@ class DB {
 		if(!self::$ado->Connect(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME))
     			trigger_error("Connect to database failed",E_USER_ERROR);
 //  		DB::$ado->raiseErrorFn = $errh;
+		DB::Execute('SET NAMES "utf8"');
 	}
 
 	/**
