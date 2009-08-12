@@ -49,6 +49,22 @@ class Pages
       $i        = 0;
       $iCount   = count( $this->mData[0] );
 
+      if($iType==1) {
+        global $config;
+	$iCount += count($config['available_lang']);
+	
+	foreach($config['available_lang'] as $lang) {
+    	    $aData = array();
+	    $aData['sLinkName'] = $_SERVER['SCRIPT_NAME'].'?'.$lang.'_,';
+	    $aData['sName'] = '<img src="config/'.$lang.'.gif" />';
+    	    $aData['sStyle']    = ( $i == ( $iCount - 1 ) ) ? 'L': $i + 1;
+        
+	    $oTpl->setVariables( 'aData', $aData );
+	    $content .= $oTpl->tbHtml( $sFile, 'LIST_LANG' );
+	}
+
+      }
+      
       foreach( $this->mData[0] as $iPage => $bValue ){
         $aData = $this->aPages[$iPage];
 

@@ -201,7 +201,6 @@ if( isset( $iContent ) && is_numeric( $iContent ) ){
 		if(isset($translations['Utils_CommonData'][$v]) && $translations['Utils_CommonData'][$v])
 			$countries[$k] = $translations['Utils_CommonData'][$v];
 	  }
-	  $countriesList = '';
 	  foreach($countries as $k=>$v) {
 		$countriesList .= '<option value="'.$k.'" '.(strtolower($k)==LANGUAGE?'selected="1"':'').'>'.$v.'</option>';
 	  }

@@ -70,6 +70,8 @@ $config['time_diff'] = 0;
 */
 $config['default_lang'] = "pl";
 
+$config['available_lang'] = array("pl","gb");
+
 /*
 * If should be use wysiwyg editor or default
 */
@@ -83,7 +85,7 @@ $config['text_size'] = true;
 /*
 * If should be language parameter added to url
 */
-$config['language_in_url'] = false;
+$config['language_in_url'] = true;
 
 /*
 * Language separator in url
@@ -114,7 +116,7 @@ else{
 }
 
 $config['config']       = 'config/general.php';
-$config['config_lang']  = 'config/lang_'.LANGUAGE.'.php';
+$config['config_lang']  = 'config/'.LANGUAGE.'.php';
 
 $config_db['pages']       = $config['dir_db'].LANGUAGE.'_pages.php';
 $config_db['pages_ext']   = $config['dir_db'].LANGUAGE.'_pages_ext.php';
