@@ -363,13 +363,22 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	
 	public static function check_if_no_duplicate_company_contact($data) {
 		if (isset($data['receipt']) && $data['receipt']) return true;
+		if (!isset($data['company']) && !isset($data['contact'])) return true;
 		if (((!isset($data['company']) || $data['company']<=0) && $data['company_name']) ||
 			((!isset($data['contact']) || $data['contact']<=0) && ($data['first_name'] || $data['last_name']))) {
 			eval_js('contact_duplicate_fill_order = function (cont_id, comp_id) {'.
-						'$("company").value=comp_id;'.
-						'$("company").fire("e_cs:load");'.
-						'$("company").fire("native:change");'.
-						'setTimeout(function(){$("contact").value=cont_id;$("contact").fire("native:change");},1000);'. // TODO: poor solution
+						'if(comp_id==null){'.
+							'$("company").disabled=1;'.
+							'$("contact").disabled=1;'.
+						'}else{'.
+							'$("company").value=comp_id;'.
+							'$("company").fire("e_cs:load");'.
+							'$("company").fire("native:change");'.
+							'if(cont_id==null)$("contact").disabled=1;'.
+							'else{'.
+								'setTimeout(function(){$("contact").value=cont_id;$("contact").fire("native:change");},1000);'. // TODO: poor solution
+							'}'.
+						'}'.
 					'}');
 			$ret = CRM_ContactsCommon::check_for_duplicates($data,'contact_duplicate_fill_order');
 			if ($ret==false) return true;
