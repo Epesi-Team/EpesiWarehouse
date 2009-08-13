@@ -54,7 +54,6 @@ function listProductsRelated( $sFile, $iProduct ){
   $sLanguageUrl = ( LANGUAGE_IN_URL == true ) ? LANGUAGE.LANGUAGE_SEPARATOR : null;
   if( !isset( $aRelatedIds ) )
     return null;
-  $iStatus = throwStatus( );
     $aProducts = array();
     if($aRelatedIds) {
 	    $oProduct =& Products::getInstance( );

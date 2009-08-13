@@ -298,8 +298,6 @@ class Pages
   function generateCache( ){
   	//epesi {
 	global $config;
-    $iStatus    = throwStatus( );
-
     $this->aPages             = null;
     $this->aPagesChildrens    = null;
     $this->aPagesParents      = null;

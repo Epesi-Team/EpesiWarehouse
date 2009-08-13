@@ -13,25 +13,6 @@ function getVariable($name) {
 }
 
 /**
-* Return status limit
-* @return int
-*/
-function throwStatus( ){
-  if( isset( $_SESSION['bUserQCMS'] ) && $_SESSION['bUserQCMS'] === true ){
-    if( defined( 'CUSTOMER_PAGE' ) ){
-      if( HIDDEN_SHOWS === true )
-        return 0;
-      else
-        return 1;
-    }
-    else
-      return 0;
-  }
-  else
-    return 1;
-} // end function throwStatus
-
-/**
 * Return value to $p variable from $_GET
 * @return array
 */

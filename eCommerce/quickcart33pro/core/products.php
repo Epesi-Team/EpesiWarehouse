@@ -20,10 +20,9 @@ class Products
   */
   function Products( ){
 //    $this->generateCache( );
-	$iStatus    = throwStatus( );
 	$uncategorized = DB::GetOne('SELECT 1 FROM premium_ecommerce_products_data_1 pr
 					INNER JOIN (premium_warehouse_items_data_1 it,premium_ecommerce_availability_data_1 av) ON (pr.f_item_name=it.id AND av.id=pr.f_available)
-					 WHERE pr.f_publish>=%d AND pr.active=1 AND it.f_category is NULL',array($iStatus));
+					 WHERE pr.f_publish=1 AND pr.active=1 AND it.f_category is NULL');
 
 	if(!$uncategorized) {//remove uncategorized category
 	    unset(Pages::getInstance()->aPages[23]);
@@ -50,8 +49,6 @@ class Products
   */
   function getProducts($where = '',$limit=null,$offset=null){
 	global $config;
-    $iStatus    = throwStatus( );
-
     $products = array();
 
 	$currency = DB::GetOne('SELECT id FROM utils_currency WHERE code=%s',array($config['currency_symbol']));
@@ -89,7 +86,7 @@ class Products
 					LEFT JOIN premium_ecommerce_availability_labels_data_1 avl ON (pr.f_available=avl.f_availability AND avl.f_language="'.LANGUAGE.'" AND avl.active=1) 
 					LEFT JOIN premium_warehouse_location_data_1 loc ON (loc.f_item_sku=it.id AND loc.f_quantity>0 AND loc.active=1)
 					LEFT JOIN (premium_warehouse_wholesale_items dist, premium_warehouse_distributor_data_1 distributor) ON (dist.item_id=it.id AND dist.quantity>0 AND distributor.id=dist.distributor_id AND dist.price=(SELECT MIN(tmp.price) FROM premium_warehouse_wholesale_items tmp WHERE tmp.item_id=it.id))
-					 WHERE pr.f_publish>=%d AND pr.active=1 '.($where?' AND ('.$where.')':'').' ORDER BY pr.f_position'.($limit!==null?' LIMIT '.(int)$limit.($offset!==null?' OFFSET '.(int)$offset:''):''),array($iStatus));
+					 WHERE pr.f_publish=1 AND pr.active=1 '.($where?' AND ('.$where.')':'').' ORDER BY pr.f_position'.($limit!==null?' LIMIT '.(int)$limit.($offset!==null?' OFFSET '.(int)$offset:''):''));
 
         $taxes = DB::GetAssoc('SELECT id, f_percentage FROM data_tax_rates_data_1 WHERE active=1');
 	$autoprice = getVariable('ecommerce_autoprice');
@@ -213,12 +210,11 @@ class Products
     if( $query ){
       $sBasketPage = ( isset( $GLOBALS['config']['basket_page'] ) && isset( $oPage->aPages[$GLOBALS['config']['basket_page']] ) ) ? $oPage->aPages[$GLOBALS['config']['basket_page']]['sLinkName'].((defined( 'FRIENDLY_LINKS' ) && FRIENDLY_LINKS == true)?'?':'&amp;') : null;
 
-      $iStatus    = throwStatus( );
       $iCount = DB::GetOne('SELECT 	count(it.id) 
 					FROM premium_ecommerce_products_data_1 pr
 					INNER JOIN (premium_warehouse_items_data_1 it,premium_ecommerce_availability_data_1 av) ON (pr.f_item_name=it.id AND av.id=pr.f_available)
 					LEFT JOIN premium_ecommerce_descriptions_data_1 d ON (d.f_item_name=it.id AND d.f_language="'.LANGUAGE.'" AND d.active=1)
-					 WHERE pr.f_publish>=%d AND pr.active=1 AND ('.$query.') ORDER BY pr.f_position'.($limit!==null?' LIMIT '.(int)$limit.($offset!==null?' OFFSET '.(int)$offset:''):''),array($iStatus));
+					 WHERE pr.f_publish=1 AND pr.active=1 AND ('.$query.') ORDER BY pr.f_position'.($limit!==null?' LIMIT '.(int)$limit.($offset!==null?' OFFSET '.(int)$offset:''):''));
 
       if( !isset( $iList ) ){
         $iList = $GLOBALS['config']['products_list'];
