@@ -98,7 +98,7 @@ if( isset( $iContent ) && is_numeric( $iContent ) ){
       $sProductsList = $oTpl->tbHtml( 'messages.tpl', 'ERROR' );
 
     $aData['sDescriptionFull'] = changeTxt( $aData['sDescriptionFull'], 'nlNds' );
-    if( $aData['iSubpagesShow'] > 0 && ( empty( $aData['iProducts'] ) || ( $aData['iProducts'] == 1 && !isset( $aHiddenSubpages[$aData['iType']] ) ) ) ){
+    if( $aData['iSubpagesShow'] > 0 ){
       if( $aData['iSubpagesShow'] < 3 )
         $sSubpagesList = $oPage->listSubpages( $iContent, $aData['sTemplate'], $aData['iSubpagesShow'] );
       elseif( $aData['iSubpagesShow'] == 3 )
@@ -151,7 +151,7 @@ if( isset( $iContent ) && is_numeric( $iContent ) ){
           if( $oOrder->checkFields( $_POST ) === true ){
             // save and print order
             $iOrder = $oOrder->addOrder( $_POST );
-            if( !empty( $config['orders_email'] ) ){
+            if( !empty( $config['email'] ) ){
               $oOrder->sendEmailWithOrderDetails( 'orders_print.tpl', $iOrder );
             }
 

@@ -403,7 +403,7 @@ class Premium_Warehouse_eCommerce extends Module {
 		$form->addElement('text', 'path', $this->t('Path'));
 		$form->addRule('path', $this->t('A path must be between 3 and 255 chars'), 'rangelength', array(3,255));
 		$form->registerRule('check_path','callback','check_path','Premium_Warehouse_eCommerce');
-		$form->addRule('path', $this->t('Invalid path'), 'check_path');
+		$form->addRule('path', $this->t('Invalid path or files directory not writable'), 'check_path');
 		$form->addRule('path', $this->t('Field required'), 'required');
 
 		if($form->validate()) {
@@ -474,7 +474,10 @@ class Premium_Warehouse_eCommerce extends Module {
 	}
 	
 	public function check_path($p) {
-	    if(!is_dir($p) || !is_dir(rtrim($p,'/').'/files') || !is_writable(rtrim($p,'/').'/files')) return false;
+	    if(!is_dir($p) || !is_dir(rtrim($p,'/').'/files') || !is_writable(rtrim($p,'/').'/files')
+		|| (file_exists(rtrim($p,'/').'/files/epesi') && !is_writable(rtrim($p,'/').'/files/epesi'))
+		|| (file_exists(rtrim($p,'/').'/files/100/epesi') && !is_writable(rtrim($p,'/').'/files/100/epesi'))
+		|| (file_exists(rtrim($p,'/').'/files/200/epesi') && !is_writable(rtrim($p,'/').'/files/200/epesi'))) return false;
 	    return true;
 	}
 	

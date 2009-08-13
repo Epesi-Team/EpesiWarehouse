@@ -197,34 +197,6 @@ function throwPoll( $sFile, $iPoll = null, $sOption = null, $iWidth = 150 ){
       return $oTpl->tbHtml( $sFile, 'NOT_EXIST' );
     //} epesi
 
-/*  if( !isset( $aData ) ){
-    $aData['iPoll'] = null;
-    $aData['iStatus'] = 1;
-  }
-
-  if( isset( $aData['iPoll'] ) || $sOption == 'admin' ){
-    if( $sOption == 'admin' )
-      $aData['sStatusBox'] = throwYesNoBox( 'iStatus', $aData['iStatus'] );
-
-    if( is_numeric( $aData['iPoll'] ) && !empty( $aData['sQuestions'] ) && ( ( isset( $aData['iStatus'] ) && $aData['iStatus'] == 1 ) || $sOption == 'admin' ) ){
-      if( isset( $_COOKIE[LANGUAGE.'_'.POLL_COOKIE_NAME.$aData['sCookieName']] ) && $sOption != 'admin' )
-        $bResult = true;
-      else
-        $bResult = null;
-      $aData['sAnswers'] = throwPollAnswers( $sFile, $aData['iPoll'], $bResult, $sOption, $iWidth );
-      $oTpl->setVariables( 'aData', $aData );
-      return $oTpl->tbHtml( $sFile, 'POLL' );
-    }
-    elseif( $sOption == 'admin' ){
-      $aData['sAnswers'] = throwPollAnswers( $sFile, null, null, $sOption, $iWidth );
-      $oTpl->setVariables( 'aData', $aData );
-      return $oTpl->tbHtml( $sFile, 'POLL' );
-    }
-    else
-      return $oTpl->tbHtml( $sFile, 'NOT_EXIST' );
-  }
-  else
-    return $oTpl->tbHtml( $sFile, 'NOT_EXIST' );*/
 } // end function throwPoll
 
 /**

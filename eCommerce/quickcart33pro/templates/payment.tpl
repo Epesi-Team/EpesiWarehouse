@@ -118,7 +118,7 @@
     <input type="hidden" name="shopNo" value="$config[zagiel_id]" />
     <input type="hidden" name="shopName" value="$aUrl[host]$aUrl[path]" />
     <input type="hidden" name="shopHttp" value="$aUrl[scheme]://$aUrl[host]$aUrl[path]" />
-    <input type="hidden" name="shopMailAdress" value="$config['orders_email']" />
+    <input type="hidden" name="shopMailAdress" value="$config['email']" />
     <input type="hidden" name="shopPhone" value="" />
   
   </fieldset>

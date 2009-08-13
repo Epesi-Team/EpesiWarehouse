@@ -4,8 +4,6 @@
 */
 $config['charset'] = "utf-8";
 ?><?php
-$lang['Subpage_show_1'] = "List (name, description)";
-$lang['Subpage_show_2'] = "List (name, description, photo)";
 
 $lang['yes'] = "yes";
 $lang['no'] = "no";
@@ -83,7 +81,6 @@ $lang['Display_all_files'] = "Display files from server in form";
 $lang['Change_files_names'] = "Change files name to page and product name";
 $lang['Added_to'] = "Added to";
 $lang['Display_text_size_option'] = "Display text size option";
-$lang['Language_in_url'] = "Language parameter in URL";
 $lang['Admin_see_hidden_pages'] = "Administrator is able to see hidden pages and products";
 $lang['Products'] = "Products";
 $lang['Products_on_page'] = "Products on page";
@@ -320,9 +317,6 @@ $lang['Mail_send_error'] = 'Mail sending error';
 $lang['Mail_send_correct'] = 'E-mail has been sent';
 $lang['send'] = 'send';
 $lang['Rss'] = 'RSS';
-$lang['Subpage_show_3'] = 'News (name, description, photo)';
-$lang['Subpage_show_4'] = 'Gallery (name, picture)';
-$lang['Fill_news_list'] = 'Enter news list limit on per page';
 $lang['News_on_page'] = 'News on page';
 $lang['Date'] = 'Date';
 ?>

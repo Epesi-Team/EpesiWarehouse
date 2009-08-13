@@ -107,6 +107,23 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 		return self::$page_opts[$r['type']];
 	}
 
+	private static $subpage_as_opts = array(1=>"List (name, description)",2=>"List (name, description, photo)",3=>'News (name, description, photo)',4=>'Gallery (name, picture)');
+
+  	public static function QFfield_subpages(&$form, $field, $label, $mode, $default) {
+		if ($mode=='add' || $mode=='edit') {
+			$form->addElement('select', $field, $label, self::$subpage_as_opts, array('id'=>$field));
+			$form->addRule($field,'Field required','required');
+			if ($mode=='edit') $form->setDefaults(array($field=>$default));
+		} else {
+			$form->addElement('static', $field, $label);
+			$form->setDefaults(array($field=>self::$subpage_as_opts[$default]));
+		}
+	}
+
+  	public static function display_subpages($r, $nolink=false) {
+		return self::$subpage_as_opts[$r['show_subpages_as']];
+	}
+
 	public static $payment_related_opts = array(''=>'---','1'=>'DotPay','2'=>'Przelewy24','3'=>'PayPal', '4'=>'Platnosci.pl', '5'=>'Żagiel');
 
   	public static function QFfield_payment_related_with(&$form, $field, $label, $mode, $default) {
@@ -124,7 +141,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 	}
 
   	public static function parent_page_crits($v, $rec) {
-		if(!$rec)
+		if(!$rec || !isset($rec['id']))
 			return array();
 		return array('!id'=>$rec['id']);
 	}
@@ -196,10 +213,10 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 		    $th2 = Utils_ImageCommon::create_thumb($file,200,200);
 		}
 		foreach($qcs as $q) {
-		    @copy($file,$q.'/files/epesi/'.$id.'_'.$rev.$ext);
+		    copy($file,$q.'/files/epesi/'.$id.'_'.$rev.$ext);
 		    if(isset($th1)) {
-    			@copy($th1['thumb'],$q.'/files/100/epesi/'.$id.'_'.$rev.$ext);
-    			@copy($th2['thumb'],$q.'/files/200/epesi/'.$id.'_'.$rev.$ext);
+    			copy($th1['thumb'],$q.'/files/100/epesi/'.$id.'_'.$rev.$ext);
+    			copy($th2['thumb'],$q.'/files/200/epesi/'.$id.'_'.$rev.$ext);
 		    }
 		}
 	}
@@ -273,6 +290,11 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 		    curl_setopt($c, CURLOPT_URL, $url);
 		    curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
 		    curl_setopt($c, CURLOPT_USERPWD,$user.':'.$pass);
+		    $httpHeader = array(
+			"Content-Type: text/xml; charset=UTF-8",
+		        "Content-Encoding: UTF-8"
+		    );
+		    curl_setopt($ch, CURLOPT_HTTPHEADER, $httpHeader);
 		    $output = curl_exec($c);
 		    $response_code = curl_getinfo($c, CURLINFO_HTTP_CODE);
 		    curl_close($c);

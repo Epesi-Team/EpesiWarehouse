@@ -49,7 +49,7 @@ if( isset( $aActions['a'] ) && is_numeric( $aActions['a'] ) ){
 
     $sTxtSize   = ( $config['text_size'] == true ) ? $oTpl->tbHtml( $aData['sTemplate'], 'TXT_SIZE' ) : null;
     $sAvailable = !empty( $aData['sAvailable'] ) ? $oTpl->tbHtml( $aData['sTemplate'], 'AVAILABLE' ) : null;
-    $sRecommended = isset( $aProductsRecommended[$iProduct] ) ? $oTpl->tbHtml( $aData['sTemplate'], 'RECOMMENDED' ) : null;
+    $sRecommended = $aData['sRecommended'] ? $oTpl->tbHtml( $aData['sTemplate'], 'RECOMMENDED' ) : null;
     $sTitle     = strip_tags( ( !empty( $aData['sNameTitle'] ) ? $aData['sNameTitle'] : $aData['sName'] ).' - ' );
 
     $aImages    = $oFile->listImagesByTypes( $aData['sTemplate'], $iProduct, 2 );

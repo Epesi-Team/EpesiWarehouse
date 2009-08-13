@@ -100,28 +100,6 @@ class Orders
 	    if( isset( $_SESSION['fOrderSummary'.LANGUAGE] ) )
     		$this->fProductsSummary = $_SESSION['fOrderSummary'.LANGUAGE] = normalizePrice( $_SESSION['fOrderSummary'.LANGUAGE] );
 	//} epesi
-/*    
-    $sLanguageUrl = ( LANGUAGE_IN_URL === true ) ? LANGUAGE.LANGUAGE_SEPARATOR : null;
-    $aFile      = file( DB_ORDERS_TEMP );
-    $iCount     = count( $aFile );
-    $this->aProducts = null;
-    $this->fProductsSummary   = null;
-    $_SESSION['iOrderQuantity'.LANGUAGE]  = 0;
-    $_SESSION['fOrderSummary'.LANGUAGE]   = null;
-
-    for( $i = 1; $i < $iCount; $i++ ){
-      $aExp = explode( '$', $aFile[$i] );
-      if( isset( $aExp[0] ) && $aExp[0] == $_SESSION['iCustomer'.LANGUAGE] ){
-        $this->aProducts[$aExp[1]] = orders_temp( $aExp );
-        $this->aProducts[$aExp[1]]['sLinkName'] = throwPageUrl( $aExp[1].','.$sLanguageUrl.change2Url( $this->aProducts[$aExp[1]]['sName'] ) );
-        $this->aProducts[$aExp[1]]['fSummary'] = normalizePrice( $this->aProducts[$aExp[1]]['fPrice'] * $this->aProducts[$aExp[1]]['iQuantity'] );
-        $_SESSION['iOrderQuantity'.LANGUAGE] += $aExp[2];
-        $_SESSION['fOrderSummary'.LANGUAGE]  += ( $aExp[2] * $aExp[3] );
-      }
-    } // end for
-    if( isset( $_SESSION['fOrderSummary'.LANGUAGE] ) )
-      $this->fProductsSummary = $_SESSION['fOrderSummary'.LANGUAGE] = normalizePrice( $_SESSION['fOrderSummary'.LANGUAGE] );
-      */
   } // end function generateBasket
 
   /**
@@ -130,18 +108,6 @@ class Orders
   * @param int  $iOrder
   */
   function generateProducts( $iOrder ){
-/*    $aFile  = file( DB_ORDERS_PRODUCTS );
-    $iCount = count( $aFile );
-    $this->fProductsSummary = null;
-    for( $i = 1; $i < $iCount; $i++ ){
-      $aExp = explode( '$', $aFile[$i] );
-      if( isset( $aExp[1] ) && $aExp[1] == $iOrder ){
-        $this->aProducts[$aExp[0]] = orders_products( $aExp );
-        $this->aProducts[$aExp[0]]['fSummary'] = normalizePrice( $this->aProducts[$aExp[0]]['fPrice'] * $this->aProducts[$aExp[0]]['iQuantity'] );
-        $this->fProductsSummary += $this->aProducts[$aExp[0]]['fPrice'] * $this->aProducts[$aExp[0]]['iQuantity'];
-      }
-    } // end for
-*/
     // { epesi
     $ret = DB::Execute('SELECT * FROM premium_warehouse_items_orders_details_data_1 WHERE f_transaction_id=%d',array($iOrder));
     while($row = $ret->FetchRow()) {
@@ -172,37 +138,12 @@ class Orders
   */
   function saveBasket( $aForm ){
     if( isset( $aForm['aProducts'] ) && is_array( $aForm['aProducts'] ) ){
-		//{ epesi
 		$qty = DB::GetAssoc('SELECT product,quantity FROM premium_ecommerce_orders_temp WHERE customer=%s',array($_SESSION['iCustomer'.LANGUAGE]));
 		foreach($qty as $p=>$q) {
 			if(isset( $aForm['aProducts'][$p] ) && is_numeric( $aForm['aProducts'][$p] ) && $aForm['aProducts'][$p] > 0 && $aForm['aProducts'][$p] < 10000 && $q!=$aForm['aProducts'][$p]) {
 				DB::Execute('UPDATE premium_ecommerce_orders_temp SET quantity=%d WHERE customer=%s AND product=%d',array($aForm['aProducts'][$p],$_SESSION['iCustomer'.LANGUAGE],$p));
 			}
 		}
-		//} epesi
-/*      $aFile  = file( DB_ORDERS_TEMP );
-      $iCount = count( $aFile );
-      $rFile = fopen( DB_ORDERS_TEMP, 'w' );
-      flock( $rFile, LOCK_EX );
-      for( $i = 0; $i < $iCount; $i++ ){
-        if( $i > 0 ){
-          $aFile[$i]  = rtrim( $aFile[$i] );
-          $aExp       = explode( '$', $aFile[$i] );
-          if( isset( $aForm['aProducts'][$aExp[1]] ) && is_numeric( $aForm['aProducts'][$aExp[1]] ) && $aForm['aProducts'][$aExp[1]] > 0 && $aForm['aProducts'][$aExp[1]] < 10000 && $aExp[0] == $_SESSION['iCustomer'.LANGUAGE] ){
-            $aExp[2] = (int) $aForm['aProducts'][$aExp[1]];
-            $aFile[$i] = trim( implode( '$', $aExp ) )."\n";
-          }
-          else
-            $aFile[$i] .= "\n";
-        }
-        else{
-          $aFile[$i] = '<?php exit; ?>'."\n";
-        }
-
-        fwrite( $rFile, $aFile[$i] );
-      } // end for
-      flock( $rFile, LOCK_UN );
-      fclose( $rFile );*/
     }
   } // end function saveBasket
 
@@ -213,37 +154,9 @@ class Orders
   * @param int  $iOrder
   */
   function deleteFromBasket( $iProduct, $iOrder = null ){
-  	//{ epesi
     if( !isset( $iOrder ) )
     	 $iOrder = $_SESSION['iCustomer'.LANGUAGE];
 	DB::Execute('DELETE FROM premium_ecommerce_orders_temp WHERE product=%d AND customer=%s',array($iProduct,$iOrder));
-	//} epesi
-/*    if( !isset( $iOrder ) ){
-      $iOrder = $_SESSION['iCustomer'.LANGUAGE];
-      $sDb    = DB_ORDERS_TEMP;
-    }
-    $aFile  = file( $sDb );
-    $iCount = count( $aFile );
-    $rFile = fopen( $sDb, 'w' );
-    flock( $rFile, LOCK_EX );
-    for( $i = 0; $i < $iCount; $i++ ){
-      if( $i > 0 ){
-        $aFile[$i]  = rtrim( $aFile[$i] );
-        $aExp       = explode( '$', $aFile[$i] );
-        if( $aExp[1] == $iProduct && $aExp[0] == $iOrder ){
-          $aFile[$i] = null;
-        }
-        else
-          $aFile[$i] .= "\n";
-      }
-      else{
-        $aFile[$i] = '<?php exit; ?>'."\n";
-      }
-
-      fwrite( $rFile, $aFile[$i] );
-    } // end for
-    flock( $rFile, LOCK_UN );
-    fclose( $rFile );*/
   } // end function deleteFromBasket
 
   /**
@@ -273,53 +186,6 @@ class Orders
 		DB::Execute('INSERT INTO premium_ecommerce_orders_temp(customer,product,quantity,price,name,tax,weight) VALUES (%s,%d,%d,%s,%s,%s,%f)',array($iOrder,$iProduct,$iQuantity,$prod['fPrice'],$prod['sName'],$prod['tax'],$prod['sWeight']));
 	}
 	//} epesi
-/*    if( !isset( $iOrder ) ){
-      $iOrder = $_SESSION['iCustomer'.LANGUAGE];
-      $sDb    = DB_ORDERS_TEMP;
-    }
-
-    $iQuantity = (int) $iQuantity;
-    $aFile  = file( $sDb );
-    $iCount = count( $aFile );
-    $rFile = fopen( $sDb, 'w' );
-    $iTime = time( );
-    flock( $rFile, LOCK_EX );
-    for( $i = 0; $i < $iCount; $i++ ){
-      if( $i > 0 ){
-        $aFile[$i]  = rtrim( $aFile[$i] );
-        $aExp       = explode( '$', $aFile[$i] );
-        if( $aExp[0] == $iOrder ){
-          if( $aExp[1] == $iProduct ){
-            if( ( $aExp[2] + $iQuantity ) < 10000 )
-              $aExp[2] += (int) $iQuantity;
-            $aFile[$i] = trim( implode( '$', $aExp ) )."\n";
-            $bFound = true;
-          }
-          else{
-            $aFile[$i] .= "\n";
-          }
-        }
-        else{
-          if( $iTime - substr( $aExp[0], 0, 10 ) >= 259200 ) // delete empty orders older then 72 hours
-            $aFile[$i] = null;
-          else
-            $aFile[$i] .= "\n";
-        }
-      }
-      else{
-        $aFile[$i] = '<?php exit; ?>'."\n";
-      }
-
-      fwrite( $rFile, $aFile[$i] );
-    } // end for
-
-    if( !isset( $bFound ) ){
-      $oProduct =& Products::getInstance( );
-
-      fwrite( $rFile, $iOrder.'$'.$iProduct.'$'.$iQuantity.'$'.$oProduct->aProducts[$iProduct]['fPrice'].'$'.$oProduct->aProducts[$iProduct]['sName'].'$'."\n" );
-    }
-    flock( $rFile, LOCK_UN );
-    fclose( $rFile );*/
   } // end function addToBasket
 
   /**
@@ -331,11 +197,8 @@ class Orders
     if( isset( $aForm['sPaymentCarrier'] ) ){
       $aExp = explode( ';', $aForm['sPaymentCarrier'] );
       if( isset( $aExp[0] ) && isset( $aExp[1] ) )
-//        $sPrice = $this->countPaymentPrice( $this->throwPaymentCarrierPrice( $aExp[0], $aExp[1] ) );
-//{ epesi
         $sPrice = $this->throwPaymentCarrierPrice( $aExp[0], $aExp[1]);
 	if($sPrice===false) unset($sPrice);
-//} epesi
     }
     else{
       return false;
@@ -364,67 +227,8 @@ class Orders
   * @param array  $aForm
   */
   function addOrder( $aForm ){
-/*    $oFF  =& FlatFiles::getInstance( );
-    if( !isset( $aForm['iPaymentRealized'] ) )
-      $aForm['iPaymentRealized'] = 0;
-
-    $aForm = changeMassTxt( $aForm, 'H', Array( 'sComment', 'LenHNds' ) );
-    $aForm['iOrder'] = $oFF->throwLastId( DB_ORDERS, 'iOrder' ) + 1;
-    $aForm['iTime'] = time( );
-    $aForm['sIp'] = $_SERVER['REMOTE_ADDR'];
-    $aForm['iStatus'] = 1;
-    $aForm['sLanguage'] = LANGUAGE;
-
-    if( !isset( $aForm['iInvoice'] ) )
-      $aForm['iInvoice'] = null;
-
-    $aExp = explode( ';', $aForm['sPaymentCarrier'] );
-    $aCarrier = $this->throwCarrier( $aExp[0] );
-    $aPayment = $this->throwPayment( $aExp[1] );
-
-    $aForm['sCarrierName']  = $aCarrier['sName'];
-    $aForm['fCarrierPrice'] = $this->countCarrierPrice( $aCarrier['fPrice'], $aCarrier['sWeightRange'] );
-    $aForm['iCarrier']      = $aCarrier['iCarrier'];
-    $aForm['sPaymentName']  = $aPayment['sName'];
-    $aForm['iPayment']      = $aPayment['iPayment'];
-    $aForm['sPaymentPrice'] = $this->countPaymentPrice( $this->throwPaymentCarrierPrice( $aExp[0], $aExp[1] ) );
-
-    if( isset( $aPayment['iOuterSystem'] ) ){
-      $aForm['iPaymentSystem'] = $aPayment['iOuterSystem'];
-      if( isset( $aForm['aPaymentChannel'][$aPayment['iPayment']] ) )
-        $aForm['mPaymentChannel'] = $aForm['aPaymentChannel'][$aPayment['iPayment']];
-      else
-        $aForm['mPaymentChannel'] = null;
-    }
-    else{
-      $aForm['iPaymentSystem'] = null;
-      $aForm['mPaymentChannel'] = null;
-    }
-    $aForm['iPaymentRealized']  = 0;
-
-
-$oFF->save( DB_ORDERS, $aForm, null, 'rsort' );
-    $oFF->save( DB_ORDERS_COMMENTS, $aForm );
-
-    if( isset( $this->aProducts ) ){
-      $iElement = $oFF->throwLastId( DB_ORDERS_PRODUCTS, 'iElement' ) + 1;
-      foreach( $this->aProducts as $aData ){
-        $oFF->save( DB_ORDERS_PRODUCTS, Array( 'iElement' => $iElement++, 'iOrder' => $aForm['iOrder'], 'iProduct' => $aData['iProduct'], 'iQuantity' => $aData['iQuantity'], 'fPrice' => $aData['fPrice'], 'sName' => $aData['sName'] ) );
-      }
-    }
-
-    $oFF->deleteInFile( DB_ORDERS_TEMP, $_SESSION['iCustomer'.LANGUAGE], 'iCustomer' );
-
-    $_SESSION['iOrderQuantity'.LANGUAGE]  = 0;
-    $_SESSION['fOrderSummary'.LANGUAGE]   = null;
-
-    return $aForm['iOrder'];
-*/
-
-	//{ epesi
 	/* 
 	//'iOrder' => 0, 
-	//'iStatus' => 2, 
 	//'iTime' => 3, 
 	//'iCarrier' => 4, 
 	//'iPayment' => 5, 
@@ -499,23 +303,7 @@ $oFF->save( DB_ORDERS, $aForm, null, 'rsort' );
     $_SESSION['fOrderSummary'.LANGUAGE]   = null;
 
     return $id;
-	//} epesi
-
   } // end function addOrder
-
-  /**
-  * Return order status name
-  * @return string
-  * @param int    $iStatus
-  */
-  function throwStatus( $iStatus = null ){
-    global $lang;
-    $aStatus[1] = $lang['Orders_pending'];
-    $aStatus[2] = $lang['Orders_processing'];
-    $aStatus[3] = $lang['Orders_finished'];
-    $aStatus[4] = $lang['Orders_canceled'];
-    return isset( $iStatus ) ? $aStatus[$iStatus] : $aStatus;
-  } // end function throwStatus
 
   /**
   * Return order data
@@ -523,15 +311,11 @@ $oFF->save( DB_ORDERS, $aForm, null, 'rsort' );
   * @param int  $iOrder
   */
   function throwOrder( $iOrder ){
-//    $oFF  =& FlatFiles::getInstance( );
-
     if( isset( $this->aOrders[$iOrder] ) ){
       return $this->aOrders[$iOrder];
     }
     else{
-	//{ epesi
 	$aData = DB::GetRow('SELECT w.id as iOrder, 
-				    1 as iStatus, 
 				    w.created_on as iTime,
 				    w.f_shipment_type as iCarrier,
 				    w.f_shipment_type,
@@ -562,9 +346,6 @@ $oFF->save( DB_ORDERS, $aForm, null, 'rsort' );
 		list($aData['sPaymentPrice']) = explode('_',$aData['sPaymentPrice']);
         	$aData['iTime'] = strtotime($aData['iTime']);
 	}
-	//} epesi
-
-//      $aData = $oFF->throwDataFromFiles( Array( DB_ORDERS, DB_ORDERS_COMMENTS ), $iOrder, 'iOrder' );
     }
 
     if( isset( $aData ) ){
@@ -591,51 +372,11 @@ $this->aOrders[$iOrder] = $aData;
   * @param string $sOrder
   */
   function throwSavedOrderId( $sOrder ){
-  	//{ epesi
 	$ret = DB::GetOne('SELECT customer FROM premium_ecommerce_orders_temp WHERE md5(customer)=%s',array($sOrder));
 	if($ret) return $ret;
 	return null;
-	//} epesi
-/*    $aFile = file( DB_ORDERS_TEMP );
-    $iCount= count( $aFile );
-    for( $i = 1; $i < $iCount; $i++ ){
-      $aExp = explode( '$', $aFile[$i] );
-      if( $sOrder == md5( $aExp[0] ) )
-        return $aExp[0];
-    } // end for
-
-    return null;*/
   } // end function throwSavedOrderId
 
-  /**
-  * Return status list
-  * @return string
-  * @param string $sFile
-  * @param int    $iOrder
-  */
-/*  function listOrderStatuses( $sFile, $iOrder ){
-    $aFile      = file( DB_ORDERS_STATUS );
-    $iCount     = count( $aFile );
-    $oTpl       =& TplParser::getInstance( );
-    $content    = null;
-
-    for( $i = 1; $i < $iCount; $i++ ){
-      $aExp = explode( '$', $aFile[$i] );
-      if( $aExp[0] == $iOrder ){
-        $aData = orders_status( $aExp );
-        $aData['sDate'] = displayDate( $aData['iTime'] );
-        $aData['sStatus'] = $this->throwStatus( $aData['iStatus'] );
-        $oTpl->setVariables( 'aData', $aData );
-        $content .= $oTpl->tbHtml( $sFile, 'STATUS_LIST' );
-      }
-    } // end for
-
-    if( isset( $content ) ){
-      $oTpl->setVariables( 'aData', $aData );
-      return $oTpl->tbHtml( $sFile, 'STATUS_HEAD' ).$content.$oTpl->tbHtml( $sFile, 'STATUS_FOOT' );
-    }
-  } // end function listOrderStatuses
-*/
   /**
   * Return payment and carrier price
   * @return string
@@ -658,14 +399,6 @@ $this->aOrders[$iOrder] = $aData;
 			(SELECT 1 FROM premium_ecommerce_payments_carriers_data_1 WHERE active=1 AND f_currency=%s AND f_max_weight>=%f LIMIT 1) is null
 			))',array($iPayment,$iCarrier,$currency,$currency,$weight,$currency,$weight));
     // } epesi
-/*    $aFile = file( DB_CARRIERS_PAYMENTS );
-    $iCount= count( $aFile );
-    for( $i = 1; $i < $iCount; $i++ ){
-      $aExp = explode( '$', $aFile[$i] );
-      if( $aExp[0] == $iCarrier && $aExp[1] == $iPayment ){
-        return $aExp[2];
-      }
-    }*/
   } // end function throwPaymentCarrierPrice
 
   /**
@@ -677,57 +410,6 @@ $this->aOrders[$iOrder] = $aData;
     $oTpl       =& TplParser::getInstance( );
     $content    = null;
     $sPaymentList= null;
-/*    $oFF        =& FlatFiles::getInstance( );
-
-    $aPayments = $oFF->throwFileArraySmall( DB_PAYMENTS, 'iPayment', 'sName' );
-    if( isset( $aPayments ) ){
-      $aFile = file( DB_CARRIERS_PAYMENTS );
-      $iCount= count( $aFile );
-      for( $i = 1; $i < $iCount; $i++ ){
-        $aExp = explode( '$', $aFile[$i] );
-        $aPaymentsCarriers[$aExp[0]][$aExp[1]] = $aExp[2];
-      }
-
-      $sFunction  = LANGUAGE.'_carriers';
-      $aFile      = file( DB_CARRIERS );
-      $iCount     = count( $aFile );
-      for( $i = 1; $i < $iCount; $i++ ){
-        $aExp = explode( '$', $aFile[$i] );
-        if( isset( $aPaymentsCarriers[$aExp[0]] ) )
-          $aCarriers[$aExp[0]] = $sFunction( $aExp );
-      }
-
-      if( !isset( $aCarriers ) )
-        return null;
-
-      foreach( $aCarriers as $iCarrier => $aData ){
-        $aData['sPayments'] = null;
-        $aData['fPrice']    = $this->countCarrierPrice( $aData['fPrice'], $aData['sWeightRange'] );
-        foreach( $aPayments as $iPayment => $sName ){
-          if( isset( $aPaymentsCarriers[$iCarrier][$iPayment] ) ){
-            if( !empty( $aPaymentsCarriers[$iCarrier][$iPayment] ) ){
-              $aData['fPaymentCarrierPrice'] = generatePrice( $aData['fPrice'], $this->countPaymentPrice( $aPaymentsCarriers[$iCarrier][$iPayment] ) );
-            }
-            else{
-              $aData['fPaymentCarrierPrice'] = $aData['fPrice'];
-            }
-            $aData['sPaymentCarrierPrice'] = displayPrice( $aData['fPaymentCarrierPrice'] );
-            $aData['iPayment'] = $iPayment;
-            $oTpl->setVariables( 'aData', $aData );
-            $aData['sPayments'] .= $oTpl->tbHtml( $sFile, 'ORDER_PAYMENT_CARRIERS_LIST' );
-          }
-          else{
-            $aData['sPayments'] .= $oTpl->tbHtml( $sFile, 'ORDER_PAYMENT_CARRIERS_EMPTY' );
-          }
-        } // end foreach
-        $oTpl->setVariables( 'aData', $aData );
-        $content .= $oTpl->tbHtml( $sFile, 'ORDER_CARRIERS' );
-      } // end foreach
-
-      $aOuterPayments = $oFF->throwFileArraySmall( DB_PAYMENTS, 'iPayment', 'iOuterSystem' );
-*/
-
-      // { epesi
     $aOuterPayments = DB::GetAssoc('SELECT f_payment,f_relate_with FROM premium_ecommerce_payments_data_1 WHERE active=1');
 
     $freeDelivery = false;
@@ -774,7 +456,6 @@ $this->aOrders[$iOrder] = $aData;
         $content .= $oTpl->tbHtml( $sFile, 'ORDER_CARRIERS' );
       } // end foreach
       $aData = array();
-     // } epesi
 
       foreach( $aPayments as $aData['iPayment'] => $aData['sName'] ){
         if( isset( $aOuterPayments[$aData['iPayment']] ) && $aOuterPayments[$aData['iPayment']] > 0 ){
@@ -863,29 +544,15 @@ $this->aOrders[$iOrder] = $aData;
   // } epesi
 
   /**
-  * Return carrier data
-  * @return array
-  * @param int  $iCarrier
-  */
-/*  function throwCarrier( $iCarrier ){
-    $oFF =& FlatFiles::getInstance( );
-    return $oFF->throwData( DB_CARRIERS, $iCarrier, 'iCarrier' );
-  } // end function throwCarrier
-*/
-  /**
   * Return payment data
   * @return array
   * @param int  $iPayment
   */
   function throwPayment( $iPayment ){
-/*    $oFF =& FlatFiles::getInstance( );
-    $aData = $oFF->throwData( DB_PAYMENTS, $iPayment, 'iPayment' );*/
-    //{ epesi
     $payments = $this->getPayments();
     if(!isset($payments[$iPayment])) return null;
     $aData = DB::GetRow('SELECT f_relate_with as iOuterSystem, f_description as sDescription, f_payment as iPayment FROM premium_ecommerce_payments_data_1 WHERE f_payment=%s',array($iPayment));
     $aData['sName'] = $payments[$iPayment];
-    //} epesi
     if( isset( $aData ) && is_array( $aData ) ){
       $aData['sDescription'] = changeTxt( $aData['sDescription'], 'Ndsnl' );
       return $aData;
@@ -914,95 +581,8 @@ $this->aOrders[$iOrder] = $aData;
     $oTpl->setVariables( 'aData', $aData );
     $aSend['sMailContent'] = ereg_replace( '\|n\|', "\n", $oTpl->tbHtml( $sFile, 'ORDER_EMAIL_BODY' ) );
     $aSend['sTopic'] = $oTpl->tbHtml( $sFile, 'ORDER_EMAIL_TITLE' );
-    $aSend['sSender']= $GLOBALS['config']['orders_email'];
-    sendEmail( $aSend, null, $GLOBALS['config']['orders_email'] );
+    $aSend['sSender']= $GLOBALS['config']['email'];
+    sendEmail( $aSend, null, $aData['sEmail'] ); //send e-mail to client
   } // end function sendEmailWithOrderDetails
-
-
-  /**
-  * Count carrier price using products weight etc.
-  * @return float
-  * @param mixed  $mPrice
-  * @param string $sWeightRange
-  */
-/*  function countCarrierPrice( $mPrice, $sWeightRange ){
-
-    if( !isset( $this->sWeightSummary ) ){
-      $this->sWeightSummary = 0;
-      $this->fOrderSummary = 0;
-      foreach( $this->aProducts as $sProductId => $aData ){
-        if( !empty( $GLOBALS['oProduct']->aProducts[$aData['iProduct']]['sWeight'] ) )
-          $this->sWeightSummary += ( $aData['iQuantity'] * $GLOBALS['oProduct']->aProducts[$aData['iProduct']]['sWeight'] );
-        $this->fOrderSummary += $aData['fSummary'];
-      }
-
-    }
-
-    if( isset( $GLOBALS['config']['delivery_free'] ) && $this->fOrderSummary >= $GLOBALS['config']['delivery_free'] ){
-      $this->bFreeDelivery = true;
-      return normalizePrice( 0 );
-    }
-
-    if( ereg( ';', $mPrice ) ){
-      $aExpPrices           = explode( ';', $mPrice );
-      $this->iExplodeRange  = null;
-
-      if( $this->sWeightSummary > 0 && !empty( $sWeightRange ) ){
-        $aExpRanges = explode( ';', $sWeightRange );
-        $iCount = count( $aExpRanges );
-        for( $i = 0; $i < $iCount; $i++ ){
-          if( ereg( '-', $aExpRanges[$i] ) ){
-            $aRange = explode( '-', $aExpRanges[$i] );
-            if( $this->sWeightSummary > $aRange[0] && $this->sWeightSummary <= $aRange[1] && isset( $aExpPrices[$i] ) ){
-              $fReturn = $aExpPrices[$i];
-              $this->iExplodeRange = $i;
-              break;
-            }
-          }
-        } // end for
-
-        if( isset( $this->iExplodeRange ) )
-          return normalizePrice( $fReturn );
-        else{
-          $iCount = count( $aExpPrices );
-          if( empty( $aExpPrices[$iCount - 1] ) && !empty( $aExpPrices[$iCount - 2] ) ){
-            $this->iExplodeRange = $iCount - 2;
-            return normalizePrice( $aExpPrices[$iCount - 2] );
-          }
-          else{
-            $this->iExplodeRange = $iCount - 1;
-            return normalizePrice( $aExpPrices[$iCount - 1] );
-          }
-
-        }
-      }
-      else{
-        return normalizePrice( $aExpPrices[0] );
-      }
-    }
-    else{
-      return $mPrice;
-    }
-  } // end function countCarrierPrice
-*/
-  /**
-  * Count payment price
-  * @return mixed
-  * @param mixed  $mPaymentPrice
-  */
-/*  function countPaymentPrice( $mPaymentPrice ){
-    if( isset( $this->bFreeDelivery ) )
-      return normalizePrice( 0 );
-    else{
-      if( ereg( ';', $mPaymentPrice ) ){
-        $aExpPrices = explode( ';', $mPaymentPrice );
-        return isset( $this->iExplodeRange ) ? $aExpPrices[$this->iExplodeRange] : $aExpPrices[0];
-      }
-      else{
-        return $mPaymentPrice;
-      }
-    }
-  } // end function countPaymentPrice
-*/
 };
 ?>

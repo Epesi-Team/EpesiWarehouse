@@ -59,8 +59,8 @@ class Products
 								it.f_item_name as sName2, 
 								pri.f_gross_price as fPrice, 
 								pri.f_tax_rate as tax,
-								pr.f_publish as iStatus, 
 								pr.f_position as iPosition, 
+								pr.f_recommended as sRecommended,
 								it.f_category,
 								av.f_availability_code as sAvailable2, 
 								avl.f_label as sAvailable, 
@@ -239,7 +239,7 @@ class Products
         $aData['sPrice'] = is_numeric( $aData['fPrice'] ) ? displayPrice( $aData['fPrice'] ) : $aData['fPrice'];
         $aData['sPages'] = $this->throwProductsPagesTree( $aData['aCategories'] );
         $aData['sBasket']= null;
-        $aData['sRecommended'] = isset( $GLOBALS['aProductsRecommended'][$aData['iProduct']] ) ? $oTpl->tbHtml( $sFile, 'PRODUCTS_RECOMMENDED' ) : null;
+        $aData['sRecommended'] = $aData['sRecommended']? $oTpl->tbHtml( $sFile, 'PRODUCTS_RECOMMENDED' ) : null;
 
         if( !empty( $aData['sDescriptionShort'] ) ){
           $aData['sDescriptionShort'] = changeTxt( $aData['sDescriptionShort'], 'nlNds' );

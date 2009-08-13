@@ -448,29 +448,6 @@ function throwMicroTime( ){
 } // end function throwMicroTime
 
 /**
-* Check content
-* @return void
-*/
-/*function checkContent( ){
-  global $sMsg, $config;
-  if( !defined( base64_decode( 'TElDRU5TRV9OT19MSU5L' ) ) ){
-    $oDir = dir( DIR_TEMPLATES );
-    $oFF  =& FlatFiles::getInstance( );
-    while( false !== ( $sFileName = $oDir->read( ) ) ){
-      if( strstr( $sFileName, '.tpl' ) ){
-        $sContent = $oFF->throwFile( DIR_TEMPLATES.$sFileName );
-        if( stristr( $sContent, base64_decode( 'aHR0cDovL29wZW5zb2x1dGlvbi5vcmc=' ) ) || stristr( $sContent, base64_decode( 'aHR0cDovL3d3dy5vcGVuc29sdXRpb24ub3Jn' ) ) )
-          return null;
-      }
-    }
-    $oDir->close();
-    if( !isset( $config['email'] ) )
-      $config['email'] = null;
-    $sMsg = base64_decode('PGRpdiBpZD0ibXNnIiBjbGFzcz0iZXJyb3IiPllvdXIgUGFnZSBicmVha3Mgb3VyIHByb2R1Y3QgbGljZW5zZSE8YnIgLz48YnIgLz5QbGVhc2UgcmV0dXJuIGxpbmsgdG8gcGFnZSBodHRwOi8vb3BlbnNvbHV0aW9uLm9yZy8gd2l0aCB0aXRsZQ==').base64_decode('ICJwb3dlcmVkIGJ5IFF1aWNrLkNhcnQi').base64_decode('PC9kaXY+PGlmcmFtZSBzcmM9Imh0dHA6Ly9vcGVuc29sdXRpb24ub3JnL2xpY2Vuc2UtYnJlYWss' ).$config['email'].','.$config['language'].base64_decode('Lmh0bWwiIHN0eWxlPSJkaXNwbGF5Om5vbmU7Ij48L2lmcmFtZT4=');
-  }
-} // end function checkContent
-*/
-/**
 * Return HTML select from defined array
 * @return string
 * @param array  $aData

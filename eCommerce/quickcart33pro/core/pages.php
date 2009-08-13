@@ -55,7 +55,7 @@ class Pages
 	
 	foreach($config['available_lang'] as $lang) {
     	    $aData = array();
-	    $aData['sLinkName'] = $_SERVER['SCRIPT_NAME'].'?'.$lang.'_,';
+	    $aData['sLinkName'] = $_SERVER['SCRIPT_NAME'].'?'.$lang.LANGUAGE_SEPARATOR.',';
 	    $aData['sName'] = '<img src="config/'.$lang.'.gif" />';
     	    $aData['sStyle']    = ( $i == ( $iCount - 1 ) ) ? 'L': $i + 1;
         
@@ -316,7 +316,7 @@ class Pages
 		else
 			$r['f_parent_category'] *= 4;
 		$id = $r['id']*4;
-        $this->aPages[$id] = array('iPage' => $id, 'iPageParent' => $r['f_parent_category'], 'sName' => $r['f_display_name']?$r['f_display_name']:$r['f_category_name'], 'sNameTitle' => $r['f_page_title'], 'sDescriptionShort' => $r['f_short_description'], 'iStatus' => 1, 'iPosition' => $r['f_position'], 'iType' => 3, 'iSubpagesShow' => 1, 'iProducts' => 1, 'sDescriptionFull'=>$r['f_long_description'], 'sMetaDescription' => $r['f_meta_description'], 'sMetaKeywords' =>$r['f_keywords'] );
+        $this->aPages[$id] = array('iPage' => $id, 'iPageParent' => $r['f_parent_category'], 'sName' => $r['f_display_name']?$r['f_display_name']:$r['f_category_name'], 'sNameTitle' => $r['f_page_title'], 'sDescriptionShort' => $r['f_short_description'], 'iPosition' => $r['f_position'], 'iType' => 3, 'iSubpagesShow' => 1, 'iProducts' => 1, 'sDescriptionFull'=>$r['f_long_description'], 'sMetaDescription' => $r['f_meta_description'], 'sMetaKeywords' =>$r['f_keywords'] );
         $this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
         if( $r['f_parent_category'] > 0 ){
           $this->aPagesChildrens[$r['f_parent_category']][] = $id;
@@ -335,7 +335,7 @@ class Pages
 	$x = DB::GetAll($query);
 	foreach($x as $r) {
 		$id = $r['id']*4+1;
-        $this->aPages[$id] = array('iPage' => $id, 'iPageParent' => 0, 'sName' => $r['f_company_name'], 'sNameTitle' => $r['f_company_name'], 'sDescriptionShort' => '', 'iStatus' => 1, 'iPosition' => 0, 'iType' => 4, 'iSubpagesShow' => 1, 'iProducts' => 1, 'sDescriptionFull'=>'', 'sMetaDescription' => '', 'sMetaKeywords' =>'' );
+        $this->aPages[$id] = array('iPage' => $id, 'iPageParent' => 0, 'sName' => $r['f_company_name'], 'sNameTitle' => $r['f_company_name'], 'sDescriptionShort' => '', 'iPosition' => 0, 'iType' => 4, 'iSubpagesShow' => 1, 'iProducts' => 1, 'sDescriptionFull'=>'', 'sMetaDescription' => '', 'sMetaKeywords' =>'' );
         $this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
         $this->aPagesParentsTypes[4][] = $id;
 	}
@@ -343,7 +343,7 @@ class Pages
 	//pages - id mod 4 == 2
 	$i = 0;
 	$query = 'SELECT p.id, p.f_page_name, p.f_parent_page, p.f_type,
-					p.f_position, d.f_name, d.f_short_description, d.f_long_description, 
+					p.f_position, p.f_show_subpages_as, d.f_name, d.f_short_description, d.f_long_description, 
 					d.f_page_title, d.f_meta_description, d.f_keywords
 			FROM premium_ecommerce_pages_data_1 p INNER JOIN premium_ecommerce_pages_data_data_1 d ON (p.id=d.f_page AND d.f_language="'.LANGUAGE.'" AND d.active=1) WHERE p.active=1 AND p.f_publish=1 AND p.f_parent_page';
 	$x = DB::GetAll($query.' is null');
@@ -359,7 +359,7 @@ class Pages
 		else
 			$r['f_parent_page'] = $r['f_parent_page']*4+2;
 		$id = $r['id']*4+2;
-        $this->aPages[$id] = array('iPage' => $id, 'iPageParent' => $r['f_parent_page'], 'sName' => $r['f_name'], 'sNameTitle' => $r['f_page_title'], 'sDescriptionShort' => $r['f_short_description'], 'iStatus' => 1, 'iPosition' => $r['f_position'], 'iType' => $r['f_type'], 'iSubpagesShow' => 1, 'iProducts' => 0, 'sDescriptionFull'=>$r['f_long_description'], 'sMetaDescription' => $r['f_meta_description'], 'sMetaKeywords' =>$r['f_keywords'] );
+        $this->aPages[$id] = array('iPage' => $id, 'iPageParent' => $r['f_parent_page'], 'sName' => $r['f_name'], 'sNameTitle' => $r['f_page_title'], 'sDescriptionShort' => $r['f_short_description'], 'iPosition' => $r['f_position'], 'iType' => $r['f_type'], 'iSubpagesShow' => $r['f_show_subpages_as'], 'iProducts' => 0, 'sDescriptionFull'=>$r['f_long_description'], 'sMetaDescription' => $r['f_meta_description'], 'sMetaKeywords' =>$r['f_keywords'] );
         $this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
         if( $r['f_parent_page'] > 0 ){
           $this->aPagesChildrens[$r['f_parent_page']][] = $id;
@@ -373,86 +373,53 @@ class Pages
 	//basket
 	$id = 3;
 	$config['basket_page'] = $id;
-	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => 'basket', 'sNameTitle' => '', 'sDescriptionShort' => '', 'iStatus' => 1, 'iPosition' => 0,
+	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => 'basket', 'sNameTitle' => '', 'sDescriptionShort' => '', 'iPosition' => 0,
 					 'iType' => 1, 'iSubpagesShow' => 1, 'iProducts' => 0);
     $this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
     $this->aPagesParentsTypes[1][] = $id;
 	//order
 	$id = 7;
-	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => 'order form', 'sNameTitle' => '', 'sDescriptionShort' => '', 'iStatus' => 1, 'iPosition' => 0,
+	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => 'order form', 'sNameTitle' => '', 'sDescriptionShort' => '', 'iPosition' => 0,
 					 'iType' => 5, 'iSubpagesShow' => 1, 'iProducts' => 0, 'sTheme'=>'order.php');
     $this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
     $this->aPagesParentsTypes[5][] = $id;
 	//start page
 	$id = 11;
-	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => 'Start', 'sNameTitle' => '', 'sDescriptionShort' => getVariable('ecommerce_start_page'), 'iStatus' => 1, 'iPosition' => 0,
+	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => 'Start', 'sNameTitle' => '', 'sDescriptionShort' => getVariable('ecommerce_start_page'), 'iPosition' => 0,
 					 'iType' => 2, 'iSubpagesShow' => 1, 'iProducts' => 0);
     $this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
     $this->aPagesParentsTypes[2][] = $id;
 	//rules and policies
 	$id = 15;
-	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => 'Rules and Policies', 'sNameTitle' => '', 'sDescriptionShort' => getVariable('ecommerce_rules'), 'iStatus' => 1, 'iPosition' => 1,
+	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => 'Rules and Policies', 'sNameTitle' => '', 'sDescriptionShort' => getVariable('ecommerce_rules'), 'iPosition' => 1,
 					 'iType' => 2, 'iSubpagesShow' => 1, 'iProducts' => 0);
     $this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
     $this->aPagesParentsTypes[2][] = $id;
 	//search
 	$id = 19;
-	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => 'Search results', 'sNameTitle' => '', 'sDescriptionShort' => '', 'iStatus' => 1, 'iPosition' => 0,
+	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => 'Search results', 'sNameTitle' => '', 'sDescriptionShort' => '', 'iPosition' => 0,
 					 'iType' => 5, 'iSubpagesShow' => 1, 'iProducts' => 0);
     $this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
     $this->aPagesParentsTypes[5][] = $id;
 
 	//uncategorized products
 	$id = 23;
-	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => 'Uncategorized', 'sNameTitle' => 'Uncategorized', 'sDescriptionShort' => '', 'iStatus' => 1, 'iPosition' => 1000, 'iType' => 3, 'iSubpagesShow' => 1, 'iProducts' => 1, 'sDescriptionFull'=>'', 'sMetaDescription' => '', 'sMetaKeywords' =>'' );
+	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => 'Uncategorized', 'sNameTitle' => 'Uncategorized', 'sDescriptionShort' => '', 'iPosition' => 1000, 'iType' => 3, 'iSubpagesShow' => 1, 'iProducts' => 1, 'sDescriptionFull'=>'', 'sMetaDescription' => '', 'sMetaKeywords' =>'' );
 	$this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
 	$this->aPagesParentsTypes[3][] = $id;
 	
 	//sitemap
 	$id = 27;
-	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => 'site map', 'sNameTitle' => '', 'sDescriptionShort' => '', 'iStatus' => 1, 'iPosition' => 1000, 'iType' => 0, 'iSubpagesShow' => 1, 'iProducts' => 0, 'sDescriptionFull'=>'', 'sMetaDescription' => '', 'sMetaKeywords' =>'' );
+	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => 'site map', 'sNameTitle' => '', 'sDescriptionShort' => '', 'iPosition' => 1000, 'iType' => 0, 'iSubpagesShow' => 1, 'iProducts' => 0, 'sDescriptionFull'=>'', 'sMetaDescription' => '', 'sMetaKeywords' =>'' );
 	$this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
 	$this->aPagesParentsTypes[1][] = $id;
 
 	//sitemap
 	$id = 31;
-	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => 'contact us', 'sNameTitle' => '', 'sDescriptionShort' => getVariable('ecommerce_contactus'), 'iStatus' => 1, 'iPosition' => 1000, 'iType' => 0, 'iSubpagesShow' => 1, 'iProducts' => 0, 'sDescriptionFull'=>'', 'sMetaDescription' => '', 'sMetaKeywords' =>'');
+	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => 'contact us', 'sNameTitle' => '', 'sDescriptionShort' => getVariable('ecommerce_contactus'), 'iPosition' => 1000, 'iType' => 0, 'iSubpagesShow' => 1, 'iProducts' => 0, 'sDescriptionFull'=>'', 'sMetaDescription' => '', 'sMetaKeywords' =>'');
 	$this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
 	$this->aPagesParentsTypes[2][] = $id;
 	//} epesi
-/*
-    if( !is_file( DB_PAGES ) )
-      return null;
-
-    $aFile      = file( DB_PAGES );
-    $iCount     = count( $aFile );
-    $sFunction  = LANGUAGE.'_pages';
-    $iStatus    = throwStatus( );
-    $sLanguageUrl  = ( LANGUAGE_IN_URL == true ) ? LANGUAGE.LANGUAGE_SEPARATOR : null;
-
-    $this->aPages             = null;
-    $this->aPagesChildrens    = null;
-    $this->aPagesParents      = null;
-    $this->aPagesParentsTypes = null;
-
-    for( $i = 1; $i < $iCount; $i++ ){
-      $aExp = explode( '$', $aFile[$i] );
-      if( isset( $aExp[5] ) && $aExp[5] >= $iStatus ){
-        if( !is_numeric( $aExp[1] ) )
-          $aExp[1] = 0;
-        $this->aPages[$aExp[0]] = $sFunction( $aExp );
-        $this->aPages[$aExp[0]]['sDate'] = is_numeric( $this->aPages[$aExp[0]]['iTime'] ) ? displayDate( $this->aPages[$aExp[0]]['iTime'] ) : null;
-        $this->aPages[$aExp[0]]['sLinkName'] = throwPageUrl( $sLanguageUrl.change2Url( $this->aPages[$aExp[0]]['sName'] ).','.$aExp[0] );
-        if( $aExp[1] > 0 ){
-          $this->aPagesChildrens[$aExp[1]][] = $aExp[0];
-          $this->aPagesParents[$aExp[0]] = $aExp[1];
-        }
-        else{
-          if( !empty( $aExp[7] ) )
-            $this->aPagesParentsTypes[$aExp[7]][] = $aExp[0];
-        }
-      }
-    } // end for*/
   } // end function generateCache
 
   /**

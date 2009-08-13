@@ -24,6 +24,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 			array('name'=>'Product Name', 	'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>true, 'display_callback'=>array($this->get_type().'Common', 'display_product_name')),
 			array('name'=>'Item Name', 		'type'=>'select', 'required'=>true, 'param'=>'premium_warehouse_items::SKU|Item Name;Premium_Warehouse_eCommerceCommon::items_crits', 'extra'=>false, 'visible'=>true, 'display_callback'=>array($this->get_type().'Common', 'display_item_name')),
 			array('name'=>'Publish', 		'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>true),
+			array('name'=>'Recommended', 		'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>false),
 			array('name'=>'Position', 		'type'=>'integer', 'required'=>true, 'extra'=>false, 'visible'=>false),
 			array('name'=>'Available',	 	'type'=>'select', 'required'=>true, 'extra'=>false, 'visible'=>false, 'param'=>'premium_ecommerce_availability::Availability Code'),
 			array('name'=>'Description', 	'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>true, 'display_callback'=>array($this->get_type().'Common', 'display_description')),
@@ -207,6 +208,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 			array('name'=>'Page Name', 		'type'=>'text', 'param'=>128, 'required'=>true, 'extra'=>false, 'visible'=>true),
 			array('name'=>'Parent Page',	'type'=>'select', 'param'=>'premium_ecommerce_pages::Page Name;Premium_Warehouse_eCommerceCommon::parent_page_crits' ,'required'=>false, 'extra'=>false, 'visible'=>false),
 			array('name'=>'Type',			'type'=>'integer',	'required'=>true, 'extra'=>false, 'visible'=>true,'display_callback'=>array($this->get_type().'Common', 'display_page_type'),'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_page_type')),
+			array('name'=>'Show subpages as',	'type'=>'integer',	'required'=>true, 'extra'=>false, 'visible'=>true,'display_callback'=>array($this->get_type().'Common', 'display_subpages'),'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_subpages')),
 			array('name'=>'Publish', 		'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>true),
 			array('name'=>'Position', 		'type'=>'integer', 'required'=>true, 'extra'=>false,'visible'=>false)
 		);

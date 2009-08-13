@@ -24,20 +24,6 @@ function listProductsRelatedSelect( $sFile, $iProduct ){
 } // end function
 */
 
-/**
-* Check if product related can be shown
-* @return bool
-* @param array  $aData
-* @param array  $aCheck
-*/
-/*
-function checkIsProductRelated( $aData, $aCheck ){
-  if( is_array( $aData ) && isset( $aCheck[0][$aData['iProduct']] ) && ( $aCheck[1] === 0 || ( isset( $aCheck[2][$aData['iProduct']] ) && $aData['iStatus'] >= $aCheck[1] ) ) )
-    return true;
-  else
-    return null;
-} // end function
-*/
 
 
 /**
@@ -51,7 +37,7 @@ function listProductsRelated( $sFile, $iProduct ){
   $oTpl   =& TplParser::getInstance( );
   $oFile  =& Files::getInstance( );
   $aRelatedIds = throwProductsRelated( $iProduct );
-  $sLanguageUrl = ( LANGUAGE_IN_URL == true ) ? LANGUAGE.LANGUAGE_SEPARATOR : null;
+  $sLanguageUrl = LANGUAGE.LANGUAGE_SEPARATOR;
   if( !isset( $aRelatedIds ) )
     return null;
     $aProducts = array();

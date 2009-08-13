@@ -31,21 +31,6 @@
 * @param array  $aTypes
 */
 function throwBannersRand( $sFile, $aTypes = null ){
-/*
-  $oFF  =& FlatFiles::getInstance( );
-  $oTpl =& TplParser::getInstance( );
-
-  $aFile  = $oFF->throwFileArray( DB_BANNERS );
-  $iCount = count( $aFile );
-  $aStats = throwBannersStats( );
-
-  for( $i = 0; $i < $iCount; $i++ ){
-    $aData = $aFile[$i];
-    if( $aData['iStatus'] == 1 && ( !isset( $aStats[$aData['iBanner']] ) || isset( $aStats[$aData['iBanner']] ) && ( $aData['iMax'] == 0 || ( $aData['iMax'] > 0 && $aStats[$aData['iBanner']]['iViews'] < $aData['iMax'] ) ) ) ){
-      $aBanners[$aData['iType']][] = $aData;
-    }
-  }
-*/
 //{ epesi
   $oTpl =& TplParser::getInstance( );
   $aBanners = array();
@@ -62,7 +47,7 @@ function throwBannersRand( $sFile, $aTypes = null ){
   }
 //} epesi
   if( isset( $aBanners ) ){
-    $iCountTypes = count( $GLOBALS['aBannersTypes'] );
+    $iCountTypes = 2;
     for( $i = 0; $i < $iCountTypes; $i++ ){
       if( isset( $aBanners[$i] ) && is_array( $aBanners[$i] ) && ( ( isset( $aTypes ) && in_array( $i, $aTypes, true ) ) || !isset( $aTypes ) ) ){
         $iCount = count( $aBanners[$i] );

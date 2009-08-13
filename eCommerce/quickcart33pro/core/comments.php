@@ -9,20 +9,6 @@
 function addComment( $aForm, $iLink, $sFileDb = null ){
   if( !isset( $sFileDb ) )
     $sFileDb = DB_PAGES_COMMENTS;
-/*  if( !is_file( $sFileDb ) )
-    return null;
-
-  $oFF =& FlatFiles::getInstance( );
-
-  $aForm = changeMassTxt( $aForm, 'HLen', Array( 'sContent', 'HBrLen' ) );
-  $aForm['iComment'] = $oFF->throwLastId( $sFileDb, 'iComment' ) + 1;
-  $aForm['iTime']    = time( );
-  $aForm['iLink']    = $iLink;
-  $aForm['sIp']      = $_SERVER['REMOTE_ADDR'];
-  $aForm['iStatus']  = 0;
-
-  $oFF->save( $sFileDb, $aForm, null, 'rsort' );
-  */
   //{ epesi
   $aForm = changeMassTxt( $aForm, 'HLen', Array( 'sContent', 'HBrLen' ) );
   DB::Execute('INSERT INTO premium_ecommerce_product_comments_data_1(created_on,f_name,f_content,f_time,f_item_name,f_ip,f_publish,f_language) VALUES (%T,%s,%s,%T,%d,%s,%b,%s)',
@@ -44,32 +30,6 @@ function listComments( $sFile, $iLink, $sFileDb = null ){
     $sFileDb = DB_PAGES_COMMENTS;
     $bPages = true;
   }
-  /*
-  if( !is_file( $sFileDb ) )
-    return null;
-
-  $oTpl =& TplParser::getInstance( );
-  $oFF  =& FlatFiles::getInstance( );
-
-  $iCommentsLimit = 50;
-  $iStatus = defined( 'CUSTOMER_PAGE' ) ? 1 : 0;
-  
-  if( isset( $iLink ) && is_numeric( $iLink ) ){
-    $aFile  = $oFF->throwFileArray( $sFileDb, 'listCommentsCheck', Array( 'iLink' => $iLink, 'iStatus' => $iStatus ) );
-    $iCount = count( $aFile );
-  }
-  else{
-    $aFile  = $oFF->throwFileArray( $sFileDb );
-    $iCount = count( $aFile );
-    if( $iCount > $iCommentsLimit )
-      $iCount = $iCommentsLimit;
-  }
-  
-  $content= null;
-  if( isset( $aFile ) && is_array( $aFile ) ){
-    for( $i = 0; $i < $iCount; $i++ ){  
-      $aData = $aFile[$i];
-*/
   //{ epesi
   $oTpl =& TplParser::getInstance( );
   $bPages = false;
@@ -104,19 +64,4 @@ function listComments( $sFile, $iLink, $sFileDb = null ){
   }
 } // end function listComments
 
-/**
-* Check comments in database
-* @return bool
-* @param array  $aData
-* @param array  $aCheck
-*/
-/*
-function listCommentsCheck( $aData, $aCheck ){
-  if( isset( $aData ) && $aData['iLink'] == $aCheck['iLink'] && $aData['iStatus'] >= $aCheck['iStatus'] ){
-    return true;
-  }
-  else{
-    return null;
-  }
-} */// end function listCommentsCheck
 ?>
