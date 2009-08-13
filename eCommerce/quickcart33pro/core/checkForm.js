@@ -50,7 +50,7 @@ function checkText( oObj, sInfo ) {
 	checkT = oObj.value.replace( reS, "" );
 
   var bCheck = true;
-	if( checkT == '' )
+	if( checkT.length <= 1 )
     bCheck = false;
 
   return fieldOperations( oObj, bCheck, sInfo );

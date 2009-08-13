@@ -343,12 +343,12 @@ class Orders
 
     if(
       throwStrLen( $aForm['sFirstName'] ) > 1
-      && throwStrLen( $aForm['sLastName'] ) > 2
+      && throwStrLen( $aForm['sLastName'] ) > 1
       && throwStrLen( $aForm['sStreet'] ) > 1
-      && throwStrLen( $aForm['sZipCode'] ) > 2
-      && throwStrLen( $aForm['sCity'] ) > 2
-      && throwStrLen( $aForm['sPhone'] ) > 2
-      && throwStrLen( $aForm['sCountry'] ) > 2
+      && throwStrLen( $aForm['sZipCode'] ) > 1
+      && throwStrLen( $aForm['sCity'] ) > 1
+      && throwStrLen( $aForm['sPhone'] ) > 1
+      && throwStrLen( $aForm['sCountry'] ) > 1
       && checkEmail( $aForm['sEmail'] )
       && isset( $sPrice )
       && ( ( isset( $aForm['iRules'] ) && isset( $aForm['iRulesAccept'] ) ) || !isset( $aForm['iRules'] ) )
