@@ -13,7 +13,6 @@ $config['dir_lang']     = 'lang/';
 $config['dir_templates']= 'templates/';
 $config['dir_themes']   = $config['dir_templates'].'themes/';
 $config['dir_files']    = 'files/';
-$config['dir_plugins']  = 'plugins/';
 
 /*
 * Rewrite
@@ -48,34 +47,9 @@ $config['hidden_shows'] = false;
 $config['embed_php'] = false;
 
 /*
-* If true, then script will search db/*_products_ext.php file in
-* meta keywords, meta description and full description.
-* We dont recommend it if shopping cart have more then 1000 products
-*/
-$config['search_products_description'] = false;
-
-/*
-* Administrator login and password
-*/
-$config['login'] = "admin";
-$config['pass'] = "admin";
-
-/*
 * Add minutes difference between your local time and server time
 */
 $config['time_diff'] = 0;
-
-/*
-* Default language
-*/
-$config['default_lang'] = "pl";
-
-$config['available_lang'] = array("pl","en");
-
-/*
-* If should be use wysiwyg editor or default
-*/
-$config['wysiwyg'] = true;
 
 /*
 * If should be text size change option on pages
@@ -172,7 +146,6 @@ define( 'DIR_DB',         $config['dir_db'] );
 define( 'DIR_FILES',      $config['dir_files'] );
 define( 'DIR_BACKUP', DIR_FILES.'backup/' );
 define( 'DIR_LIBRARIES',  $config['dir_libraries'] );
-define( 'DIR_PLUGINS',    $config['dir_plugins'] );
 define( 'DIR_LANG',       $config['dir_lang'] );
 define( 'DIR_TEMPLATES',  $config['dir_templates'] );
 define( 'DIR_THEMES',     $config['dir_themes'] );
@@ -219,7 +192,6 @@ define( 'POLL_COOKIE_NAME',  'iPollAnswer' );
 define( 'HIDDEN_SHOWS',   $config['hidden_shows'] );
 define( 'DISPLAY_EXPANDED_MENU', $config['display_expanded_menu'] );
 define( 'DISPLAY_SUBCATEGORY_PRODUCTS', $config['display_subcategory_products'] );
-define( 'WYSIWYG',   $config['wysiwyg'] );
 define( 'VERSION',  $config['version'] );
 define( 'TIME_DIFF', $config['time_diff'] );
 ?>
