@@ -57,10 +57,11 @@ class Pages
 	foreach( $_GET as $mKey => $mValue )
     	    if( strstr( $mKey, ',' ) ){
 	        $x = explode( ',', $mKey );
-		if(isset($x[1])) {
-			$y = explode(LANGUAGE_SEPARATOR,$x[1],2);
-			if(isset($y[1])) $x[1] = $y[1];
-			$x[1] = '__LANG__'.$x[1];
+		foreach($x as &$v) {
+			if(is_numeric($v)) continue;
+			$y = explode(LANGUAGE_SEPARATOR,$v,2);
+			if(isset($y[1])) $v = $y[1];
+			$v = '__LANG__'.$v;
 		}
 		$url = implode(',',$x);
 		break;

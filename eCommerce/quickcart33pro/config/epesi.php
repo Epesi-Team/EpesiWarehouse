@@ -18,5 +18,6 @@ $config['platnosci_key1'] = 'asdf786sdf65asdf78sd785fs7d6f57s';
 $config['platnosci_key2'] = 'zkjxcv87sd989zxcv79sd6ds98fs7df9';
 $config['zagiel_id'] = null;
 $config['zagiel_min_price'] = null;
-$config['paypal_email']	= 'test@test.com';
+$config['paypal_email'] = 'test@test.com';
+$config['default_image_size'] = 0;
 ?>

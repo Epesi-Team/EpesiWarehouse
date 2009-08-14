@@ -381,16 +381,6 @@ class Premium_Warehouse_eCommerce extends Module {
 
 		$this->display_module($gb);
 
-		$qf = $this->init_module('Libs/QuickForm',null,'th_size');
-		$qf->addElement('select','quickcart_thumbnail_size',$this->t('Thumbnails size'),array(0=>$this->ht('100 x 100'),1=>$this->ht('200 x 200')),array('onChange'=>$qf->get_submit_form_js()));
-		$qf->setDefaults(array('quickcart_thumbnail_size'=>Variable::get('quickcart_thumbnail_size')));
-		if($qf->validate()) {
-			Variable::set('quickcart_thumbnail_size',$qf->exportValue('quickcart_thumbnail_size'));
-		}
-		$qf->display();
-
-		Base_ActionBarCommon::add('add','Add',$this->create_callback_href(array($this,'add_quickcart')));
-		
 		return true;
 	}
 	
@@ -430,6 +420,8 @@ class Premium_Warehouse_eCommerce extends Module {
 		$form->addRule('time_diff', $this->t('This field should be numeric'), 'numeric');
 		$form->addRule('time_diff', $this->t('Field required'), 'required');
 
+		$form->addElement('select','default_image_size',$this->t('Thumbnails size'),array(0=>$this->ht('100 x 100'),1=>$this->ht('200 x 200')));
+
 		$form->addElement('checkbox', 'text_size', $this->t('Text resize buttons'));
 		$form->addElement('checkbox', 'site_map_products', $this->t('Display products on sitemap page'));
 
@@ -462,6 +454,33 @@ class Premium_Warehouse_eCommerce extends Module {
 		$config = array();
 		@include_once($path.'/config/epesi.php');
 		$form->setDefaults($config);
+		
+		$currencies = DB::GetAssoc('SELECT code, code FROM utils_currency WHERE active=1');
+		foreach($langs as $l) {
+			$form->addElement('header',null,$this->t('Language: %s',array($l)));
+			$form->addElement('select',$l.'-currency_symbol',$this->t('Currency'),$currencies);
+			$form->addRule($l.'-currency_symbol',$this->t('Field required'),'required');
+			
+			$form->addElement('text', $l.'-delivery_free', $this->t('Price, after which the order gets sent for free to the customer'));
+			$form->addRule($l.'-delivery_free', $this->t('This field should be numeric'), 'numeric');
+			$form->addRule($l.'-delivery_free',$this->t('Field required'),'required');
+			
+			$form->addElement('text', $l.'-title', $this->t('Title'));
+			$form->addRule($l.'-title',$this->t('Field required'),'required');
+
+			$form->addElement('text', $l.'-slogan', $this->t('Slogan'));
+			$form->addElement('textarea', $l.'-description', $this->t('Description'));
+			$form->addElement('textarea', $l.'-keywords', $this->t('Keywords'));
+			$form->addElement('textarea', $l.'-foot_info', $this->t('Foot'));
+			
+			$config = array();
+			$config2 = array();
+			@include_once($path.'/config/epesi_'.$l.'.php');
+			foreach($config as $k=>$v) {
+				$config2[$l.'-'.$k] = $v;
+			}
+			$form->setDefaults($config2);
+		}
 
 		if($form->validate()) {
 			$data_dir = dirname(dirname(dirname(dirname(dirname(__FILE__))))).'/'.DATA_DIR;
@@ -486,9 +505,24 @@ if(!file_exists(EPESI_DATA_DIR)) die('Launch epesi, log in as administrator, go 
 \$config['platnosci_key2'] = '".$vals['platnosci_key2']."';
 \$config['zagiel_id'] = ".($vals['zagiel_id']?$vals['zagiel_id']:'null').";
 \$config['zagiel_min_price'] = ".($vals['zagiel_min_price']?$vals['zagiel_min_price']:'null').";
-\$config['paypal_email']	= '".$vals['paypal_email']."';
+\$config['paypal_email'] = '".$vals['paypal_email']."';
+\$config['default_image_size'] = ".$vals['default_image_size'].";
 ?>";
 			file_put_contents($path.'/config/epesi.php',$ccc);
+			
+			foreach($langs as $l) {
+				
+				$ccc = "<?php
+\$config['currency_symbol'] = '".str_replace('\'','\\\'',$vals[$l.'-currency_symbol'])."';
+\$config['delivery_free'] = ".$vals[$l.'-delivery_free'].";
+\$config['title'] = '".str_replace('\'','\\\'',$vals[$l.'-title'])."';
+\$config['description'] = '".str_replace('\'','\\\'',$vals[$l.'-description'])."';
+\$config['slogan'] = '".str_replace('\'','\\\'',$vals[$l.'-slogan'])."';
+\$config['keywords'] = '".str_replace('\'','\\\'',$vals[$l.'-keywords'])."';
+\$config['foot_info'] = '".str_replace('\'','\\\'',$vals[$l.'-foot_info'])."';
+?>";
+				file_put_contents($path.'/config/epesi_'.$l.'.php',$ccc);
+			}
 			return false;
 		} else $form->display();
 	
@@ -847,7 +881,7 @@ if(!file_exists(EPESI_DATA_DIR)) die('Launch epesi, log in as administrator, go 
 		}
 
 		$f = $this->init_module('Libs/OpenFlashChart');
-		$title = new title( $this->ht($tab) );
+		$description = new title( $this->ht($tab) );
 		$f->set_title( $title );
 
 		$av_colors = array('#339933','#999933', '#993333', '#336699', '#808080','#339999','#993399');

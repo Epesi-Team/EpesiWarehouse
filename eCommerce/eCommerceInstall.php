@@ -453,7 +453,6 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Variable::set('ecommerce_start_page','This is start page of quickcart shop with epesi backend. You can edit it in Administration - eCommerce settings.');
 		Variable::set('ecommerce_rules','You can edit this page in Administration - eCommerce settings.');
 		Variable::set('ecommerce_contactus','You can edit this page in Administration - eCommerce settings.');
-		Variable::set('quickcart_thumbnail_size',0);
 
 		//icecat
 		Variable::set('icecat_user','');
