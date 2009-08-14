@@ -53,11 +53,26 @@ class Pages
         global $config;
 	$iCount += count($config['available_lang']);
 	
+	$url = null;
+	foreach( $_GET as $mKey => $mValue )
+    	    if( strstr( $mKey, ',' ) ){
+	        $x = explode( ',', $mKey );
+		if(isset($x[1])) {
+			$y = explode(LANGUAGE_SEPARATOR,$x[1],2);
+			if(isset($y[1])) $x[1] = $y[1];
+			$x[1] = '__LANG__'.$x[1];
+		}
+		$url = implode(',',$x);
+		break;
+	    }
+	if(!$url)
+	    $url = '__LANG__,';
 	foreach($config['available_lang'] as $lang) {
     	    $aData = array();
-	    $aData['sLinkName'] = $_SERVER['SCRIPT_NAME'].'?'.$lang.LANGUAGE_SEPARATOR.',';
+	    $aData['sLinkName'] = $_SERVER['SCRIPT_NAME'].'?'.str_replace('__LANG__',$lang.LANGUAGE_SEPARATOR,$url);
 	    $aData['sName'] = '<img src="config/'.$lang.'.gif" />';
     	    $aData['sStyle']    = ( $i == ( $iCount - 1 ) ) ? 'L': $i + 1;
+    	    $aData['sSelected'] = ( $lang==LANGUAGE ) ? $oTpl->tbHtml( $sFile, 'SELECTED' ) : null;
         
 	    $oTpl->setVariables( 'aData', $aData );
 	    $content .= $oTpl->tbHtml( $sFile, 'LIST_LANG' );

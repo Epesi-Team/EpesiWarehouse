@@ -141,6 +141,8 @@ $config['default_theme'] = 'default.php';
 $config['default_pages_template'] = 'pages_default.tpl';
 $config['default_products_template'] = 'products_default.tpl';
 
+$config['inherit_from_parents'] = false;
+
 /*
 * Start page
 */

@@ -280,7 +280,7 @@ function generateSiteMap2Xml( $sFile ){
 * @param string $sFormat
 */
 function displayDate( $iTime = null, $sFormat = 'Y-m-d H:i' ){
-  return isset( $iTime ) ? date( $sFormat, $iTime + ( TIME_DIFF * 60 ) ) : date( $sFormat );
+  return isset( $iTime ) ? date( $sFormat, $iTime + ( TIME_DIFF * 60 * 60 ) ) : date( $sFormat );
 } // end function displayDate
 
 /**

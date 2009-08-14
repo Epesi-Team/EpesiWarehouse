@@ -376,6 +376,7 @@ class Premium_Warehouse_eCommerce extends Module {
 			    $r = $gb->get_new_row();
 			    $r->add_data($row['path']);
 			    $r->add_action($this->create_confirm_callback_href($this->ht('Are you sure you want to delete this record?'),array($this,'delete_quickcart'),$row['path']),'delete');
+			    $r->add_action($this->create_callback_href(array($this,'quickcart_settings'),$row['path']),'edit','Settings');
 			}
 
 		$this->display_module($gb);
@@ -393,12 +394,120 @@ class Premium_Warehouse_eCommerce extends Module {
 		return true;
 	}
 	
+	public function quickcart_settings($path) {
+		if($this->is_back()) return false;
+
+		$form = & $this->init_module('Libs/QuickForm');
+
+		$form->addElement('header', null, $this->t('QuickCart settings: %s',array($path)));
+		
+		$files = scandir($path.'/config');
+		$langs = array();
+		foreach($files as $f) {
+			if(!ereg('^(..)\.php$',$f,$reqs))
+				continue;
+			if(in_array($reqs[1].'.gif',$files) && in_array('epesi_'.$reqs[1].'.php',$files))
+				$langs[$reqs[1]] = $reqs[1];
+		}
+		$form->addElement('select', 'default_lang', $this->t('Default language'),$langs);
+		$form->addRule('default_lang', $this->t('Field required'), 'required');
+		$form->addElement('multiselect', 'available_lang', $this->t('Available languages'),$langs);
+		$form->addRule('available_lang', $this->t('At least one language must be available'), 'required');
+		$form->addRule(array('default_lang','available_lang'), $this->t('Default language must be one of quickcart available languages'), 'callback',array($this,'quickcart_check_default_lang'));
+
+		$form->addElement('text', 'email', $this->t('Shop e-mail'));
+		$form->addRule('email', $this->t('This is not valid email address'), 'email',true);
+
+		$form->addElement('text', 'products_list', $this->t('Number of products displayed on page'));
+		$form->addRule('products_list', $this->t('This field should be numeric'), 'numeric');
+		$form->addRule('products_list', $this->t('Field required'), 'required');
+
+		$form->addElement('text', 'news_list', $this->t('Number of news (subpages) displayed on page'));
+		$form->addRule('news_list', $this->t('This field should be numeric'), 'numeric');
+		$form->addRule('news_list', $this->t('Field required'), 'required');
+
+		$form->addElement('text', 'time_diff', $this->t('Difference between your local time and server time in hours'));
+		$form->addRule('time_diff', $this->t('This field should be numeric'), 'numeric');
+		$form->addRule('time_diff', $this->t('Field required'), 'required');
+
+		$form->addElement('checkbox', 'text_size', $this->t('Text resize buttons'));
+		$form->addElement('checkbox', 'site_map_products', $this->t('Display products on sitemap page'));
+
+		$form->addElement('header',null,$this->t('External services settings'));
+
+		$form->addElement('text', 'skapiec_shop_id', $this->t('Skąpiec shop ID'));
+		$form->addRule('skapiec_shop_id', $this->t('This field should be numeric'), 'numeric');
+
+		$form->addElement('text', 'allpay_id', $this->t('Allpay ID'));
+		$form->addRule('allpay_id', $this->t('This field should be numeric'), 'numeric');
+
+		$form->addElement('text', 'przelewy24_id', $this->t('Przelewy24 ID'));
+		$form->addRule('przelewy24_id', $this->t('This field should be numeric'), 'numeric');
+
+		$form->addElement('text', 'platnosci_id', $this->t('Platnosci ID'));
+		$form->addRule('platnosci_id', $this->t('This field should be numeric'), 'numeric');
+		$form->addElement('text', 'platnosci_pos_auth_key', $this->t('Platnosci pos auth key'));
+		$form->addRule('platnosci_pos_auth_key', $this->t('This field should be numeric'), 'numeric');
+		$form->addElement('text', 'platnosci_key1', $this->t('Platnosci key 1'));
+		$form->addElement('text', 'platnosci_key2', $this->t('Platnosci key 2'));
+
+		$form->addElement('text', 'zagiel_id', $this->t('Zagiel ID'));
+		$form->addRule('zagiel_id', $this->t('This field should be numeric'), 'numeric');
+		$form->addElement('text', 'zagiel_min_price', $this->t('Zagiel minimal price'));
+		$form->addRule('zagiel_min_price', $this->t('This field should be numeric'), 'numeric');
+
+		$form->addElement('text', 'paypal_email', $this->t('Paypal email'));
+		$form->addRule('paypal_email', $this->t('This is not valid email address'), 'email');
+		
+		$config = array();
+		@include_once($path.'/config/epesi.php');
+		$form->setDefaults($config);
+
+		if($form->validate()) {
+			$data_dir = dirname(dirname(dirname(dirname(dirname(__FILE__))))).'/'.DATA_DIR;
+			$vals = $form->exportValues();
+			$ccc = "<?php
+define('EPESI_DATA_DIR','".str_replace('\'','\\\'',$data_dir)."');
+if(!file_exists(EPESI_DATA_DIR)) die('Launch epesi, log in as administrator, go to Menu->Adminitration->eCommerce->QuickCart settings and add \''.dirname(dirname(__FILE__)).'\' directory to setup quickcart');
+\$config['default_lang'] = '".$vals['default_lang']."';
+\$config['available_lang'] = array('".implode('\',\'',$vals['available_lang'])."');
+\$config['text_size'] = ".((isset($vals['text_size']) && $vals['text_size'])?'true':'false').";
+\$config['email'] = '".$vals['email']."';
+\$config['skapiec_shop_id'] = ".$vals['skapiec_shop_id'].";
+\$config['products_list'] = ".$vals['products_list'].";
+\$config['news_list'] = ".$vals['news_list'].";
+\$config['site_map_products'] = ".((isset($vals['site_map_products']) && $vals['site_map_products'])?'true':'false').";
+\$config['time_diff'] = ".$vals['time_diff'].";
+\$config['allpay_id'] = ".($vals['allpay_id']!==null?$vals['allpay_id']:null).";
+\$config['przelewy24_id'] = ".$vals['przelewy24_id'].";
+\$config['platnosci_id']	= ".$vals['platnosci_id'].";
+\$config['platnosci_pos_auth_key'] = ".$vals['platnosci_pos_auth_key'].";
+\$config['platnosci_key1'] = '".$vals['platnosci_key1']."';
+\$config['platnosci_key2'] = '".$vals['platnosci_key2']."';
+\$config['zagiel_id'] = ".($vals['zagiel_id']?$vals['zagiel_id']:'null').";
+\$config['zagiel_min_price'] = ".($vals['zagiel_min_price']?$vals['zagiel_min_price']:'null').";
+\$config['paypal_email']	= '".$vals['paypal_email']."';
+?>";
+			file_put_contents($path.'/config/epesi.php',$ccc);
+			return false;
+		} else $form->display();
+	
+		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
+		Base_ActionBarCommon::add('save', 'Save', $form->get_submit_form_href(true,$this->t('creating thumbnails, please wait')));
+		
+    		return true;
+	}
+	
+	public function quickcart_check_default_lang($x) {
+		return strpos($x[1],$x[0])!==false;
+	}
+	
 	public function add_quickcart() {
 		if($this->is_back()) return false;
 	
 		$form = & $this->init_module('Libs/QuickForm');
 
-		$form->addElement('header', null, $this->t('Add quickcart binding'));
+		$form->addElement('header', null, $this->t('Add quickcart(epesi version) binding'));
 
 		$form->addElement('text', 'path', $this->t('Path'));
 		$form->addRule('path', $this->t('A path must be between 3 and 255 chars'), 'rangelength', array(3,255));
@@ -477,7 +586,9 @@ class Premium_Warehouse_eCommerce extends Module {
 	    if(!is_dir($p) || !is_dir(rtrim($p,'/').'/files') || !is_writable(rtrim($p,'/').'/files')
 		|| (file_exists(rtrim($p,'/').'/files/epesi') && !is_writable(rtrim($p,'/').'/files/epesi'))
 		|| (file_exists(rtrim($p,'/').'/files/100/epesi') && !is_writable(rtrim($p,'/').'/files/100/epesi'))
-		|| (file_exists(rtrim($p,'/').'/files/200/epesi') && !is_writable(rtrim($p,'/').'/files/200/epesi'))) return false;
+		|| (file_exists(rtrim($p,'/').'/files/200/epesi') && !is_writable(rtrim($p,'/').'/files/200/epesi'))
+		|| !is_writable(rtrim($p,'/').'/config')
+		|| !file_exists(rtrim($p,'/').'/config/epesi.php') || !is_writable(rtrim($p,'/').'/config/epesi.php')) return false;
 	    return true;
 	}
 	

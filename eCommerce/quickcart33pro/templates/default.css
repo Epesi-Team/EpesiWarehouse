@@ -39,7 +39,8 @@ a:hover{background-color:inherit;color:#970000;text-decoration:underline;}
 #menu1 li#basketMenu span{display:block;font-size:0.727em;font-family:sans-serif;}
 #menu1 li#basketMenu span strong{background-color:inherit;color:#e62808;}
 #menu1 li#langMenu{padding:0px 0px 0px 0px;}
-#menu1 li#langMenu a{background:none;color:#e62808;}
+#menu1 li#langMenu a{background:none;color:#e62808;padding:3px 5px 3px 5px; display: block}
+#menu1 li#langMenu .selected{background-color:#c3bda6;}
 
 /* LOGO, HEADER BACKGROUND AND SLOGAN */
 #head2{position:relative;clear:both;height:170px;background:#422d1c url('img/header.jpg') no-repeat;color:#fff;}
