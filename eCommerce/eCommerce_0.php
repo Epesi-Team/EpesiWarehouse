@@ -527,7 +527,7 @@ if(!file_exists(EPESI_DATA_DIR)) die('Launch epesi, log in as administrator, go 
 		} else $form->display();
 	
 		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
-		Base_ActionBarCommon::add('save', 'Save', $form->get_submit_form_href(true,$this->t('creating thumbnails, please wait')));
+		Base_ActionBarCommon::add('save', 'Save', $form->get_submit_form_href());
 		
     		return true;
 	}
