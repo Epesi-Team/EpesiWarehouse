@@ -340,7 +340,7 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 	}
 	
 	public static function display_item_quantity($r, $nolink=false) {
-		$res = Premium_Warehouse_Items_Location_Common::display_item_quantity($r, $nolink);
+		$res = Premium_Warehouse_Items_LocationCommon::display_item_quantity($r, $nolink);
 		return self::add_dest_qty_info($r, $res);
 	}
 	
