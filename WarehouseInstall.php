@@ -118,6 +118,7 @@ class Premium_WarehouseInstall extends ModuleInstall {
 	public function requires($v) {
 		return array(
 			array('name'=>'Base','version'=>0),
+			array('name'=>'Data/Countries', 'version'=>0),
 			array('name'=>'Utils/RecordBrowser', 'version'=>0));
 	}
 	
