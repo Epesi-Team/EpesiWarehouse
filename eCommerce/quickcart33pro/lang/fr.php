@@ -1,0 +1,201 @@
+<?php
+/*
+* French - compatible CART v3.3
+*/
+$config['charset'] = "utf-8";
+?><?php
+$lang['Subpage_show_1'] = "Liste (nom, description)";
+$lang['Subpage_show_2'] = "Liste (nom, description, photo)";
+
+$lang['yes'] = "oui";
+$lang['no'] = "non";
+$lang['Skip_navigation'] = "Saute la navigation";
+$lang['back'] = "retour";
+$lang['print'] = "imprimer";
+$lang['delete'] = "supprimer";
+$lang['Delete'] = "Supprimer";
+$lang['edit'] = "éditer";
+$lang['none'] = "aucun";
+$lang['Select'] = "Sélectionner";
+$lang['Save'] = "Sauver";
+$lang['save'] = "Sauver";
+$lang['save_list'] = "Sauver et montrer la liste";
+$lang['Data_not_found'] = "Impossible de trouver les donnée";
+$lang['Operation_completed'] = "Opération compléte";
+$lang['Operation_sure'] = "Etes vous sur de vouloir faire ca ?";
+$lang['Wrong_login_or_pass'] = "Identifiant ou mot de passe incorrect : essayez a nouveau";
+$lang['Change_login_and_pass'] = "Changer l'identifiant et mot de passe dans la configuration";
+$lang['Operation_unknown'] = "Erreur - opération inconnue -";
+$lang['Pages'] = "Pages / catégories";
+$lang['Pages_form'] = "Page form";
+$lang['homepage'] = "accueil";
+$lang['Homepage'] = "Accueil";
+$lang['New_page'] = "Nouvelle page / catégorie";
+$lang['Start_page'] = "Page de démarrage";
+$lang['Parent_page'] = "Page parente";
+$lang['Admin'] = "Admin";
+$lang['support'] = "support";
+$lang['configuration'] = "configuration";
+$lang['Configuration'] = "Configuration";
+$lang['Files'] = "Fichiers";
+$lang['File'] = "Fichier";
+$lang['log_out'] = "déconnexion";
+$lang['log_in'] = "Connexion";
+$lang['Login'] = "Identifiant";
+$lang['Password'] = "Mot de passe";
+$lang['select_language'] = "Sélectionner la langue";
+$lang['Thumbnail_1'] = "Miniature 1";
+$lang['Thumbnail_2'] = "Miniature 2";
+$lang['Photo_place'] = "Place de la photo";
+$lang['Description'] = "Description";
+$lang['Position'] = "Position";
+$lang['Files_on_server'] = "Choisissez des fichiers du serveur";
+$lang['Files_from_computer'] = "Sélectionner des fichiers à uploader depuis votre PC";
+$lang['Id'] = "Id";
+$lang['Name'] = "Nom";
+$lang['Hide_tabs'] = "Cachez les étiquettes";
+$lang['Display_tabs'] = "Afficher les étiquettes";
+$lang['Short_description'] = "Description courte";
+$lang['Full_description'] = "Description complète";
+$lang['Options'] = "Options";
+$lang['View'] = "Voir";
+$lang['SEO'] = "Référencement";
+$lang['Status'] = "Statut (on/off)";
+$lang['Menu'] = "Menu";
+$lang['Address'] = "Adresse";
+$lang['Subpages'] = "Sous pages";
+$lang['Template'] = "Thème";
+$lang['Topic'] = "Topic";
+$lang['Banner'] = "Bannière";
+$lang['Page_title'] = "Titre de la page";
+$lang['Meta_description'] = "Meta description";
+$lang['Key_words'] = "Mots clé";
+$lang['Slogan'] = "Slogan";
+$lang['Foot_info'] = "Information du pied de page";
+$lang['Default_language'] = "Langage par défaut";
+$lang['Styles_template'] = "Styles template";
+$lang['WYSWIG_editor'] = "Editeur WYSWIG";
+$lang['New_language'] = "Nouveau langage";
+$lang['Languages'] = "Langages";
+$lang['Language'] = "Langage";
+$lang['Use_language'] = "Créer un langage en utilisant";
+$lang['Display_all_files'] = "Montrer les fichiers du serveur";
+$lang['Change_files_names'] = "Changer le fichier au nom de la page";
+$lang['Added_to'] = "Ajouter à";
+$lang['Display_text_size_option'] = "Montre l'option taille du texte";
+$lang['Language_in_url'] = "Langue comme paramètre dans l'URL";
+$lang['Admin_see_hidden_pages'] = "L'administrateur peut voir la page et produit caché";
+$lang['Products'] = "Produits";
+$lang['Products_on_page'] = "Produits sur la page";
+$lang['Admin_items_on_page'] = "Nombre d'élément par page dans l'administration";
+$lang['Rules_page'] = "Page avec réglements";
+$lang['Basket_page'] = "Page avec panier";
+$lang['Basket_empty'] = "Le panier est vide";
+$lang['Basket_delete'] = "supprimer";
+$lang['Basket_update'] = "Mettre à jour";
+$lang['Basket_next'] = "Suivant";
+$lang['Basket_add'] = "Ajouter au panier";
+$lang['Order_page'] = "Page avec bon de commande";
+$lang['Price'] = "Prix";
+$lang['Quantity'] = "Quantité";
+$lang['Summary'] = "Total";
+$lang['Order_summary'] = "Sous-total";
+$lang['First_name'] = "Prénom";
+$lang['Last_name'] = "Nom de famille";
+$lang['Company'] = "Société";
+$lang['Street'] = "Rue";
+$lang['Zip_code'] = "Code postal";
+$lang['City'] = "Ville";
+$lang['Telephone'] = "Téléphone";
+$lang['Email'] = "Email";
+$lang['Rules_accept'] = "J'accepte les conditions ";
+$lang['rules_read'] = "Lire les conditions";
+$lang['Require_rules_accept'] = "Vous devez accepter les conditions pour continuer";
+$lang['order_send'] = "Envoyer la commander";
+$lang['Page_search'] = "Page avec résultats de recherche";
+$lang['search'] = "Rechercher";
+$lang['all_pages'] = "Toutes les pages";
+$lang['New_product'] = "Nouveau produit";
+$lang['Currency_symbol'] = "devise";
+$lang['Products_form'] = "Editer un produit";
+$lang['Product_available'] = " disponibilité de Produit";
+$lang['View_and_seo'] = "Visuel and référencement";
+$lang['Orders'] = "Commandes";
+$lang['Orders_form'] = "Edition des commandes";
+$lang['Orders_pending'] = "Commande en attente";
+$lang['Orders_processing'] = "en progression";
+$lang['Orders_finished'] = "Fini";
+$lang['Orders_canceled'] = "Abandonné";
+$lang['order_add_product'] = "ajouter un produit à la commande";
+$lang['First_and_last_name'] = "Nom et prénom";
+$lang['Date'] = "Date";
+$lang['Change_status'] = "Changer la sélection pour";
+$lang['All_status'] = "Statut de tout les article";
+$lang['Orders_search_products'] = "Rechercher dans les produits";
+$lang['Products_and_payment'] = "Produits et paiement";
+$lang['Order_comment'] = "Commentaire";
+$lang['Payment_methods'] = "Paiements";
+$lang['New_payment_method'] = "Nouveau mode paiement";
+$lang['Edit_payment_method'] = "Configuration du mode de paiement";
+$lang['Carriers'] = "Livraisons";
+$lang['New_carrier'] = "Nouveau mode de livraison";
+$lang['Edit_carrier'] = "Configurer le mode de livraison";
+$lang['example'] = "Ex :";
+$lang['Products_search_description'] = "Chercher dans la description complète des produit";
+$lang['Mail_informing'] = "Information au sujet la nouvelle commande envoyer au e-mail";
+$lang['Order_info_title'] = "ID nouvelle commande";
+$lang['Delivery_and_payment'] = "Livraison et payment";
+$lang['Order_sent'] = "La commande a été enregistré et envoyé.<br />Merci";
+$lang['Save_basket'] = "Sauver le panier";
+$lang['Basket_info'] = "Voici le contenu de votre panier. Si vous changez la quantité, cliquez sur 'Mettre à jour'.<br />Cliquez sur 'Sauver le panier' pour sauvgarder votre panier pour 72 heures.";
+$lang['Summary_cost'] = "Coùt total";
+$lang['Your_personal_information'] = "Vos données personnelles";
+$lang['Ordered_products'] = "Commandes passés";
+$lang['Basket_products'] = "Produits dans le panier";
+$lang['Select_delivery_and_payment'] = "Choisissez un mode de payement et de livraison";
+$lang['Display_expanded_menu'] = "Afficher le menu élargi";
+$lang['Inherit_from_parents'] = "Hériter les thèmes/templates des pages parentes";
+$lang['Display_subcategory_products'] = "Afficher les produits des sous-catégories dans le catégorie parente";
+$lang['View_all'] = "Voir tous";
+$lang['Page_prev'] = "« Précédant";
+$lang['Page_next'] = "Suivant »";
+
+$lang['Enter_text_to_be_formatted'] = "Entrer le texte a formater";
+$lang['Enter_list_type'] = "Choisissez le type de liste. Tapez '1' pour la liste numérique, tapez 'a' pour la liste alphanumérique, ou laissez vide pour la liste de point :";
+$lang['Enter_list_item'] = "Laissez vide ou cliquez sur 'Abandonné' pour fermer la list";
+$lang['Enter_link_url'] = "Entrer l'URL pour le lien:";
+$lang['Enter_email_link'] = "Entrer l'adresse Email pour le lien:";
+$lang['Bold'] = "Gras";
+$lang['Italic'] = "Italique";
+$lang['Underline'] = "Souligné";
+$lang['Align_left'] = "Aligner à gauche";
+$lang['Align_center'] = "Centrer";
+$lang['Align_right'] = "Aligner à droite";
+$lang['Add_li'] = "Ajouter une liste";
+$lang['Add_hyperlink'] = "Ajouter un lien";
+$lang['Add_email_link'] = "Ajouter un lien Email";
+$lang['New_line'] = "Nouvelle ligne";
+$lang['Page_break'] = "casser la page";
+$lang['Size_plus'] = "Agrandir la taille";
+$lang['Size_minus'] = "Réduire la taille";
+
+$lang['cf_no_word'] = "Merci de remplir tout les champs";
+$lang['cf_mail'] = "Entrez votre adresse E-mail";
+$lang['cf_wrong_value'] = "Entrer une valeur correcte";
+$lang['cf_to_small_value'] = "La valeur est trop petite";
+$lang['cf_txt_to_short'] = "Le texte est trop court";
+
+/*
+* Dont change below
+*/
+if( !defined( 'LANG_YES_SHORT' ) )
+  define( 'LANG_YES_SHORT', $lang['yes'] );
+if( !defined( 'LANG_NO_SHORT' ) )
+  define( 'LANG_NO_SHORT', $lang['no'] );
+if( !defined( 'LANG_PAGE_PREV' ) )
+  define( 'LANG_PAGE_PREV', $lang['Page_prev'] );
+if( !defined( 'LANG_PAGE_NEXT' ) )
+  define( 'LANG_PAGE_NEXT', $lang['Page_next'] );
+?><?php
+// plugins
+?>

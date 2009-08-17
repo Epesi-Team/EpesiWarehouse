@@ -394,7 +394,7 @@ class Premium_Warehouse_eCommerce extends Module {
 		$files = scandir($path.'/config');
 		$langs = array();
 		foreach($files as $f) {
-			if(!ereg('^(..)\.php$',$f,$reqs))
+			if(!ereg('^(.{2,3})\.php$',$f,$reqs))
 				continue;
 			if(in_array($reqs[1].'.gif',$files) && in_array('epesi_'.$reqs[1].'.php',$files))
 				$langs[$reqs[1]] = $reqs[1];
@@ -487,7 +487,7 @@ class Premium_Warehouse_eCommerce extends Module {
 			$vals = $form->exportValues();
 			$ccc = "<?php
 define('EPESI_DATA_DIR','".str_replace('\'','\\\'',$data_dir)."');
-if(!file_exists(EPESI_DATA_DIR)) die('Launch epesi, log in as administrator, go to Menu->Adminitration->eCommerce->QuickCart settings and add \''.dirname(dirname(__FILE__)).'\' directory to setup quickcart');
+if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi, log in as administrator, go to Menu->Adminitration->eCommerce->QuickCart settings and add \''.dirname(dirname(__FILE__)).'\' directory to setup quickcart');
 \$config['default_lang'] = '".$vals['default_lang']."';
 \$config['available_lang'] = array('".implode('\',\'',$vals['available_lang'])."');
 \$config['text_size'] = ".((isset($vals['text_size']) && $vals['text_size'])?'true':'false').";

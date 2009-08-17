@@ -1,8 +1,8 @@
 <?php
 define('EPESI_DATA_DIR','/var/www/epesi/data');
-if(!file_exists(EPESI_DATA_DIR)) die('Launch epesi, log in as administrator, go to Menu->Adminitration->eCommerce->QuickCart settings and add \''.dirname(dirname(__FILE__)).'\' directory to setup quickcart');
+if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi, log in as administrator, go to Menu->Adminitration->eCommerce->QuickCart settings and add \''.dirname(dirname(__FILE__)).'\' directory to setup quickcart');
 $config['default_lang'] = 'pl';
-$config['available_lang'] = array('en','pl');
+$config['available_lang'] = array('de','en','fr','it','nl','pl','ru','us');
 $config['text_size'] = true;
 $config['email'] = 'shacky7@gmail.com';
 $config['skapiec_shop_id'] = 2222;

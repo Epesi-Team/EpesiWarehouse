@@ -73,8 +73,8 @@ class Pages
 	    $aData['sLinkName'] = $_SERVER['SCRIPT_NAME'].'?'.str_replace('__LANG__',$lang.LANGUAGE_SEPARATOR,$url);
 	    $aData['sName'] = '<img src="config/'.$lang.'.gif" />';
     	    $aData['sStyle']    = ( $i == ( $iCount - 1 ) ) ? 'L': $i + 1;
-    	    $aData['sSelected'] = ( $lang==LANGUAGE ) ? $oTpl->tbHtml( $sFile, 'SELECTED' ) : null;
-        
+    	    $aData['sSelected'] = ( $lang==LANGUAGE_CONFIG ) ? $oTpl->tbHtml( $sFile, 'SELECTED' ) : null;
+    	
 	    $oTpl->setVariables( 'aData', $aData );
 	    $content .= $oTpl->tbHtml( $sFile, 'LIST_LANG' );
 	}

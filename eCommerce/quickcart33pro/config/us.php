@@ -1,13 +1,14 @@
 <?php
-setlocale( LC_CTYPE, 'pl_PL' );
 
-$aMenuTypes[1] = 'Menu górne nad logo';
-$aMenuTypes[2] = 'Menu górne pod logo';
-$aMenuTypes[3] = 'Kategorie';
-$aMenuTypes[4] = 'Producenci';
-$aMenuTypes[5] = 'Ukryte menu';
+$config['language']='en';
 
-$aPay[1][0] = 'Karta płatnicza';
+$aMenuTypes[1] = 'Top menu above logo';
+$aMenuTypes[2] = 'Top menu under logo';
+$aMenuTypes[3] = 'Categories';
+$aMenuTypes[4] = 'Producers';
+$aMenuTypes[5] = 'Hidden page';
+
+$aPay[1][0] = 'Credit card';
 $aPay[1][1] = 'mTransfer (mBank)';
 $aPay[1][2] = 'Płacę z Inteligo (PKO BP Inteligo)';
 $aPay[1][3] = 'Multitransfer (MultiBank)';
@@ -17,7 +18,7 @@ $aPay[1][7] = 'ING OnLine (ING Bank Śląski)';
 $aPay[1][8] = 'Sez@m (Bank Przemysłowo-Handlowy S.A.)';
 $aPay[1][9] = 'Pekao24 (Bank Pekao S.A.)';
 $aPay[1][10] = 'MilleNet (Millennium Bank)';
-$aPay[1][12] = 'Serwis PayPal';
+$aPay[1][12] = 'PayPal';
 $aPay[1][13] = 'Deutsche Bank PBC S.A.';
 $aPay[1][14] = 'Kredyt Bank S.A. - KB24 Bankowość Elektroniczna';
 $aPay[1][15] = 'PKO BP (konto Inteligo)';
@@ -34,5 +35,5 @@ $aPay[4]['d'] = 'Płac z Nordea';
 $aPay[4]['p'] = 'Płac z PKO BP';
 $aPay[4]['h'] = 'Płac z BPH';
 $aPay[4]['g'] = 'Płac z ING';
-$aPay[4]['c'] = 'Karta kredytowa';
+$aPay[4]['c'] = 'Credit card';
 ?>

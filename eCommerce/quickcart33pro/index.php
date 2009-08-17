@@ -8,7 +8,6 @@ session_start( );
 define( 'CUSTOMER_PAGE', true );
 
 require 'config/general.php';
-require DB_CONFIG_LANG;
 
 if( isset( $_POST['sPhrase'] ) ){
   header( 'Location: '.$_SERVER['REQUEST_URI'].((defined( 'FRIENDLY_LINKS' ) && FRIENDLY_LINKS == true)?'?':'&').'sPhrase='.urlencode( $_POST['sPhrase'] ) );

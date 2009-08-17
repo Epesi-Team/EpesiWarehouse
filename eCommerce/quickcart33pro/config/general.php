@@ -55,19 +55,20 @@ require_once $config['dir_core'].'common.php';
 
 if( defined( 'CUSTOMER_PAGE' ) && !isset( $sLang ) )
   $sLang = getLanguageFromUrl( );
-if( isset( $sLang ) && is_file( $config['dir_lang'].$sLang.'.php' ) && strlen( $sLang ) == 2 ){
+if( isset( $sLang ) && eregi('^[a-z0-9]{2}$',$sLang ) && is_file( $config['dir_lang'].$sLang.'.php' ) ){
   setCookie( 'sLanguage', $sLang, time( ) + 86400 );
   define( 'LANGUAGE', $sLang );
 }
 else{
-  if( !empty( $_COOKIE['sLanguage'] ) && is_file( $config['dir_lang'].$_COOKIE['sLanguage'].'.php' ) && strlen( $_COOKIE['sLanguage'] ) == 2 )
+  if( !empty( $_COOKIE['sLanguage'] ) && eregi('^[a-z0-9]{2}$', $_COOKIE['sLanguage'] ) && is_file( $config['dir_lang'].$_COOKIE['sLanguage'].'.php' ) )
     define( 'LANGUAGE', $_COOKIE['sLanguage'] );
   else
     define( 'LANGUAGE', $config['default_lang'] );
 }
 
 $config['config']       = 'config/general.php';
-$config['config_lang']  = 'config/'.LANGUAGE.'.php';
+require_once(LANGUAGE.'.php');
+require_once('epesi_'.LANGUAGE.'.php');
 
 $config['poll_max_answers'] = 7;
 $config['language']	= LANGUAGE;
@@ -124,7 +125,6 @@ define( 'DB_CARRIERS', $config_db['carriers'] );
 define( 'DB_CARRIERS_PAYMENTS', $config_db['carriers_payments'] );
 
 define( 'DB_CONFIG',      $config['config'] );
-define( 'DB_CONFIG_LANG', $config['config_lang'] );
 
 define( 'MAX_DIMENSION_OF_IMAGE', $config['max_dimension_of_image'] );
 
