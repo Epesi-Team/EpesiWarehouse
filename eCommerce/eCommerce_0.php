@@ -982,6 +982,27 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 		if (isset($this->rb)) return $this->rb->caption();
 		return 'eCommerce administration';
 	}
+	
+	public function applet($conf,$opts) {
+		//available applet options: toggle,href,title,go,go_function,go_arguments,go_contruct_arguments
+		$opts['go'] = false; // enable/disable full screen
+		$opts['title'] = 'eCommerce orders';
+		
+		$rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items_orders','premium_warehouse_items_orders');
+		$conds = array(
+									array(	array('field'=>'transaction_id', 'width'=>10),
+										array('field'=>'transaction_date', 'width'=>20)
+									),
+									array('status'=>'-1'),
+									array('transaction_date'=>'DESC'),
+									array('Premium_Warehouse_eCommerceCommon','applet_info_format'),
+									15,
+									$conf,
+									& $opts
+				);
+		$this->display_module($rb, $conds, 'mini_view');
+
+	}
 }
 
 ?>

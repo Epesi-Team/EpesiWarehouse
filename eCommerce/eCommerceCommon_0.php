@@ -709,6 +709,20 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 	public static function admin_caption() {
 		return 'eCommerce';
 	}
+
+	public static function applet_caption() {
+		return "eCommerce orders";
+	}
+
+	public static function applet_info() {
+		$html="Displays new eCommerce orders.";
+		return $html;
+	}
+	
+	public static function applet_info_format($r){
+		return print_r($r,true);
+	}
+
 	
 }
 ?>
