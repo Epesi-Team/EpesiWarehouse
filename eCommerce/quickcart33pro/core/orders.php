@@ -314,7 +314,6 @@ class Orders
     if( isset( $this->aOrders[$iOrder] ) ){
       return $this->aOrders[$iOrder];
     }
-    else{
 	$aData = DB::GetRow('SELECT w.id as iOrder, 
 				    w.created_on as iTime,
 				    w.f_shipment_type as iCarrier,
@@ -338,17 +337,23 @@ class Orders
 				    o.f_payment_channel as mPaymentChannel,
 				    o.f_payment_realized as iPaymentRealized
 				    FROM premium_warehouse_items_orders_data_1 w INNER JOIN premium_ecommerce_orders_data_1 o ON o.f_transaction_id=w.id WHERE w.id=%d',array($iOrder));
-        if($aData) {
-	        $aPayments = $this->getPayments();
-	        $aShipments = $this->getShipments();
-		$aData['sCarrierName'] = $aShipments[$aData['f_shipment_type']];
-		$aData['sPaymentName'] = $aPayments[$aData['iPayment']];
-		list($aData['sPaymentPrice']) = explode('_',$aData['sPaymentPrice']);
-        	$aData['iTime'] = strtotime($aData['iTime']);
-	}
-    }
 
     if( isset( $aData ) ){
+      $aPayments = $this->getPayments();
+      $aShipments = $this->getShipments();
+      
+      $countries_id = DB::GetOne('SELECT id FROM utils_commondata_tree WHERE akey="Countries"');
+      if($countries_id===false)
+	    die('Common data key "Countries" not defined.');
+      $aData['sCountry'] = DB::GetOne('SELECT p.value FROM utils_commondata_tree p WHERE p.parent_id=%d AND p.akey=%s ORDER BY p.akey',array($countries_id,$aData['sCountry']));
+      global $translations;
+      if(isset($translations['Utils_CommonData'][$aData['sCountry']]) && $translations['Utils_CommonData'][$aData['sCountry']])
+	$aData['sCountry'] = $translations['Utils_CommonData'][$aData['sCountry']];
+      
+      $aData['sCarrierName'] = $aShipments[$aData['f_shipment_type']];
+      $aData['sPaymentName'] = $aPayments[$aData['iPayment']];
+      list($aData['sPaymentPrice']) = explode('_',$aData['sPaymentPrice']);
+      $aData['iTime'] = strtotime($aData['iTime']);
       $aData['sInvoice'] = throwYesNoTxt( $aData['iInvoice'] );
       $aData['fPaymentCarrierPrice'] = generatePrice( $aData['fCarrierPrice'], $aData['sPaymentPrice'] );
       $aData['sPaymentCarrierPrice'] = displayPrice( $aData['fPaymentCarrierPrice'] );
@@ -361,7 +366,7 @@ class Orders
       else
         $aData['sPaymentChannel'] = '-';
 
-$this->aOrders[$iOrder] = $aData;
+      $this->aOrders[$iOrder] = $aData;
       return $aData;
     }
   } // end function throwOrder
