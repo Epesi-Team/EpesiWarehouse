@@ -64,11 +64,13 @@ class Premium_Warehouse_Items_Orders extends Module {
 		$rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items_orders','premium_warehouse_items_orders');
 		$limit = null;
 		$crits = array();
-		$sorting = array('item_name'=>'ASC');
+		$sorting = array();
 		$cols = array(
-							array('field'=>'item', 'width'=>10, 'cut'=>18),
-							array('field'=>'operation', 'width'=>10),
-							array('field'=>'quantity', 'width'=>10)
+							array('field'=>'transaction_id', 'width'=>1, 'label'=>'Trans. ID'),
+							array('field'=>'transaction_type', 'width'=>10, 'label'=>'Trans. Type'),
+							array('field'=>'status', 'width'=>10),
+//							array('field'=>'operation', 'width'=>10),
+//							array('field'=>'quantity', 'width'=>10)
 										);
 
 		$conds = array(

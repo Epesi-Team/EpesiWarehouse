@@ -909,10 +909,8 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 
 	public static function applet_info_format($r){
 		return
-			'Item: '.$r['item'].'<HR>'.
-			'Operation: '.$r['operation'].'<br>'.
-			'Quantity: '.$r['quantity'].'<br>'.
-			'Description: '.$r['description'];
+			'Transaction ID: '.$r['transaction_id'].'<HR>'.
+			'Status: '.$r['status'].'<br>';
 	}
 
 	public static function watchdog_label($rid = null, $events = array(), $details = true) {
