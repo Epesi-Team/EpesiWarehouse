@@ -55,20 +55,25 @@ require_once $config['dir_core'].'common.php';
 
 if( defined( 'CUSTOMER_PAGE' ) && !isset( $sLang ) )
   $sLang = getLanguageFromUrl( );
-if( isset( $sLang ) && eregi('^[a-z0-9]{2}$',$sLang ) && is_file( $config['dir_lang'].$sLang.'.php' ) ){
+if( isset( $sLang ) && eregi('^[a-z0-9]{2}$',$sLang ) && is_file( 'config/'.$sLang.'.php' ) && is_file( 'config/epesi_'.$sLang.'.php' ) ){
   setCookie( 'sLanguage', $sLang, time( ) + 86400 );
-  define( 'LANGUAGE', $sLang );
+  define( 'LANGUAGE_CONFIG', $sLang );
 }
 else{
-  if( !empty( $_COOKIE['sLanguage'] ) && eregi('^[a-z0-9]{2}$', $_COOKIE['sLanguage'] ) && is_file( $config['dir_lang'].$_COOKIE['sLanguage'].'.php' ) )
-    define( 'LANGUAGE', $_COOKIE['sLanguage'] );
+  if( !empty( $_COOKIE['sLanguage'] ) && eregi('^[a-z0-9]{2}$', $_COOKIE['sLanguage'] ) && is_file( 'config/'.$_COOKIE['sLanguage'].'.php' ) && is_file( 'config/epesi_'.$_COOKIE['sLanguage'].'.php' ) )
+    define( 'LANGUAGE_CONFIG', $_COOKIE['sLanguage'] );
   else
-    define( 'LANGUAGE', $config['default_lang'] );
+    define( 'LANGUAGE_CONFIG', $config['default_lang'] );
 }
 
 $config['config']       = 'config/general.php';
-require_once(LANGUAGE.'.php');
-require_once('epesi_'.LANGUAGE.'.php');
+require_once(LANGUAGE_CONFIG.'.php');
+require_once('epesi_'.LANGUAGE_CONFIG.'.php');
+if(!defined('LANGUAGE')) {
+	if(isset($config['language']))
+		define('LANGUAGE',$config['language']);
+	define('LANGUAGE',LANGUAGE_CONFIG);
+}
 
 $config['poll_max_answers'] = 7;
 $config['language']	= LANGUAGE;
