@@ -320,4 +320,14 @@ $lang['send'] = 'wyślij';
 $lang['Rss'] = 'RSS';
 $lang['News_on_page'] = 'Nowości na stronę';
 $lang['Date'] = 'Data';
+
+//epesi
+$lang['Basket'] = 'Koszyk';
+$lang['Order_form'] = 'Formularz zamówienia';
+$lang['Start'] = 'Start';
+$lang['Rules_and_Policies'] = 'Regulamin';
+$lang['Search_results'] = 'Wyniki wyszukiwania';
+$lang['Uncategorized'] = 'Bez kategorii';
+$lang['Site_map'] = 'Mapa strony';
+$lang['Contact_us'] = 'Kontakt';
 ?>

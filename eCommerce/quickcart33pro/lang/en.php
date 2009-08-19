@@ -319,4 +319,14 @@ $lang['send'] = 'send';
 $lang['Rss'] = 'RSS';
 $lang['News_on_page'] = 'News on page';
 $lang['Date'] = 'Date';
+
+//epesi
+$lang['Basket'] = 'Basket';
+$lang['Order_form'] = 'Order form';
+$lang['Start'] = 'Start';
+$lang['Rules_and_Policies'] = 'Rules and Policies';
+$lang['Search_results'] = 'Search results';
+$lang['Uncategorized'] = 'Uncategorized';
+$lang['Site_map'] = 'Site map';
+$lang['Contact_us'] = 'Contact us';
 ?>
