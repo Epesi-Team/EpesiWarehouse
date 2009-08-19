@@ -313,7 +313,7 @@ class Pages
   */
   function generateCache( ){
   	//epesi {
-	global $config;
+	global $config,$lang;
     $this->aPages             = null;
     $this->aPagesChildrens    = null;
     $this->aPagesParents      = null;
@@ -389,50 +389,50 @@ class Pages
 	//basket
 	$id = 3;
 	$config['basket_page'] = $id;
-	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => 'basket', 'sNameTitle' => '', 'sDescriptionShort' => '', 'iPosition' => 0,
+	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => $lang['Basket'], 'sNameTitle' => '', 'sDescriptionShort' => '', 'iPosition' => 0,
 					 'iType' => 1, 'iSubpagesShow' => 1, 'iProducts' => 0);
     $this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
     $this->aPagesParentsTypes[1][] = $id;
 	//order
 	$id = 7;
-	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => 'order form', 'sNameTitle' => '', 'sDescriptionShort' => '', 'iPosition' => 0,
+	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => $lang['Order_form'], 'sNameTitle' => '', 'sDescriptionShort' => '', 'iPosition' => 0,
 					 'iType' => 5, 'iSubpagesShow' => 1, 'iProducts' => 0, 'sTheme'=>'order.php');
     $this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
     $this->aPagesParentsTypes[5][] = $id;
 	//start page
 	$id = 11;
-	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => 'Start', 'sNameTitle' => '', 'sDescriptionShort' => getVariable('ecommerce_start_page'), 'iPosition' => 0,
+	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => $lang['Start'], 'sNameTitle' => '', 'sDescriptionShort' => getVariable('ecommerce_start_page'), 'iPosition' => 0,
 					 'iType' => 2, 'iSubpagesShow' => 1, 'iProducts' => 0);
     $this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
     $this->aPagesParentsTypes[2][] = $id;
 	//rules and policies
 	$id = 15;
-	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => 'Rules and Policies', 'sNameTitle' => '', 'sDescriptionShort' => getVariable('ecommerce_rules'), 'iPosition' => 1,
+	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => $lang['Rules_and_Policies'], 'sNameTitle' => '', 'sDescriptionShort' => getVariable('ecommerce_rules'), 'iPosition' => 1,
 					 'iType' => 2, 'iSubpagesShow' => 1, 'iProducts' => 0);
     $this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
     $this->aPagesParentsTypes[2][] = $id;
 	//search
 	$id = 19;
-	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => 'Search results', 'sNameTitle' => '', 'sDescriptionShort' => '', 'iPosition' => 0,
+	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => $lang['Search_results'], 'sNameTitle' => '', 'sDescriptionShort' => '', 'iPosition' => 0,
 					 'iType' => 5, 'iSubpagesShow' => 1, 'iProducts' => 0);
     $this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
     $this->aPagesParentsTypes[5][] = $id;
 
 	//uncategorized products
 	$id = 23;
-	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => 'Uncategorized', 'sNameTitle' => 'Uncategorized', 'sDescriptionShort' => '', 'iPosition' => 1000, 'iType' => 3, 'iSubpagesShow' => 1, 'iProducts' => 1, 'sDescriptionFull'=>'', 'sMetaDescription' => '', 'sMetaKeywords' =>'' );
+	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => $lang['Uncategorized'], 'sNameTitle' => 'Uncategorized', 'sDescriptionShort' => '', 'iPosition' => 1000, 'iType' => 3, 'iSubpagesShow' => 1, 'iProducts' => 1, 'sDescriptionFull'=>'', 'sMetaDescription' => '', 'sMetaKeywords' =>'' );
 	$this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
 	$this->aPagesParentsTypes[3][] = $id;
 	
 	//sitemap
 	$id = 27;
-	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => 'site map', 'sNameTitle' => '', 'sDescriptionShort' => '', 'iPosition' => 1000, 'iType' => 0, 'iSubpagesShow' => 1, 'iProducts' => 0, 'sDescriptionFull'=>'', 'sMetaDescription' => '', 'sMetaKeywords' =>'' );
+	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => $lang['Site_map'], 'sNameTitle' => '', 'sDescriptionShort' => '', 'iPosition' => 1000, 'iType' => 0, 'iSubpagesShow' => 1, 'iProducts' => 0, 'sDescriptionFull'=>'', 'sMetaDescription' => '', 'sMetaKeywords' =>'' );
 	$this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
 	$this->aPagesParentsTypes[1][] = $id;
 
 	//sitemap
 	$id = 31;
-	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => 'contact us', 'sNameTitle' => '', 'sDescriptionShort' => getVariable('ecommerce_contactus'), 'iPosition' => 1000, 'iType' => 0, 'iSubpagesShow' => 1, 'iProducts' => 0, 'sDescriptionFull'=>'', 'sMetaDescription' => '', 'sMetaKeywords' =>'');
+	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => $lang['Contact_us'], 'sNameTitle' => '', 'sDescriptionShort' => getVariable('ecommerce_contactus'), 'iPosition' => 1000, 'iType' => 0, 'iSubpagesShow' => 1, 'iProducts' => 0, 'sDescriptionFull'=>'', 'sMetaDescription' => '', 'sMetaKeywords' =>'');
 	$this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
 	$this->aPagesParentsTypes[2][] = $id;
 	//} epesi
