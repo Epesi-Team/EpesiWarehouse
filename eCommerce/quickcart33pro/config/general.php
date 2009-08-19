@@ -62,8 +62,13 @@ if( isset( $sLang ) && eregi('^[a-z0-9]{2}$',$sLang ) && is_file( 'config/'.$sLa
 else{
   if( !empty( $_COOKIE['sLanguage'] ) && eregi('^[a-z0-9]{2}$', $_COOKIE['sLanguage'] ) && is_file( 'config/'.$_COOKIE['sLanguage'].'.php' ) && is_file( 'config/epesi_'.$_COOKIE['sLanguage'].'.php' ) )
     define( 'LANGUAGE_CONFIG', $_COOKIE['sLanguage'] );
-  else
-    define( 'LANGUAGE_CONFIG', $config['default_lang'] );
+  else {
+    require_once($config['dir_libraries'].'GeoIP.php');
+    if(is_file( 'config/'.GEOIP_COUNTRY.'.php' ) && is_file( 'config/epesi_'.GEOIP_COUNTRY.'.php' ))
+	define('LANGUAGE_CONFIG', GEOIP_COUNTRY);
+    else
+	define('LANGUAGE_CONFIG', $config['default_lang']);
+  }
 }
 
 $config['config']       = 'config/general.php';
