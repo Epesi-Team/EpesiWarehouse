@@ -40,17 +40,18 @@
 <div id="container">
   <div id="main">
     <div id="head1">
-      $sMenu1
-    </div>
-    <div id="head2">
       <div id="logo">
-        <h1><a href="$config[index]" tabindex="1"><img src="$config[dir_templates]img/logo.jpg" alt="$config[title]" /></a></h1>
+        <h1><a href="$config[index]" tabindex="1"><img src="$config[dir_templates]img/logo.gif" alt="$config[title]" /></a></h1>
         <h2>$config[slogan]</h2>
       </div>
-      <div id="navipath">$sPagesTree</div>
+      $sMenu1
+      <div id="searchform">$sSearchForm</div>
     </div>
     <div id="head3">
       $sMenu2
+    </div>
+    <div id="head4">
+      <div id="navipath">$sPagesTree</div>
     </div>
     <div id="body">
       <div id="column2">
@@ -58,7 +59,6 @@
       </div>
 
       <div id="column">
-        $sSearchForm
         $sMenu3
         $sMenu4
         $sPoll
@@ -70,6 +70,8 @@
         $sNewsletterForm
       </div>
       <div id="content">
+        <div id="shadow-top"></div>
+        <div id="shadow-corner"></div>
         <div id="banner0">$aBanners[0]</div>
 <!-- END BODY -->
 
@@ -105,23 +107,25 @@
 <div id="container">
   <div id="main">
     <div id="head1">
-      $sMenu1
-    </div>
-    <div id="head2">
       <div id="logo">
-        <h1><a href="$config[index]" tabindex="1"><img src="$config[dir_templates]img/logo.jpg" alt="$config[title]" /></a></h1>
+        <h1><a href="$config[index]" tabindex="1"><img src="$config[dir_templates]img/logo.gif" alt="$config[title]" /></a></h1>
         <h2>$config[slogan]</h2>
       </div>
-      <div id="navipath">$sPagesTree</div>
+      $sMenu1
     </div>
     <div id="head3">
       $sMenu2
+    </div>
+    <div id="head4">
+      <div id="navipath">$sPagesTree</div>
     </div>
     <div id="orderbody">
       <div id="column2">
         <!-- additional column, hidden in styles -->
       </div>
       <div id="content">
+        <div id="shadow-top"></div>
+        <div id="shadow-corner"></div>
         <div id="banner0">$aBanners[0]</div>
 <!-- END ORDER_BODY -->
 
