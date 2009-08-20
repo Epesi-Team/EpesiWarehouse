@@ -124,22 +124,6 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 		return self::$subpage_as_opts[$r['show_subpages_as']];
 	}
 
-	public static $payment_related_opts = array(''=>'---','1'=>'DotPay','2'=>'Przelewy24','3'=>'PayPal', '4'=>'Platnosci.pl', '5'=>'Żagiel');
-
-  	public static function QFfield_payment_related_with(&$form, $field, $label, $mode, $default) {
-		if ($mode=='add' || $mode=='edit') {
-			$form->addElement('select', $field, $label, self::$payment_related_opts, array('id'=>$field));
-			if ($mode=='edit') $form->setDefaults(array($field=>$default));
-		} else {
-			$form->addElement('static', $field, $label);
-			$form->setDefaults(array($field=>self::$payment_related_opts[$default]));
-		}
-	}
-
-  	public static function display_payment_related_with($r, $nolink=false) {
-		return self::$payment_related_opts[$r['relate_with']];
-	}
-
   	public static function parent_page_crits($v, $rec) {
 		if(!$rec || !isset($rec['id']))
 			return array();
@@ -527,20 +511,6 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 		$form->addElement('static', $field, $label, $default);
 	}
 
-	public static function display_payment_system($r) {
-		if(is_array($r)) $r = $r['payment_system'];
-		if(isset(self::$payment_related_opts[$r]))
-		    return self::$payment_related_opts[$r];
-		return "---";
-	}
-	
-	private static $last_payment_system;
-
-  	public static function QFfield_payment_system(&$form, $field, $label, $mode, $default) {
-		$form->addElement('static', $field, $label, self::display_payment_system($default));
-		self::$last_payment_system = $default;
-	}
-	
 	private static function get_payment_channel($sys,$chn) {
 	    static $aPay;
 	    if(!isset($aPay)) {
@@ -584,8 +554,9 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 		return self::get_payment_channel($r['payment_system'],$r['payment_channel']);
 	}
 
-  	public static function QFfield_payment_channel(&$form, $field, $label, $mode, $default) {
-		$form->addElement('static', $field, $label, self::get_payment_channel(self::$last_payment_system,$default));
+  	public static function QFfield_payment_channel(&$form, $field, $label, $mode, $default,$dupa,$parent_rb) {
+		$ord = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders',$parent_rb->record['transaction_id']);
+		$form->addElement('static', $field, $label, 'TODO:'.self::get_payment_channel($ord['payment_type'],$default));
 	}
 	
 	public static function display_payment_realized($r) {

@@ -204,23 +204,10 @@ class Premium_Warehouse_eCommerce extends Module {
 		if($this->is_back()) return false;
 		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
 	
-		$tb = & $this->init_module('Utils/TabbedBrowser');
-		$tb->set_tab($this->t("Payments"), array($this,'payments'),array());
-		$tb->set_tab($this->t("Prices"), array($this,'payments_carriers_assoc'),array());
-		$this->display_module($tb);
-		$this->tag();
-
-		return true;
-	}
-	
-	public function payments() {
-		$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_payments');
-		$this->display_module($this->rb);
-	}
-
-	public function payments_carriers_assoc() {
 		$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_payments_carriers');
 		$this->display_module($this->rb);
+		
+		return true;
 	}
 
 	public function actions_for_position($r, & $gb_row) {

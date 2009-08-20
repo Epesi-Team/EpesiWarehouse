@@ -197,7 +197,7 @@ class Orders
     if( isset( $aForm['sPaymentCarrier'] ) ){
       $aExp = explode( ';', $aForm['sPaymentCarrier'] );
       if( isset( $aExp[0] ) && isset( $aExp[1] ) )
-        $sPrice = $this->throwPaymentCarrierPrice( $aExp[0], $aExp[1]);
+        $sPrice = $this->throwPaymentCarrier( $aExp[0], $aExp[1]);
 	if($sPrice===false) unset($sPrice);
     }
     else{
@@ -251,20 +251,18 @@ class Orders
       $aForm['iInvoice'] = null;
 
     list($carrier,$payment) = explode( ';', $aForm['sPaymentCarrier'] );
-    $price = $this->throwPaymentCarrierPrice($carrier,$payment);
+    $aPayment = $this->throwPaymentCarrier($carrier,$payment);
+    $price = $aPayment['fPrice'];
     $currency = $this->getCurrencyId();
 
-    $aPayment = $this->throwPayment( $payment );
 
-    if( isset( $aPayment['iOuterSystem'] ) ){
-      $aForm['iPaymentSystem'] = $aPayment['iOuterSystem'];
+    if( isset( self::$payments_to_qcpayments[$payment] ) ){
       if( isset( $aForm['aPaymentChannel'][$aPayment['iPayment']] ) ) {
         $aForm['mPaymentChannel'] = $aForm['aPaymentChannel'][$aPayment['iPayment']];
       } else
         $aForm['mPaymentChannel'] = null;
     }
     else{
-      $aForm['iPaymentSystem'] = null;
       $aForm['mPaymentChannel'] = null;
     }
     $aForm['iPaymentRealized']  = 0;
@@ -281,11 +279,11 @@ class Orders
     $trans_id = '#'.str_pad($id, 6, '0', STR_PAD_LEFT);
     DB::Execute('UPDATE premium_warehouse_items_orders_data_1 SET f_transaction_id=%s WHERE id=%d',array($trans_id,$id));
 
-	DB::Execute('INSERT INTO premium_ecommerce_orders_data_1(f_transaction_id, f_language, f_email, f_ip, f_comment, f_invoice, f_payment_system, 
+	DB::Execute('INSERT INTO premium_ecommerce_orders_data_1(f_transaction_id, f_language, f_email, f_ip, f_comment, f_invoice, 
 						f_payment_channel,f_payment_realized,created_on) VALUES
-						(%d,%s,%s,%s,%s,%b,%d,%d,%b,%T)',
+						(%d,%s,%s,%s,%s,%b,%s,%b,%T)',
 					array($id,LANGUAGE,$aForm['sEmail'],$_SERVER['REMOTE_ADDR'],$aForm['sComment'],$aForm['iInvoice']?true:false,
-					$aForm['iPaymentSystem'],$aForm['mPaymentChannel'],$aForm['iPaymentRealized'],time()));
+					$aForm['mPaymentChannel'],$aForm['iPaymentRealized'],time()));
 
     $taxes = DB::GetAssoc('SELECT id, f_percentage FROM data_tax_rates_data_1 WHERE active=1');
 
@@ -333,7 +331,6 @@ class Orders
 				    o.f_ip as sIp,
 				    o.f_email as sEmail,
 				    o.f_language as sLanguage,
-				    o.f_payment_system as iPaymentSystem,
 				    o.f_payment_channel as mPaymentChannel,
 				    o.f_payment_realized as iPaymentRealized
 				    FROM premium_warehouse_items_orders_data_1 w INNER JOIN premium_ecommerce_orders_data_1 o ON o.f_transaction_id=w.id WHERE w.id=%d',array($iOrder));
@@ -358,10 +355,12 @@ class Orders
       $aData['fPaymentCarrierPrice'] = generatePrice( $aData['fCarrierPrice'], $aData['sPaymentPrice'] );
       $aData['sPaymentCarrierPrice'] = displayPrice( $aData['fPaymentCarrierPrice'] );
       $aData['sDate'] = displayDate( $aData['iTime'] );
-      if( !empty( $aData['iPaymentSystem'] ) && isset( $GLOBALS['aOuterPaymentOption'][$aData['iPaymentSystem']] ) ){
-        $aData['sPaymentChannel'] = $GLOBALS['aOuterPaymentOption'][$aData['iPaymentSystem']];
-        if( isset( $GLOBALS['aPay'][$aData['iPaymentSystem']][$aData['mPaymentChannel']] ) )
-          $aData['sPaymentChannel'] .= ' | '.$GLOBALS['aPay'][$aData['iPaymentSystem']][$aData['mPaymentChannel']];
+      $aData['sPaymentSystem'] = '';
+      if( isset( self::$payments_to_qcpayments[$aData['iPayment']] ) && isset( $GLOBALS['aOuterPaymentOption'][self::$payments_to_qcpayments[$aData['iPayment']]] ) ){
+        $aData['iPaymentSystem'] = self::$payments_to_qcpayments[$aData['iPayment']];
+        $aData['sPaymentChannel'] = $GLOBALS['aOuterPaymentOption'][self::$payments_to_qcpayments[$aData['iPayment']]];
+        if( isset( $GLOBALS['aPay'][self::$payments_to_qcpayments[$aData['iPayment']]][$aData['mPaymentChannel']] ) )
+          $aData['sPaymentChannel'] .= ' | '.$GLOBALS['aPay'][self::$payments_to_qcpayments[$aData['iPayment']]][$aData['mPaymentChannel']];
       }
       else
         $aData['sPaymentChannel'] = '-';
@@ -388,14 +387,14 @@ class Orders
   * @param int  $iCarrier
   * @param int  $iPayment
   */
-  function throwPaymentCarrierPrice( $iCarrier, $iPayment ){
+  function throwPaymentCarrier( $iCarrier, $iPayment){
     // { epesi
     if( isset( $GLOBALS['config']['delivery_free'] ) && $_SESSION['fOrderSummary'.LANGUAGE] >= $GLOBALS['config']['delivery_free'] ){
       return 0;
     }
     $currency = $this->getCurrencyId();
     $weight = $this->getWeight();
-    return DB::GetOne('SELECT f_price FROM premium_ecommerce_payments_carriers_data_1 WHERE active=1 AND f_payment=%d AND f_shipment=%d AND f_currency=%d
+    $row = DB::GetRow('SELECT f_price,f_description FROM premium_ecommerce_payments_carriers_data_1 WHERE active=1 AND f_payment=%s AND f_shipment=%d AND f_currency=%d
     			AND (
 			f_max_weight=(SELECT MIN(f_max_weight) FROM premium_ecommerce_payments_carriers_data_1 WHERE active=1 AND f_currency=%s AND f_max_weight>=%f)
 			OR
@@ -403,8 +402,13 @@ class Orders
 			    AND
 			(SELECT 1 FROM premium_ecommerce_payments_carriers_data_1 WHERE active=1 AND f_currency=%s AND f_max_weight>=%f LIMIT 1) is null
 			))',array($iPayment,$iCarrier,$currency,$currency,$weight,$currency,$weight));
-    // } epesi
-  } // end function throwPaymentCarrierPrice
+    if($row) {
+	    return array('fPrice'=>$row['f_price'],'sDescription'=>changeTxt( $row['f_description'], 'Ndsnl' ), 'iPayment'=>$iPayment, 'iCarrier'=>$iCarrier);
+    }
+    return false;
+  } // end function throwPaymentCarrier
+  
+  static $payments_to_qcpayments = array('DotPay'=>1,'Przelewy24'=>2,'PayPal'=>3, 'Platnosci.pl'=>4, 'Zagiel'=>5);
 
   /**
   * Return list of payments and carriers
@@ -415,7 +419,6 @@ class Orders
     $oTpl       =& TplParser::getInstance( );
     $content    = null;
     $sPaymentList= null;
-    $aOuterPayments = DB::GetAssoc('SELECT f_payment,f_relate_with FROM premium_ecommerce_payments_data_1 WHERE active=1');
 
     $freeDelivery = false;
     if( isset( $GLOBALS['config']['delivery_free'] ) && $_SESSION['fOrderSummary'.LANGUAGE] >= $GLOBALS['config']['delivery_free'] ){
@@ -436,11 +439,14 @@ class Orders
 			    AND
 			(SELECT 1 FROM premium_ecommerce_payments_carriers_data_1 WHERE active=1 AND f_currency=%s AND f_max_weight>=%f LIMIT 1) is null
 			))',array($currency,$currency,$weight,$currency,$weight));
+      $aOuterPayments = array();
       while($aExp = $ret->FetchRow()) {
         if($freeDelivery)
     	    $aPaymentsCarriers[$aExp['f_shipment']][$aExp['f_payment']] = 0;
 	else
     	    $aPaymentsCarriers[$aExp['f_shipment']][$aExp['f_payment']] = $aExp['f_price'];
+	if(isset(self::$payments_to_qcpayments[$aExp['f_payment']]))
+		$aOuterPayments[$aExp['f_payment']] = self::$payments_to_qcpayments[$aExp['f_payment']];
       }
       foreach( $aShipments as $iCarrier => $carrier_name ) {
         if(!isset($aPaymentsCarriers[$iCarrier])) continue;
@@ -553,7 +559,7 @@ class Orders
   * @return array
   * @param int  $iPayment
   */
-  function throwPayment( $iPayment ){
+/*  function throwPayment( $iPayment ){
     $payments = $this->getPayments();
     if(!isset($payments[$iPayment])) return null;
     $aData = DB::GetRow('SELECT f_relate_with as iOuterSystem, f_description as sDescription, f_payment as iPayment FROM premium_ecommerce_payments_data_1 WHERE f_payment=%s',array($iPayment));
@@ -565,7 +571,7 @@ class Orders
     else
       return null;
   } // end function throwPayment
-
+*/
   /**
   * Send email to admin with order details
   * @return void
@@ -579,7 +585,7 @@ class Orders
 
     $aData['sProducts'] = $this->listProducts( $sFile, $iOrder, 'ORDER_EMAIL_' );
     $aData['sOrderSummary'] = $this->aOrders[$iOrder]['sOrderSummary'];
-    $aPayment = $this->throwPayment( $aData['iPayment'] );
+    $aPayment = $this->throwPaymentCarrier( $aData['iCarrier'], $aData['iPayment'] );
     if( !empty( $aPayment['sDescription'] ) )
       $aData['sPaymentDescription'] = $aPayment['sDescription'];
 

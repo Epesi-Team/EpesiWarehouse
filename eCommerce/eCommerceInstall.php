@@ -77,21 +77,11 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		//payments and carriers
 		$fields = array(
 			array('name'=>'Payment', 	'type'=>'commondata', 'required'=>true, 'extra'=>false, 'visible'=>true, 'param'=>array('order_by_key'=>true,'Premium_Items_Orders_Payment_Types')),
-			array('name'=>'Relate with',		'type'=>'integer',	'required'=>false, 'extra'=>false, 'visible'=>true,'display_callback'=>array($this->get_type().'Common', 'display_payment_related_with'),'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_payment_related_with')),
-			array('name'=>'Description', 		'type'=>'long text', 'required'=>false, 'extra'=>false,'visible'=>true)
-		);
-		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_payments', $fields);
-
-		Utils_RecordBrowserCommon::set_favorites('premium_ecommerce_payments', false);
-		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_payments', 'eCommerce - Payments');
-		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_payments', array('Premium_Warehouse_eCommerceCommon', 'access_parameters'));
-
-		$fields = array(
-			array('name'=>'Payment', 	'type'=>'commondata', 'required'=>true, 'extra'=>false, 'visible'=>true, 'param'=>array('order_by_key'=>true,'Premium_Items_Orders_Payment_Types')),
 			array('name'=>'Shipment', 	'type'=>'commondata', 'required'=>true, 'extra'=>false, 'visible'=>true, 'param'=>array('order_by_key'=>true,'Premium_Items_Orders_Shipment_Types')),
 			array('name'=>'Currency', 	'type'=>'float', 'required'=>true, 'extra'=>false,'visible'=>true, 'display_callback'=>array($this->get_type().'Common', 'display_currency'),'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_currency')),
 			array('name'=>'Price', 		'type'=>'integer', 'required'=>true, 'extra'=>false,'visible'=>true),
-			array('name'=>'Max Weight',	'type'=>'float', 'required'=>false, 'extra'=>false,'visible'=>true, 'display_callback'=>array('Premium_Warehouse_ItemsCommon', 'display_weight'))
+			array('name'=>'Max Weight',	'type'=>'float', 'required'=>false, 'extra'=>false,'visible'=>true, 'display_callback'=>array('Premium_Warehouse_ItemsCommon', 'display_weight')),
+			array('name'=>'Description', 		'type'=>'long text', 'required'=>false, 'extra'=>false,'visible'=>true)
 		);
 		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_payments_carriers', $fields);
 
@@ -265,8 +255,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 			array('name'=>'IP', 			'type'=>'text', 'required'=>false, 'param'=>'32', 'extra'=>false, 'visible'=>false),
 			array('name'=>'Comment',		'type'=>'long text', 'required'=>false, 'extra'=>false),
 			array('name'=>'Invoice', 		'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>true),
-			array('name'=>'Payment System',		'type'=>'integer',	'required'=>true, 'extra'=>false, 'visible'=>true,'display_callback'=>array($this->get_type().'Common', 'display_payment_system'),'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_payment_system')),
-			array('name'=>'Payment Channel',	'type'=>'integer',	'required'=>true, 'extra'=>false, 'visible'=>true,'display_callback'=>array($this->get_type().'Common', 'display_payment_channel'),'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_payment_channel')),
+			array('name'=>'Payment Channel',	'type'=>'text', 'param'=>4,	'required'=>true, 'extra'=>false, 'visible'=>true,'display_callback'=>array($this->get_type().'Common', 'display_payment_channel'),'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_payment_channel')),
 			array('name'=>'Payment Realized',	'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>true,'display_callback'=>array($this->get_type().'Common', 'display_payment_realized'),'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_payment_realized'))
 		);
 		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_orders', $fields);
@@ -429,7 +418,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::new_record_field('company','eCommerce Category','multiselect', false, false, 'premium_warehouse_items_categories::Category Name', '', false, false, 16);
 		Utils_RecordBrowserCommon::set_QFfield_callback('company','eCommerce Category',array('Premium_Warehouse_ItemsCommon', 'QFfield_item_category'));
 
-		Utils_CommonDataCommon::new_array('Premium/Warehouse/eCommerce/Languages',array('en'=>'English','pl'=>'Polish'));
+		Utils_CommonDataCommon::new_array('Premium/Warehouse/eCommerce/Languages',array('en'=>'English','pl'=>'Polish','it'=>'Italian','fr'=>'French','nl'=>'Dutch','ru'=>'Russian'));
 		Utils_RecordBrowserCommon::new_record('premium_ecommerce_availability',
 				array('availability_code'=>'24h',
 					'position'=>0));
@@ -534,7 +523,6 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_pages');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_pages_data');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_prices');
-		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_payments');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_payments_carriers');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_polls');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_poll_answers');

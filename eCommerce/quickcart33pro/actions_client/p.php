@@ -171,7 +171,7 @@ if( isset( $iContent ) && is_numeric( $iContent ) ){
               $sPaymentOuterForm = $oTpl->tbHtml( 'payment.tpl', 'PAYMENT_FORM_'.$aOrder['iPaymentSystem'] );
               $sPaymentOuter = $oTpl->tbHtml( 'payment.tpl', 'PAYMENT_OUTER' );
             }
-            $aPayment = $oOrder->throwPayment( $aOrder['iPayment'] );
+            $aPayment = $oOrder->throwPaymentCarrier( $aOrder['iCarrier'], $aOrder['iPayment'] );
             if( !empty( $aPayment['sDescription'] ) || !empty( $sPaymentOuter ) )
               $sPaymentDescription = $oTpl->tbHtml( 'orders_print.tpl', 'ORDER_PRINT_PAYMENT' );
             $sOrder = $oTpl->tbHtml( 'orders_print.tpl', 'ORDER_PRINT' );
