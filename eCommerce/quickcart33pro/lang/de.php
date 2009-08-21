@@ -322,11 +322,11 @@ $lang['Date'] = 'Date';
 
 //epesi
 $lang['Basket'] = 'Wahrenkorb';
-$lang['Order_form'] = 'Order form';
+$lang['Order_form'] = 'Bestellungsformular';
 $lang['Start'] = 'Start';
-$lang['Rules_and_Policies'] = 'Rules and Policies';
-$lang['Search_results'] = 'Search results';
-$lang['Uncategorized'] = 'Uncategorized';
-$lang['Site_map'] = 'Site map';
-$lang['Contact_us'] = 'Contact us';
+$lang['Rules_and_Policies'] = 'Reglement';
+$lang['Search_results'] = 'Suchen Resultat';
+$lang['Uncategorized'] = 'Ohne Kategorie';
+$lang['Site_map'] = 'Webseite-Karte';
+$lang['Contact_us'] = 'Kontakt';
 ?>

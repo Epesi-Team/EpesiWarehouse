@@ -325,11 +325,11 @@ $lang['Date'] = 'Date';
 
 //epesi
 $lang['Basket'] = 'Le panier';
-$lang['Order_form'] = 'Order form';
+$lang['Order_form'] = 'Formule de commande';
 $lang['Start'] = 'Start';
-$lang['Rules_and_Policies'] = 'Rules and Policies';
-$lang['Search_results'] = 'Search results';
-$lang['Uncategorized'] = 'Uncategorized';
-$lang['Site_map'] = 'Site map';
-$lang['Contact_us'] = 'Contact us';
+$lang['Rules_and_Policies'] = 'Règlement';
+$lang['Search_results'] = 'Rechercher résultat';
+$lang['Uncategorized'] = 'Sans catégorie';
+$lang['Site_map'] = 'Sitemap';
+$lang['Contact_us'] = 'Le contact';
 ?>
