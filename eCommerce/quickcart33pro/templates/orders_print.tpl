@@ -98,6 +98,7 @@ $aData[sEmail]
 ---
 $lang[Summary_cost]: $aData[sOrderSummary] $config[currency_symbol]
 ---
+$aData[sPaymentDescription]
 <!-- END ORDER_EMAIL_BODY -->
 
 <!-- BEGIN ORDER_EMAIL_LIST -->|n|- $aData[sName] - $aData[sPrice] $config[currency_symbol] * $aData[iQuantity] = $aData[sSummary] $config[currency_symbol]<!-- END ORDER_EMAIL_LIST -->
