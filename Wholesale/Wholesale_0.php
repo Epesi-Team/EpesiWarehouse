@@ -30,22 +30,60 @@ class Premium_Warehouse_Wholesale extends Module {
 		$this->display_module($a);
 	}
 	
+	public function unlink_item($id) {
+		DB::Execute('UPDATE premium_warehouse_wholesale_items SET item_id=NULL WHERE id=%d', array($id));
+		return false;
+	}
+	
 	public function items_addon($arg) {
 		$gb = $this->init_module('Utils/GenericBrowser', null, 'wholesale_items_addon');
 		$gb->set_table_columns(array(
-			array('name'=>$this->t('SKU'), 'width'=>6, 'wrapmode'=>'nowrap'),
-			array('name'=>$this->t('Item Name'), 'width'=>40, 'wrapmode'=>'nowrap'),
-			array('name'=>$this->t('Distributor Code'), 'width'=>7, 'wrapmode'=>'nowrap'),
-			array('name'=>$this->t('Price'), 'width'=>7, 'wrapmode'=>'nowrap'),
-			array('name'=>$this->t('Quantity'), 'width'=>7, 'wrapmode'=>'nowrap'),
-			array('name'=>$this->t('Quantity Details'), 'width'=>7, 'wrapmode'=>'nowrap')
+			array('name'=>$this->t('SKU'), 'width'=>6, 'wrapmode'=>'nowrap', 'order'=>'item_id', 'search'=>'f_sku'),
+			array('name'=>$this->t('Item Name'), 'width'=>40, 'wrapmode'=>'nowrap', 'order'=>'distributor_item_name', 'search'=>'distributor_item_name'),
+			array('name'=>$this->t('Distributor Code'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'internal_key', 'search'=>'internal_key'),
+			array('name'=>$this->t('Price'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'price'),
+			array('name'=>$this->t('Quantity'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'quantity'),
+			array('name'=>$this->t('Quantity Details'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'quantity_info')
 		));
 		$limit = $gb->get_limit(DB::GetOne('SELECT COUNT(*) FROM premium_warehouse_wholesale_items WHERE distributor_id=%d AND (quantity!=%d OR quantity_info!=%s)', array($arg['id'],0,'')));
-		$ret = DB::SelectLimit('SELECT * FROM premium_warehouse_wholesale_items WHERE distributor_id=%d AND (quantity!=%d OR quantity_info!=%s) ORDER BY item_id', $limit['numrows'], $limit['offset'], array($arg['id'],0,''));
+		$where = $gb->get_search_query();
+		if ($where) $where = 'AND '.$where;
+		$gb->set_default_order(array('Item Name'=>'ASC'));
+		$order = $gb->get_query_order();
+
+		$form2 = $this->init_module('Libs/QuickForm');
+		$form2->addElement('text', 'item_name', $this->t('Item Name'));
+		$form2->addElement('commondata', 'item_type', $this->t('Item Type'), 'Premium_Warehouse_Items_Type', array('empty_option'=>true, 'order_by_key'=>true));
+		$form2->addElement('text', 'product_code', $this->t('Product Code'));
+		$form2->addElement('text', 'manufacturer_part_number', $this->t('Manufacturer Part Number'));
+		$form2->setDefaults(array('item_type'=>1));
+		$lp = $this->init_module('Utils_LeightboxPrompt');
+		$lp->add_option('add', 'Add', '', $form2);
+		$this->display_module($lp, array($this->t('Create new item'), array('internal_id')));
+		$vals = $lp->export_values();
+		if ($vals) {
+			$validate = true;
+			if (!isset($vals['form']['item_name']) || !$vals['form']['item_name']) {
+				print('<b>'.$this->t('Item name is required').'</b><br>');
+				$validate = false;
+			}
+			if (!isset($vals['form']['item_type']) || !$vals['form']['item_type']) {
+				print('<b>'.$this->t('Item type is required').'</b><br>');
+				$validate = false;
+			}
+			if ($validate) { 
+				$iid = Utils_RecordBrowserCommon::new_record('premium_warehouse_items', $vals['form']);
+				DB::Execute('UPDATE premium_warehouse_wholesale_items SET item_id=%d WHERE id=%d', array($iid, $vals['params']['internal_id']));
+			}
+		}
+		
+		$ret = DB::SelectLimit('SELECT *, whl.id AS id FROM premium_warehouse_wholesale_items AS whl LEFT JOIN premium_warehouse_items_data_1 AS itm ON itm.id=whl.item_id WHERE distributor_id=%d AND (quantity!=%d OR quantity_info!=%s) '.$where.' '.$order, $limit['numrows'], $limit['offset'], array($arg['id'],0,''));
+
 		while ($row=$ret->FetchRow()) {
 			if ($row['item_id']) {
 //				$item = Utils_RecordBrowserCommon::get_record('premium_warehouse_items', $row['item_id']);
 				$sku = Utils_RecordBrowserCommon::create_linked_label('premium_warehouse_items', 'sku', $row['item_id']); 
+				$sku .= '<a '.$this->create_callback_href(array($this, 'unlink_item'), array($row['id'])).'><img src="'.Base_ThemeCommon::get_template_file('Premium/Warehouse/Wholesale','cancel.png').'" border="0" /></a>';
 			} else {
 				$form = $this->init_module('Libs/QuickForm');
 				$field = 'link_it_'.$row['id'];
@@ -54,6 +92,8 @@ class Premium_Warehouse_Wholesale extends Module {
 				$theme = $this->init_module('Base/Theme');
 				$form->assign_theme('form', $theme);
 				$theme->assign('field_name', $field);
+				$theme->assign('submit_button', '<a '.$form->get_submit_form_href().'><img src="'.Base_ThemeCommon::get_template_file('Premium/Warehouse/Wholesale','link.png').'" border="0" /></a>');
+				$theme->assign('cancel_button', '<a href="javascript:void(0);" onclick="$(\'link_it_'.$row['id'].'_form\').style.display=\'none\';$(\'link_it_'.$row['id'].'_choice\').style.display=\'inline\'"><img src="'.Base_ThemeCommon::get_template_file('Premium/Warehouse/Wholesale','cancel.png').'" border="0" /></a>');
 				ob_start();
 				$theme->display('match_form');
 				if ($form->validate()) {
@@ -62,7 +102,13 @@ class Premium_Warehouse_Wholesale extends Module {
 					DB::Execute('UPDATE premium_warehouse_wholesale_items SET item_id=%d WHERE id=%d', array($item_id, $row['id']));
 					location(array());
 				} else {
-					$sku = ob_get_clean();
+					$sku = 	'<span id="link_it_'.$row['id'].'_form" style="display:none;">'.
+								ob_get_clean().
+							'</span>'.
+							'<span id="link_it_'.$row['id'].'_choice">'.
+								'<a href="javascript:void(0);" onclick="$(\'link_it_'.$row['id'].'_form\').style.display=\'inline\';$(\'link_it_'.$row['id'].'_choice\').style.display=\'none\'"><img src="'.Base_ThemeCommon::get_template_file('Premium/Warehouse/Wholesale','link.png').'" border="0" /></a>'.
+								'<a '.$lp->get_href(array($row['id'])).'><img src="'.Base_ThemeCommon::get_template_file('Premium/Warehouse/Wholesale','add_item.png').'" border="0" /></a>'.
+							'</span>';
 				}
 			}
 			$gb->add_row(

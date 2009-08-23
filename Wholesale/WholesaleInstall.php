@@ -23,7 +23,6 @@ class Premium_Warehouse_WholesaleInstall extends ModuleInstall {
 			array('name'=>'Name', 			'type'=>'text', 'required'=>true, 'param'=>'128', 'extra'=>false, 'visible'=>true,'display_callback'=>array('Premium_Warehouse_WholesaleCommon', 'display_distributor')),
 			array('name'=>'Plugin', 		'type'=>'select', 'required'=>true, 'extra'=>false, 'QFfield_callback'=>array('Premium_Warehouse_WholesaleCommon','QFfield_plugin')),
 			array('name'=>'Company', 		'type'=>'crm_company', 'param'=>array('field_type'=>'select'), 'required'=>false, 'extra'=>false, 'visible'=>true),
-			array('name'=>'Add new items', 	'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>true),
 			array('name'=>'Last update', 	'type'=>'timestamp', 'required'=>false, 'extra'=>false, 'visible'=>true),
 			array('name'=>'Tax Rate', 	'type'=>'select', 'required'=>false, 'extra'=>false, 'visible'=>true, 'param'=>'data_tax_rates::Name', 'style'=>'integer'),
 			array('name'=>'Param1', 		'type'=>'text', 'required'=>false, 'param'=>'128', 'extra'=>true, 'visible'=>false),

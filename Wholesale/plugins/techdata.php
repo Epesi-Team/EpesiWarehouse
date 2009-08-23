@@ -209,10 +209,6 @@ class Premium_Warehouse_Wholesale__Plugin_techdata implements Premium_Warehouse_
 					if ($w_item===null) {
 						/*** no item was found matching this entry ***/
 						$new_items++;
-						if ($distributor['add_new_items']) {
-							$vendor = Utils_RecordBrowserCommon::get_id('company', 'company_name', $row_parts['VENDOR']);
-							$w_item = Utils_RecordBrowserCommon::new_record('premium_warehouse_items', array('item_name'=>$row_parts['NAZWA'], 'item_type'=>1, 'manufacturer_part_number'=>$row_parts['SYMBOLPROD'], 'manufacturer'=>$vendor));
-						}
 					} else {
 						/*** found match ***/
 						$item_exist++;

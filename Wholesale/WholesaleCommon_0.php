@@ -310,7 +310,7 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 
 	public function item_match_autocomplete($str) {
 		$ret = '<ul>';
-		$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items', array('~"item_name'=>DB::Concat(DB::qstr('%'),DB::qstr($str),DB::qstr('%'))), array(), array('item_name'=>'ASC'), 10);
+		$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items', array('(~"item_name'=>DB::Concat(DB::qstr('%'),DB::qstr($str),DB::qstr('%')), '|~"sku'=>DB::Concat(DB::qstr('%'),DB::qstr($str),DB::qstr('%'))), array(), array('item_name'=>'ASC'), 10);
 		foreach ($items as $k=>$v) {
 			$ret .= '<li>';
 			$ret .= '<span style="display:none;">'.$v['sku'].'</span>';
