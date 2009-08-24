@@ -859,16 +859,15 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 				$j = 'premium_ecommerce_pages_data_1 j';
 				break;
 			    case 'products':
-				$jf = 'i.f_item_name';
-				$j = '(premium_ecommerce_products_data_1 j, premium_warehouse_items_data_1 i)';
-				$aj = 'AND j.f_item_name=i.id';
+				$jf = 'j.f_item_name';
+				$j = 'premium_warehouse_items_data_1 j';
 				break;
 			}
-			$ret = DB::Execute('SELECT obj,count(visited_on) as num, '.$jf.' as name FROM premium_ecommerce_'.$tab.'_stats INNER JOIN '.$j.' ON (obj=j.id '.$aj.') WHERE visited_on>=%T AND visited_on<%T GROUP BY obj ORDER BY num DESC LIMIT 10',array($start_reg,$end_reg+3600*24));
+			$ret = DB::Execute('SELECT obj,count(visited_on) as num, '.$jf.' as name FROM premium_ecommerce_'.$tab.'_stats INNER JOIN '.$j.' ON (obj=j.id) WHERE visited_on>=%T AND visited_on<%T GROUP BY obj ORDER BY num DESC LIMIT 10',array($start_reg,$end_reg+3600*24));
 		}
 
 		$f = $this->init_module('Libs/OpenFlashChart');
-		$description = new title( $this->ht($tab) );
+		$title = new title( $this->ht($tab) );
 		$f->set_title( $title );
 
 		$av_colors = array('#339933','#999933', '#993333', '#336699', '#808080','#339999','#993399');
