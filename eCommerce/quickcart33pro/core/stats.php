@@ -26,7 +26,6 @@ function savePageStat( $iPage ){
 */
 function saveProductStat( $iProduct ){
     //{ epesi
-    print($iProduct.' ok<br>');
     DB::Execute('INSERT INTO premium_ecommerce_products_stats(obj,visited_on) VALUES (%d,%T)',array($iProduct,time()));
     //} epesi
 } // end function saveProductStat

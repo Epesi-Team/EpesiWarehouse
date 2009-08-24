@@ -292,7 +292,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 			print('Unable to create table premium_ecommerce_pages_stats.<br>');
 			return false;
 		}
-		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_products', 'Premium/Warehouse/eCommerce', 'pages_stats_addon', 'Visits');
+		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_pages', 'Premium/Warehouse/eCommerce', 'pages_stats_addon', 'Visits');
 		$ret = DB::CreateTable('premium_ecommerce_categories_stats','
 			obj I4 NOTNULL,
 			visited_on T DEFTIMESTAMP',
