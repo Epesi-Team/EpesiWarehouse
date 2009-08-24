@@ -5,28 +5,11 @@
 * @param string $sEmail
 */
 function saveNewsletter( $sEmail ){
-/*
-  $oFF =& FlatFiles::getInstance( );
-
-  deleteNewsletter( $sEmail );
-  $oFF->save( DB_NEWSLETTER, Array( 'sEmail' => $sEmail ) );
-  */
   //{ epesi
   DB::Execute('INSERT INTO premium_ecommerce_newsletter_data_1(f_email,created_on) VALUES(%s,%T)',array($sEmail,time()));
   //} epesi
 } // end function saveNewsletter
 
-/**
-* Delete email from newsletter
-* @return void
-* @param string $sEmail
-*/
-/* //epesi - not needed
-function deleteNewsletter( $sEmail ){
-  $oFF =& FlatFiles::getInstance( );
-  $oFF->deleteInFile( DB_NEWSLETTER, $sEmail, 'sEmail' );
-} // end function deleteNewsletter
-*/
 
 if( !function_exists( 'checkEmail' ) ){
   /**

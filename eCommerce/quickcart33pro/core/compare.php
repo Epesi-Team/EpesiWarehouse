@@ -149,36 +149,11 @@ function listSubPagesCompare( $sFile, $iPageParent ){
 * Zwraca nazwy kategorii nokaut
 * @return array
 */
-/*
-function throwCategoriesNokautNames( ){
-  $oFF =& FlatFiles::getInstance( );
-  return $oFF->throwFileArraySmall( DB_CATEGORIES_NOKAUT_NAMES, 'iCategory', 'sName' );
-} // end function throwCategoriesNokautNames
-
-*/
 /**
 * Throws minimal couriers price
 * @return float
 */
 function throwCourierMinPrice( ){
-  /*$oFF =& FlatFiles::getInstance( );
-  $aData = $oFF->throwFileArray( DB_CARRIERS );
-
-  $fMinPrice = null;
-  if( isset( $aData ) ){
-    $iCount   = count( $aData );
-    for( $i = 0; $i < $iCount; $i++ ){
-      if( !isset( $fMinPrice ) || $aData[$i]['fPrice'] < $fMinPrice )
-        $fMinPrice = $aData[$i]['fPrice'];
-    } // end for
-    if( !isset( $fMinPrice ) )
-      $fMinPrice = 0;
-
-    return $fMinPrice;
-  }
-  else
-    return null;
-    */
     //{ epesi
     global $config;
 

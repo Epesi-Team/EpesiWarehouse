@@ -97,58 +97,6 @@ function throwPollAnswers( $sFile, $iPoll, $bResult = null, $sOption = null, $iW
   return $content;
 } // end function throwPollAnswers
 
-/**
-* Return list of votes for poll questions
-* @return array
-*/
-/*
-function throwPollVotes( ){
-  $oFF    =& FlatFiles::getInstance( );
-  return $oFF->throwFileArraySmall( DB_POLL_VOTES, 'iAnswer', 'iVotes' );
-} // end function throwPollVotes
-
-*/
-/**
-* Checks if answer is for selected poll
-* @return boolean
-* @param array  $aData
-* @param int    $iPoll
-*/
-/*
-function checkThrowPollAnswers( $aData, $iPoll ){
-  if( $aData['iPoll'] == $iPoll )
-    return true;
-  else
-    return null;
-} // end function checkThrowPollAnswers
-*/
-
-/**
-* Return list of questions for poll
-* @return array
-* @param int $iPoll
-*/
-/*
-function dbThrowPollAnswers( $iPoll ){
-  $oFF    =& FlatFiles::getInstance( );
-  return $oFF->throwFileArray( DB_POLL_ANSWERS, 'checkThrowPollAnswers', $iPoll );
-} // end function dbThrowPollAnswers
-*/
-
-/**
-* Returns selected answer data
-* @return array
-* @param int $iPoll
-*/
-/*
-function throwPollAnswerVotes( $iAnswer ){
-  $oFF    =& FlatFiles::getInstance( );
-  $aData = $oFF->throwData( DB_POLL_VOTES, $iAnswer, 'iAnswer' );
-  if( !is_numeric( $aData['iVotes'] ) )
-    $aData['iVotes'] = 0;
-  return $aData;
-} // end function throwPollAnswerVotese
-*/
 
 /**
 * Return list of questions for poll
@@ -161,10 +109,6 @@ function throwPollQuestions( $iPoll = null ){
 	return DB::GetRow('SELECT id as iPoll, f_question as sQuestions FROM premium_ecommerce_polls_data_1 WHERE active=1 AND f_publish=1 AND f_language=\''.LANGUAGE.'\' ORDER BY f_position DESC LIMIT 1');
     return DB::GetRow('SELECT id as iPoll, f_question as sQuestions FROM premium_ecommerce_polls_data_1 WHERE active=1 AND f_publish=1 AND f_language=\''.LANGUAGE.'\' AND id=%d',array($iPoll));
     //} epesi
-  /*$oFF    =& FlatFiles::getInstance( );
-  if( !isset( $iPoll ) )
-    $iPoll = $oFF->throwLastId( DB_POLL_QUESTIONS, 'iPoll' );
-  return $oFF->throwData( DB_POLL_QUESTIONS, $iPoll, 'iPoll' );*/
 } // end function throwPollQuestions
 
 
@@ -204,18 +148,6 @@ function throwPoll( $sFile, $iPoll = null, $sOption = null, $iWidth = 150 ){
 * @param int $iAnswer
 */
 function dbSavePollAnswer( $iAnswer, $iPoll ){
-/*
-  $oFF  =& FlatFiles::getInstance( );
-  if( !isset( $iPoll ) || $iPoll == 0 )
-    $iPoll = $oFF->throwLastId( DB_POLL_QUESTIONS, 'iPoll' );
-  $sPollCookieName = throwPollCookieName( $iPoll );
-  if( !isset( $_COOKIE[LANGUAGE.'_'.POLL_COOKIE_NAME.$sPollCookieName] ) ){
-    $aData = throwPollAnswerVotes( $iAnswer );
-    $oFF->save( DB_POLL_VOTES, Array( 'iAnswer' => $aData['iAnswer'], 'iVotes' => $aData['iVotes']+1 ), 'iAnswer' );
-    $_COOKIE[LANGUAGE.'_'.POLL_COOKIE_NAME.$sPollCookieName] = $aData['iAnswer'];
-    setCookie( LANGUAGE.'_'.POLL_COOKIE_NAME.$sPollCookieName, $aData['iAnswer'], time( ) + 2592000 );
-  }
-  */
   //{ epesi
   if( !isset( $iPoll ) || $iPoll == 0 )
     $iPoll = DB::GetOne('SELECT id FROM premium_ecommerce_polls_data_1 WHERE active=1 AND f_publish=1 AND f_language=\''.LANGUAGE.'\' ORDER BY f_position DESC LIMIT 1');

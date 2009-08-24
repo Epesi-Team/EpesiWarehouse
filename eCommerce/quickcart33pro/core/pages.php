@@ -176,33 +176,6 @@ class Pages
   */
   function throwPage( $iPage ){
     if( isset( $this->aPages[$iPage] ) ){
-/*      $aFile      = file( DB_PAGES_EXT );
-      $iCount     = count( $aFile );
-      $sFunction  = LANGUAGE.'_pages_ext';
-      for( $i = 1; $i < $iCount; $i++ ){
-        $aExp = explode( '$', $aFile[$i] );
-        if( $aExp[0] == $iPage ){
-          $aData = $sFunction( $aExp );
-          break;
-        }
-      } // end for
-      if( isset( $aData ) ){
-        $aFile = null;
-        if( defined( 'CUSTOMER_PAGE' ) && strstr( $aData['sDescriptionFull'], '[break]' ) ){
-          $aExp = explode( '[break]', $aData['sDescriptionFull'] );
-          if( isset( $GLOBALS['aActions']['o4'] ) && is_numeric( $GLOBALS['aActions']['o4'] ) )
-            $iPageContent = $GLOBALS['aActions']['o4'];
-          else
-            $iPageContent = 1;
-
-          if( isset( $aExp[$iPageContent - 1] ) ){
-            $aData['sDescriptionFull'] = $aExp[$iPageContent - 1];
-            $aData['sPages'] = countPages( count( $aExp ), 1, $iPageContent, throwPageUrl( $this->aPages[$iPage]['sLinkName'].',,', true ), null, FRIENDLY_LINKS );
-          }
-        }
-
-        return array_merge( $this->aPages[$iPage], $aData );
-      }*/
       	  //epesi {
 	  return $this->aPages[$iPage];
 	  //} epesi

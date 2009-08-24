@@ -14,7 +14,7 @@ if( isset( $aActions['a'] ) && is_numeric( $aActions['a'] ) ){
 
     if( !empty( $aData['iComments'] ) && $aData['iComments'] == 1 ){
       if( isset( $_POST['sOption'] ) && $_POST['sOption'] == 'saveComment' && !empty( $_POST['sContent'] ) && !eregi( "\[url|<a href=", $_POST['sContent'] ) && !empty( $_POST['sName'] ) ){
-        addComment( $_POST, $iProduct, DB_PRODUCTS_COMMENTS );
+        addComment( $_POST, $iProduct, true);
         $sIndex = ( !isset( $config['index'] ) || ( isset( $config['index'] ) && $config['index'] == '?' ) ) ? $_SERVER['PHP_SELF'] : null;
         $sAnd = isset( $sIndex ) ? '&' : '?';
         header( 'Location: '.$sIndex.$aData['sLinkName'].$sAnd.'iCommentAdded=1' );
@@ -22,7 +22,7 @@ if( isset( $aActions['a'] ) && is_numeric( $aActions['a'] ) ){
       }
 
       $sCommentsList = $oTpl->tbHtml( $aData['sTemplate'], 'COMMENTS_TITLE' );
-      $sCommentsList .= listComments( $aData['sTemplate'], $iProduct, DB_PRODUCTS_COMMENTS );
+      $sCommentsList .= listComments( $aData['sTemplate'], $iProduct, true );
       $oTpl->unsetVariables( );
       $sCommentsForm = isset( $iCommentAdded ) ? $oTpl->tbHtml( 'messages.tpl', 'COMMENT_ADDED' ) : $oTpl->tbHtml( $aData['sTemplate'], 'COMMENTS_FORM' );
     }

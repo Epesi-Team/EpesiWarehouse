@@ -18,10 +18,6 @@ function savePageStat( $iPage ){
 		break;
     }
     //} epesi
-    /*
-  $oFF =& FlatFiles::getInstance( );
-  $oFF->save( DB_PAGES_STATS, Array( 'iPage' => $iPage, 'iTime' => time( ) ) );
-  */
 } // end function savePageStat
 
 /**
@@ -30,12 +26,9 @@ function savePageStat( $iPage ){
 */
 function saveProductStat( $iProduct ){
     //{ epesi
+    print($iProduct.' ok<br>');
     DB::Execute('INSERT INTO premium_ecommerce_products_stats(obj,visited_on) VALUES (%d,%T)',array($iProduct,time()));
     //} epesi
-    /*
-  $oFF =& FlatFiles::getInstance( );
-  $oFF->save( DB_PRODUCTS_STATS, Array( 'iProduct' => $iProduct, 'iTime' => time( ) ) );
-  */
 } // end function saveProductStat
 
 /**
@@ -51,10 +44,6 @@ function saveSearchedWords( $aWords ){
     $sWordsSorted = strtolower_utf8( implode( ' ', $aWords ) );
   $aWordsSorted = explode( ' ', $sWordsSorted );
   sort( $aWordsSorted );
-  /*
-  $oFF =& FlatFiles::getInstance( );
-  $oFF->save( DB_SEARCHED_WORDS, Array( 'sWords' => implode( ' ', $aWordsSorted ), 'iTime' => time( ) ) );
-  */
   //{ epesi
   DB::Execute('INSERT INTO premium_ecommerce_searched_stats(obj,visited_on) VALUES(%s,%T)',array(implode( ' ', $aWordsSorted ),time()));
   //} epesi

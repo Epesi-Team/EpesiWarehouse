@@ -71,7 +71,6 @@ else{
   }
 }
 
-$config['config']       = 'config/general.php';
 require_once(LANGUAGE_CONFIG.'.php');
 require_once('epesi_'.LANGUAGE_CONFIG.'.php');
 if(!defined('LANGUAGE')) {
@@ -101,40 +100,6 @@ define( 'DIR_LIBRARIES',  $config['dir_libraries'] );
 define( 'DIR_LANG',       $config['dir_lang'] );
 define( 'DIR_TEMPLATES',  $config['dir_templates'] );
 define( 'DIR_THEMES',     $config['dir_themes'] );
-
-define( 'DB_PAGES',       $config_db['pages'] );
-define( 'DB_PAGES_EXT',   $config_db['pages_ext'] );
-define( 'DB_PAGES_FILES', $config_db['pages_files'] );
-define( 'DB_CATEGORIES_NOKAUT_NAMES', $config_db['categories_nokaut_names'] );
-define( 'DB_POLL_QUESTIONS', $config_db['poll_questions'] );
-define( 'DB_POLL_ANSWERS',   $config_db['poll_answers'] );
-define( 'DB_POLL_VOTES',     $config_db['poll_votes'] );
-define( 'DB_PRODUCTS_RELATED', $config_db['products_related'] );
-define( 'DB_BANNERS', $config_db['banners'] );
-define( 'DB_BANNERS_STATS', $config_db['banners_stats'] );
-define( 'DB_BOXES', $config_db['boxes'] );
-define( 'DB_PAGES_STATS',     $config_db['pages_stats'] );
-define( 'DB_SEARCHED_WORDS',  $config_db['searched_words'] );
-define( 'DB_PRODUCTS_STATS',  $config_db['products_stats'] );
-define( 'DB_FEATURES', $config_db['features'] );
-define( 'DB_FEATURES_PRODUCTS', $config_db['features_products'] );
-define( 'DB_PAGES_COMMENTS', $config_db['pages_comments'] );
-define( 'DB_PRODUCTS_COMMENTS', $config_db['products_comments'] );
-define( 'DB_NEWSLETTER', $config_db['newsletter'] );
-define( 'DB_PRODUCTS',       $config_db['products'] );
-define( 'DB_PRODUCTS_EXT',   $config_db['products_ext'] );
-define( 'DB_PRODUCTS_FILES', $config_db['products_files'] );
-define( 'DB_PRODUCTS_PAGES', $config_db['products_pages'] );
-define( 'DB_ORDERS_TEMP', $config_db['orders_temp'] );
-define( 'DB_ORDERS', $config_db['orders'] );
-define( 'DB_ORDERS_PRODUCTS', $config_db['orders_products'] );
-define( 'DB_ORDERS_COMMENTS', $config_db['orders_comments'] );
-define( 'DB_ORDERS_STATUS', $config_db['orders_status'] );
-define( 'DB_PAYMENTS', $config_db['payments'] );
-define( 'DB_CARRIERS', $config_db['carriers'] );
-define( 'DB_CARRIERS_PAYMENTS', $config_db['carriers_payments'] );
-
-define( 'DB_CONFIG',      $config['config'] );
 
 define( 'MAX_DIMENSION_OF_IMAGE', $config['max_dimension_of_image'] );
 

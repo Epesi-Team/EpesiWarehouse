@@ -72,7 +72,7 @@ class Products
 								d.f_keywords as sMetaKeywords,
 								it.f_weight as sWeight,
 								it.f_manufacturer as iProducer,
-								loc.f_quantity,
+								SUM(loc.f_quantity),
 								it.f_cost fPrice2,
 								it.f_tax_rate tax2,
 								dist.quantity as distributorQuantity,
@@ -86,13 +86,12 @@ class Products
 					LEFT JOIN premium_ecommerce_availability_labels_data_1 avl ON (pr.f_available=avl.f_availability AND avl.f_language="'.LANGUAGE.'" AND avl.active=1) 
 					LEFT JOIN premium_warehouse_location_data_1 loc ON (loc.f_item_sku=it.id AND loc.f_quantity>0 AND loc.active=1)
 					LEFT JOIN (premium_warehouse_wholesale_items dist, premium_warehouse_distributor_data_1 distributor) ON (dist.item_id=it.id AND dist.quantity>0 AND distributor.id=dist.distributor_id AND dist.price=(SELECT MIN(tmp.price) FROM premium_warehouse_wholesale_items tmp WHERE tmp.item_id=it.id))
-					 WHERE pr.f_publish=1 AND pr.active=1 '.($where?' AND ('.$where.')':'').' ORDER BY pr.f_position'.($limit!==null?' LIMIT '.(int)$limit.($offset!==null?' OFFSET '.(int)$offset:''):''));
+					 WHERE pr.f_publish=1 AND pr.active=1 '.($where?' AND ('.$where.')':'').' GROUP BY it.id ORDER BY pr.f_position'.($limit!==null?' LIMIT '.(int)$limit.($offset!==null?' OFFSET '.(int)$offset:''):''));
 
         $taxes = DB::GetAssoc('SELECT id, f_percentage FROM data_tax_rates_data_1 WHERE active=1');
 	$autoprice = getVariable('ecommerce_autoprice');
 	$minimal = getVariable('ecommerce_minimal_profit');
 	$percentage = getVariable('ecommerce_percentage_profit');
-	
 	while($aExp = $ret->FetchRow()) {
 		if($aExp['sName']=='') 
 			$aExp['sName'] = $aExp['sName2'];
@@ -104,20 +103,20 @@ class Products
 				$netto = $rr[0];
 				$profit = $netto*$percentage/100;
 				if($profit<$minimal) $profit = $minimal;
-				$gross = number_format((float)($netto+$profit)*(100+$taxes[$aExp['tax2']])/100,2);
-				$aExp['fPrice'] = $gross;
+				$aExp['fPrice'] = (float)($netto+$profit)*(100+$taxes[$aExp['tax2']])/100;
 				$aExp['tax'] = $aExp['tax2'];
 			} elseif($aExp['fPrice3'] && $aExp['price_currency']==$currency) {
 				$netto = $aExp['fPrice3'];
 				$profit = $netto*$percentage/100;
 				if($profit<$minimal) $profit = $minimal;
-				$gross = number_format((float)($netto+$profit)*(100+$taxes[$aExp['tax3']])/100,2);
-				$aExp['fPrice'] = $gross;
+				$aExp['fPrice'] = (float)($netto+$profit)*(100+$taxes[$aExp['tax3']])/100;
 				$aExp['tax'] = $aExp['tax3'];
 			}
 		}
 		if(!$aExp['f_quantity'] && !$aExp['distributorQuantity'])
 			$aExp['fPrice']='';
+		if($aExp['fPrice'])
+			$aExp['fPrice'] = number_format($aExp['fPrice'],2);
 		$aExp['iComments'] = 1;
 		unset($aExp['sName2']);
 		$cats = array_filter(explode('__',$aExp['f_category']));
@@ -185,7 +184,7 @@ class Products
       }
       else{
 	if($iContent==23) {
-    	    $query .= 'it.f_category is null';
+    	    $query .= 'it.f_category is null OR it.f_category=\'\'';
 	} elseif($iContent%4==0) {
             if( DISPLAY_SUBCATEGORY_PRODUCTS === true ){
 	      // return all pages and subpages

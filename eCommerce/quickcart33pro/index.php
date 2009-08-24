@@ -43,7 +43,6 @@ else
 
 //$oFF  =& FlatFiles::getInstance( );
 $oTpl =& TplParser::getInstance( DIR_TEMPLATES, $config['embed_php'] );
-//$oFF->cacheFilesIndexes( $config_db );
 
 $oFile    =& Files::getInstance( );
 $oPage    =& Pages::getInstance( );

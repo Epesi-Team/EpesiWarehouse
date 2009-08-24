@@ -26,21 +26,6 @@ class Files
   } // end function Files
 
   /**
-  * Return database name
-  * @return mixed
-  * @param int  $iDbType
-  */
-/*  function throwDbNames( $iDbType = null ){
-    $aFiles[1] = DB_PAGES_FILES;
-    $aFiles[2] = DB_PRODUCTS_FILES;
-
-    if( isset( $iDbType ) )
-      return isset( $aFiles[$iDbType] ) ? $aFiles[$iDbType] : null;
-    else
-      return $aFiles;
-  } // end function throwDbNames
-*/
-  /**
   * List all images by types
   * @return array
   * @param string $sFile

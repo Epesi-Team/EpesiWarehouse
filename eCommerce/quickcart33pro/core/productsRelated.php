@@ -1,32 +1,6 @@
 <?php
 
 /**
-* Throw select from products list
-* @return string
-* @param string $sFile
-* @param int  $iProduct
-*/
-/*
-function listProductsRelatedSelect( $sFile, $iProduct ){
-  $oFF    =& FlatFiles::getInstance( );
-  $content = null;
-  $aData = $oFF->throwFileArraySmall( DB_PRODUCTS, 'iProduct', 'sName' );
-  if( isset( $aData ) && is_array( $aData ) ){
-    asort( $aData );
-    $aRelatedIds  = throwProductsRelated( $iProduct );
-    $iCount       = count( $aData );
-    foreach( $aData as $iProduct => $sName ){  
-      $sSelected = ( isset( $aRelatedIds[$iProduct] ) ) ? ' selected="selected"' : null;
-      $content .= '<option value="'.$iProduct.'" '.$sSelected.'>'.$sName.'</option>';
-    } // end for
-  }
-  return $content;
-} // end function
-*/
-
-
-
-/**
 * Trow list of related products
 * @return string
 * @param string $sFile
@@ -130,15 +104,6 @@ function checkThrowProductsRelated( $aData, $iProduct ){
 * @param int  $iProduct
 */
 function throwProductsRelated( $iProduct ){
-  /*$oFF      =& FlatFiles::getInstance( );
-  $aData    = $oFF->throwFileArray( DB_PRODUCTS_RELATED, 'checkThrowProductsRelated', $iProduct );
-  $iCount   = count( $aData );
-  $aReturn  = null;
-  for( $i = 0; $i < $iCount; $i++ ){  
-    $aReturn[$aData[$i]['iRelated']] = $aData[$i]['iRelated'];
-  } // end for
-  return $aReturn;
-*/
     //{ epesi
     $aReturn  = array();
     $rel = array_filter(explode('__',DB::GetOne('SELECT f_related_products FROM premium_ecommerce_products_data_1 WHERE f_item_name=%d AND active=1',array($iProduct))));
