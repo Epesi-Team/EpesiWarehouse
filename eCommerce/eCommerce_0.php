@@ -918,6 +918,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 		$query = 'SELECT visited_on FROM premium_ecommerce_'.$tab.'_stats WHERE obj='.$id;
 		$query_qty = 'SELECT count(*) FROM premium_ecommerce_'.$tab.'_stats WHERE obj='.$id;
 
+		$gb->set_default_order(array('Time'=>'DESC'));
 		$ret = $gb->query_order_limit($query, $query_qty);
 		
 		while(($row=$ret->FetchRow())) {
