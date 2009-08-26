@@ -45,9 +45,9 @@ class Premium_Warehouse_Wholesale extends Module {
 			array('name'=>$this->t('Quantity'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'quantity'),
 			array('name'=>$this->t('Quantity Details'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'quantity_info')
 		));
-		$limit = $gb->get_limit(DB::GetOne('SELECT COUNT(*) FROM premium_warehouse_wholesale_items WHERE distributor_id=%d AND (quantity!=%d OR quantity_info!=%s)', array($arg['id'],0,'')));
 		$where = $gb->get_search_query();
 		if ($where) $where = 'AND '.$where;
+		$limit = $gb->get_limit(DB::GetOne('SELECT COUNT(*) FROM premium_warehouse_wholesale_items WHERE distributor_id=%d AND (quantity!=%d OR quantity_info!=%s) '.$where, array($arg['id'],0,'')));
 		$gb->set_default_order(array('Item Name'=>'ASC'));
 		$order = $gb->get_query_order();
 
