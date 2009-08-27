@@ -62,7 +62,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 	public function applet($conf,$opts) {
 		$opts['go'] = true; // enable full screen
 		$rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items_orders','premium_warehouse_items_orders');
-		$limit = null;
+		$limit = 15;
 		$crits = array();
 		$sorting = array();
 		$cols = array(
