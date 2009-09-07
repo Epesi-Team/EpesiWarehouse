@@ -1131,6 +1131,21 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		return $values;
 	}
 
+	public static function display_last_price($r, $nolink=false, $desc=null) {
+		$price = Utils_CurrencyFieldCommon::get_values($r[$desc['id']]);
+		$ret = Utils_CurrencyFieldCommon::format($r[$desc['id']]);
+		if (!$nolink) {
+			$htmlinfo = array();
+			$htmlinfo['Net Price'] = Utils_CurrencyFieldCommon::format($r[$desc['id']]);
+			$htmlinfo['Tax'] = Data_TaxRatesCommon::get_tax_name($r['tax_rate']);
+			$htmlinfo['Tax Rate'] = Data_TaxRatesCommon::get_tax_rate($r['tax_rate']).'%';
+			$htmlinfo['Tax Value'] = Utils_CurrencyFieldCommon::format(($price[0]*Data_TaxRatesCommon::get_tax_rate($r['tax_rate']))/100, $price[1]);;
+			$htmlinfo['Gross Price'] = Utils_CurrencyFieldCommon::format(($price[0]*(100+Data_TaxRatesCommon::get_tax_rate($r['tax_rate'])))/100, $price[1]);;
+			$ret = Utils_TooltipCommon::create($ret, Utils_TooltipCommon::format_info_tooltip($htmlinfo,'Utils_RecordBrowser'), false);
+		}
+		return $ret;
+	}
+
 	public static function submit_order_details($values, $mode) {
 		static $notice='';
 		if ($notice!=='') print($notice);

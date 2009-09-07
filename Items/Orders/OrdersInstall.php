@@ -138,6 +138,8 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::set_display_callback('premium_warehouse_items', 'Quantity En Route', array('Premium_Warehouse_Items_OrdersCommon', 'display_quantity_on_route'));
 		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items', 'Last Sale Price', 'currency', false, false, '', 'currency', false, false);
 		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items', 'Last Purchase Price', 'currency', false, false, '', 'currency', false, false);
+		Utils_RecordBrowserCommon::set_display_callback('premium_warehouse_items','Last Sale Price',array('Premium_Warehouse_Items_OrdersCommon', 'display_last_price'));
+		Utils_RecordBrowserCommon::set_display_callback('premium_warehouse_items','Last Purchase Price',array('Premium_Warehouse_Items_OrdersCommon', 'display_last_price'));
 
 		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items','Reserved Qty','calculated', true, false, '', 'integer', false, false, 11);
 		Utils_RecordBrowserCommon::set_display_callback('premium_warehouse_items','Reserved Qty',array('Premium_Warehouse_Items_OrdersCommon', 'display_reserved_qty'));
