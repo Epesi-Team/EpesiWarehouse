@@ -540,6 +540,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	} 
 	
 	public static function check_sale_price($data) {
+		if (!isset($data['item_name'])) return true; // TODO: FIX, seriously!
 		$item_id = Utils_RecordBrowserCommon::get_id('premium_warehouse_items', 'item_name', $data['item_name']);
 		if (!is_numeric($item_id)) return array('item_name'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders', 'Item not found'));
 		$item = Utils_RecordBrowserCommon::get_record('premium_warehouse_items', $item_id);
@@ -1136,11 +1137,11 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		$ret = Utils_CurrencyFieldCommon::format($r[$desc['id']]);
 		if (!$nolink) {
 			$htmlinfo = array();
-			$htmlinfo['Net Price'] = Utils_CurrencyFieldCommon::format($r[$desc['id']]);
+			$htmlinfo[$desc['name']] = Utils_CurrencyFieldCommon::format($r[$desc['id']]);
 			$htmlinfo['Tax'] = Data_TaxRatesCommon::get_tax_name($r['tax_rate']);
 			$htmlinfo['Tax Rate'] = Data_TaxRatesCommon::get_tax_rate($r['tax_rate']).'%';
 			$htmlinfo['Tax Value'] = Utils_CurrencyFieldCommon::format(($price[0]*Data_TaxRatesCommon::get_tax_rate($r['tax_rate']))/100, $price[1]);;
-			$htmlinfo['Gross Price'] = Utils_CurrencyFieldCommon::format(($price[0]*(100+Data_TaxRatesCommon::get_tax_rate($r['tax_rate'])))/100, $price[1]);;
+			$htmlinfo[$desc['name'].' (Gross)'] = Utils_CurrencyFieldCommon::format(($price[0]*(100+Data_TaxRatesCommon::get_tax_rate($r['tax_rate'])))/100, $price[1]);;
 			$ret = Utils_TooltipCommon::create($ret, Utils_TooltipCommon::format_info_tooltip($htmlinfo,'Utils_RecordBrowser'), false);
 		}
 		return $ret;
