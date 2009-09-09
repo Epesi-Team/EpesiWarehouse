@@ -22,7 +22,7 @@ class Premium_Warehouse_Items extends Module {
 		if (isset($_REQUEST['recordset']) || $mod=='categories') {
 			if (isset($_REQUEST['recordset'])) $this->set_module_variable('recordset', 'categories');
 			$this->rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items_categories');
-			$this->rb->set_additional_actions_method($this, 'actions_for_position');
+			$this->rb->set_additional_actions_method(array($this, 'actions_for_position'));
 			$this->rb->force_order(array('position'=>'ASC','category_name'=>'ASC'));
 			$this->display_module($this->rb, array(array(),array('parent_category'=>'')));
 			return;
@@ -67,7 +67,7 @@ class Premium_Warehouse_Items extends Module {
 						));
 
 		if(ModuleManager::is_installed('Premium_Warehouse_eCommerce')>=0)
-    			$this->rb->set_additional_actions_method('Premium_Warehouse_eCommerceCommon', 'warehouse_item_actions');
+    			$this->rb->set_additional_actions_method(array('Premium_Warehouse_eCommerceCommon', 'warehouse_item_actions'));
 
 		$this->display_module($this->rb, array(array(),array(),$cols));
 	}

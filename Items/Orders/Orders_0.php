@@ -156,7 +156,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 			$cols['credit'] = false;
 			$cols['return_date'] = true;
 			$rb->set_defaults(array('return_date'=>$arg['return_date']));
-			$rb->set_additional_actions_method($this, 'actions_for_order_details');
+			$rb->set_additional_actions_method(array($this, 'actions_for_order_details'));
 		}
 		$order = array(array('transaction_id'=>$arg['id']), $cols, array());
 		$rb->set_button(false);

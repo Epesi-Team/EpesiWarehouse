@@ -63,7 +63,7 @@ class Premium_Warehouse_eCommerce extends Module {
 		$this->recordset = 'products';
 		$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_products');
 		$this->rb->set_defaults(array('publish'=>1,'status'=>1));
-		$this->rb->set_additional_actions_method($this, 'actions_for_position');
+		$this->rb->set_additional_actions_method(array($this, 'actions_for_position'));
 		$this->rb->force_order(array('position'=>'ASC'));
 		$this->display_module($this->rb);
 	}
@@ -95,7 +95,7 @@ class Premium_Warehouse_eCommerce extends Module {
 	
 		$this->recordset = 'parameters';
 		$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_parameters');
-		$this->rb->set_additional_actions_method($this, 'actions_for_position');
+		$this->rb->set_additional_actions_method(array($this, 'actions_for_position'));
 		$this->rb->force_order(array('position'=>'ASC'));
 		$this->display_module($this->rb);
 
@@ -108,7 +108,7 @@ class Premium_Warehouse_eCommerce extends Module {
 
 		$this->recordset = 'parameter_groups';
 		$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_parameter_groups');
-		$this->rb->set_additional_actions_method($this, 'actions_for_position');
+		$this->rb->set_additional_actions_method(array($this, 'actions_for_position'));
 		$this->rb->force_order(array('position'=>'ASC'));
 		$this->display_module($this->rb);
 
@@ -122,7 +122,7 @@ class Premium_Warehouse_eCommerce extends Module {
 		$this->recordset = 'boxes';
 		$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_boxes');
 		$this->rb->set_defaults(array('publish'=>1,'language'=>Base_LangCommon::get_lang_code()));
-		$this->rb->set_additional_actions_method($this, 'actions_for_position');
+		$this->rb->set_additional_actions_method(array($this, 'actions_for_position'));
 		$this->rb->force_order(array('position'=>'ASC'));
 		$this->display_module($this->rb);
 
@@ -149,7 +149,7 @@ class Premium_Warehouse_eCommerce extends Module {
 		$this->recordset = 'polls';
 		$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_polls');
 		$this->rb->set_defaults(array('publish'=>1,'language'=>Base_LangCommon::get_lang_code()));
-		$this->rb->set_additional_actions_method($this, 'actions_for_position');
+		$this->rb->set_additional_actions_method(array($this, 'actions_for_position'));
 		$this->rb->force_order(array('position'=>'ASC'));
 		$this->display_module($this->rb);
 
@@ -179,7 +179,7 @@ class Premium_Warehouse_eCommerce extends Module {
 	
 		$this->recordset = 'availability';
 		$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_availability');
-		$this->rb->set_additional_actions_method($this, 'actions_for_position');
+		$this->rb->set_additional_actions_method(array($this, 'actions_for_position'));
 		$this->rb->force_order(array('position'=>'ASC'));
 		$this->display_module($this->rb);
 
@@ -193,7 +193,7 @@ class Premium_Warehouse_eCommerce extends Module {
 		$this->recordset = 'pages';
 		$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_pages');
 		$this->rb->set_defaults(array('publish'=>1,'type'=>2));
-		$this->rb->set_additional_actions_method($this, 'actions_for_position');
+		$this->rb->set_additional_actions_method(array($this, 'actions_for_position'));
 		$this->rb->force_order(array('position'=>'ASC'));
 		$this->display_module($this->rb);
 
@@ -951,7 +951,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 			'language'=>array('width'=>1, 'wrapmode'=>'nowrap'),
 			'content'=>array('width'=>50, 'wrapmode'=>'nowrap')
 									));
-		$this->rb->set_additional_actions_method($this, 'comments_publish_action');
+		$this->rb->set_additional_actions_method(array($this, 'comments_publish_action'));
 		$this->display_module($this->rb,$args,'show_data');
 	
 	}
