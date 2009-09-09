@@ -55,12 +55,12 @@ require_once $config['dir_core'].'common.php';
 
 if( defined( 'CUSTOMER_PAGE' ) && !isset( $sLang ) )
   $sLang = getLanguageFromUrl( );
-if( isset( $sLang ) && eregi('^[a-z0-9]{2}$',$sLang ) && is_file( 'config/'.$sLang.'.php' ) && is_file( 'config/epesi_'.$sLang.'.php' ) ){
+if( isset( $sLang ) && preg_match('/^[a-z0-9]{2}$/i',$sLang ) && is_file( 'config/'.$sLang.'.php' ) && is_file( 'config/epesi_'.$sLang.'.php' ) ){
   setCookie( 'sLanguage', $sLang, time( ) + 86400 );
   define( 'LANGUAGE_CONFIG', $sLang );
 }
 else{
-  if( !empty( $_COOKIE['sLanguage'] ) && eregi('^[a-z0-9]{2}$', $_COOKIE['sLanguage'] ) && is_file( 'config/'.$_COOKIE['sLanguage'].'.php' ) && is_file( 'config/epesi_'.$_COOKIE['sLanguage'].'.php' ) )
+  if( !empty( $_COOKIE['sLanguage'] ) && preg_match('/^[a-z0-9]{2}$/i', $_COOKIE['sLanguage'] ) && is_file( 'config/'.$_COOKIE['sLanguage'].'.php' ) && is_file( 'config/epesi_'.$_COOKIE['sLanguage'].'.php' ) )
     define( 'LANGUAGE_CONFIG', $_COOKIE['sLanguage'] );
   else {
     require_once($config['dir_libraries'].'GeoIP.php');

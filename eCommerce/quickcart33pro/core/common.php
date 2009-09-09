@@ -166,7 +166,7 @@ function displayPrice( $fPrice ){
 * @param float  $fPrice
 */
 function normalizePrice( $fPrice ){
-  return sprintf( '%01.2f', ereg_replace( ',', '.', $fPrice ) );
+  return sprintf( '%01.2f', preg_replace( '/,/', '.', $fPrice ) );
 } // end function normalizePrice
 
 /**
@@ -176,8 +176,8 @@ function normalizePrice( $fPrice ){
 * @param float $fPrice2
 */
 function generatePrice( $fPrice1, $fPrice2 ){
-  if( ereg( '%', $fPrice2 ) ){
-    $fPrice2 = ereg_replace( '%', '', $fPrice2 );
+  if( preg_match( '/%/', $fPrice2 ) ){
+    $fPrice2 = preg_replace( '/%/', '', $fPrice2 );
     if( $fPrice2 < 0 ){
       return normalizePrice( $fPrice1 - ( $fPrice1 * ( -$fPrice2 / 100 ) ) );
     }
@@ -195,7 +195,7 @@ function generatePrice( $fPrice1, $fPrice2 ){
 * @param  string  $sEmail
 */
 function checkEmail( $sEmail ){
-  if( eregi( "^[a-z0-9_.-]+([_\\.-][a-z0-9]+)*@([a-z0-9_\.-]+([\.][a-z]{2,4}))+$", $sEmail ) )
+  if( preg_match( "/^[a-z0-9_.-]+([_\\.-][a-z0-9]+)*@([a-z0-9_\.-]+([\.][a-z]{2,4}))+$/i", $sEmail ) )
     return true;
   else
     return false;
@@ -310,7 +310,7 @@ function throwStreetDetails( $sStreet ){
   preg_match_all( "/[ ][0-9]{1,}[\/a-z0-9]*[ ]*$/i", $sStreet, $aStreet );
   if( isset( $aStreet[0][0] ) ){
     preg_match_all( "/([0-9a-z]{1,})[\/]*([0-9]*)[ ]*$/i", $aStreet[0][0], $aStreet );
-    $aData['sStreetName'] = ereg_replace( $aStreet[0][0]."$", "", $sStreet );
+    $aData['sStreetName'] = preg_replace( '/'.addcslashes($aStreet[0][0],'/')."$/", "", $sStreet );
     if( isset( $aStreet[1][0] ) )
       $aData['sStreetNumber1'] = $aStreet[1][0];
     if( isset( $aStreet[2][0] ) )

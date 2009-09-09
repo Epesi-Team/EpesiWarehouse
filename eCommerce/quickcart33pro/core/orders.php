@@ -590,7 +590,7 @@ class Orders
       $aData['sPaymentDescription'] = $aPayment['sDescription'];
 
     $oTpl->setVariables( 'aData', $aData );
-    $aSend['sMailContent'] = ereg_replace( '\|n\|', "\n", $oTpl->tbHtml( $sFile, 'ORDER_EMAIL_BODY' ) );
+    $aSend['sMailContent'] = preg_replace( '/\|n\|/', "\n", $oTpl->tbHtml( $sFile, 'ORDER_EMAIL_BODY' ) );
     $aSend['sTopic'] = $oTpl->tbHtml( $sFile, 'ORDER_EMAIL_TITLE' );
     $aSend['sSender']= $GLOBALS['config']['email'];
     sendEmail( $aSend, null, $aData['sEmail'] ); //send e-mail to client

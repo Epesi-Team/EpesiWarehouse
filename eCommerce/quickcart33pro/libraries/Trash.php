@@ -93,7 +93,7 @@ function changeTxt( $sContent, $sOption = null ){
   else
     $sContent = stripslashes( $sContent );
 
-  $sContent = ereg_replace( "\r", '', $sContent );
+  $sContent = preg_replace( "/\r/", '', $sContent );
 
   if( preg_match( '/len/i', $sOption ) )
     $sContent = checkLengthOfTxt( $sContent );
@@ -416,7 +416,7 @@ function is_date( $date, $format='ymd', $separator='-' ){
   $f['m'] = 2;
   $f['d'] = 2;
 
-  if ( ereg( "([0-9]{".$f[$format[0]]."})".$separator."([0-9]{".$f[$format[1]]."})".$separator."([0-9]{".$f[$format[2]]."})", $date ) ){
+  if ( preg_match( "/([0-9]{".$f[$format[0]]."})".$separator."([0-9]{".$f[$format[1]]."})".$separator."([0-9]{".$f[$format[2]]."})/", $date ) ){
     
     $y =    strpos( $format, 'y' );
     $m =    strpos( $format, 'm' );
@@ -475,7 +475,7 @@ function throwSelectFromArray( $aData, $mData = null ){
 */
 function getAction( $p ){
   global $a;
-  if( ereg( '-', $p ) ){
+  if( preg_match( '/-/', $p ) ){
     $aExp   = explode( '-', $p );
     $iCount = count( $aExp );
     for( $i = 0; $i < $iCount; $i++ ){

@@ -381,7 +381,7 @@ class Premium_Warehouse_eCommerce extends Module {
 		$files = scandir($path.'/config');
 		$langs = array();
 		foreach($files as $f) {
-			if(!ereg('^(.{2,3})\.php$',$f,$reqs))
+			if(!preg_match('/^(.{2,3})\.php$/i',$f,$reqs))
 				continue;
 			if(in_array($reqs[1].'.gif',$files) && in_array('epesi_'.$reqs[1].'.php',$files))
 				$langs[$reqs[1]] = $reqs[1];

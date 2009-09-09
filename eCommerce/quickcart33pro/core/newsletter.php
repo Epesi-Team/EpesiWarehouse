@@ -18,7 +18,7 @@ if( !function_exists( 'checkEmail' ) ){
   * @param  string  $sEmail
   */
   function checkEmail( $sEmail ){
-    if( eregi( "^[a-z0-9_.-]+([_\\.-][a-z0-9]+)*@([a-z0-9_\.-]+([\.][a-z]{2,4}))+$", $sEmail ) )
+    if( preg_match( "/^[a-z0-9_.-]+([_\\.-][a-z0-9]+)*@([a-z0-9_\.-]+([\.][a-z]{2,4}))+$/i", $sEmail ) )
       return true;
     else
       return false;

@@ -29,7 +29,7 @@ if( isset( $iContent ) && is_numeric( $iContent ) ){
     }
 
     if( !empty( $aData['iComments'] ) && $aData['iComments'] == 1 ){
-      if( isset( $_POST['sOption'] ) && $_POST['sOption'] == 'saveComment' && !empty( $_POST['sContent'] ) && !eregi( "\[url|<a href=|<a href=\"h", $_POST['sContent'] ) && !empty( $_POST['sName'] ) ){
+      if( isset( $_POST['sOption'] ) && $_POST['sOption'] == 'saveComment' && !empty( $_POST['sContent'] ) && !preg_match( "/\[url|<a href=|<a href=\"h/i", $_POST['sContent'] ) && !empty( $_POST['sName'] ) ){
         addComment( $_POST, $iContent );
         $sIndex = ( !isset( $config['index'] ) || ( isset( $config['index'] ) && $config['index'] == '?' ) ) ? REDIRECT : null;
         $sAnd = isset( $sIndex ) ? '&' : '?';
@@ -156,7 +156,7 @@ if( isset( $iContent ) && is_numeric( $iContent ) ){
             }
 
             $aOrder = $oOrder->throwOrder( $iOrder );
-            $aOrder['sComment'] = ereg_replace( '\|n\|', '<br />' , $aOrder['sComment'] );
+            $aOrder['sComment'] = preg_replace( '/\|n\|/', '<br />' , $aOrder['sComment'] );
             $sOrderProducts = $oOrder->listProducts( 'orders_print.tpl', $iOrder, 'ORDER_PRINT_' );
 
             if( !empty( $aOrder['iPaymentSystem'] ) && isset( $aOuterPaymentOption[$aOrder['iPaymentSystem']] ) ){

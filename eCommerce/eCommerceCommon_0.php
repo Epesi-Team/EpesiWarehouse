@@ -192,7 +192,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 	public static function copy_attachment($id,$rev,$file,$original) {
 		$qcs = self::get_quickcarts();
 		$ext = strrchr($original,'.');
-		if(eregi('^\.(jpg|jpeg|gif|png|bmp)$',$ext)) {
+		if(preg_match('/^\.(jpg|jpeg|gif|png|bmp)$/i',$ext)) {
     		    $th1 = Utils_ImageCommon::create_thumb($file,100,100);
 		    $th2 = Utils_ImageCommon::create_thumb($file,200,200);
 		}
@@ -597,7 +597,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 	}
 
 	public static function display_banner_file($r) {
-	    if(ereg('\.swf$',$r['file']))
+	    if(preg_match('/\.swf$/i',$r['file']))
 		    $ret = '<object type="application/x-shockwave-flash" data="'.$r['file'].'" width="'.$r['width'].'" height="'.$r['height'].'"><param name="bgcolor" value="'.$r['color'].'" /><param name="movie" value="'.$r['file'].'" /></object>';
 	    else
 		    $ret = '<img src="'.$r['file'].'" style="width:'.$r['width'].'px;height:'.$r['height'].'px;" alt="" />';
@@ -622,7 +622,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
                 $form->addRule($field,'Field required','required');
 	    load_js('modules/Premium/Warehouse/eCommerce/banner.js');
         } else {
-	    if(eregi('\.swf$',$default))
+	    if(preg_match('/\.swf$/i',$default))
 		$r = '<object type="application/x-shockwave-flash" data="'.$default.'" width="300" height="120"><param name="movie" value="'.$default.'" /></object>';
 	    else
 		$r = '<img src="'.$default.'" style="max-width:300px;max-height:120px">';
@@ -643,7 +643,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
         $rt=microtime(true);
         foreach($ls as $file) {
             $reqs = array();
-            if(!eregi('^([0-9]+)\.([0-9]+).([a-z0-9]+)$',$file, $reqs)) continue;
+            if(!preg_match('/^([0-9]+)\.([0-9]+)\.([a-z0-9]+)$/i',$file, $reqs)) continue;
             $rtc = $reqs[1].'.'.$reqs[2];
             if(floatval($rt)-floatval($rtc)>86400) //files older then 24h
                 @unlink(DATA_DIR.'/Premium_Warehouse_eCommerce/banners/tmp/'.$file);

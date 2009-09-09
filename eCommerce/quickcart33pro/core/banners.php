@@ -32,7 +32,7 @@ function throwBannersRand( $sFile, $aTypes = null ){
 	  //{ epesi
 	  $aData['sFile'] = 'epesi/banners/'.basename($aData['sFile']);
 	  $aData['sExt'] = FileJobs::throwExtOfFile( $aData['sFile'] );
-	  if(!eregi('^http[s]?:\/\/',$aData['sLink']))
+	  if(!preg_match('/^http[s]?:\/\//i',$aData['sLink']))
 	    $aData['sLink'] = 'http://'.$aData['sLink'];
 	  //} epesi
           if( $aData['sExt'] == 'swf' ){
@@ -79,7 +79,7 @@ function goToBannerLink( $iBanner ){
   $link =  DB::GetOne('SELECT f_link FROM premium_ecommerce_banners_data_1 WHERE active=1 AND id=%d',array($iBanner));
   if($link) {
     DB::Execute('UPDATE premium_ecommerce_banners_data_1 SET f_clicks=f_clicks+1 WHERE id=%d',array($iBanner));
-    if(!eregi('^http[s]?:\/\/',$link))
+    if(!preg_match('/^http[s]?:\/\//i',$link))
 	    $link = 'http://'.$link;
     header( "Location: ".$link );
     exit;

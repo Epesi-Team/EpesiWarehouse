@@ -39,8 +39,8 @@ function listProductsCompare( $sFile, $sBlock ){
 
   if( isset( $aProducts ) ){
     foreach($aProducts as $aData){
-      $aData['sPages'] = ereg_replace( '&nbsp;&raquo;&nbsp;', '/', strip_tags( $GLOBALS['oProduct']->throwProductsPagesTree( $aData['aCategories'] ) ) );
-      $aData['sPagesOnet'] = ereg_replace( '&nbsp;&raquo;&nbsp;', ' &gt; ', strip_tags( $GLOBALS['oProduct']->throwProductsPagesTree( $aData['aCategories'] ) ) );
+      $aData['sPages'] = preg_replace( '/&nbsp;&raquo;&nbsp;/', '/', strip_tags( $GLOBALS['oProduct']->throwProductsPagesTree( $aData['aCategories'] ) ) );
+      $aData['sPagesOnet'] = preg_replace( '/&nbsp;&raquo;&nbsp;/', ' &gt; ', strip_tags( $GLOBALS['oProduct']->throwProductsPagesTree( $aData['aCategories'] ) ) );
       $aData['sDescriptionShort'] = changeTxt( $aData['sDescriptionShort'], 'nlNds' );
 
       if( isset( $oFile->aImagesDefault[2][$aData['iProduct']] ) ){
@@ -64,7 +64,7 @@ function listProductsCompare( $sFile, $sBlock ){
       if(empty( $aData['sDescriptionFull'] ) && !empty( $aData['sDescriptionShort'] ) )
     	$aData['sDescriptionFull'] = $aData['sDescriptionShort'];
       else
-        $aData['sDescriptionFull'] = ereg_replace( '\|n\|', '', $aData['sDescriptionFull'] );
+        $aData['sDescriptionFull'] = preg_replace( '/\|n\|/', '', $aData['sDescriptionFull'] );
 
       $aData['sFeatures'] = null;
       if( isset( $aFeaturesProducts[$aData['iProduct']] ) ){

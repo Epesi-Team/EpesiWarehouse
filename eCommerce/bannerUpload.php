@@ -52,7 +52,7 @@ if($doc['error']==UPLOAD_ERR_INI_SIZE || $doc['error']==UPLOAD_ERR_FORM_SIZE) {
 	-->
 	</script>
 	<?php
-} elseif(!eregi('\.(png|gif|swf|jpg|jpeg)$',$doc['name'],$reqs)) {
+} elseif(!preg_match('/\.(png|gif|swf|jpg|jpeg)$/i',$doc['name'],$reqs)) {
 	?>
 	<script type="text/javascript">
 	<!--

@@ -194,11 +194,11 @@ class Files
     while($row = $ret->FetchRow()) {
 	$ext = strrchr($row['original'],'.');
 	if(!file_exists('files/epesi/'.$row['id'].'_'.$row['revision'].$ext)) continue;
-	$photo = eregi('^\.(jpg|jpeg|gif|png|bmp)$',$ext);
+	$photo = preg_match('/^\.(jpg|jpeg|gif|png|bmp)$/i',$ext);
 	$product = basename($row['local']);
-	if(ereg('^Premium/Warehouse/eCommerce/Products',$row['local'])) {
+	if(preg_match('/^Premium\/Warehouse\/eCommerce\/Products/',$row['local'])) {
 	    $iKey = 2;
-	    if(ereg('^Premium/Warehouse/eCommerce/ProductsDesc',$row['local'])) {
+	    if(preg_match('/^Premium\/Warehouse\/eCommerce\/ProductsDesc/',$row['local'])) {
 		$lang = basename(dirname($row['local']));
 		if($lang!=LANGUAGE) continue;
 	    }

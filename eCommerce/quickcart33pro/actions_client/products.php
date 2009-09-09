@@ -13,7 +13,7 @@ if( isset( $aActions['a'] ) && is_numeric( $aActions['a'] ) ){
       $aData['sTemplate'] = $config['default_products_template'];
 
     if( !empty( $aData['iComments'] ) && $aData['iComments'] == 1 ){
-      if( isset( $_POST['sOption'] ) && $_POST['sOption'] == 'saveComment' && !empty( $_POST['sContent'] ) && !eregi( "\[url|<a href=", $_POST['sContent'] ) && !empty( $_POST['sName'] ) ){
+      if( isset( $_POST['sOption'] ) && $_POST['sOption'] == 'saveComment' && !empty( $_POST['sContent'] ) && !preg_match( "/\[url|<a href=/i", $_POST['sContent'] ) && !empty( $_POST['sName'] ) ){
         addComment( $_POST, $iProduct, true);
         $sIndex = ( !isset( $config['index'] ) || ( isset( $config['index'] ) && $config['index'] == '?' ) ) ? $_SERVER['PHP_SELF'] : null;
         $sAnd = isset( $sIndex ) ? '&' : '?';
