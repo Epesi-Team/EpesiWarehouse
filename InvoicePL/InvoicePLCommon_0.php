@@ -17,6 +17,13 @@ defined("_VALID_ACCESS") || die('Direct access forbidden');
 class Premium_Warehouse_InvoicePLCommon extends ModuleCommon {
 	private static $rb_obj=null;
 	
+	public static function user_settings() {
+		return array(	
+			'Invoice'=>array(
+				array('name'=>'number_format','label'=>'Invoice Number Format','type'=>'text','default'=>'%n/%Y')
+			));
+	}
+
 	public static function invoice_pl_addon_parameters($record) {
 		if ($record['transaction_type']<=1 && !$record['receipt']) {
 			$href = 'href="modules/Premium/Warehouse/InvoicePL/print_invoice.php?'.http_build_query(array('record_id'=>$record['id'], 'cid'=>CID)).'"';

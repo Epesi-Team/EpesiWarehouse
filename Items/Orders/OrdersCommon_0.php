@@ -21,13 +21,12 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	private static $status_blocked = null;
 	
 	public static function user_settings() {
-		return array(	'Transaction'=>array(
+		return array(	
+			'Transaction'=>array(
 				array('name'=>'my_transaction','label'=>'None','type'=>'hidden','default'=>'')
 			),
-						'Warehouse'=>array(
-				array('name'=>'display_qty','label'=>'Quantity Display','type'=>'select','values'=>array(0=>'Availble', 1=>'On Hand', 2=>'Both'),'default'=>2)
-			),
-						'Warehouse'=>array(
+			'Warehouse'=>array(
+				array('name'=>'display_qty','label'=>'Quantity Display','type'=>'select','values'=>array(0=>'Availble', 1=>'On Hand', 2=>'Both'),'default'=>2),
 				array('name'=>'filter_by_my_warehouse','label'=>'Filter items by my warehouse','type'=>'select','values'=>array(0=>'No', 1=>'Yes'),'default'=>1)
 			));
 	}
