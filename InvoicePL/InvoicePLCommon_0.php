@@ -68,8 +68,8 @@ class Premium_Warehouse_InvoicePLCommon extends ModuleCommon {
 	}
 	
 	public static function get_conflict_invoices($order) {
-		if (!trim($order['invoice_number'])) return array();
-		$recs = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders',array('transaction_type'=>$order['transaction_type'], '!id'=>$order['id'], 'invoice_number'=>$order['invoice_number'], 'warehouse'=>$order['warehouse']));
+		if (!trim($order['invoice_number']) || $order['transaction_type']!=1) return array();
+		$recs = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders',array('transaction_type'=>$order['transaction_type'], '!id'=>$order['id'], 'invoice_number'=>$order['invoice_number'], 'warehouse'=>$order['warehouse'], 'receipt'=>$order['receipt']));
 		return $recs;
 	}
 	
