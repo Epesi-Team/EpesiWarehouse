@@ -31,7 +31,9 @@ if ($order['transaction_type']==1) {
 	if (!$order['invoice_number']) {
 		$order['invoice_number'] = Premium_Warehouse_InvoicePLCommon::generate_invoice_number($order);
 	}
-	$order['invoice_id'] = str_pad($order['invoice_number'], 4, '0', STR_PAD_LEFT).'/'.date('Y',strtotime($order['transaction_date']));
+	$format = Base_User_SettingsCommon::get('Premium_Warehouse_InvoicePL','number_format');
+	$nr = str_pad($order['invoice_number'], 4, '0', STR_PAD_LEFT);
+	$order['invoice_id'] = str_replace(array('%Y', '%n'), array(date('Y',strtotime($order['transaction_date'])), $nr), $format);
 //	$header = 'Faktura VAT nr. '.$order['invoice_id'];
 }
 
@@ -55,7 +57,7 @@ $theme = Base_ThemeCommon::init_smarty();
 $theme->assign('order', $order);
 $theme->assign('warehouse', $warehouse);
 $theme->assign('company', $company);
-$theme->assign('date', date('Y-m-d'));
+$theme->assign('date', $order['invoice_print_date']?$order['invoice_print_date']:date('Y-m-d'));
 ob_start();
 Base_ThemeCommon::display_smarty($theme,'Premium_Warehouse_InvoicePL','invoice_form_top');
 $html = ob_get_clean();
