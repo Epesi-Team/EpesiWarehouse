@@ -12,13 +12,17 @@
 		</td>
 		<td align="right">
 			{$warehouse.city}, {$date}<br/>
-			Data sprzedazy: {$order.transaction_date}
+			Data sprzedaży: {$order.transaction_date}
 		</td>
 	</tr>
 </table>
 <div width="100%" align="center">
-	{if isset($order.invoice_id) && $order.invoice_id}<font size=12><b>Faktura VAT nr. {$order.invoice_id}</b></font><br>{/if}
-	{if isset($order.po_id)}<font size=11><b>Zamówienie {$order.po_id}</b></font><br>{/if}
+	{if $order.receipt}
+		<font size=12><b>Paragon nr. {$order.invoice_id}</b></font><br>
+	{else}
+		{if isset($order.invoice_id) && $order.invoice_id}<font size=12><b>Faktura VAT nr. {$order.invoice_id}</b></font><br>{/if}
+		{if isset($order.po_id)}<font size=11><b>Zamówienie {$order.po_id}</b></font><br>{/if}
+	{/if}
 	ORYGINAŁ | KOPIA | DUPLIKAT
 </div>
 <table>
@@ -56,6 +60,7 @@
 	</tr>
 </table>
 <br>
+{if !$order.receipt}
 <table>
 	<tr>
 		<td align="right" width="80px">
@@ -91,7 +96,7 @@
 	</tr>
 </table>
 <br>
-
+{/if}
 <table>
 	<tr>
 		<td align="right" width="80px">

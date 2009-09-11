@@ -25,7 +25,7 @@ class Premium_Warehouse_InvoicePLCommon extends ModuleCommon {
 	}
 
 	public static function invoice_pl_addon_parameters($record) {
-		if ($record['transaction_type']<=1 && !$record['receipt']) {
+		if ($record['transaction_type']<=1) {
 			$href = 'href="modules/Premium/Warehouse/InvoicePL/print_invoice.php?'.http_build_query(array('record_id'=>$record['id'], 'cid'=>CID)).'"';
 			if (!$record['invoice_number'] && $record['transaction_type']==1) {
 				$href .= ' '.Utils_TooltipCommon::open_tag_attrs(Base_LangCommon::ts('Premium_Warehouse_InvoicePL','Invoice number is not defined<br>It will be assgined automatically upon print'), false);
@@ -43,7 +43,7 @@ class Premium_Warehouse_InvoicePLCommon extends ModuleCommon {
 	}
 
 	public static function generate_invoice_number($order) {
-		$order['invoice_number'] = DB::GetOne('SELECT MAX(f_invoice_number) FROM premium_warehouse_items_orders_data_1 WHERE f_warehouse=%d AND f_transaction_type=%d', array($order['warehouse'], $order['transaction_type']));
+		$order['invoice_number'] = DB::GetOne('SELECT MAX(f_invoice_number) FROM premium_warehouse_items_orders_data_1 WHERE f_warehouse=%d AND f_transaction_type=%d AND f_receipt=%d', array($order['warehouse'], $order['transaction_type'], $order['receipt']));
 		$order['invoice_number']++;
 		Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $order['id'], array('invoice_number'=>$order['invoice_number']));
 		return $order['invoice_number'];
