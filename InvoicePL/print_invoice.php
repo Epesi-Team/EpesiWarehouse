@@ -18,7 +18,7 @@ define('CID', $cid);
 define('READ_ONLY_SESSION',true);
 require_once('../../../../include.php');
 ModuleManager::load_modules();
-Base_ThemeCommon::install_default_theme('Premium_Warehouse_InvoicePL');
+//Base_ThemeCommon::install_default_theme('Premium_Warehouse_InvoicePL');
 $order = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $order_id);
 
 if (!Acl::is_user() || !Utils_RecordBrowserCommon::get_access('premium_warehouse_items_orders', 'view', $order)) die('Unauthorized access');

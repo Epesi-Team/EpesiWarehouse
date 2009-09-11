@@ -20,8 +20,11 @@
 	{if $order.receipt}
 		<font size=12><b>Paragon nr. {$order.invoice_id}</b></font><br>
 	{else}
-		{if isset($order.invoice_id) && $order.invoice_id}<font size=12><b>Faktura VAT nr. {$order.invoice_id}</b></font><br>{/if}
-		{if isset($order.po_id)}<font size=11><b>Zamówienie {$order.po_id}</b></font><br>{/if}
+		{if isset($order.invoice_id) && $order.invoice_id}
+			<font size=12><b>Faktura VAT nr. {$order.invoice_id}</b></font><br>
+		{else}
+			{if isset($order.po_id)}<font size=11><b>Zamówienie {$order.po_id}</b></font><br>{/if}
+		{/if}
 	{/if}
 	ORYGINAŁ | KOPIA | DUPLIKAT
 </div>
