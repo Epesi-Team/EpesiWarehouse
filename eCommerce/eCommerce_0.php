@@ -272,6 +272,17 @@ class Premium_Warehouse_eCommerce extends Module {
 		$this->display_module($rb,$order,'show_data');
 	}
 
+	public function item_cat_labels_addon($arg) {
+		$rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_item_cat_labels');
+		$order = array(array('item_name'=>$arg['item_name']), array('item_name'=>false), array('language'=>'ASC'));
+		$rb->set_defaults(array('item_name'=>$arg['item_name'],'language'=>Base_LangCommon::get_lang_code()));
+		$rb->set_header_properties(array(
+			'language'=>array('width'=>1, 'wrapmode'=>'nowrap'),
+			'description'=>array('width'=>50, 'wrapmode'=>'nowrap')
+									));
+		$this->display_module($rb,$order,'show_data');
+	}
+
 	public function cat_descriptions_addon($arg) {
 		$rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_cat_descriptions');
 		$order = array(array('category'=>$arg['id']), array('category'=>false), array('language'=>'ASC'));
