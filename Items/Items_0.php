@@ -72,7 +72,7 @@ class Premium_Warehouse_Items extends Module {
 		$this->display_module($this->rb, array(array(),array(),$cols));
 	}
 
-	public function actions_for_position($r, & $gb_row) {
+	public function actions_for_position($r, $gb_row) {
 		$tab = 'premium_warehouse_items_categories';
 		if(isset($_REQUEST['pos_action']) && $r['id']==$_REQUEST['pos_action'] && is_numeric($_REQUEST['old']) && is_numeric($_REQUEST['new'])) {
 		    $recs = Utils_RecordBrowserCommon::get_records($tab,array('position'=>$_REQUEST['new']), array('id'));

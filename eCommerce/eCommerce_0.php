@@ -210,7 +210,7 @@ class Premium_Warehouse_eCommerce extends Module {
 		return true;
 	}
 
-	public function actions_for_position($r, & $gb_row) {
+	public function actions_for_position($r, $gb_row) {
 		$tab = 'premium_ecommerce_'.$this->recordset;
 		if(isset($_REQUEST['pos_action']) && $r['id']==$_REQUEST['pos_action'] && is_numeric($_REQUEST['old']) && is_numeric($_REQUEST['new'])) {
 		    $recs = Utils_RecordBrowserCommon::get_records($tab,array('position'=>$_REQUEST['new']), array('id'));
