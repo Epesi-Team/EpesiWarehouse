@@ -359,6 +359,7 @@ class Premium_Warehouse_eCommerce extends Module {
 	public function QC_dirs() {
 		if($this->is_back()) return false;
 		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
+		Base_ActionBarCommon::add('add', 'Add', $this->create_callback_href(array($this,'add_quickcart')));
 	
 		$gb = & $this->init_module('Utils/GenericBrowser',null,'qc_list');
 

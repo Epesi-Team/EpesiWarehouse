@@ -33,6 +33,8 @@ class Premium_Warehouse_ItemsInstall extends ModuleInstall {
 			array('name'=>'Weight', 		'type'=>'float', 'required'=>false, 'extra'=>false, 'visible'=>false, 'display_callback'=>array('Premium_Warehouse_ItemsCommon', 'display_weight')),
 			array('name'=>'Volume',	 		'type'=>'float', 'required'=>false, 'extra'=>false, 'visible'=>false, 'display_callback'=>array('Premium_Warehouse_ItemsCommon', 'display_volume')),
 			array('name'=>'Manufacturer Part Number', 'type'=>'text', 'required'=>false, 'param'=>'32', 'extra'=>false, 'visible'=>true),
+			array('name'=>'Manufacturer',	'type'=>'crm_company',	'required'=>false,	'extra'=>false,	'filter'=>true,	'visible'=>true,
+				'param'=>array('field_type'=>'select','crits'=>array('Premium_Warehouse_ItemsCommon','manufacturer_crits'))),
 			array('name'=>'Vendor',		 	'type'=>'crm_company', 'required'=>false, 'extra'=>false, 'filter'=>true, 'visible'=>true, 'param'=>array('field_type'=>'select','crits'=>array('Premium_Warehouse_ItemsCommon','vendors_crits'))),
 			array('name'=>'Net Price', 		'type'=>'currency', 'required'=>false, 'extra'=>false, 'visible'=>false),
 			array('name'=>'Tax Rate', 		'type'=>'select', 'required'=>false, 'extra'=>false, 'visible'=>false, 'param'=>'data_tax_rates::Name', 'style'=>'integer'),
