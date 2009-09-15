@@ -25,6 +25,7 @@ class Premium_Warehouse_Items extends Module {
 			$this->rb->set_additional_actions_method(array($this, 'actions_for_position'));
 			$this->rb->force_order(array('position'=>'ASC','category_name'=>'ASC'));
 			$this->display_module($this->rb, array(array(),array('parent_category'=>'')));
+			Base_ActionBarCommon::add('attach',$this->ht('Merge categories'),$this->create_callback_href(array($this,'merge_categories')));
 			return;
 		}
 		$this->rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items');
@@ -70,6 +71,38 @@ class Premium_Warehouse_Items extends Module {
     			$this->rb->set_additional_actions_method(array('Premium_Warehouse_eCommerceCommon', 'warehouse_item_actions'));
 
 		$this->display_module($this->rb, array(array(),array(),$cols));
+	}
+	
+	public function merge_categories() {
+		if($this->is_back()) return false;
+		
+		$qf = $this->init_module('Libs/QuickForm');
+		
+		$opts = array();
+		Premium_Warehouse_ItemsCommon::build_category_tree($opts);
+		$qf->addElement('select', 'master_cat', $this->t('Master category'), $opts);
+		$qf->addRule('master_cat',$this->t('Field required'),'required');
+		$qf->addElement('multiselect', 'cats', $this->t('Merge categories'), $opts);
+		$qf->addRule('cats',$this->t('Field required'),'required');
+		$qf->addRule('cats',$this->t('You must select at least one category'),'callback','check_merge_cats','Premium_Warehouse_Items');
+		
+		if($qf->validate()) {
+			location(array());
+			Epesi::alert('Categories merged');
+		}
+		
+		$qf->display();
+	
+		Base_ActionBarCommon::add('save','Merge',$qf->get_submit_form_href());
+		Base_ActionBarCommon::add('back','Back',$this->create_back_href());
+		
+		return true;
+	}
+	
+	public static function check_merge_cats($val) {
+		$val = explode('__SEP__',$val);
+		Epesi::alert($val);
+		return false;
 	}
 
 	public function actions_for_position($r, $gb_row) {
