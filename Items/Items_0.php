@@ -84,9 +84,35 @@ class Premium_Warehouse_Items extends Module {
 		$qf->addRule('master_cat',$this->t('Field required'),'required');
 		$qf->addElement('multiselect', 'cats', $this->t('Merge categories'), $opts);
 		$qf->addRule('cats',$this->t('Field required'),'required');
-		$qf->addRule('cats',$this->t('You must select at least one category'),'callback','check_merge_cats','Premium_Warehouse_Items');
+		$qf->addRule(array('cats','master_cat'),$this->t('You must select at least one category different then master category'),'callback',array($this,'check_merge_cats'));
 		
 		if($qf->validate()) {
+			set_time_limit(0);
+			$vals = $qf->exportValues();
+			$master = substr(strrchr($vals['master_cat'],'/'),1);
+			$cats = array();
+			foreach($vals['cats'] as $cat) {
+				$items = DB::GetAssoc('SELECT id,f_category FROM premium_warehouse_items_data_1 WHERE f_category LIKE '.DB::Concat(DB::qstr('%'),DB::qstr($cat),DB::qstr('%')));
+				foreach($items as $id=>$it_cats) {
+					DB::Execute('UPDATE premium_warehouse_items_data_1 SET f_category=%s WHERE id=%d',array(str_replace($it_cats,$cat,$vals['master_cat']),$id));
+				}
+				$cat2 = substr(strrchr($cat,'/'),1);
+				$cats[] = $cat2;
+				DB::Execute('UPDATE premium_warehouse_items_categories_data_1 SET f_parent_category=%d WHERE f_parent_category=%d',array($master,$cat2));
+			}
+			
+			if(ModuleManager::is_installed('Premium/Warehouse/eCommerce')>=0) {
+				foreach($cats as $cat) {
+					$langs = array_map(array('DB','qstr'),DB::GetCol('SELECT f_language FROM premium_ecommerce_cat_descriptions_data_1 WHERE f_category=%d',array($master)));
+					if($langs)
+						DB::Execute('DELETE FROM premium_ecommerce_cat_descriptions_data_1 WHERE f_category=%d AND f_language IN ('.implode(',',$langs).')',array($cat));
+					DB::Execute('UPDATE premium_ecommerce_cat_descriptions_data_1 SET f_category=%d WHERE f_category=%d',array($master,$cat));
+					DB::Execute('UPDATE premium_ecommerce_categories_stats SET obj=%d WHERE obj=%d',array($master,$cat));
+				}
+			}
+			
+			DB::Execute('DELETE FROM premium_warehouse_items_categories_data_1 WHERE id IN ('.implode(',',$cats).')');
+
 			location(array());
 			Epesi::alert('Categories merged');
 		}
@@ -94,15 +120,16 @@ class Premium_Warehouse_Items extends Module {
 		$qf->display();
 	
 		Base_ActionBarCommon::add('save','Merge',$qf->get_submit_form_href());
-		Base_ActionBarCommon::add('back','Back',$this->create_back_href());
+		Base_ActionBarCommon::add('back','Back',$this->create_back_href(true,'processing... this operation can take couple minutes...'));
 		
 		return true;
 	}
 	
 	public static function check_merge_cats($val) {
-		$val = explode('__SEP__',$val);
-		Epesi::alert($val);
-		return false;
+		$cats = array_values(array_filter(explode('__SEP__',$val[0])));
+		if(count($cats)==1 && $cats[0]==$val[1]) 
+			return false;
+		return true;
 	}
 
 	public function actions_for_position($r, $gb_row) {
