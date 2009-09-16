@@ -124,6 +124,27 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 		return self::$subpage_as_opts[$r['show_subpages_as']];
 	}
 
+	private static $products_as_opts = array(1=>"List (name, description, photo)",4=>'Gallery (name, picture)');
+
+  	public static function QFfield_products_as(&$form, $field, $label, $mode, $default) {
+  		if($default!=1 && $default!=4)
+  			$default=1;
+		if ($mode=='add' || $mode=='edit') {
+			$form->addElement('select', $field, $label, self::$products_as_opts, array('id'=>$field));
+			$form->addRule($field,'Field required','required');
+			if ($mode=='edit') $form->setDefaults(array($field=>$default));
+		} else {
+			$form->addElement('static', $field, $label);
+			$form->setDefaults(array($field=>self::$products_as_opts[$default]));
+		}
+	}
+
+  	public static function display_products_as($r, $nolink=false) {
+  		if($r['show_as']!=1 && $r['show_as']!=4)
+  			$r['show_as'] = 1;
+		return self::$products_as_opts[$r['show_as']];
+	}
+
   	public static function parent_page_crits($v, $rec) {
 		if(!$rec || !isset($rec['id']))
 			return array();

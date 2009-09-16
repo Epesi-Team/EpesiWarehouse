@@ -305,7 +305,7 @@ class Pages
     $this->aPagesParentsTypes = null;
 
 	//categories - id mod 4 == 0
-	$query = 'SELECT c.id, c.f_category_name, c.f_parent_category, 
+	$query = 'SELECT c.id, c.f_category_name, c.f_parent_category, c.f_show_as,
 					d.f_page_title, d.f_meta_description, d.f_keywords, 
 					d.f_display_name, d.f_short_description, d.f_long_description,
 					c.f_position
@@ -317,7 +317,7 @@ class Pages
 		else
 			$r['f_parent_category'] *= 4;
 		$id = $r['id']*4;
-        $this->aPages[$id] = array('iPage' => $id, 'iPageParent' => $r['f_parent_category'], 'sName' => $r['f_display_name']?$r['f_display_name']:$r['f_category_name'], 'sNameTitle' => $r['f_page_title'], 'sDescriptionShort' => $r['f_short_description'], 'iPosition' => $r['f_position'], 'iType' => 3, 'iSubpagesShow' => 1, 'iProducts' => 1, 'sDescriptionFull'=>$r['f_long_description'], 'sMetaDescription' => $r['f_meta_description'], 'sMetaKeywords' =>$r['f_keywords'] );
+        $this->aPages[$id] = array('iPage' => $id, 'iPageParent' => $r['f_parent_category'], 'sName' => $r['f_display_name']?$r['f_display_name']:$r['f_category_name'], 'sNameTitle' => $r['f_page_title'], 'sDescriptionShort' => $r['f_short_description'], 'iPosition' => $r['f_position'], 'iType' => 3, 'iSubpagesShow' => $r['f_show_as']===null?1:$r['f_show_as'], 'iProducts' => 1, 'sDescriptionFull'=>$r['f_long_description'], 'sMetaDescription' => $r['f_meta_description'], 'sMetaKeywords' =>$r['f_keywords'] );
         $this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
         if( $r['f_parent_category'] > 0 ){
           $this->aPagesChildrens[$r['f_parent_category']][] = $id;
