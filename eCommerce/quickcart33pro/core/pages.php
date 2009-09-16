@@ -44,14 +44,21 @@ class Pages
 
     $this->generateMenuData( $iType, $iPageCurrent, $iDepthLimit, 0 );
     if( isset( $this->mData[0] ) ){
+      global $config;
       $oTpl     =& TplParser::getInstance( );
       $content  = null;
       $i        = 0;
       $iCount   = count( $this->mData[0] );
 
-      if($iType==1) {
-        global $config;
-	$iCount += count($config['available_lang']);
+      $num_of_langs = count($config['available_lang']);
+      if($iType==1 && $num_of_langs>1) {
+    	$aData = array();
+	$aData['sName'] = '<img src="config/'.LANGUAGE_CONFIG.'.gif" />';
+	$aData['iCount'] = $num_of_langs;
+	$oTpl->setVariables( 'aData', $aData );
+	$content .= $oTpl->tbHtml( $sFile, 'HEAD_LANG' );
+
+	$iCount += $num_of_langs;
 	
 	$url = null;
 	foreach( $_GET as $mKey => $mValue )
@@ -79,6 +86,11 @@ class Pages
 	    $content .= $oTpl->tbHtml( $sFile, 'LIST_LANG' );
 	}
 
+    	$aData = array();
+	$aData['sName'] = '<img src="config/'.LANGUAGE_CONFIG.'.gif" />';
+	$aData['iCount'] = $num_of_langs;
+	$oTpl->setVariables( 'aData', $aData );
+	$content .= $oTpl->tbHtml( $sFile, 'FOOT_LANG' );
       }
       
       foreach( $this->mData[0] as $iPage => $bValue ){
@@ -378,6 +390,14 @@ class Pages
 					 'iType' => 2, 'iSubpagesShow' => 1, 'iProducts' => 0);
     $this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
     $this->aPagesParentsTypes[2][] = $id;
+
+	//recommended
+	$id = 35;
+	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => $lang['Recommended'], 'sNameTitle' => '', 'sDescriptionShort' => '', 'iPosition' => 1, 
+			'iType' => 2, 'iSubpagesShow' => 4, 'iProducts' => 1, 'sDescriptionFull'=>'', 'sMetaDescription' => '', 'sMetaKeywords' =>'');
+	$this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
+	$this->aPagesParentsTypes[2][] = $id;
+
 	//rules and policies
 	$id = 15;
 	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => $lang['Rules_and_Policies'], 'sNameTitle' => '', 'sDescriptionShort' => getVariable('ecommerce_rules'), 'iPosition' => 1,
@@ -399,13 +419,14 @@ class Pages
 	
 	//sitemap
 	$id = 27;
-	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => $lang['Site_map'], 'sNameTitle' => '', 'sDescriptionShort' => '', 'iPosition' => 1000, 'iType' => 0, 'iSubpagesShow' => 1, 'iProducts' => 0, 'sDescriptionFull'=>'', 'sMetaDescription' => '', 'sMetaKeywords' =>'' );
+	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => $lang['Site_map'], 'sNameTitle' => '', 'sDescriptionShort' => '', 'iPosition' => 1000, 'iType' => 1, 'iSubpagesShow' => 1, 'iProducts' => 0, 'sDescriptionFull'=>'', 'sMetaDescription' => '', 'sMetaKeywords' =>'' );
 	$this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
 	$this->aPagesParentsTypes[1][] = $id;
 
-	//sitemap
+	//contact us
 	$id = 31;
-	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => $lang['Contact_us'], 'sNameTitle' => '', 'sDescriptionShort' => getVariable('ecommerce_contactus'), 'iPosition' => 1000, 'iType' => 0, 'iSubpagesShow' => 1, 'iProducts' => 0, 'sDescriptionFull'=>'', 'sMetaDescription' => '', 'sMetaKeywords' =>'');
+	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => $lang['Contact_us'], 'sNameTitle' => '', 'sDescriptionShort' => getVariable('ecommerce_contactus'), 'iPosition' => 1000, 'iType' => 1, 
+			'iSubpagesShow' => 1, 'iProducts' => 0, 'sDescriptionFull'=>'', 'sMetaDescription' => '', 'sMetaKeywords' =>'');
 	$this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
 	$this->aPagesParentsTypes[2][] = $id;
 	//} epesi

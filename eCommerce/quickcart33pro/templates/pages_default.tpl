@@ -196,3 +196,11 @@
 <li class="pages$aData[sHidePages]" id="pagesAfter"><a href="$_SERVER[REQUEST_URI]$config[search_amp]bViewAll=true">$lang['View_all']</a> | $lang[Pages]: $aData[sPages]</li>
 </ul>
 <!-- END PRODUCTS_FOOT -->
+
+<!-- BEGIN PRODUCTS_GALLERY_LIST -->
+<td style="width:$aData[iWidth]%;">$aData[sImage]<h4><a href="$aData[sLinkName]">$aData[sName]</a></h4>$aData[sBasket]$aData[sPrice]</td>
+<!-- END PRODUCTS_GALLERY_LIST -->
+<!-- BEGIN PRODUCTS_GALLERY_BREAK --></tr><tr><!-- END PRODUCTS_GALLERY_BREAK -->
+<!-- BEGIN PRODUCTS_GALLERY_BLANK --><td>&nbsp;</td><!-- END PRODUCTS_GALLERY_BLANK -->
+<!-- BEGIN PRODUCTS_GALLERY_HEAD --><table id="subpagesGallery" cellspacing="0"><tr><!-- END PRODUCTS_GALLERY_HEAD -->
+<!-- BEGIN PRODUCTS_GALLERY_FOOT --></tr></table><!-- END PRODUCTS_GALLERY_FOOT -->

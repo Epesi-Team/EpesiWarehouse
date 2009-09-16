@@ -465,7 +465,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 	}
 	
 
-	public static function warehouse_item_actions($r, & $gb_row) {
+	public static function warehouse_item_actions($r, $gb_row) {
 		if(isset($_REQUEST['publish_warehouse_item']) && $r['id']==$_REQUEST['publish_warehouse_item']) {
 		    self::publish_warehouse_item($r['id']);
 		} 

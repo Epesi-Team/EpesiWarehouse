@@ -29,6 +29,10 @@
     AddOnload( targetBlank );
     //-->
   </script>
+  <script type="text/javascript">
+    <!--
+    //-->
+  </script>
 
   <style type="text/css">@import "$config[dir_templates]$config[template]";</style>
   $sBanner
@@ -59,6 +63,7 @@
       </div>
 
       <div id="column">
+        <div id="shadow-corner"></div>
         $sMenu3
         $sMenu4
         $sPoll
@@ -68,10 +73,10 @@
         $aBoxes[3]
         $aBoxes[4]
         $sNewsletterForm
+        <div class="column-bottom"><div id="shadow-corner-2"></div></div>
       </div>
       <div id="content">
         <div id="shadow-top"></div>
-        <div id="shadow-corner"></div>
         <div id="banner0">$aBanners[0]</div>
 <!-- END BODY -->
 

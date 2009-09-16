@@ -148,22 +148,8 @@ class Products
 	return $products;
   } // end function generateCache
 
-
-  /**
-  * List products
-  * @return string
-  * @param string $sFile
-  * @param int    $iContent
-  * @param int    $iList
-  * @param array  $aProducts
-  */
-  function listProducts( $sFile, $iContent, $iList = null, $aProducts = null ){
-    $oTpl   =& TplParser::getInstance( );
-    $oFile  =& Files::getInstance( );
+  function listProductsQuery($iContent,$aProducts) {
     $oPage  =& Pages::getInstance( );
-    $content= null;
-    $sUrlExt= null;
-
     $query = '';
     if( !isset( $aProducts ) ){
       if( isset( $GLOBALS['sPhrase'] ) && !empty( $GLOBALS['sPhrase'] ) ){
@@ -185,6 +171,8 @@ class Products
       else{
 	if($iContent==23) {
     	    $query .= 'it.f_category is null OR it.f_category=\'\'';
+	} elseif($iContent==35) {
+    	    $query .= 'pr.f_recommended=1';
 	} elseif($iContent%4==0) {
             if( DISPLAY_SUBCATEGORY_PRODUCTS === true ){
 	      // return all pages and subpages
@@ -205,6 +193,25 @@ class Products
 	foreach($aProducts as $p)
 		$query .= ' OR it.id='.(int)$p;
     }
+    return $query;
+  }
+
+  /**
+  * List products
+  * @return string
+  * @param string $sFile
+  * @param int    $iContent
+  * @param int    $iList
+  * @param array  $aProducts
+  */
+  function listProducts( $sFile, $iContent, $iList = null, $aProducts = null ){
+    $oTpl   =& TplParser::getInstance( );
+    $oFile  =& Files::getInstance( );
+    $oPage  =& Pages::getInstance( );
+    $content= null;
+    $sUrlExt= null;
+
+    $query = $this->listProductsQuery($iContent,$aProducts);
 
     if( $query ){
       $sBasketPage = ( isset( $GLOBALS['config']['basket_page'] ) && isset( $oPage->aPages[$GLOBALS['config']['basket_page']] ) ) ? $oPage->aPages[$GLOBALS['config']['basket_page']]['sLinkName'].((defined( 'FRIENDLY_LINKS' ) && FRIENDLY_LINKS == true)?'?':'&amp;') : null;
@@ -213,7 +220,7 @@ class Products
 					FROM premium_ecommerce_products_data_1 pr
 					INNER JOIN (premium_warehouse_items_data_1 it,premium_ecommerce_availability_data_1 av) ON (pr.f_item_name=it.id AND av.id=pr.f_available)
 					LEFT JOIN premium_ecommerce_descriptions_data_1 d ON (d.f_item_name=it.id AND d.f_language="'.LANGUAGE.'" AND d.active=1)
-					 WHERE pr.f_publish=1 AND pr.active=1 AND ('.$query.') ORDER BY pr.f_position'.($limit!==null?' LIMIT '.(int)$limit.($offset!==null?' OFFSET '.(int)$offset:''):''));
+					 WHERE pr.f_publish=1 AND pr.active=1 AND ('.$query.') ORDER BY pr.f_position');
 
       if( !isset( $iList ) ){
         $iList = $GLOBALS['config']['products_list'];
@@ -231,6 +238,7 @@ class Products
       $this->mData = null;
 
       $products = $this->getProducts($query,$iList,$iStart);
+      $i=0;
       foreach($products as $aData){
 
         $aData['iStyle'] = ( $i % 2 ) ? 0: 1;
@@ -273,6 +281,7 @@ class Products
 
         $oTpl->setVariables( 'aData', $aData );
         $content .= $oTpl->tbHtml( $sFile, 'PRODUCTS_LIST' );
+        $i++;
       } // end for
 
       if( isset( $content ) ){
@@ -285,6 +294,122 @@ class Products
 
         $oTpl->setVariables( 'aData', $aData );
         return $oTpl->tbHtml( $sFile, 'PRODUCTS_HEAD' ).$content.$oTpl->tbHtml( $sFile, 'PRODUCTS_FOOT' );
+      }
+    }
+  } // end function listProducts
+
+  /**
+  * List products
+  * @return string
+  * @param string $sFile
+  * @param int    $iContent
+  * @param int    $iList
+  * @param array  $aProducts
+  */
+  function listProductsGallery( $sFile, $iContent, $iList = null, $aProducts = null ){
+    $oTpl   =& TplParser::getInstance( );
+    $oFile  =& Files::getInstance( );
+    $oPage  =& Pages::getInstance( );
+    $content= null;
+    $sUrlExt= null;
+    $iColumns = 3;
+    $iWidth   = (int) ( 100 / $iColumns );
+
+    $query = $this->listProductsQuery($iContent,$aProducts);
+    
+    if( $query ){
+      $sBasketPage = ( isset( $GLOBALS['config']['basket_page'] ) && isset( $oPage->aPages[$GLOBALS['config']['basket_page']] ) ) ? $oPage->aPages[$GLOBALS['config']['basket_page']]['sLinkName'].((defined( 'FRIENDLY_LINKS' ) && FRIENDLY_LINKS == true)?'?':'&amp;') : null;
+
+      $iCount = DB::GetOne('SELECT 	count(it.id) 
+					FROM premium_ecommerce_products_data_1 pr
+					INNER JOIN (premium_warehouse_items_data_1 it,premium_ecommerce_availability_data_1 av) ON (pr.f_item_name=it.id AND av.id=pr.f_available)
+					LEFT JOIN premium_ecommerce_descriptions_data_1 d ON (d.f_item_name=it.id AND d.f_language="'.LANGUAGE.'" AND d.active=1)
+					 WHERE pr.f_publish=1 AND pr.active=1 AND ('.$query.') ORDER BY pr.f_position');
+
+      if( !isset( $iList ) ){
+        $iList = $GLOBALS['config']['products_list'];
+      }
+      $iList *= $iColumns;
+
+      $iProducts = ceil( $iCount / $iList );
+      $iPageNumber = isset( $GLOBALS['aActions']['o2'] ) ? $GLOBALS['aActions']['o2'] : 1;
+      if( !isset( $iPageNumber ) || !is_numeric( $iPageNumber ) || $iPageNumber < 1 )
+        $iPageNumber = 1;
+      if( $iPageNumber > $iProducts && $iProducts>0)
+        $iPageNumber = $iProducts;
+
+      $iStart = ($iPageNumber-1) * $iList;
+
+      $this->mData = null;
+
+      $products = $this->getProducts($query,$iList,$iStart);
+      $i = 0;
+      foreach($products as $aData){
+
+        $aData['iWidth']  = $iWidth;
+        $aData['iStyle'] = ( $i % 2 ) ? 0: 1;
+        $aData['sStyle'] = ( $i == ( $iCount - 1 ) ) ? 'L': $i + 1;
+        $aData['sPrice'] = is_numeric( $aData['fPrice'] ) ? displayPrice( $aData['fPrice'] ) : $aData['fPrice'];
+        $aData['sPages'] = $this->throwProductsPagesTree( $aData['aCategories'] );
+        $aData['sBasket']= null;
+        $aData['sRecommended'] = $aData['sRecommended']? $oTpl->tbHtml( $sFile, 'PRODUCTS_RECOMMENDED' ) : null;
+
+        if( $i > 0 && $i % $iColumns == 0 ){
+          $oTpl->setVariables( 'aData', $aData );
+          $content .= $oTpl->tbHtml( $sFile, 'PRODUCTS_GALLERY_BREAK' );
+        }
+
+        if( !empty( $aData['sDescriptionShort'] ) ){
+          $aData['sDescriptionShort'] = changeTxt( $aData['sDescriptionShort'], 'nlNds' );
+          $oTpl->setVariables( 'aData', $aData );
+          $aData['sDescriptionShort'] = $oTpl->tbHtml( $sFile, 'PRODUCTS_DESCRIPTION' );
+        }
+
+        $oTpl->setVariables( 'aData', $aData );
+
+        if( isset( $oFile->aImagesDefault[2][$aData['iProduct']] ) ){
+          $aDataImage = $oFile->aFilesImages[2][$oFile->aImagesDefault[2][$aData['iProduct']]];
+          $oTpl->setVariables( 'aDataImage', $aDataImage );
+          $aData['sImage'] = $oTpl->tbHtml( $sFile, 'PRODUCTS_IMAGE' );
+        }
+        else{
+          $aData['sImage'] = $oTpl->tbHtml( $sFile, 'PRODUCTS_NO_IMAGE' );
+        }
+
+        if( is_numeric( $aData['fPrice'] ) ){
+          if( isset( $sBasketPage ) ){
+            $aData['sBasketPage'] = $sBasketPage;
+            $oTpl->setVariables( 'aData', $aData );
+            $aData['sBasket'] = $oTpl->tbHtml( $sFile, 'PRODUCTS_BASKET' );
+          }
+          $oTpl->setVariables( 'aData', $aData );
+          $aData['sPrice'] = $oTpl->tbHtml( $sFile, 'PRODUCTS_PRICE' );
+        }
+        else{
+          $oTpl->setVariables( 'aData', $aData );
+          $aData['sPrice'] = $oTpl->tbHtml( $sFile, 'PRODUCTS_NO_PRICE' );
+        }
+
+        $oTpl->setVariables( 'aData', $aData );
+        $content .= $oTpl->tbHtml( $sFile, 'PRODUCTS_GALLERY_LIST' );
+        $i++;
+      } // end for
+
+      while( $i % $iColumns > 0 ){
+        $content .= $oTpl->tbHtml( $sFile, 'PRODUCTS_GALLERY_BLANK' );
+        $i++;
+      } // end while
+
+      if( isset( $content ) ){
+        if( $iCount > $iList ){
+          $aData['sPages'] = countPages( $iCount, $iList, $iPageNumber, throwPageUrl( $oPage->aPages[$iContent]['sLinkName'], true ), $sUrlExt, FRIENDLY_LINKS );
+          $aData['sHidePages'] = null;
+        }
+        else
+          $aData['sHidePages'] = ' hide';
+
+        $oTpl->setVariables( 'aData', $aData );
+        return $oTpl->tbHtml( $sFile, 'PRODUCTS_GALLERY_HEAD' ).$content.$oTpl->tbHtml( $sFile, 'PRODUCTS_GALLERY_FOOT' );
       }
     }
   } // end function listProducts

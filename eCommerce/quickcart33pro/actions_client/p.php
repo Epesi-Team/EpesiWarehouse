@@ -92,7 +92,14 @@ if( isset( $iContent ) && is_numeric( $iContent ) ){
     $sSubpagesList = null;
     // display products in page
     $iProductsList = isset( $bViewAll ) ? 999 : null;
-    $sProductsList = ( $aData['iProducts'] == 1 || ( isset( $sPhrase ) && $config['page_search'] == $iContent ) ) ? $oProduct->listProducts( $aData['sTemplate'], $iContent, $iProductsList ) : null;
+    if( $aData['iProducts'] == 1 || ( isset( $sPhrase ) && $config['page_search'] == $iContent ) ) {
+    	if($aData['iSubpagesShow'] == 4)
+	    	$sProductsList = $oProduct->listProductsGallery( $aData['sTemplate'], $iContent, $iProductsList );    	
+    	else
+	    	$sProductsList = $oProduct->listProducts( $aData['sTemplate'], $iContent, $iProductsList );
+    } else {
+    	 $sProductsList = null;
+    }
 
     if( isset( $sPhrase ) && $config['page_search'] == $iContent && empty( $sProductsList ) )
       $sProductsList = $oTpl->tbHtml( 'messages.tpl', 'ERROR' );
