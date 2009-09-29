@@ -28,9 +28,10 @@ class Premium_Warehouse_InvoicePLCommon extends ModuleCommon {
 		if ($record['transaction_type']<=1) {
 			$href = 'href="modules/Premium/Warehouse/InvoicePL/print_invoice.php?'.http_build_query(array('record_id'=>$record['id'], 'cid'=>CID)).'"';
 			if (!$record['invoice_number'] && $record['transaction_type']==1) {
-				$href .= ' '.Utils_TooltipCommon::open_tag_attrs(Base_LangCommon::ts('Premium_Warehouse_InvoicePL','Invoice number is not defined<br>It will be assgined automatically upon print'), false);
+				$href .= ' '.Utils_TooltipCommon::open_tag_attrs(Base_LangCommon::ts('Premium_Warehouse_InvoicePL','Number is not defined<br>It will be assigned automatically upon print'), false);
 			}
-			Base_ActionBarCommon::add('print', 'Print Invoice', $href);
+			if (!$record['receipt']) Base_ActionBarCommon::add('print', 'Print Invoice', $href);
+			else Base_ActionBarCommon::add('print', 'Print Receipt', $href);
 		}
 		return array('show'=>false);
 	}
@@ -60,7 +61,7 @@ class Premium_Warehouse_InvoicePLCommon extends ModuleCommon {
 					if ($msg) $msg .= ', ';
 					$msg .= $v['transaction_id'];
 				} 
-				$msg = Base_LangCommon::ts('Premium_Warehouse_InvoicePL','Warning: Found duplicate invoice number, transaction'.(count($conflicts)==1?'':'s').': ').$msg;
+				$msg = Base_LangCommon::ts('Premium_Warehouse_InvoicePL','Warning: Found duplicate number, transaction'.(count($conflicts)==1?'':'s').': ').$msg;
 				$postfix = Utils_TooltipCommon::create($postfix, $msg, false);
 			}
 		}
@@ -89,11 +90,29 @@ class Premium_Warehouse_InvoicePLCommon extends ModuleCommon {
 
 	public static function QFfield_invoice_number(&$form, $field, $label, $mode, $default, $desc, $rb_obj) {
 		if ($mode!='view') {
+			eval_js('update_invoice_fields_label = function(){'.
+				'if($("receipt").checked){'.
+					'print_s="'.Base_LangCommon::ts('Premium_Warehouse_InvoicePL', 'Receipt Print Date').'";'.
+					'print_n="'.Base_LangCommon::ts('Premium_Warehouse_InvoicePL', 'Receipt Number').'";'.
+				'}else{'.
+					'print_s="'.Base_LangCommon::ts('Premium_Warehouse_InvoicePL', 'Invoice Print Date').'";'.
+					'print_n="'.Base_LangCommon::ts('Premium_Warehouse_InvoicePL', 'Invoice Number').'";'.
+				'}'.
+				'if($("_invoice_print_date__label"))$("_invoice_print_date__label").innerHTML=print_s;'.
+				'if($("_invoice_number__label"))$("_invoice_number__label").innerHTML=print_n;'.
+			'}');
+			eval_js('update_invoice_fields_label();');
+			eval_js('setTimeout(\'Event.observe("receipt", "change", update_invoice_fields_label)\', 1000);');
+//			eval_js('alert("!");');
 			self::$rb_obj = $rb_obj; 
 			$form->addFormRule(array('Premium_Warehouse_InvoicePLCommon', 'check_number'));
 			$form->addElement('text', $field, $label, array('id'=>$field));
 			$form->setDefaults(array($field=>$default));
 		} else {
+			if (Utils_RecordBrowser::$last_record['receipt']) {
+				eval_js('if($("_invoice_print_date__label"))$("_invoice_print_date__label").innerHTML="'.Base_LangCommon::ts('Premium_Warehouse_InvoicePL', 'Receipt Print Date').'";');
+				eval_js('if($("_invoice_number__label"))$("_invoice_number__label").innerHTML="'.Base_LangCommon::ts('Premium_Warehouse_InvoicePL', 'Receipt Number').'";');
+			}
 			$postfix = '';
 			if (Utils_RecordBrowser::$last_record['transaction_type']==1) {
 				if (!Utils_RecordBrowser::$last_record['invoice_number']) {

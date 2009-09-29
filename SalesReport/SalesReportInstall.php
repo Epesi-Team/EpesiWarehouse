@@ -43,10 +43,20 @@ class Premium_Warehouse_SalesReportInstall extends ModuleInstall {
 						'gross_price I4',
 						array('constraints'=>'')
 		);
+		DB::CreateTable('premium_warehouse_sales_report_exchange',
+						'id I4 AUTO KEY,'.
+						'order_id I4,'.
+						'currency I4,'.
+						'exchange_rate F',
+						array('constraints'=>'')
+		);
+		Utils_RecordBrowserCommon::new_addon('premium_warehouse_items_orders', 'Premium/Warehouse/SalesReport', 'currency_exchange_addon', 'Exchange Rates');
+		Variable::set('premium_warehouse_ex_currency', 1);
 		return true;
 	}
 	
 	public function uninstall() {
+		DB::DropTable('premium_warehouse_sales_report_exchange');
 		DB::DropTable('premium_warehouse_sales_report_earning');
 		DB::DropTable('premium_warehouse_sales_report_purchase_fifo_tmp');
 		DB::DropTable('premium_warehouse_sales_report_purchase_lifo_tmp');

@@ -525,8 +525,11 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	} 
 	
 	public static function check_sale_price($data) {
-		if (!isset($data['item_name'])) return true; // TODO: FIX, seriously!
-		$item_id = Utils_RecordBrowserCommon::get_id('premium_warehouse_items', 'item_name', $data['item_name']);
+		if (!isset($data['item_name'])) {
+			$item_id = Utils_RecordBrowser::$last_record['item_name'];
+		} else {
+			$item_id = Utils_RecordBrowserCommon::get_id('premium_warehouse_items', 'item_name', $data['item_name']);
+		}
 		if (!is_numeric($item_id)) return array('item_name'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders', 'Item not found'));
 		$item = Utils_RecordBrowserCommon::get_record('premium_warehouse_items', $item_id);
 		$item['last_purchase_price'] = Utils_CurrencyFieldCommon::get_values($item['last_purchase_price']);
@@ -573,6 +576,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 				load_js('modules/Premium/Warehouse/Items/Orders/check_item_price_cost.js');
 				$msg = 'Warning';
 				$sell_with_loss = self::Instance()->acl_check('sell with loss');
+				$sell_with_loss = false; // TODO: remove
 				if (!$sell_with_loss) {
 					$msg = 'Error';
 					$form->addFormRule(array('Premium_Warehouse_Items_OrdersCommon','check_sale_price'));
@@ -606,7 +610,8 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 
 	public static function check_qty_on_hand($data){
 		self::get_trans();
-		if (isset($data['quantity']) && intval($data['quantity'])!=$data['quantity']) return array('item_name'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders', 'Invallid amount'));
+		$ord_qty = $data['quantity'];
+		if (isset($data['quantity']) && intval($data['quantity'])!=$data['quantity']) return array('item_name'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders', 'Invalid amount'));
 		if (self::$trans['transaction_type']==0) return true;
 		if (isset(Utils_RecordBrowser::$last_record['quantity'])) {
 			if (isset($data['quantity'])) $data['quantity'] -= Utils_RecordBrowser::$last_record['quantity'];
@@ -618,12 +623,15 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		} else { 
 			if (!is_numeric($data['item_name']))
 				$data['item_name'] = Utils_RecordBrowserCommon::get_id('premium_warehouse_items', 'item_name', $data['item_name']);
-			if (!is_numeric($data['item_name'])) return array('item_name'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders', 'Item not found'));
+			if (!is_numeric($data['item_name'])) {
+				$data['item_name'] = Utils_RecordBrowser::$last_record['item_name'];
+				//return array('item_name'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders', 'Item not found'));
+			}
 		}
 		$item_type = Utils_RecordBrowserCommon::get_value('premium_warehouse_items',$data['item_name'],'item_type');
 		if ($item_type>=2) return true;
 		if (self::$trans['transaction_type']==1) {
-			if ($data['quantity']<=0) return array('quantity'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders', 'Invallid amount'));
+			if ($ord_qty<=0) return array('quantity'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders', 'Invalid amount'));
 			if (self::$trans['status']<=1) return true;
 			$location_id = Utils_RecordBrowserCommon::get_records('premium_warehouse_location',array('item_sku'=>$data['item_name'],'warehouse'=>self::$trans['warehouse'],'!quantity'=>0));
 			$location_id = array_shift($location_id);
@@ -633,7 +641,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			if ($data['quantity']>$location_id['quantity']) return array('quantity'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders', 'Amount not available'));
 		}
 		if (self::$trans['transaction_type']==4) {
-			if ($data['quantity']<0) return array('quantity'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders', 'Invallid amount'));
+			if ($ord_qty<=0) return array('quantity'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders', 'Invallid amount'));
 			$location_id = Utils_RecordBrowserCommon::get_records('premium_warehouse_location',array('item_sku'=>$data['item_name'],'warehouse'=>self::$trans['warehouse'],'!quantity'=>0));
 			$location_id = array_shift($location_id);
 			if (!isset($location_id) || !$location_id) {

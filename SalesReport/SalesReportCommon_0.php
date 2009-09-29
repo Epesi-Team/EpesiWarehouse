@@ -13,6 +13,10 @@
 defined("_VALID_ACCESS") || die('Direct access forbidden');
 
 class Premium_Warehouse_SalesReportCommon extends ModuleCommon {
+	public function admin_caption() {
+		return "Sales Report";
+	}
+	
 	public function menu() {
 		if (!Base_AclCommon::i_am_admin()) return;
 		return array('Reports'=>array('__submenu__'=>1, 
@@ -22,25 +26,27 @@ class Premium_Warehouse_SalesReportCommon extends ModuleCommon {
 		));	
 	}
 	
-	public static function currency_exchange($val, $c1, $c2) {
-		return 0;// TODO
+	public static function currency_exchange($val, $cur, $order_id) {
+		$rate = DB::GetOne('SELECT exchange_rate FROM premium_warehouse_sales_report_exchange WHERE order_id=%d AND currency=%d', array($order_id, $cur));
+		if (!$rate) $rate = 0;
+		return $val*$rate;
 	} 
 	
 	public static function recalculate() {
-		$currency = 1;
+		$currency = Variable::get('premium_warehouse_ex_currency');
 		$prec = Utils_CurrencyFieldCommon::get_precission($currency);
 		$multip = pow(10,$prec);
 
 		DB::Execute('DELETE FROM premium_warehouse_sales_report_purchase_fifo_tmp');
 		DB::Execute('DELETE FROM premium_warehouse_sales_report_purchase_lifo_tmp');
-		$purchases = DB::Execute('SELECT * FROM premium_warehouse_items_orders_details_data_1 AS od LEFT JOIN premium_warehouse_items_orders_data_1 AS o ON o.id=od.f_transaction_id WHERE od.active=1 AND (o.f_transaction_type=0 OR o.f_transaction_type=4) AND o.f_status=20 ORDER BY o.f_transaction_date ASC, o.f_transaction_type ASC, o.created_on ASC');
+		$purchases = DB::Execute('SELECT *, o.id AS order_id FROM premium_warehouse_items_orders_details_data_1 AS od LEFT JOIN premium_warehouse_items_orders_data_1 AS o ON o.id=od.f_transaction_id WHERE od.active=1 AND (o.f_transaction_type=0 OR o.f_transaction_type=4) AND o.f_status=20 ORDER BY o.f_transaction_date ASC, o.f_transaction_type ASC, o.created_on ASC');
 		$id = 0;
 		while ($trans = $purchases->FetchRow()) {
 			if ($trans['f_transaction_type']==0) {
 				$trans['f_price'] = Utils_CurrencyFieldCommon::get_values($trans['f_net_price']);
 				$net_price = $trans['f_price'][0];
 				if ($trans['f_price'][1]!=$currency)
-					$net_price = self::currency_exchange($net_price, $trans['f_price'][1], $currency);
+					$net_price = self::currency_exchange($net_price, $trans['f_price'][1], $trans['order_id']);
 				$gross_price = round((100+Data_TaxRatesCommon::get_tax_rate($trans['f_tax_rate']))*$net_price/100, $prec);
 				DB::Execute('INSERT INTO premium_warehouse_sales_report_purchase_fifo_tmp VALUES (%d, %d, %d, %d, %d, %d)', array($id, $trans['f_item_name'], $trans['f_quantity'], $trans['f_warehouse'], $net_price*$multip, $gross_price*$multip));
 				DB::Execute('INSERT INTO premium_warehouse_sales_report_purchase_lifo_tmp VALUES (%d, %d, %d, %d, %d, %d)', array($id, $trans['f_item_name'], $trans['f_quantity'], $trans['f_warehouse'], $net_price*$multip, $gross_price*$multip));

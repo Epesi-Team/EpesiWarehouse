@@ -26,6 +26,59 @@ class Premium_Warehouse_SalesReport extends Module {
 	public function recalculate() {
 		Premium_Warehouse_SalesReportCommon::recalculate();
 	}
+	
+	public function currency_exchange_addon($r) {
+		$currency = Variable::get('premium_warehouse_ex_currency');
+		$cur_code = Utils_CurrencyFieldCommon::get_code($currency);
+		$form = $this->init_module('Libs/QuickForm');
+		$form->addElement('hidden', 'currency_id', '', array('id'=>'currency_id'));
+		$form->addElement('hidden', 'exch_rate', '', array('id'=>'exch_rate'));
+		$form->addElement('hidden', 'prompt_header', '', array('id'=>'prompt_header'));
+		$form->addElement('hidden', 'submit_form_js', '', array('id'=>'submit_form_js'));
+		$form->setDefaults(array('prompt_header'=>$this->t('Enter the amount in '.$cur_code)));
+		$form->setDefaults(array('submit_form_js'=>$form->get_submit_form_js()));
+		$form->display();
+		if ($form->validate()) {
+			$vals = $form->exportValues();
+			DB::Execute('DELETE FROM premium_warehouse_sales_report_exchange WHERE currency=%d AND order_id=%d', array($vals['currency_id'], $r['id']));
+			DB::Execute('INSERT INTO premium_warehouse_sales_report_exchange (exchange_rate, currency, order_id) VALUES (%f, %d, %d)', array($vals['exch_rate'], $vals['currency_id'], $r['id']));
+		}
+		$mapping = DB::GetAssoc('SELECT currency, exchange_rate FROM premium_warehouse_sales_report_exchange WHERE order_id=%d', array($r['id']));
+		$currencies = Utils_CurrencyFieldCommon::get_currencies();
+		$gb = $this->init_module('Utils/GenericBrowser', null, 'reports_currency_exchange');
+		$gb->set_table_columns(array(
+			array('name'=>'Currency'),
+			array('name'=>'Exchange')
+		));
+		load_js('modules/Premium/Warehouse/SalesReport/exchange.js');
+		$current = Variable::get('premium_warehouse_ex_currency');
+		foreach ($currencies as $k=>$v) {
+			if ($k==$current) continue;
+			$gb_row = $gb->get_new_row();
+			$is_set = isset($mapping[$k]);
+			if ($is_set) $is_exch = $mapping[$k];
+			else $is_exch = $this->t('Not set');
+			$gb_row->add_data($v, $is_exch);
+			$gb_row->add_action('href="javascript:void(0);" onclick="report_edit_exchange('.$k.')"', 'edit', 'Edit');
+			if ($is_set) $gb_row->add_action($this->create_callback_href(array($this, 'remove_mapping'), array($r['id'], $k)), 'move-down', 'Unset');
+		}
+		$this->display_module($gb);
+	}
+	
+	public function admin() {
+		$form = $this->init_module('Libs/QuickForm');
+		$current = Variable::get('premium_warehouse_ex_currency');
+		$currencies = Utils_CurrencyFieldCommon::get_currencies();
+		$form->addElement('header', '', 'Select default currency for all reports');
+		$form->addElement('select', 'currency', 'Currency for reports', $currencies);
+		$form->addElement('submit', 'submit', 'Submit');
+		$form->setDefaults(array('currency'=>$current));
+		if ($form->validate()) {
+			Variable::set('premium_warehouse_ex_currency', $form->exportValue('currency'));
+			return false;
+		}
+		$form->display();
+	}
 
 /************************************************************************************/
 	public function body() {
@@ -88,7 +141,7 @@ class Premium_Warehouse_SalesReport extends Module {
 	
 /************************************************************************************/
 	public function display_sales_by_warehouse_cells($ref_rec){
-		$currency = 1;
+		$currency = Variable::get('premium_warehouse_ex_currency');
 		$prec = Utils_CurrencyFieldCommon::get_precission($currency);
 		$multip = pow(10,$prec);
 
@@ -287,7 +340,7 @@ class Premium_Warehouse_SalesReport extends Module {
 	}
 	
 	public function display_sales_by_item_cells($ref_rec) {
-		$currency = 1;
+		$currency = Variable::get('premium_warehouse_ex_currency');
 		$prec = Utils_CurrencyFieldCommon::get_precission($currency);
 		$multip = pow(10,$prec);
 		
@@ -375,7 +428,7 @@ class Premium_Warehouse_SalesReport extends Module {
 	}
 	
 	public function display_sales_by_transaction_cells($transaction) {
-		$currency = 1;
+		$currency = Variable::get('premium_warehouse_ex_currency');
 		$prec = Utils_CurrencyFieldCommon::get_precission($currency);
 		$multip = pow(10,$prec);
 		
