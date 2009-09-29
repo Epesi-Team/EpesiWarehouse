@@ -64,7 +64,12 @@ class Premium_Warehouse_SalesReport extends Module {
 		}
 		$this->display_module($gb);
 	}
-	
+
+	public function remove_mapping($order_id, $currency_id) {
+		DB::Execute('DELETE FROM premium_warehouse_sales_report_exchange WHERE currency=%d AND order_id=%d', array($currency_id, $order_id));
+		return false;
+	}
+
 	public function admin() {
 		$form = $this->init_module('Libs/QuickForm');
 		$current = Variable::get('premium_warehouse_ex_currency');
