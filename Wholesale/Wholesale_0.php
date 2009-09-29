@@ -43,7 +43,8 @@ class Premium_Warehouse_Wholesale extends Module {
 			array('name'=>$this->t('Distributor Code'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'internal_key', 'search'=>'internal_key'),
 			array('name'=>$this->t('Price'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'price'),
 			array('name'=>$this->t('Quantity'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'quantity'),
-			array('name'=>$this->t('Quantity Details'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'quantity_info')
+			array('name'=>$this->t('Quantity Details'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'quantity_info'),
+			array('name'=>$this->t('Distributor Category'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'distributor_category')
 		));
 		$where = $gb->get_search_query();
 		if ($where) $where = 'AND '.$where;
@@ -77,7 +78,7 @@ class Premium_Warehouse_Wholesale extends Module {
 			}
 		}
 		
-		$ret = DB::SelectLimit('SELECT *, whl.id AS id FROM premium_warehouse_wholesale_items AS whl LEFT JOIN premium_warehouse_items_data_1 AS itm ON itm.id=whl.item_id WHERE distributor_id=%d AND (quantity!=%d OR quantity_info!=%s) '.$where.' '.$order, $limit['numrows'], $limit['offset'], array($arg['id'],0,''));
+		$ret = DB::SelectLimit('SELECT *, whl.id AS id,cat.f_foreign_category_name as category FROM premium_warehouse_wholesale_items AS whl LEFT JOIN premium_warehouse_items_data_1 AS itm ON itm.id=whl.item_id LEFT JOIN premium_warehouse_distributor_categories_data_1 cat ON (cat.f_distributor=distributor_id AND cat.id=distributor_category) WHERE distributor_id=%d AND (quantity!=%d OR quantity_info!=%s) '.$where.' '.$order, $limit['numrows'], $limit['offset'], array($arg['id'],0,''));
 
 		while ($row=$ret->FetchRow()) {
 			if ($row['item_id']) {
@@ -118,7 +119,8 @@ class Premium_Warehouse_Wholesale extends Module {
 				array('value'=>$row['internal_key'], 'style'=>'text-align:right;'),
 				array('value'=>Utils_CurrencyFieldCommon::format($row['price'],$row['price_currency']), 'style'=>'text-align:right;'),
 				array('value'=>$row['quantity'], 'style'=>'text-align:right;'),
-				$row['quantity_info']
+				$row['quantity_info'],
+				$row['category']
 			);
 		}
 		$this->display_module($gb);
@@ -149,6 +151,14 @@ class Premium_Warehouse_Wholesale extends Module {
 		}
 		$this->display_module($gb);
 	}
+	
+	public function categories_addon($arg) {
+		$rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_distributor_categories');
+		$order = array(array('distributor'=>$arg['id']), array('distributor'=>false), array('foreign_category_name'=>'ASC'));
+		$rb->set_defaults(array('distributor'=>$arg['id']));
+		$this->display_module($rb,$order,'show_data');
+	}
+
 
 	public function caption(){
 		if (isset($this->rb)) return $this->rb->caption();

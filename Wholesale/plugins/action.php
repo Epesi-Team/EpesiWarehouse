@@ -68,8 +68,8 @@ class Premium_Warehouse_Wholesale__Plugin_action implements Premium_Warehouse_Wh
 		curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($c, CURLOPT_USERAGENT, "Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)");
 		curl_setopt($c, CURLOPT_FOLLOWLOCATION, false);
-		curl_setopt($c, CURLOPT_COOKIEFILE, 'D:\cookiefile.cf');
-		curl_setopt($c, CURLOPT_COOKIEJAR, 'D:\cookiefile.cf');
+		curl_setopt($c, CURLOPT_COOKIEFILE, $dir.'cookiefile.cf');
+		curl_setopt($c, CURLOPT_COOKIEJAR, $dir.'cookiefile.cf');
 
 		$output = curl_exec($c);
 	    
@@ -112,7 +112,7 @@ class Premium_Warehouse_Wholesale__Plugin_action implements Premium_Warehouse_Wh
 	    $time = time();
 
 		$filename = $dir.'ab_data_'.$time.'.tmp';
-		file_put_contents($filename, $output);
+		file_put_contents($filename, iconv("cp1250","UTF-8",$output));
 
 	    curl_close($c);
 
@@ -163,6 +163,8 @@ class Premium_Warehouse_Wholesale__Plugin_action implements Premium_Warehouse_Wh
 		}
 
 		DB::Execute('UPDATE premium_warehouse_wholesale_items SET quantity=%d, quantity_info=%s WHERE distributor_id=%d', array(0, '', $distributor['id']));
+		
+		$categories = DB::GetAssoc('SELECT f_foreign_category_name,id FROM premium_warehouse_distributor_categories_data_1 WHERE active=1 AND f_distributor=%d',array($distributor['id']));
 
 		Premium_Warehouse_WholesaleCommon::file_scan_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Scanning...'));
 		while (!feof($f)) {
@@ -172,7 +174,7 @@ class Premium_Warehouse_Wholesale__Plugin_action implements Premium_Warehouse_Wh
 			$scanned++;
 			
 			foreach ($row as $k=>$v) $row[$keys[$k]] = $v;
-			$row['Nazwa produktu'] = mb_convert_encoding($row['Nazwa produktu'],"ISO-8859-1","UTF-8");
+			$row['Nazwa produktu'] = $row['Nazwa produktu'];
 			if (strlen($row['Nazwa produktu'])>127) $row['Nazwa produktu'] = substr($row['Nazwa produktu'],0,127);
 			
 			if ($row['Stan mag']!=0) {
@@ -185,6 +187,10 @@ class Premium_Warehouse_Wholesale__Plugin_action implements Premium_Warehouse_Wh
 					$quantity_info = $row['Stan mag'];
 					$quantity = 30;
 				}
+				
+				if(!isset($categories[$row['Grupa towarowa'].' : '.$row['Podgrupa towarowa']]))
+					$categories[$row['Grupa towarowa'].' : '.$row['Podgrupa towarowa']] = Utils_RecordBrowserCommon::new_record('premium_warehouse_distributor_categories',array('foreign_category_name'=>$row['Grupa towarowa'].' : '.$row['Podgrupa towarowa'],'distributor'=>$distributor['id']));
+				$category = $categories[$row['Grupa towarowa'].' : '.$row['Podgrupa towarowa']];
 
 				/*** check for exact match ***/
 				$internal_key = DB::GetOne('SELECT internal_key FROM premium_warehouse_wholesale_items WHERE internal_key=%s AND distributor_id=%d', array($row['Kod produktu'], $distributor['id']));
@@ -217,14 +223,14 @@ class Premium_Warehouse_Wholesale__Plugin_action implements Premium_Warehouse_Wh
 						$item_exist++;
 					}
 					if ($w_item!==null) {
-						DB::Execute('INSERT INTO premium_warehouse_wholesale_items (item_id, internal_key, distributor_item_name, distributor_id, quantity, quantity_info, price, price_currency) VALUES (%d, %s, %s, %d, %d, %s, %f, %d)', array($w_item, $row['Kod produktu'], $row['Nazwa produktu'], $distributor['id'], $quantity, $quantity_info, $row['Cena netto'], $pln_id));
+						DB::Execute('INSERT INTO premium_warehouse_wholesale_items (item_id, internal_key, distributor_item_name, distributor_id, quantity, quantity_info, price, price_currency,distributor_category) VALUES (%d, %s, %s, %d, %d, %s, %f, %d,%d)', array($w_item, $row['Kod produktu'], $row['Nazwa produktu'], $distributor['id'], $quantity, $quantity_info, $row['Cena netto'], $pln_id,$category));
 					} else {
-						DB::Execute('INSERT INTO premium_warehouse_wholesale_items (internal_key, distributor_item_name, distributor_id, quantity, quantity_info, price, price_currency) VALUES (%s, %s, %d, %d, %s, %f, %d)', array($row['Kod produktu'], $row['Nazwa produktu'], $distributor['id'], $quantity, $quantity_info, $row['Cena netto'], $pln_id));
+						DB::Execute('INSERT INTO premium_warehouse_wholesale_items (internal_key, distributor_item_name, distributor_id, quantity, quantity_info, price, price_currency,distributor_category) VALUES (%s, %s, %d, %d, %s, %f, %d,%d)', array($row['Kod produktu'], $row['Nazwa produktu'], $distributor['id'], $quantity, $quantity_info, $row['Cena netto'], $pln_id,$category));
 					}
 				} else {
 					/*** there's an exact match in the system already ***/
 					$link_exist++;
-					DB::Execute('UPDATE premium_warehouse_wholesale_items SET quantity=%d, quantity_info=%s, price=%f, price_currency=%d WHERE internal_key=%s AND distributor_id=%d', array($quantity, $quantity_info, $row['Cena netto'], $pln_id, $row['Kod produktu'], $distributor['id']));
+					DB::Execute('UPDATE premium_warehouse_wholesale_items SET quantity=%d, quantity_info=%s, price=%f, price_currency=%d,distributor_category=%d WHERE internal_key=%s AND distributor_id=%d', array($quantity, $quantity_info, $row['Cena netto'], $pln_id, $category, $row['Kod produktu'], $distributor['id']));
 				}
 			} 
 		}

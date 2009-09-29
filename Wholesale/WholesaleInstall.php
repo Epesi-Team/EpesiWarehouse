@@ -80,12 +80,25 @@ class Premium_Warehouse_WholesaleInstall extends ModuleInstall {
 						'price F,'.
 						'price_currency I4,'.
 						'quantity I4,'.
-						'quantity_info C(64)',
+						'quantity_info C(64),'.
+						'distributor_category I4',
 						array('constraints'=>''));
 		DB::CreateIndex('premium_warehouse_wholesale_items__ik_di__idx', 'premium_warehouse_wholesale_items', array('internal_key','distributor_id'));
 		DB::CreateIndex('premium_warehouse_wholesale_items__item_id__idx', 'premium_warehouse_wholesale_items', 'item_id');
 
 		DB::Execute('UPDATE premium_warehouse_distributor_field SET param = 1 WHERE field = %s', array('Details'));
+
+		$fields = array(
+			array('name'=>'Distributor', 		'type'=>'select','param'=>array('premium_warehouse_distributor'=>'Name'), 'required'=>true, 'extra'=>false, 'visible'=>true, 'QFfield_callback'=>array('Premium_Warehouse_WholesaleCommon', 'QFfield_static')),
+			array('name'=>'Foreign Category Name', 			'type'=>'text', 'required'=>true, 'param'=>'128', 'extra'=>false, 'visible'=>true, 'QFfield_callback'=>array('Premium_Warehouse_WholesaleCommon', 'QFfield_static')),
+			array('name'=>'Epesi Category', 		'type'=>'select', 'required'=>false, 'param'=>'premium_warehouse_items_categories::Category Name', 'extra'=>false, 'visible'=>true)
+		);
+
+		Utils_RecordBrowserCommon::install_new_recordset('premium_warehouse_distributor_categories', $fields);
+		Utils_RecordBrowserCommon::set_favorites('premium_warehouse_distributors_categories', false);
+		Utils_RecordBrowserCommon::new_addon('premium_warehouse_distributor', 'Premium/Warehouse/Wholesale', 'categories_addon', 'Categories');
+		Utils_RecordBrowserCommon::set_caption('premium_warehouse_distributor_categories', 'Distributor Categories');
+		Utils_RecordBrowserCommon::set_access_callback('premium_warehouse_distributor_categories', array('Premium_Warehouse_WholesaleCommon', 'access_distributor_categories'));
 
 		return true;
 	}
@@ -100,7 +113,9 @@ class Premium_Warehouse_WholesaleInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::delete_addon('premium_warehouse_items', 'Premium/Warehouse/Wholesale', 'distributors_addon');
 		Utils_RecordBrowserCommon::delete_addon('premium_warehouse_distributor', 'Premium/Warehouse/Wholesale', 'items_addon');
 		Utils_RecordBrowserCommon::delete_addon('premium_warehouse_distributor', 'Premium/Warehouse/Wholesale', 'attachment_addon');
+		Utils_RecordBrowserCommon::delete_addon('premium_warehouse_distributor', 'Premium/Warehouse/Wholesale', 'categories_addon');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_warehouse_distributor');
+		Utils_RecordBrowserCommon::uninstall_recordset('premium_warehouse_distributor_categories');
 		return true;
 	}
 	

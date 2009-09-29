@@ -45,7 +45,7 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 		$dir = scandir(self::$plugin_path);
 		DB::Execute('UPDATE premium_warehouse_wholesale_plugin SET active=2');
 		foreach ($dir as $file) {
-			if ($file=='..' || $file=='.' || $file=='interface.php') continue;
+			if ($file=='..' || $file=='.' || !preg_match('/\.php$/i',$file)) continue;
 			$filename = basename($file, '.php');
 			$plugin = self::get_plugin($filename);
 			if ($plugin) {
@@ -370,6 +370,23 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 		if(!$row) return false;
 		$row = array_pop($row);
 		return Utils_RecordBrowserCommon::record_link_open_tag('premium_warehouse_distributor', $row['id']).Base_LangCommon::ts('Premium_Warehouse_Wholesale', 'Distributor (attachment) #%d, %s', array($row['id'], $row['name'])).Utils_RecordBrowserCommon::record_link_close_tag();
+	}
+	
+	public static function access_distributor_categories($action, $param=null){
+		$i = self::Instance();
+		switch ($action) {
+			case 'browse_crits':	return $i->acl_check('browse distributors');
+			case 'browse':	return true;
+			case 'view':	return $i->acl_check('view distributors');
+			case 'add':	return false;
+			case 'edit':	if(!$i->acl_check('edit distributors')) return false;
+							return array('last_update'=>false);
+			case 'delete':	return $i->acl_check('delete distributors');
+		}
+		return false;
+    }
+	public static function QFfield_static(&$form, $field, $label, $mode, $default) {
+		$form->addElement('static', $field, $label, $default);
 	}
 }
 ?>
