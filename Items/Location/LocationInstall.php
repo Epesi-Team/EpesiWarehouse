@@ -95,7 +95,7 @@ class Premium_Warehouse_Items_LocationInstall extends ModuleInstall {
 		return array(
 			'Description'=>'Items Transactions - Premium Module',
 			'Author'=>'abisaga@telaxus.com',
-			'License'=>'MIT');
+			'License'=>'Commercial');
 	}
 	
 	public static function simple_setup() {

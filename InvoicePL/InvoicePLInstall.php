@@ -63,7 +63,7 @@ class Premium_Warehouse_InvoicePLInstall extends ModuleInstall {
 		return array(
 			'Description'=>'Polish Invoice Report - Premium Module',
 			'Author'=>'abisaga@telaxus.com',
-			'License'=>'MIT');
+			'License'=>'Commecial');
 	}
 	
 	public static function simple_setup() {

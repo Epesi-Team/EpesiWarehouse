@@ -135,7 +135,7 @@ class Premium_Warehouse_WholesaleInstall extends ModuleInstall {
 		return array(
 			'Description'=>'Wholesale - Premium Module',
 			'Author'=>'abisaga@telaxus.com',
-			'License'=>'MIT');
+			'License'=>'Commercial');
 	}
 	
 	public static function simple_setup() {
