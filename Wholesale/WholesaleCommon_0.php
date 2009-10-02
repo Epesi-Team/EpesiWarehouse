@@ -171,6 +171,7 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 			'item_exist'=>'Items found in the system:',
 			'link_exist'=>'Items scanned in the past:',
 			'new_items_added'=>'New items:',
+			'new_categories_added'=>'New categories:',
 			'unknown'=>'Unknown'
 		);
 		foreach ($fields as $k=>$v) 
@@ -188,13 +189,13 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 		Base_ActionBarCommon::add('folder', 'File scan', 'class="lbOn" rel="wholesale_scan_file" onmouseup="wholesale_leightbox_switch_to_form();"');
     }
     
-    public static function update_scan_status($total, $scanned, $available, $item_exist, $link_exist, $new_items_added) {
+    public static function update_scan_status($total, $scanned, $available, $item_exist, $link_exist, $new_items_added, $new_categories_added) {
 		static $time = 0;
 		$new_time = microtime(true);
 		if ($new_time-$time>1.5 || $total==$scanned) {
 			$time = $new_time;
 			if ($total===null) $total='"'.Base_LangCommon::ts('Premium_Warehouse_Wholesale','Unknown').'"';
-			echo('<script>parent.update_wholesale_scan_status('.$total.','.$scanned.','.$available.','.$item_exist.','.$link_exist.','.$new_items_added.');</script>');
+			echo('<script>parent.update_wholesale_scan_status('.$total.','.$scanned.','.$available.','.$item_exist.','.$link_exist.','.$new_items_added.','.$new_categories_added.');</script>');
 			flush();
 			@ob_flush();
 		}
@@ -385,8 +386,15 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 		}
 		return false;
     }
-	public static function QFfield_static(&$form, $field, $label, $mode, $default) {
-		$form->addElement('static', $field, $label, $default);
+	public static function QFfield_category_name(&$form, $field, $label, $mode, $default) {
+		$form->addElement('text', $field, $label)->freeze();
+		$form->setDefaults(array($field=>$default));
+	}
+
+	public static function QFfield_distributor_name(&$form, $field, $label, $mode, $default) {
+		$rec = Utils_RecordBrowserCommon::get_record('premium_warehouse_distributor', $default);
+		$form->addElement('select', $field, $label, array($default=>$rec['name']))->freeze();
+		$form->setDefaults(array($field=>$default));
 	}
 }
 ?>

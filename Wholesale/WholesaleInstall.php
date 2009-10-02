@@ -89,9 +89,9 @@ class Premium_Warehouse_WholesaleInstall extends ModuleInstall {
 		DB::Execute('UPDATE premium_warehouse_distributor_field SET param = 1 WHERE field = %s', array('Details'));
 
 		$fields = array(
-			array('name'=>'Distributor', 		'type'=>'select','param'=>array('premium_warehouse_distributor'=>'Name'), 'required'=>true, 'extra'=>false, 'visible'=>true, 'QFfield_callback'=>array('Premium_Warehouse_WholesaleCommon', 'QFfield_static')),
-			array('name'=>'Foreign Category Name', 			'type'=>'text', 'required'=>true, 'param'=>'128', 'extra'=>false, 'visible'=>true, 'QFfield_callback'=>array('Premium_Warehouse_WholesaleCommon', 'QFfield_static')),
-			array('name'=>'Epesi Category', 		'type'=>'select', 'required'=>false, 'param'=>'premium_warehouse_items_categories::Category Name', 'extra'=>false, 'visible'=>true)
+			array('name'=>'Distributor', 		'type'=>'select','param'=>'premium_warehouse_distributor::Name', 'required'=>true, 'extra'=>false, 'visible'=>true, 'QFfield_callback'=>array('Premium_Warehouse_WholesaleCommon', 'QFfield_distributor_name')),
+			array('name'=>'Foreign Category Name', 			'type'=>'text', 'required'=>true, 'param'=>'128', 'extra'=>false, 'visible'=>true, 'QFfield_callback'=>array('Premium_Warehouse_WholesaleCommon', 'QFfield_category_name')),
+			array('name'=>'Epesi Category',		'type'=>'multiselect', 'required'=>false, 'visible'=>true, 'extra'=>false,  'param'=>'premium_warehouse_items_categories::Category Name', 'QFfield_callback'=>array('Premium_Warehouse_ItemsCommon', 'QFfield_item_category'))
 		);
 
 		Utils_RecordBrowserCommon::install_new_recordset('premium_warehouse_distributor_categories', $fields);

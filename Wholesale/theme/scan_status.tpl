@@ -51,6 +51,14 @@
 					<div id="wholesale_scan_status_new_items_added">{$unknown}</div>
 				</td>
 			</tr>
+			<tr>
+				<td align="left">
+					{$new_categories_added}
+				</td>
+				<td align="right">
+					<div id="wholesale_scan_status_new_categories_added">{$unknown}</div>
+				</td>
+			</tr>
 		</table>
 	</div>
 </center>
