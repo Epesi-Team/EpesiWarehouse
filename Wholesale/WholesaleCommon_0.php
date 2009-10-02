@@ -396,5 +396,19 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 		$form->addElement('select', $field, $label, array($default=>$rec['name']))->freeze();
 		$form->setDefaults(array($field=>$default));
 	}
+	
+	public static function display_epesi_cat_name($v, $nolink=false) {
+		$ret = array();
+		foreach($v['epesi_category'] as $c) {
+			$cc = explode('/',$c);
+			$ret2 = array();
+			foreach($cc as $ccc) {
+				$cat = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_categories',$ccc);
+				$ret2[] = $cat['category_name'];
+			}
+			$ret[] = implode(' / ',$ret2);
+		}
+		return implode(', ',$ret);
+	}
 }
 ?>

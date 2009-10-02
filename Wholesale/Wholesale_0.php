@@ -73,7 +73,9 @@ class Premium_Warehouse_Wholesale extends Module {
 				$validate = false;
 			}
 			if ($validate) { 
-				$iid = Utils_RecordBrowserCommon::new_record('premium_warehouse_items', $vals['form']);
+				$dist_cat = DB::GetOne('SELECT distributor_category FROM premium_warehouse_wholesale_items WHERE id=%d',array($vals['params']['internal_id']));
+				$categories = Utils_RecordBrowserCommon::get_record('premium_warehouse_distributor_categories',$dist_cat);
+				$iid = Utils_RecordBrowserCommon::new_record('premium_warehouse_items', array_merge($vals['form'],array('category'=>$categories['epesi_category'])));
 				DB::Execute('UPDATE premium_warehouse_wholesale_items SET item_id=%d WHERE id=%d', array($iid, $vals['params']['internal_id']));
 			}
 		}
