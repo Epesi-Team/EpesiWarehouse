@@ -72,7 +72,7 @@ class Products
 								d.f_keywords as sMetaKeywords,
 								it.f_weight as sWeight,
 								it.f_manufacturer as iProducer,
-								SUM(loc.f_quantity),
+								SUM(loc.f_quantity) as f_quantity,
 								it.f_cost fPrice2,
 								it.f_tax_rate tax2,
 								dist.quantity as distributorQuantity,
@@ -115,6 +115,7 @@ class Products
 		}
 		if(!$aExp['f_quantity'] && !$aExp['distributorQuantity'])
 			$aExp['fPrice']='';
+		print($aExp['f_quantity']);
 		if($aExp['fPrice'])
 			$aExp['fPrice'] = number_format($aExp['fPrice'],2);
 		$aExp['iComments'] = 1;
