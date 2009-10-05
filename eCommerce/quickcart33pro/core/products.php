@@ -115,7 +115,6 @@ class Products
 		}
 		if(!$aExp['f_quantity'] && !$aExp['distributorQuantity'])
 			$aExp['fPrice']='';
-		print($aExp['f_quantity']);
 		if($aExp['fPrice'])
 			$aExp['fPrice'] = number_format($aExp['fPrice'],2);
 		$aExp['iComments'] = 1;
