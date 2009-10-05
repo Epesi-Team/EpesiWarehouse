@@ -415,7 +415,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 	    if(isset($_REQUEST['icecat_sync'])) {
 		self::icecat_sync($r['item_name']);
 	    }
-	    return false;
+	    return array('show'=>false);
 	}
 
 	private static $orders_rec;
