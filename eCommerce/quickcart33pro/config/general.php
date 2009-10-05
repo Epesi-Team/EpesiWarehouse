@@ -76,7 +76,8 @@ require_once('epesi_'.LANGUAGE_CONFIG.'.php');
 if(!defined('LANGUAGE')) {
 	if(isset($config['language']))
 		define('LANGUAGE',$config['language']);
-	define('LANGUAGE',LANGUAGE_CONFIG);
+	else
+		define('LANGUAGE',LANGUAGE_CONFIG);
 }
 
 $config['poll_max_answers'] = 7;
