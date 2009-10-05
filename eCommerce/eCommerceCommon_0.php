@@ -310,12 +310,17 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 		    if($output) {
 			$got_data = true;
 			$obj = simplexml_load_string($output);
+			if(isset($obj->Product[0]['ErrorMessage'])) {
+				Epesi::alert($obj->Product[0]['ErrorMessage']);
+				return false;
+		    	}
+				
 			
 			//description
 			$product_desc = array('item_name'=>$item_id,
 						'language'=>$code,
 						'display_name'=>(string)$obj->Product[0]['Name'],
-						'short_description'=>(string)$obj->Product[0]->ProductDescription[0]);
+						'short_description'=>str_replace('\n','<br />',(string)$obj->Product[0]->ProductDescription[0]));
 			if(isset($descriptions[$code]))
 			    Utils_RecordBrowserCommon::update_record('premium_ecommerce_descriptions',$descriptions[$code],$product_desc);
 			else
@@ -341,7 +346,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 				    continue;
 				$parameter_group_label = array('group'=>$parameter_groups[$key],
 							'language'=>$code,
-							'label'=>(string)$cg->FeatureGroup[0]->Name[0]['Value']);
+							'label'=>str_replace('\n','<br />',(string)$cg->FeatureGroup[0]->Name[0]['Value']));
 				Utils_RecordBrowserCommon::new_record('premium_ecommerce_parameter_group_labels',$parameter_group_label);
 			}
 			
@@ -359,14 +364,14 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 			    if(!isset($parameter_labels[$parameters[$key]])) {
 				$parameter_label = array('parameter'=>$parameters[$key],
 							'language'=>$code,
-							'label'=>(string)$pf->Feature[0]->Name[0]['Value']);
+							'label'=>str_replace('\n','<br />',(string)$pf->Feature[0]->Name[0]['Value']));
 				$parameter_labels[$parameters[$key]] = Utils_RecordBrowserCommon::new_record('premium_ecommerce_parameter_labels',$parameter_label);
 			    }
 			    $item_params = array('item_name'=>$item_id,
 						'parameter'=>$parameters[$key],
 						'group'=>$parameter_groups['icecat_'.$pf['CategoryFeatureGroup_ID']],
 						'language'=>$code,
-						'value'=>(string)str_replace('\n','<br />',$pf['Presentation_Value']));
+						'value'=>str_replace('\n','<br />',(string)$pf['Presentation_Value']));
 			    if(isset($item_parameters[$parameters[$key]]))
 				Utils_RecordBrowserCommon::update_record('premium_ecommerce_products_parameters',$item_parameters[$parameters[$key]],$item_params);
 			    else
