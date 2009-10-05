@@ -366,7 +366,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 						'parameter'=>$parameters[$key],
 						'group'=>$parameter_groups['icecat_'.$pf['CategoryFeatureGroup_ID']],
 						'language'=>$code,
-						'value'=>(string)$pf['Presentation_Value']);
+						'value'=>(string)str_replace('\n','<br />',$pf['Presentation_Value']));
 			    if(isset($item_parameters[$parameters[$key]]))
 				Utils_RecordBrowserCommon::update_record('premium_ecommerce_products_parameters',$item_parameters[$parameters[$key]],$item_params);
 			    else
