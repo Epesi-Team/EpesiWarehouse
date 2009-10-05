@@ -202,7 +202,7 @@ function delSavedUserData( ){
 
 function txtSize( iSize ){
   var aSizes = Array( '0.917em', '', '1.333em' );
-  var aChange = Array( 'pageDescription', 'h5', 'productDescription' );
+  var aChange = Array( 'pageDescription', 'h5', 'productDescription', 'features' );
   var aSizesDefault = Array( '1.083em', '1em', '1.08em' );
   for( var i = 0; i < aChange.length; i++ ){
     if( !aSizes[iSize] )
