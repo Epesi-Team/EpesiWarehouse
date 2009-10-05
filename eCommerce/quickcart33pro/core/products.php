@@ -115,8 +115,8 @@ class Products
 		}
 		if(!$aExp['f_quantity'] && !$aExp['distributorQuantity'])
 			$aExp['fPrice']='';
-//		if($aExp['fPrice'])
-//			$aExp['fPrice'] = number_format($aExp['fPrice'],2);
+		if($aExp['fPrice'])
+			$aExp['fPrice'] = number_format($aExp['fPrice'],2,'.','');
 		$aExp['iComments'] = 1;
 		unset($aExp['sName2']);
 		$cats = array_filter(explode('__',$aExp['f_category']));
