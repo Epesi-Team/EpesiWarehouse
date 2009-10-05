@@ -299,7 +299,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 			"Content-Type: text/xml; charset=UTF-8",
 		        "Content-Encoding: UTF-8"
 		    );
-		    curl_setopt($ch, CURLOPT_HTTPHEADER, $httpHeader);
+		    curl_setopt($c, CURLOPT_HTTPHEADER, $httpHeader);
 		    $output = curl_exec($c);
 		    $response_code = curl_getinfo($c, CURLINFO_HTTP_CODE);
 		    curl_close($c);
