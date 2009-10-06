@@ -83,6 +83,7 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 			case 'browse':	return $i->acl_check('browse items');
 			case 'view':	if($i->acl_check('view items')) return true;
 							return false;
+			case 'clone':
 			case 'add':
 			case 'edit':	if (!$i->acl_check('edit items')) return false;
 							return array('item_type'=>false);
@@ -98,6 +99,7 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 			case 'browse':	return true;
 			case 'view':	if (!$i->acl_check('view items')) return false;
 							return array('position'=>false,'parent_category'=>false);
+			case 'clone':
 			case 'add':
 			case 'edit':	return $i->acl_check('edit items');
 			case 'delete':	return $i->acl_check('delete items');

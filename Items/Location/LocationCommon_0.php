@@ -62,6 +62,7 @@ class Premium_Warehouse_Items_LocationCommon extends ModuleCommon {
 			case 'browse_crits':	return $i->acl_check('browse location');
 			case 'browse':	return $i->acl_check('browse location');
 			case 'view':	return true;
+			case 'clone':
 			case 'add':
 			case 'edit':	$ret = array('item_sku'=>false, 'warehouse'=>false);
 							if (!Base_AclCommon::i_am_sa()) $ret['quantity'] = false;

@@ -717,6 +717,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 								$ret['quantity'] = false;
 							}
 							return $ret;
+			case 'clone':
 			case 'add':		if (!$i->acl_check('edit orders') || !self::access_orders('add')) return false;
 							$ret = array('transaction_id'=>false);
 //							if ($trans['transaction_type']==3)
@@ -850,6 +851,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 								if ($param['status']!=1) $ret['expiration_date'] = false;
 							}
 							return $ret;
+			case 'clone':
 			case 'add':		if (!$i->acl_check('edit orders')) return false;
 							$ret['status'] = false;
 							$ret['transaction_type'] = false;
@@ -882,6 +884,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			case 'view':	if (!$i->acl_check('view items')) return false;
 							if ($param['item_type']==2 || $param['item_type']==3) return array('reorder_point'=>false,'quantity_on_hand'=>false,'upc'=>false,'manufacturer_part_number'=>false, 'quantity_en_route'=>false);
 							return array('quantity_sold'=>false);
+			case 'clone':
 			case 'add':
 			case 'edit':	if (!$i->acl_check('edit items')) return false;
 							return array('quantity_on_hand'=>false,'item_type'=>false);	
@@ -1072,6 +1075,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 				}
 				Base_ActionBarCommon::add($icon,$label,Module::create_href(array('premium_warehouse_change_active_order'=>$values['id'])));
 				return $values;
+			case 'clone':
 			case 'add':
 				if ($values['company']<0 && $values['company_name']) {
 					$values['company'] = Utils_RecordBrowserCommon::new_record('company',
@@ -1157,6 +1161,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 				$trans = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $values['transaction_id']);
 				self::add_transaction($trans, $values);
 				return;
+			case 'clone':
 			case 'add':
 				$trans = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $values['transaction_id']);
 				$net = Utils_CurrencyFieldCommon::get_values($values['net_price']);

@@ -101,6 +101,7 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 			case 'browse_crits':	return $i->acl_check('browse distributors');
 			case 'browse':	return true;
 			case 'view':	return $i->acl_check('view distributors');
+			case 'clone':
 			case 'add':
 			case 'edit':	if(!$i->acl_check('edit distributors')) return false;
 							return array('last_update'=>false);
@@ -379,6 +380,7 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 			case 'browse_crits':	return $i->acl_check('browse distributors');
 			case 'browse':	return true;
 			case 'view':	return $i->acl_check('view distributors');
+			case 'clone':
 			case 'add':	return false;
 			case 'edit':	if(!$i->acl_check('edit distributors')) return false;
 							return array('last_update'=>false);

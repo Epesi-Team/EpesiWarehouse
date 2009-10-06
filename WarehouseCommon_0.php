@@ -47,6 +47,7 @@ class Premium_WarehouseCommon extends ModuleCommon {
 			case 'browse_crits': return $i->acl_check('browse warehouses');
 			case 'browse':	return $i->acl_check('browse warehouses');
 			case 'view':	return $i->acl_check('view warehouses');
+			case 'clone':
 			case 'add':
 			case 'edit':	return $i->acl_check('edit warehouses');
 			case 'delete':	return $i->acl_check('delete warehouses');

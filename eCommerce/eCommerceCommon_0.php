@@ -24,6 +24,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 			case 'browse':	return true;
 			case 'view':	if (!$i->acl_check('view ecommerce')) return false;
 							return array('position'=>false);
+			case 'clone':
 			case 'add':
 			case 'edit':	return $i->acl_check('edit ecommerce');
 			case 'delete':	return $i->acl_check('delete ecommerce');
