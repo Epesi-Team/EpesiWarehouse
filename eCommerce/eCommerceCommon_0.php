@@ -315,7 +315,6 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 				Epesi::alert($obj->Product[0]['ErrorMessage']);
 				return false;
 		    	}
-		    	error_log(print_r($obj,true),3,'data/log');
 				
 			
 			//description
