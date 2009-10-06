@@ -120,10 +120,21 @@ div#searchform .input {
 #menu1 li#langMenu {
   padding: 0px 0px 0px 0px;
 }
-#menu1 li#langMenu a{background:none;color:#e62808;padding:3px 5px 3px 5px; display: block}
-#menu1 li#langMenu .selected{
-  background-color:#c3bda6;
+#menu1 li#langMenu a {
+	background: none;
+	color: #e62808;
+	padding: 3px 5px 3px 5px;
+	display: block
 }
+
+#menu1 li#langMenu a:hover {
+	background-color:#c3bda6;
+}
+
+#menu1 li#langMenu .selected{
+	background-color: #c3bda6;
+}
+
 #menu1 li#langMenu span{display:block;font-size:0.727em;font-family:sans-serif;}
 #menu1 li#langMenu span strong{background-color:inherit;color:#e62808;}
 
@@ -133,6 +144,16 @@ div#searchform .input {
 
 #menu1 li#langMenu a.selected {
 
+}
+
+#menu1 #lang {
+	display: none;
+	z-index: 10;
+	position: absolute;
+	top: 80px;
+	right: 0px;
+	background-color: #f2f2f2;
+	padding: 5px 0px 5px 10px;
 }
 
 /* LOGO, HEADER BACKGROUND AND SLOGAN */
@@ -351,8 +372,9 @@ html, body, #container, #main, #body, #content {
   float: left;
   display: block;
   width: auto;
-  padding: 20px;
+  /*padding: 20px;*/
   text-align: left;
+  width: 100%;
 }
 
 #orderbody #content{width:100%;}
@@ -365,6 +387,7 @@ html, body, #container, #main, #body, #content {
   background: inherit;
   color: #993333;
   font: normal 2.1em Verdana, sans-serif;
+  white-space: nowrap;
 }
 
 .message h3, #page .message h3{border:0;}
@@ -373,7 +396,7 @@ html, body, #container, #main, #body, #content {
 #page div.content ul, #product div.content ul, .subpagesList li ol{margin:0 0 0 30px;padding:0;}
 #page div.content li, #product div.content li{margin:3px 0;padding:0;border-left:0;}
 
-#page .tS, #product .tS{float:right;margin:0 0 3px;}
+#page .tS, #product .tS{float:right;margin:0 10px 3px;}
 #page .tS a, #product .tS a{padding:0 1px;background:inherit;color:#222;font-weight:bold;text-decoration:none;}
 #page .tS0, #product .tS0{font-size:0.92em;}
 #page .tS1, #product .tS1{font-size:1.08em;}
@@ -410,6 +433,9 @@ html, body, #container, #main, #body, #content {
 
 /* PRODUCTS DETAILS */
 #product{float:right;display:block;width:536px;margin:0 0 10px;padding:0 0 10px;border-bottom:1px solid #d1bd9d;text-align:left;}
+#product {
+	width: 100%;
+}
 #product h3{padding:5px 0 5px;background:inherit;color:#993333;font:normal 2.1em Verdana, sans-serif;}
 #product h4{margin:0 0 10px;padding:2px 0 7px;border-bottom:1px solid #d1bd9d;font-weight:normal;font-size:0.917em;}
 #product h4, #product h4 a{background:inherit;color:#a78b65;}
@@ -580,6 +606,7 @@ html>/**/body #product .imagesList#imagesList2 li div{margin:0 auto;}
 }
 
 #product #features {
+	margin: 0px 20px 0px 20px;
 }
 
 #product #box {
@@ -589,4 +616,3 @@ html>/**/body #product .imagesList#imagesList2 li div{margin:0 auto;}
 #product .imagesList {
   float: left;
 }
-

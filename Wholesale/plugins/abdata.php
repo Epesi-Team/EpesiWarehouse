@@ -90,7 +90,7 @@ class Premium_Warehouse_Wholesale__Plugin_abdata implements Premium_Warehouse_Wh
 	    $time = time();
 
 		$filename = $dir.'ab_data_'.$time.'.tmp';
-		file_put_contents($filename, $output);
+		file_put_contents($filename, iconv("cp1250","UTF-8",$output));
 
 	    curl_close($c);
 
@@ -120,6 +120,7 @@ class Premium_Warehouse_Wholesale__Plugin_abdata implements Premium_Warehouse_Wh
 		$link_exist = 0;
 		$item_exist = 0;
 		$new_items = 0;
+		$new_categories = 0;
 		
 		$keys = array(
 			'indeks',
@@ -143,15 +144,18 @@ class Premium_Warehouse_Wholesale__Plugin_abdata implements Premium_Warehouse_Wh
 
 		DB::Execute('UPDATE premium_warehouse_wholesale_items SET quantity=%d, quantity_info=%s WHERE distributor_id=%d', array(0, '', $distributor['id']));
 
+		$categories = DB::GetAssoc('SELECT f_foreign_category_name,id FROM premium_warehouse_distributor_categories_data_1 WHERE active=1 AND f_distributor=%d',array($distributor['id']));
+		$categories_to_del = $categories;
+
 		Premium_Warehouse_WholesaleCommon::file_scan_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Scanning...'));
 		while (!feof($f)) {
 			$row = fgetcsv($f,0,$delimiter);
 			if ($row===false) break;
-			Premium_Warehouse_WholesaleCommon::update_scan_status($total, $scanned, $available, $item_exist, $link_exist, $new_items);
+			Premium_Warehouse_WholesaleCommon::update_scan_status($total, $scanned, $available, $item_exist, $link_exist, $new_items, $new_categories);
 			$scanned++;
 			
 			foreach ($row as $k=>$v) $row[$keys[$k]] = $v;
-			$row['nazwa'] = mb_convert_encoding($row['nazwa'],"ISO-8859-1","UTF-8");
+			$row['nazwa'] = $row['nazwa'];
 			if (strlen($row['nazwa'])>127) $row['nazwa'] = substr($row['nazwa'],0,127);
 			
 			if ($row['magazyn_stan']=='jest') {
@@ -164,6 +168,13 @@ class Premium_Warehouse_Wholesale__Plugin_abdata implements Premium_Warehouse_Wh
 					$quantity_info = $row['magazyn_ilosc'];
 					$quantity = 30;
 				}
+
+				if(!isset($categories[$row['kategoria']])) {
+					$categories[$row['kategoria']] = Utils_RecordBrowserCommon::new_record('premium_warehouse_distributor_categories',array('foreign_category_name'=>$row['kategoria'],'distributor'=>$distributor['id']));
+					$new_categories++;
+				} elseif(isset($categories_to_del[$row['kategoria']]))
+					unset($categories_to_del[$row['kategoria']]);
+				$category = $categories[$row['kategoria']];
 
 				/*** check for exact match ***/
 				$internal_key = DB::GetOne('SELECT internal_key FROM premium_warehouse_wholesale_items WHERE internal_key=%s AND distributor_id=%d', array($row['indeks'], $distributor['id']));
@@ -196,19 +207,22 @@ class Premium_Warehouse_Wholesale__Plugin_abdata implements Premium_Warehouse_Wh
 						$item_exist++;
 					}
 					if ($w_item!==null) {
-						DB::Execute('INSERT INTO premium_warehouse_wholesale_items (item_id, internal_key, distributor_item_name, distributor_id, quantity, quantity_info, price, price_currency) VALUES (%d, %s, %s, %d, %d, %s, %f, %d)', array($w_item, $row['indeks'], $row['nazwa'], $distributor['id'], $quantity, $quantity_info, $row['cena_netto'], $pln_id));
+						DB::Execute('INSERT INTO premium_warehouse_wholesale_items (item_id, internal_key, distributor_item_name, distributor_id, quantity, quantity_info, price, price_currency, distributor_category) VALUES (%d, %s, %s, %d, %d, %s, %f, %d,%d)', array($w_item, $row['indeks'], $row['nazwa'], $distributor['id'], $quantity, $quantity_info, $row['cena_netto'], $pln_id,$category));
 					} else {
-						DB::Execute('INSERT INTO premium_warehouse_wholesale_items (internal_key, distributor_item_name, distributor_id, quantity, quantity_info, price, price_currency) VALUES (%s, %s, %d, %d, %s, %f, %d)', array($row['indeks'], $row['nazwa'], $distributor['id'], $quantity, $quantity_info, $row['cena_netto'], $pln_id));
+						DB::Execute('INSERT INTO premium_warehouse_wholesale_items (internal_key, distributor_item_name, distributor_id, quantity, quantity_info, price, price_currency, distributor_category) VALUES (%s, %s, %d, %d, %s, %f, %d, %d)', array($row['indeks'], $row['nazwa'], $distributor['id'], $quantity, $quantity_info, $row['cena_netto'], $pln_id, $category));
 					}
 				} else {
 					/*** there's an exact match in the system already ***/
 					$link_exist++;
-					DB::Execute('UPDATE premium_warehouse_wholesale_items SET quantity=%d, quantity_info=%s, price=%f, price_currency=%d WHERE internal_key=%s AND distributor_id=%d', array($quantity, $quantity_info, $row['cena_netto'], $pln_id, $row['indeks'], $distributor['id']));
+					DB::Execute('UPDATE premium_warehouse_wholesale_items SET quantity=%d, quantity_info=%s, price=%f, price_currency=%d, distributor_category=%d WHERE internal_key=%s AND distributor_id=%d', array($quantity, $quantity_info, $row['cena_netto'], $pln_id, $category, $row['indeks'], $distributor['id']));
 				}
 			} 
 		}
+		foreach($categories_to_del as $name=>$id) {
+			Utils_RecordBrowserCommon::delete_record('premium_warehouse_distributor_categories',$id);
+		}
 		Premium_Warehouse_WholesaleCommon::file_scan_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Scan complete.'), 1);
-		Premium_Warehouse_WholesaleCommon::update_scan_status($scanned, $scanned, $available, $item_exist, $link_exist, $new_items);
+		Premium_Warehouse_WholesaleCommon::update_scan_status($scanned, $scanned, $available, $item_exist, $link_exist, $new_items, $new_categories);
 		fclose($f);
 		return true;
 	}

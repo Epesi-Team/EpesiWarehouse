@@ -133,6 +133,7 @@ class Premium_Warehouse_Wholesale__Plugin_techdata implements Premium_Warehouse_
 		$link_exist = 0;
 		$item_exist = 0;
 		$new_items = 0;
+		$new_categories = 0;
 		
 		static $parts = array(
 			'VENDOR'=>24, 
@@ -158,9 +159,12 @@ class Premium_Warehouse_Wholesale__Plugin_techdata implements Premium_Warehouse_
 
 		DB::Execute('UPDATE premium_warehouse_wholesale_items SET quantity=%d, quantity_info=%s WHERE distributor_id=%d', array(0, '', $distributor['id']));
 
+		$categories = DB::GetAssoc('SELECT f_foreign_category_name,id FROM premium_warehouse_distributor_categories_data_1 WHERE active=1 AND f_distributor=%d',array($distributor['id']));
+		$categories_to_del = $categories;
+
 		Premium_Warehouse_WholesaleCommon::file_scan_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Scanning...'));
 		while ($index <= $limit) {
-			Premium_Warehouse_WholesaleCommon::update_scan_status($limit, $total, $available, $item_exist, $link_exist, $new_items);
+			Premium_Warehouse_WholesaleCommon::update_scan_status($limit, $total, $available, $item_exist, $link_exist, $new_items, $new_categories);
 			$row_parts = dbase_get_record_with_names($d, $index);
 			$index++;
 
@@ -183,6 +187,14 @@ class Premium_Warehouse_Wholesale__Plugin_techdata implements Premium_Warehouse_
 					case 'wkrotce': $quantity_info='In less than 2 weeks';break;
 					case 'jutro': $quantity_info='Tomorrow';break;
 				}
+
+				if(!isset($categories[$row['GRUPA']])) {
+					$categories[$row['GRUPA']] = Utils_RecordBrowserCommon::new_record('premium_warehouse_distributor_categories',array('foreign_category_name'=>$row['GRUPA'],'distributor'=>$distributor['id']));
+					$new_categories++;
+				} elseif(isset($categories_to_del[$row['GRUPA']]))
+					unset($categories_to_del[$row['GRUPA']]);
+				$category = $categories[$row['GRUPA']];
+
 				/*** check for exact match ***/
 				$internal_key = DB::GetOne('SELECT internal_key FROM premium_warehouse_wholesale_items WHERE internal_key=%s AND distributor_id=%d', array($row_parts['KOD_TD'], $distributor['id']));
 				if (($internal_key===false || $internal_key===null) && $row_parts['SYMBOLPROD']) {
@@ -214,19 +226,22 @@ class Premium_Warehouse_Wholesale__Plugin_techdata implements Premium_Warehouse_
 						$item_exist++;
 					}
 					if ($w_item!==null) {
-						DB::Execute('INSERT INTO premium_warehouse_wholesale_items (item_id, internal_key, distributor_item_name, distributor_id, quantity, quantity_info, price, price_currency) VALUES (%d, %s, %s, %d, %d, %s, %f, %d)', array($w_item, $row_parts['KOD_TD'], $row_parts['NAZWA'], $distributor['id'], $quantity, $quantity_info, $row_parts['CENA_C'], $pln_id));
+						DB::Execute('INSERT INTO premium_warehouse_wholesale_items (item_id, internal_key, distributor_item_name, distributor_id, quantity, quantity_info, price, price_currency, distributor_category) VALUES (%d, %s, %s, %d, %d, %s, %f, %d, %d)', array($w_item, $row_parts['KOD_TD'], $row_parts['NAZWA'], $distributor['id'], $quantity, $quantity_info, $row_parts['CENA_C'], $pln_id,$category));
 					} else {
-						DB::Execute('INSERT INTO premium_warehouse_wholesale_items (internal_key, distributor_item_name, distributor_id, quantity, quantity_info, price, price_currency) VALUES (%s, %s, %d, %d, %s, %f, %d)', array($row_parts['KOD_TD'], $row_parts['NAZWA'], $distributor['id'], $quantity, $quantity_info, $row_parts['CENA_C'], $pln_id));
+						DB::Execute('INSERT INTO premium_warehouse_wholesale_items (internal_key, distributor_item_name, distributor_id, quantity, quantity_info, price, price_currency, distributor_category) VALUES (%s, %s, %d, %d, %s, %f, %d, %d)', array($row_parts['KOD_TD'], $row_parts['NAZWA'], $distributor['id'], $quantity, $quantity_info, $row_parts['CENA_C'], $pln_id,$category));
 					}
 				} else {
 					/*** there's an exact match in the system already ***/
 					$link_exist++;
-					DB::Execute('UPDATE premium_warehouse_wholesale_items SET quantity=%d, quantity_info=%s, price=%f, price_currency=%d WHERE internal_key=%s AND distributor_id=%d', array($quantity, $quantity_info, $row_parts['CENA_C'], $pln_id, $row_parts['KOD_TD'], $distributor['id']));
+					DB::Execute('UPDATE premium_warehouse_wholesale_items SET quantity=%d, quantity_info=%s, price=%f, price_currency=%d, distributor_category=%d WHERE internal_key=%s AND distributor_id=%d', array($quantity, $quantity_info, $row_parts['CENA_C'], $pln_id, $category, $row_parts['KOD_TD'], $distributor['id']));
 				}
 			} 
 		}
+		foreach($categories_to_del as $name=>$id) {
+			Utils_RecordBrowserCommon::delete_record('premium_warehouse_distributor_categories',$id);
+		}
 		Premium_Warehouse_WholesaleCommon::file_scan_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Scan complete.'), 1);
-		Premium_Warehouse_WholesaleCommon::update_scan_status($limit, $total, $available, $item_exist, $link_exist, $new_items);
+		Premium_Warehouse_WholesaleCommon::update_scan_status($limit, $total, $available, $item_exist, $link_exist, $new_items, $new_categories);
 		dbase_close($d);
 		return true;
 	}

@@ -386,17 +386,41 @@ class Premium_Warehouse_eCommerce extends Module {
 	public function quickcart_settings($path) {
 		if($this->is_back()) return false;
 
+		if(!is_writable($path.'/config/general.php')) {
+			Epesi::alert('Config file not writable: '.$path.'/config/general.php');
+			return false;
+		}			
+
 		$form = & $this->init_module('Libs/QuickForm');
 
 		$form->addElement('header', null, $this->t('QuickCart settings: %s',array($path)));
 		
 		$files = scandir($path.'/config');
-		$langs = array();
+		$langs = Utils_CommonDataCommon::get_array('Premium/Warehouse/eCommerce/Languages');
 		foreach($files as $f) {
 			if(!preg_match('/^(.{2,3})\.php$/i',$f,$reqs))
 				continue;
-			if(in_array($reqs[1].'.gif',$files) && in_array('epesi_'.$reqs[1].'.php',$files))
-				$langs[$reqs[1]] = $reqs[1];
+			if(in_array($reqs[1].'.gif',$files) && in_array('epesi_'.$reqs[1].'.php',$files)) {
+				$code = $reqs[1];
+				if(!is_writable($path.'/config/epesi_'.$code.'.php')) {
+					Epesi::alert('Config file not writable: '.$path.'/config/epesi_'.$code.'.php');
+					unset($langs[$code]);
+					continue;
+				}
+				global $config;
+				$config = array();
+				require_once($path.'/config/'.$code.'.php');
+				if(isset($config['language']) && $config['language']!=$code)
+					$langs[$code] = $code;
+			} else {
+				unset($langs[$code]);
+			}
+		}
+
+		foreach($langs as $code=>$name) {
+			if(file_exists($path.'/config/'.$code.'.gif') && file_exists($path.'/config/'.$code.'.php') && file_exists($path.'/config/epesi_'.$code.'.php')) {
+			} else {
+			}
 		}
 		$form->addElement('select', 'default_lang', $this->t('Default language'),$langs);
 		$form->addRule('default_lang', $this->t('Field required'), 'required');
@@ -455,28 +479,28 @@ class Premium_Warehouse_eCommerce extends Module {
 		$form->setDefaults($config);
 		
 		$currencies = DB::GetAssoc('SELECT code, code FROM utils_currency WHERE active=1');
-		foreach($langs as $l) {
+		foreach($langs as $code=>$l) {
 			$form->addElement('header',null,$this->t('Language: %s',array($l)));
-			$form->addElement('select',$l.'-currency_symbol',$this->t('Currency'),$currencies);
-			$form->addRule($l.'-currency_symbol',$this->t('Field required'),'required');
+			$form->addElement('select',$code.'-currency_symbol',$this->t('Currency'),$currencies);
+			$form->addRule($code.'-currency_symbol',$this->t('Field required'),'required');
 			
-			$form->addElement('text', $l.'-delivery_free', $this->t('Price, after which the order gets sent for free to the customer'));
-			$form->addRule($l.'-delivery_free', $this->t('This field should be numeric'), 'numeric');
-			$form->addRule($l.'-delivery_free',$this->t('Field required'),'required');
+			$form->addElement('text', $code.'-delivery_free', $this->t('Price, after which the order gets sent for free to the customer'));
+			$form->addRule($code.'-delivery_free', $this->t('This field should be numeric'), 'numeric');
+			$form->addRule($code.'-delivery_free',$this->t('Field required'),'required');
 			
-			$form->addElement('text', $l.'-title', $this->t('Title'));
-			$form->addRule($l.'-title',$this->t('Field required'),'required');
+			$form->addElement('text', $code.'-title', $this->t('Title'));
+			$form->addRule($code.'-title',$this->t('Field required'),'required');
 
-			$form->addElement('text', $l.'-slogan', $this->t('Slogan'));
-			$form->addElement('textarea', $l.'-description', $this->t('Description'));
-			$form->addElement('textarea', $l.'-keywords', $this->t('Keywords'));
-			$form->addElement('textarea', $l.'-foot_info', $this->t('Foot'));
+			$form->addElement('text', $code.'-slogan', $this->t('Slogan'));
+			$form->addElement('textarea', $code.'-description', $this->t('Description'));
+			$form->addElement('textarea', $code.'-keywords', $this->t('Keywords'));
+			$form->addElement('textarea', $code.'-foot_info', $this->t('Foot'));
 			
 			$config = array();
 			$config2 = array();
-			@include_once($path.'/config/epesi_'.$l.'.php');
+			@include_once($path.'/config/epesi_'.$code.'.php');
 			foreach($config as $k=>$v) {
-				$config2[$l.'-'.$k] = $v;
+				$config2[$code.'-'.$k] = $v;
 			}
 			$form->setDefaults($config2);
 		}
@@ -509,18 +533,18 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 ?>";
 			file_put_contents($path.'/config/epesi.php',$ccc);
 			
-			foreach($langs as $l) {
+			foreach($langs as $code=>$l) {
 				
 				$ccc = "<?php
-\$config['currency_symbol'] = '".str_replace('\'','\\\'',$vals[$l.'-currency_symbol'])."';
-\$config['delivery_free'] = ".$vals[$l.'-delivery_free'].";
-\$config['title'] = '".str_replace('\'','\\\'',$vals[$l.'-title'])."';
-\$config['description'] = '".str_replace('\'','\\\'',$vals[$l.'-description'])."';
-\$config['slogan'] = '".str_replace('\'','\\\'',$vals[$l.'-slogan'])."';
-\$config['keywords'] = '".str_replace('\'','\\\'',$vals[$l.'-keywords'])."';
-\$config['foot_info'] = '".str_replace('\'','\\\'',$vals[$l.'-foot_info'])."';
+\$config['currency_symbol'] = '".str_replace('\'','\\\'',$vals[$code.'-currency_symbol'])."';
+\$config['delivery_free'] = ".$vals[$code.'-delivery_free'].";
+\$config['title'] = '".str_replace('\'','\\\'',$vals[$code.'-title'])."';
+\$config['description'] = '".str_replace('\'','\\\'',$vals[$code.'-description'])."';
+\$config['slogan'] = '".str_replace('\'','\\\'',$vals[$code.'-slogan'])."';
+\$config['keywords'] = '".str_replace('\'','\\\'',$vals[$code.'-keywords'])."';
+\$config['foot_info'] = '".str_replace('\'','\\\'',$vals[$code.'-foot_info'])."';
 ?>";
-				file_put_contents($path.'/config/epesi_'.$l.'.php',$ccc);
+				file_put_contents($path.'/config/epesi_'.$code.'.php',$ccc);
 			}
 			return false;
 		} else $form->display();

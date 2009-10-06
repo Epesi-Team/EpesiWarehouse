@@ -315,13 +315,15 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 				Epesi::alert($obj->Product[0]['ErrorMessage']);
 				return false;
 		    	}
+		    	error_log(print_r($obj,true),3,'data/log');
 				
 			
 			//description
 			$product_desc = array('item_name'=>$item_id,
 						'language'=>$code,
 						'display_name'=>(string)$obj->Product[0]['Name'],
-						'short_description'=>str_replace('\n','<br />',(string)$obj->Product[0]->ProductDescription[0]));
+						'short_description'=>str_replace('\n','<br />',(string)(isset($obj->Product[0]->ProductDescription['ShortDesc'])?$obj->Product[0]->ProductDescription['ShortDesc']:$obj->Product[0]->ProductDescription[0])),
+						'long_description'=>str_replace('\n','<br />',(string)(isset($obj->Product[0]->ProductDescription['LongDesc'])?$obj->Product[0]->ProductDescription['LongDesc']:'')));
 			if(isset($descriptions[$code]))
 			    Utils_RecordBrowserCommon::update_record('premium_ecommerce_descriptions',$descriptions[$code],$product_desc);
 			else
