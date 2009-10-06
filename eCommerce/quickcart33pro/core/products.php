@@ -70,6 +70,12 @@ class Products
 								d.f_page_title as sNameTitle, 
 								d.f_meta_description as sMetaDescription, 
 								d.f_keywords as sMetaKeywords,
+								d_en.f_display_name as sNameEn,
+								d_en.f_short_description as sDescriptionShortEn,
+								d_en.f_long_description as sDescriptionFullEn,
+								d_en.f_page_title as sNameTitleEn, 
+								d_en.f_meta_description as sMetaDescriptionEn, 
+								d_en.f_keywords as sMetaKeywordsEn,
 								it.f_weight as sWeight,
 								it.f_manufacturer as iProducer,
 								SUM(loc.f_quantity) as f_quantity,
@@ -83,6 +89,7 @@ class Products
 					INNER JOIN (premium_warehouse_items_data_1 it,premium_ecommerce_availability_data_1 av) ON (pr.f_item_name=it.id AND av.id=pr.f_available)
 					LEFT JOIN premium_ecommerce_prices_data_1 pri ON (pri.f_item_name=it.id AND pri.active=1 AND pri.f_currency='.$currency.')
 					LEFT JOIN premium_ecommerce_descriptions_data_1 d ON (d.f_item_name=it.id AND d.f_language="'.LANGUAGE.'" AND d.active=1)
+					LEFT JOIN premium_ecommerce_descriptions_data_1 d_en ON (d_en.f_item_name=it.id AND d_en.f_language="en" AND d_en.active=1)
 					LEFT JOIN premium_ecommerce_availability_labels_data_1 avl ON (pr.f_available=avl.f_availability AND avl.f_language="'.LANGUAGE.'" AND avl.active=1) 
 					LEFT JOIN premium_warehouse_location_data_1 loc ON (loc.f_item_sku=it.id AND loc.f_quantity>0 AND loc.active=1)
 					LEFT JOIN (premium_warehouse_wholesale_items dist, premium_warehouse_distributor_data_1 distributor) ON (dist.item_id=it.id AND dist.quantity>0 AND distributor.id=dist.distributor_id AND dist.price=(SELECT MIN(tmp.price) FROM premium_warehouse_wholesale_items tmp WHERE tmp.item_id=it.id))
@@ -138,6 +145,12 @@ class Products
 		if($aExp['iProducer']!==null && $aExp['iProducer']!=='') {
 			$aExp['iProducer'] = $aExp['iProducer']*4+1;
 			$pages[$aExp['iProducer']] = $aExp['iProducer'];
+		}
+
+		foreach(array('sName','sDescriptionShort','sDescriptionFull','sNameTitle','sMetaDescription','sMetaKeywords') as $kkk) {
+			if(!$aExp[$kkk])
+				$aExp[$kkk] = $aExp[$kkk.'En'];
+			unset($aExp[$kkk.'En']);
 		}
 
     		$products[$aExp['iProduct']] = $aExp;
