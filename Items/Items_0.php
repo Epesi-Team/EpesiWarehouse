@@ -89,7 +89,11 @@ class Premium_Warehouse_Items extends Module {
 		if($qf->validate()) {
 			set_time_limit(0);
 			$vals = $qf->exportValues();
-			$master = substr(strrchr($vals['master_cat'],'/'),1);
+			$master = strrchr($vals['master_cat'],'/');
+			if($master!==false)
+				$master = substr($master,1);
+			else
+				$master = $vals['master_cat'];
 			$cats = array();
 			foreach($vals['cats'] as $cat) {
 				$items = DB::GetAssoc('SELECT id,f_category FROM premium_warehouse_items_data_1 WHERE f_category LIKE '.DB::Concat(DB::qstr('%'),DB::qstr($cat),DB::qstr('%')));
