@@ -315,6 +315,19 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 				Epesi::alert($obj->Product[0]['ErrorMessage']);
 				return false;
 		    	}
+		    	
+		    	//supplier
+		    	$warehouse_item = Utils_RecordBrowserCommon::get_record('premium_warehouse_items',$item_id);
+		    	if(!$warehouse_item['manufacturer'] && isset($obj->Supplier['Name'])); {
+		    		$manufacturers = CRM_ContactsCommon::get_companies(array('company_name'=>$obj->Supplier['Name']), array('group'));
+		    		if($manufacturer = array_shift($manufacturers)) {
+			    		Utils_RecordBrowserCommon::update_record('premium_warehouse_items',$item_id,array('manufacturer'=>$manufacturer['id']));
+			    		if(!in_array('manufacturer', $manufacturer['group'])) {
+			    			$manufacturer['group']['manufacturer'] = 'manufacturer';
+				    		Utils_RecordBrowserCommon::update_record('company',$manufacturer['id'],array('group'=>$manufacturer['group']));
+			    		}
+			    	}
+		    	}
 				
 			
 			//description
@@ -381,16 +394,26 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 			}
 
 			//picture
-			$pic = null;
+			$pic = array();
 			if(isset($obj->Product[0]['HighPic']))
-			    $pic = $obj->Product[0]['HighPic'];
+			    $pic[''] = $obj->Product[0]['HighPic'];
 			elseif(isset($obj->Product[0]['LowPic']))
-			    $pic = $obj->Product[0]['LowPic'];
-			if($pic) {
-			    $num_of_pics = Utils_AttachmentCommon::count('Premium/Warehouse/eCommerce/ProductsDesc/'.$code.'/'.$item_id);
-			    if(!$num_of_pics) {
+			    $pic[''] = $obj->Product[0]['LowPic'];
+			if(isset($obj->Product[0]->ProductGallery->ProductPicture))
+				foreach($obj->Product[0]->ProductGallery->ProductPicture as $pp) {
+					$pic[''] = $pp['Pic'];
+				}
+			$old_pics = array();
+			$ooo = Utils_AttachmentCommon::get('Premium/Warehouse/eCommerce/ProductsDesc/'.$code.'/'.$item_id);
+			if(is_array($ooo))
+				foreach($ooo as $oo) {
+					$old_pics[$oo['original']] = 1;
+				}
+			foreach($pic as $pp) {
+			    $base_pp = basename($pp);
+			    if(!isset($old_pics[$base_pp])) {
 				$ch = curl_init();
-				curl_setopt($ch, CURLOPT_URL,$pic);
+				curl_setopt($ch, CURLOPT_URL,$pp);
 				$temp_file = tempnam(sys_get_temp_dir(), 'icecatpic');
 				$fp = fopen($temp_file, 'w');
     				curl_setopt($ch, CURLOPT_FILE, $fp);
@@ -401,7 +424,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 
 				if($response_code==200)
 				    Utils_AttachmentCommon::add('Premium/Warehouse/eCommerce/ProductsDesc/'.$code.'/'.$item_id,
-							    0,Acl::get_user(),'Icecat product picture',basename($pic),$temp_file,null,null,array('Premium_Warehouse_eCommerceCommon','copy_attachment'));
+							    0,Acl::get_user(),'Icecat product picture',$base_pp,$temp_file,null,null,array('Premium_Warehouse_eCommerceCommon','copy_attachment'));
 
 				@unlink($temp_file);
 			    }
