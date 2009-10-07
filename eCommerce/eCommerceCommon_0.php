@@ -414,7 +414,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 			    if(!isset($old_pics[$base_pp])) {
 				$ch = curl_init();
 				curl_setopt($ch, CURLOPT_URL,$pp);
-				$temp_file = tempnam(sys_get_temp_dir(), 'icecatpic');
+				$temp_file = tempnam(self::Instance()->get_data_dir(), 'icecatpic');
 				$fp = fopen($temp_file, 'w');
     				curl_setopt($ch, CURLOPT_FILE, $fp);
 				curl_exec ($ch);
