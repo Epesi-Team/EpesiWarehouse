@@ -458,7 +458,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 	    if(!isset(self::$orders_rec)) {
 		    $ret = Utils_RecordBrowserCommon::get_records('premium_ecommerce_orders',array('transaction_id'=>$r['id']));
 		    if(!$ret)
-			    return false;
+			    return array('show'=>false);
 		    self::$orders_rec = array_pop($ret);
 	    }
 	    return array('show'=>true, 'label'=>'eCommerce');
