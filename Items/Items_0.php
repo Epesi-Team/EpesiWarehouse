@@ -100,7 +100,11 @@ class Premium_Warehouse_Items extends Module {
 				foreach($items as $id=>$it_cats) {
 					DB::Execute('UPDATE premium_warehouse_items_data_1 SET f_category=%s WHERE id=%d',array(str_replace($it_cats,$cat,$vals['master_cat']),$id));
 				}
-				$cat2 = substr(strrchr($cat,'/'),1);
+				$cat2 = strrchr($cat,'/');
+				if($cat2!==false)
+					$cat2 = substr($cat2,1);
+				else
+					$cat2 = $cat;
 				$cats[] = $cat2;
 				DB::Execute('UPDATE premium_warehouse_items_categories_data_1 SET f_parent_category=%d WHERE f_parent_category=%d',array($master,$cat2));
 			}
