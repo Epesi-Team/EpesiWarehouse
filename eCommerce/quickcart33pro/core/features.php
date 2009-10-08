@@ -22,7 +22,7 @@ function listProductFeatures( $sFile = null, $iProduct = null ){
 
 		$last_group = null;
 		while($bExp = $ret2->FetchRow()) {
-			$parameters[] = array('sGroup'=>($last_group!=$bExp['group_code']?($bExp['group_label']?$bExp['group_label']:$bExp['group_code']):''), 'sName'=>($bExp['parameter_label']?$bExp['parameter_label']:$bExp['parameter_code']), 'sValue'=>$bExp['f_value']);
+			$parameters[] = array('sGroup'=>($last_group!=$bExp['group_code']?($bExp['group_label']?$bExp['group_label']:$bExp['group_code']):''), 'sName'=>($bExp['parameter_label']?$bExp['parameter_label']:$bExp['parameter_code']), 'sValue'=>($bExp['f_value']=='Y'?'<span class="yes">Yes</span>':($bExp['f_value']=='N'?'<span class="no">No</span>':$bExp['f_value'])));
 			if($last_group != $bExp['group_code']) {
     				$last_group = $bExp['group_code'];
 			}
