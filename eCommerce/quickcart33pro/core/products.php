@@ -103,25 +103,20 @@ class Products
 			$aExp['sName'] = $aExp['sName2'];
 		if($aExp['sAvailable']=='') 
 			$aExp['sAvailable'] = $aExp['sAvailable2'];
-		if($autoprice && !$aExp['fPrice']) {
-			if($aExp['f_quantity']) {
-				$rr = explode('__',$aExp['fPrice2']);
-				if($rr && $rr[0] && $rr[1]==$currency) {
-					$netto = $rr[0];
-					$profit = $netto*$percentage/100;
-					if($profit<$minimal) $profit = $minimal;
-					$aExp['fPrice'] = (float)($netto+$profit)*(100+$taxes[$aExp['tax2']])/100;
-					$aExp['tax'] = $aExp['tax2'];
-				} 
-			} elseif($aExp['distributorQuantity']) {
-				if($aExp['fPrice3'] && $aExp['price_currency']==$currency) {
-					$netto = $aExp['fPrice3'];
-					$profit = $netto*$percentage/100;
-					if($profit<$minimal) $profit = $minimal;
-					$aExp['fPrice'] = (float)($netto+$profit)*(100+$taxes[$aExp['tax2']])/100;
-					$aExp['tax'] = $aExp['tax2'];
-				}
-			}
+		if(!$aExp['fPrice'] && $aExp['f_quantity']) {
+			$rr = explode('__',$aExp['fPrice2']);
+			if($rr && $rr[0] && $rr[1]==$currency) {
+				$netto = $rr[0];
+				$aExp['fPrice'] = (float)($netto)*(100+$taxes[$aExp['tax2']])/100;
+				$aExp['tax'] = $aExp['tax2'];
+			} 
+		}
+		if($autoprice && !$aExp['fPrice'] && $aExp['distributorQuantity'] && $aExp['fPrice3'] && $aExp['price_currency']==$currency) {
+			$netto = $aExp['fPrice3'];
+			$profit = $netto*$percentage/100;
+			if($profit<$minimal) $profit = $minimal;
+			$aExp['fPrice'] = (float)($netto+$profit)*(100+$taxes[$aExp['tax2']])/100;
+			$aExp['tax'] = $aExp['tax2'];
 		}
 		if(!$aExp['f_quantity'] && !$aExp['distributorQuantity'])
 			$aExp['fPrice']='';
