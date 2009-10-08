@@ -396,12 +396,12 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 			//picture
 			$pic = array();
 			if(isset($obj->Product[0]['HighPic']))
-			    $pic[''] = $obj->Product[0]['HighPic'];
+			    $pic[] = $obj->Product[0]['HighPic'];
 			elseif(isset($obj->Product[0]['LowPic']))
-			    $pic[''] = $obj->Product[0]['LowPic'];
+			    $pic[] = $obj->Product[0]['LowPic'];
 			if(isset($obj->Product[0]->ProductGallery->ProductPicture))
 				foreach($obj->Product[0]->ProductGallery->ProductPicture as $pp) {
-					$pic[''] = $pp['Pic'];
+					$pic[] = $pp['Pic'];
 				}
 			$old_pics = array();
 			$ooo = Utils_AttachmentCommon::get('Premium/Warehouse/eCommerce/ProductsDesc/'.$code.'/'.$item_id);
@@ -414,18 +414,22 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 			    if(!isset($old_pics[$base_pp])) {
 				$ch = curl_init();
 				curl_setopt($ch, CURLOPT_URL,$pp);
-				$temp_file = tempnam(self::Instance()->get_data_dir(), 'icecatpic');
-				$fp = fopen($temp_file, 'w');
-    				curl_setopt($ch, CURLOPT_FILE, $fp);
-				curl_exec ($ch);
+				$temp_file = self::Instance()->get_data_dir().md5(microtime(true));
+				curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
+//				$fp = fopen($temp_file, 'w');
+  //  				curl_setopt($ch, CURLOPT_FILE, $fp);
+				$response = curl_exec ($ch);
 		    		$response_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 				curl_close ($ch);
-				fclose($fp);
+//				fclose($fp);
+				//TODO: sprobowac bez pliku docelowego, na stdout i fileputcontents
+				
 
-				if($response_code==200)
-				    Utils_AttachmentCommon::add('Premium/Warehouse/eCommerce/ProductsDesc/'.$code.'/'.$item_id,
+				if($response_code==200) {
+					file_put_contents($temp_file,$response);
+					Utils_AttachmentCommon::add('Premium/Warehouse/eCommerce/ProductsDesc/'.$code.'/'.$item_id,
 							    0,Acl::get_user(),'Icecat product picture',$base_pp,$temp_file,null,null,array('Premium_Warehouse_eCommerceCommon','copy_attachment'));
-
+				}
 				@unlink($temp_file);
 			    }
 			}
