@@ -49,7 +49,7 @@ $sRecommended
 <!-- END BASKET -->
 
 <!-- BEGIN PRICE --><div id="price"><em>$lang['Price']:</em><strong id="priceValue">$aData[sPrice]</strong><span>$config[currency_symbol]</span></div><!-- END PRICE -->
-<!-- BEGIN NO_PRICE --><div id="noPrice">$aData[sPrice]</div><!-- END NO_PRICE -->
+<!-- BEGIN NO_PRICE --><div id="noPrice">$lang['Call_for_price']</div><!-- END NO_PRICE -->
 
 <!-- BEGIN FILES_LIST --><li class="l$aData[sStyle]"><img src="$config[dir_files]ext/$aData[sIcon].gif" alt="ico" /><a href="$config[dir_files]$aData[sFileName]">$aData[sFileName]</a>$aData[sDescriptionContent]</li><!-- END FILES_LIST -->
 <!-- BEGIN FILES_DESCRIPTION -->, <em>$aData[sDescription]</em><!-- END FILES_DESCRIPTION -->

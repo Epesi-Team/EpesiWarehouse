@@ -79,12 +79,11 @@ class Products
 								it.f_weight as sWeight,
 								it.f_manufacturer as iProducer,
 								SUM(loc.f_quantity) as f_quantity,
-								it.f_cost fPrice2,
+								it.f_net_price fPrice2,
 								it.f_tax_rate tax2,
 								dist.quantity as distributorQuantity,
 								dist.price fPrice3,
-								dist.price_currency,
-								distributor.f_tax_rate tax3
+								dist.price_currency
 					FROM premium_ecommerce_products_data_1 pr
 					INNER JOIN (premium_warehouse_items_data_1 it,premium_ecommerce_availability_data_1 av) ON (pr.f_item_name=it.id AND av.id=pr.f_available)
 					LEFT JOIN premium_ecommerce_prices_data_1 pri ON (pri.f_item_name=it.id AND pri.active=1 AND pri.f_currency='.$currency.')
@@ -92,7 +91,7 @@ class Products
 					LEFT JOIN premium_ecommerce_descriptions_data_1 d_en ON (d_en.f_item_name=it.id AND d_en.f_language="en" AND d_en.active=1)
 					LEFT JOIN premium_ecommerce_availability_labels_data_1 avl ON (pr.f_available=avl.f_availability AND avl.f_language="'.LANGUAGE.'" AND avl.active=1) 
 					LEFT JOIN premium_warehouse_location_data_1 loc ON (loc.f_item_sku=it.id AND loc.f_quantity>0 AND loc.active=1)
-					LEFT JOIN (premium_warehouse_wholesale_items dist, premium_warehouse_distributor_data_1 distributor) ON (dist.item_id=it.id AND dist.quantity>0 AND distributor.id=dist.distributor_id AND dist.price=(SELECT MIN(tmp.price) FROM premium_warehouse_wholesale_items tmp WHERE tmp.item_id=it.id))
+					LEFT JOIN premium_warehouse_wholesale_items dist ON (dist.item_id=it.id AND dist.quantity>0 AND dist.price=(SELECT MIN(tmp.price) FROM premium_warehouse_wholesale_items tmp WHERE tmp.item_id=it.id))
 					 WHERE pr.f_publish=1 AND pr.active=1 '.($where?' AND ('.$where.')':'').' GROUP BY it.id ORDER BY pr.f_position'.($limit!==null?' LIMIT '.(int)$limit.($offset!==null?' OFFSET '.(int)$offset:''):''));
 
         $taxes = DB::GetAssoc('SELECT id, f_percentage FROM data_tax_rates_data_1 WHERE active=1');
@@ -105,19 +104,23 @@ class Products
 		if($aExp['sAvailable']=='') 
 			$aExp['sAvailable'] = $aExp['sAvailable2'];
 		if($autoprice && !$aExp['fPrice']) {
-			$rr = explode('__',$aExp['fPrice2']);
-			if($rr && $rr[0] && $rr[1]==$currency) {
-				$netto = $rr[0];
-				$profit = $netto*$percentage/100;
-				if($profit<$minimal) $profit = $minimal;
-				$aExp['fPrice'] = (float)($netto+$profit)*(100+$taxes[$aExp['tax2']])/100;
-				$aExp['tax'] = $aExp['tax2'];
-			} elseif($aExp['fPrice3'] && $aExp['price_currency']==$currency) {
-				$netto = $aExp['fPrice3'];
-				$profit = $netto*$percentage/100;
-				if($profit<$minimal) $profit = $minimal;
-				$aExp['fPrice'] = (float)($netto+$profit)*(100+$taxes[$aExp['tax3']])/100;
-				$aExp['tax'] = $aExp['tax3'];
+			if($aExp['f_quantity']) {
+				$rr = explode('__',$aExp['fPrice2']);
+				if($rr && $rr[0] && $rr[1]==$currency) {
+					$netto = $rr[0];
+					$profit = $netto*$percentage/100;
+					if($profit<$minimal) $profit = $minimal;
+					$aExp['fPrice'] = (float)($netto+$profit)*(100+$taxes[$aExp['tax2']])/100;
+					$aExp['tax'] = $aExp['tax2'];
+				} 
+			} elseif($aExp['distributorQuantity']) {
+				if($aExp['fPrice3'] && $aExp['price_currency']==$currency) {
+					$netto = $aExp['fPrice3'];
+					$profit = $netto*$percentage/100;
+					if($profit<$minimal) $profit = $minimal;
+					$aExp['fPrice'] = (float)($netto+$profit)*(100+$taxes[$aExp['tax2']])/100;
+					$aExp['tax'] = $aExp['tax2'];
+				}
 			}
 		}
 		if(!$aExp['f_quantity'] && !$aExp['distributorQuantity'])

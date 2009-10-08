@@ -334,4 +334,5 @@ $lang['Site_map'] = 'Sitemap';
 $lang['Contact_us'] = 'Le contact';
 $lang['Codes'] = 'Codes';
 $lang['Product_Code'] = 'Manufacturer Product Code';
+$lang['Call_for_price'] = 'Call for price';
 ?>

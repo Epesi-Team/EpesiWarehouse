@@ -331,4 +331,5 @@ $lang['Site_map'] = 'Webseite-Karte';
 $lang['Contact_us'] = 'Kontakt';
 $lang['Codes'] = 'Codes';
 $lang['Product_Code'] = 'Manufacturer Product Code';
+$lang['Call_for_price'] = 'Call for price';
 ?>

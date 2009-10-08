@@ -305,11 +305,22 @@ class Pages
     $this->aPagesParentsTypes = null;
 
 	//categories - id mod 4 == 0
+	$ret = DB::Execute('SELECT DISTINCT(it.f_category)
+					FROM premium_ecommerce_products_data_1 pr
+					INNER JOIN (premium_warehouse_items_data_1 it,premium_ecommerce_availability_data_1 av) ON (pr.f_item_name=it.id AND av.id=pr.f_available)
+					 WHERE pr.f_publish=1 AND pr.active=1');
+	$categories = array();
+	while($row = $ret->FetchRow()) {
+		$cats = array_filter(explode('__',$row['f_category']));
+   		foreach($cats as $c) {
+			$categories += explode('/',$c);
+		}
+	}
 	$query = 'SELECT c.id, c.f_category_name, c.f_parent_category, c.f_show_as,
 					d.f_page_title, d.f_meta_description, d.f_keywords, 
 					d.f_display_name, d.f_short_description, d.f_long_description,
 					c.f_position
-			FROM premium_warehouse_items_categories_data_1 c LEFT JOIN premium_ecommerce_cat_descriptions_data_1 d ON (c.id=d.f_category AND d.f_language="'.LANGUAGE.'" AND d.active=1) WHERE c.active=1';
+			FROM premium_warehouse_items_categories_data_1 c LEFT JOIN premium_ecommerce_cat_descriptions_data_1 d ON (c.id=d.f_category AND d.f_language="'.LANGUAGE.'" AND d.active=1) WHERE c.active=1'.($categories?' AND c.id IN ('.implode(',',$categories).')':'');
 	$x = DB::GetAll($query.' ORDER BY c.f_parent_category,c.f_position');
 	foreach($x as $r) {
 		if(!$r['f_parent_category']) 
