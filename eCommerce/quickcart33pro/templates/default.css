@@ -150,10 +150,10 @@ div#searchform .input {
 	display: none;
 	z-index: 10;
 	position: absolute;
-	top: 80px;
+	top: 81px;
 	right: 0px;
-	background-color: #f2f2f2;
-	padding: 5px 0px 5px 10px;
+	background: #f2f2f2 url('img/lang-shadow.gif') left no-repeat;
+	padding: 5px 0px 5px 20px;
 }
 
 /* LOGO, HEADER BACKGROUND AND SLOGAN */
@@ -433,25 +433,71 @@ html, body, #container, #main, #body, #content {
 
 /* PRODUCTS DETAILS */
 #product{float:right;display:block;width:536px;margin:0 0 10px;padding:0 0 10px;border-bottom:1px solid #d1bd9d;text-align:left;}
+
 #product {
 	width: 100%;
 }
-#product h3{padding:5px 0 5px;background:inherit;color:#993333;font:normal 2.1em Verdana, sans-serif;}
-#product h4{margin:0 0 10px;padding:2px 0 7px;border-bottom:1px solid #d1bd9d;font-weight:normal;font-size:0.917em;}
+
+#product h3 {
+	padding: 5px 0px 5px 20px;
+	background: inherit;
+	color: #993333;
+	font: normal 2.1em Verdana, sans-serif;
+}
+
+#product h4 {
+	margin: 0px 0px 10px;
+	padding: 2px 0 7px 20px;
+	border-bottom: 1px solid #d1bd9d;
+	font-weight: normal;
+	font-size: 0.917em;
+}
+
 #product h4, #product h4 a{background:inherit;color:#a78b65;}
 #product h4 a:hover{background-color:inherit;color:#993333;}
 #product h4 em{padding:0 5px;}
 
 #product #box{float:right;width:205px;margin:0 0 10px 5px;padding:3px 0 10px;border-top:2px solid #dcc7a7;border-bottom:2px solid #dcc7a7;background:#f3edd6 url('img/basket_bg_bottom.gif') repeat-x 0 bottom;color:#fff;text-align:center;}
 #product #box form{font-weight:bold;}
-#product #box #price, #product #box #noPrice{padding:7px 0;border-bottom:1px solid #fff;background-color:transparent;color:#f00;font-size:1.417em;font-weight:bold;text-align:center;}
-#product #box #price em{background:inherit;color:#764830;font-style:normal;}
+
+#product #box #price, #product #box #noPrice {
+	padding: 7px 0;
+	border-bottom: 1px solid #fff;
+	background-color: transparent;
+	/*color: #f00;*/
+	color: #993333;
+	font-size: 1.417em;
+	font-weight: bold;
+	text-align: center;
+}
+
+#product #box #price em {
+	background: inherit;
+	/*color: #764830;*/
+	color: #000000;
+	font-style: normal;
+}
+
 #product #box #price strong{padding:0 4px;}
 #product #box #available{padding:8px 2px 0;background-color:transparent;color:#915a3c;font-weight:bold;font-size:0.9em;}
 #product #box #addBasket{padding:10px 0 5px;}
-#product #box #addBasket .submit{width:156px;padding:2px 20px 2px 0;border:1px solid #f00;background:url('img/cart_bg.png') no-repeat right center;background-color:inherit;color:#fff;font-size:1.1em;font-weight:bold;}
 
-#product div.content{clear:left;padding:0 0 10px;font:1.08em Verdana, sans-serif;}
+#product #box #addBasket .submit {
+	width: 156px;
+	padding: 2px 20px 2px 0;
+	background: url('img/cart_bg.png') no-repeat right center;
+	background-color: inherit;
+	color: #fff;
+	font-size: 1.1em;
+	font-weight: bold;
+	border: none;
+}
+
+#product div.content {
+	clear: left;
+	padding: 0px 20px 10px 20px;
+	font: 1.08em Verdana, sans-serif;
+}
 
 /* BASKET AND ORDER */
 #orderedProducts table{width:100%;margin:10px 0 0;border-top:2px solid #e8dac6;border-bottom:2px solid #e8dac6;background:#f4f3dd;color:#764830;font-size:0.917em;}
@@ -537,7 +583,17 @@ html>/**/body #product .imagesList#imagesList2 li div{margin:0 auto;}
 
 /* SUB PAGES LIST STYLES */
 .subpagesList{float:left;width:100%;margin:7px 0;list-style:none;}
-.subpagesList li{clear:left;float:left;width:96%;margin:3px 0;padding:5px 2%;border-left:1px solid #dcdac9;background:#fbf9f4;}
+
+.subpagesList li {
+	clear: left;
+	float: left;
+	width: 94%;
+	margin: 3px 0;
+	padding: 5px 3%;
+	border-left: 1px solid #dcdac9;
+	background: #fbf9f4;
+}
+
 * html .subpagesList li{width:100%;}
 .subpagesList li .photo{float:left;margin:0 6px 5px 0;}
 .subpagesList li img{border:2px solid #dcdac9;}
@@ -610,9 +666,12 @@ html>/**/body #product .imagesList#imagesList2 li div{margin:0 auto;}
 }
 
 #product #box {
-  float: left;
+  float: right;
+  margin-right: 20px;
 }
 
-#product .imagesList {
+#product .imagesList,
+#product #imagesList2 {
   float: left;
+  margin-left: 20px;
 }

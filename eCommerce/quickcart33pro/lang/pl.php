@@ -330,4 +330,6 @@ $lang['Search_results'] = 'Wyniki wyszukiwania';
 $lang['Uncategorized'] = 'Bez kategorii';
 $lang['Site_map'] = 'Mapa strony';
 $lang['Contact_us'] = 'Kontakt';
+$lang['Codes'] = 'Kody';
+$lang['Product_Code'] = 'Kod producenta';
 ?>

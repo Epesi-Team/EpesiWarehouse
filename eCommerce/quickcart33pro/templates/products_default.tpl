@@ -12,12 +12,12 @@ $sRecommended
   <h4>$aData[sPages]</h4>
   $aImages[3]
   $aImages[1]
+  $aImages[2]
   <div id="box">
     $sPrice
     $sAvailable
     $sBasket
   </div>
-  $aImages[2]
   <div class="content" id="productDescription">$aData[sDescriptionFull]</div>
   $sFeatures
   $sFilesList

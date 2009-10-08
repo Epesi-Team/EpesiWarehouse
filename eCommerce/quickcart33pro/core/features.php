@@ -27,6 +27,17 @@ function listProductFeatures( $sFile = null, $iProduct = null ){
     				$last_group = $bExp['group_code'];
 			}
 		}
+		
+		$row = DB::GetRow('SELECT it.f_sku,
+					it.f_upc,
+					it.f_product_code
+					FROM premium_warehouse_items_data_1 it WHERE id=%d',array($iProduct));
+		global $lang;
+		$parameters[] = array('sGroup'=>$lang['Codes'],'sName'=>'SKU','sValue'=>$row['f_sku']);
+		$parameters[] = array('sGroup'=>'','sName'=>'UPC','sValue'=>$row['f_upc']);
+		$parameters[] = array('sGroup'=>'','sName'=>$lang['Product_Code'],'sValue'=>$row['f_product_code']);
+
+
 	$oTpl =& TplParser::getInstance( );
 	$content = '';
 

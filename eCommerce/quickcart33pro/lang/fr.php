@@ -332,4 +332,6 @@ $lang['Search_results'] = 'Rechercher résultat';
 $lang['Uncategorized'] = 'Sans catégorie';
 $lang['Site_map'] = 'Sitemap';
 $lang['Contact_us'] = 'Le contact';
+$lang['Codes'] = 'Codes';
+$lang['Product_Code'] = 'Manufacturer Product Code';
 ?>

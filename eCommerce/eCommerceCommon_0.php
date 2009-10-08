@@ -87,6 +87,12 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 				Utils_RecordBrowserCommon::get_value('premium_ecommerce_descriptions',$id,'display_name').
 				Utils_RecordBrowserCommon::record_link_close_tag();
 	}
+
+	public function display_sku($r, $nolink, $desc) {
+		return Utils_RecordBrowserCommon::record_link_open_tag('premium_warehouse_items',$r['item_name'],$nolink).
+				Utils_RecordBrowserCommon::get_value('premium_warehouse_items',$r['item_name'],'sku').
+				Utils_RecordBrowserCommon::record_link_close_tag();
+	}
 	
 	public function items_crits() {
 		return array();
