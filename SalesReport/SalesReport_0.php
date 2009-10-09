@@ -79,8 +79,13 @@ class Premium_Warehouse_SalesReport extends Module {
 		while ($row = $ret->FetchRow()) {
 			$gb_row = $gb->get_new_row();
 			$currency = explode('__', $row['f_net_price']);
-			$currency = $currency[1];
-			$cur_code = Utils_CurrencyFieldCommon::get_code($currency);
+			if (isset($currency[1])) {
+				$currency = $currency[1];
+				$cur_code = Utils_CurrencyFieldCommon::get_code($currency);
+			} else {
+				$currency = 0;
+				$cur_code = 'Error: '.$row['f_net_price'];
+			}
 			$ex_rate = 
 				'<a href="javascript:void(0)" onclick="edit_exchange_rate('.$row['order_id'].','.$currency.')">'.
 					'<img border="0" src="'.Base_ThemeCommon::get_template_file('Utils/GenericBrowser', 'edit.png').'" />'.
