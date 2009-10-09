@@ -27,6 +27,76 @@ class Premium_Warehouse_SalesReport extends Module {
 		Premium_Warehouse_SalesReportCommon::recalculate();
 	}
 	
+	public function currency_exchange_editor() {
+		if ($this->is_back())
+			return false;
+		$currency = Variable::get('premium_warehouse_ex_currency');
+		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
+
+		$form = $this->init_module('Libs/QuickForm');
+		$form->addElement('checkbox', 'show_missing', 'Show only missing', null, array('onclick'=>$form->get_submit_form_js()));
+
+		$show_missing = $this->get_module_variable('show_missing',1);
+		if ($form->validate()) {
+			$show_missing = $form->exportValue('show_missing');
+			$this->set_module_variable('show_missing',$show_missing?1:0);
+		}
+		$form->setDefaults(array('show_missing'=>$show_missing));
+		$form->display();
+
+		if (!$show_missing) $show_missing = '';
+		else $show_missing = 'AND re.exchange_rate IS NULL ';
+
+		$gb = $this->init_module('Utils/GenericBrowser', null, 'currency_exchange_editor');
+		$query = 'SELECT re.exchange_rate, o.f_transaction_date, od.f_net_price, o.id AS order_id FROM (premium_warehouse_items_orders_details_data_1 AS od LEFT JOIN premium_warehouse_items_orders_data_1 AS o ON o.id=od.f_transaction_id) LEFT JOIN premium_warehouse_sales_report_exchange AS re ON re.order_id=o.id WHERE o.active=1 '.$show_missing.'AND f_net_price!=\'\' AND f_net_price NOT LIKE '.DB::Concat(DB::qstr('%'), DB::qstr('__'.$currency)).' GROUP BY od.f_transaction_id';
+		$limit = $gb->get_limit(DB::GetOne('SELECT COUNT(*) FROM ('.$query.') AS tmp'));
+		$ret = DB::SelectLimit($query, $limit['numrows'], $limit['offset']);
+		$gb->set_table_columns(array(
+			array('name'=>'Transaction ID'),
+			array('name'=>'Transaction Date'),
+			array('name'=>'Currency'),
+			array('name'=>'Exchange')
+		));
+		$present = array();
+
+		$form = $this->init_module('Libs/QuickForm');
+		$form->addElement('hidden', 'exchange_rate', '', array('id'=>'exchange_rate'));
+		$form->addElement('hidden', 'order_id', '', array('id'=>'order_id'));
+		$form->addElement('hidden', 'currency', '', array('id'=>'currency'));
+		$form->addElement('hidden', 'prompt_header', '', array('id'=>'prompt_header'));
+		$form->addElement('hidden', 'submit_form_js', '', array('id'=>'submit_form_js'));
+		$form->setDefaults(array('prompt_header'=>Base_LangCommon::ts('Premium_Warehouse_SalesReport','Enter new exchange rate')));
+		$form->setDefaults(array('submit_form_js'=>$form->get_submit_form_js()));
+		$form->display();
+		if ($form->validate()) {
+			$vals = $form->exportValues();
+			DB::Execute('DELETE FROM premium_warehouse_sales_report_exchange WHERE order_id=%d AND currency=%d', array($vals['order_id'], $vals['currency']));
+			DB::Execute('INSERT INTO premium_warehouse_sales_report_exchange (order_id,currency,exchange_rate) VALUES (%d,%d,%f)', array($vals['order_id'], $vals['currency'], $vals['exchange_rate']));
+			location(array());
+			return true;
+		}
+		load_js('modules/Premium/Warehouse/SalesReport/edit_exchange_rates.js');
+		while ($row = $ret->FetchRow()) {
+			$gb_row = $gb->get_new_row();
+			$currency = explode('__', $row['f_net_price']);
+			$currency = $currency[1];
+			$cur_code = Utils_CurrencyFieldCommon::get_code($currency);
+			$ex_rate = 
+				'<a href="javascript:void(0)" onclick="edit_exchange_rate('.$row['order_id'].','.$currency.')">'.
+					'<img border="0" src="'.Base_ThemeCommon::get_template_file('Utils/GenericBrowser', 'edit.png').'" />'.
+				'</a>&nbsp;'.
+				$row['exchange_rate'];
+			$gb_row->add_data(
+				Utils_RecordBrowserCommon::create_linked_label('premium_warehouse_items_orders', 'transaction_id', $row['order_id']),
+				Base_RegionalSettingsCommon::time2reg($row['f_transaction_date'],false),
+				$cur_code,
+				$ex_rate
+			);
+		}
+		$this->display_module($gb);
+		return true;
+	}
+	
 	public function currency_exchange_addon($r) {
 		$currency = Variable::get('premium_warehouse_ex_currency');
 		$cur_code = Utils_CurrencyFieldCommon::get_code($currency);
@@ -104,6 +174,8 @@ class Premium_Warehouse_SalesReport extends Module {
 	}
 	
 	public function sales_by_warehouse() {
+		Base_ActionBarCommon::add('folder', 'Currencies', $this->create_callback_href(array($this, 'currency_exchange_editor')));
+		Base_ActionBarCommon::add('search', 'Scan', $this->create_callback_href(array($this, 'recalculate')));
 		$this->cats = array('Sales Trans.','Sales Volume','Purchase Trans.','Purchase Volume','Net Profit','Sales Earnings');
 		$recs = Utils_RecordBrowserCommon::get_records('premium_warehouse',array(),array(),array('warehouse'=>'ASC'));
 		$this->rbr->set_reference_records($recs);
@@ -286,12 +358,14 @@ class Premium_Warehouse_SalesReport extends Module {
 	}
 
 	public function sales_by_item() {
+		Base_ActionBarCommon::add('folder', 'Currencies', $this->create_callback_href(array($this, 'currency_exchange_editor')));
 		Base_ActionBarCommon::add('search', 'Scan', $this->create_callback_href(array($this, 'recalculate')));
 		print('<br><b>Numbers in brackets indicate items sold that were omitted in earning calculation.</b><br><br>');
 		$form = $this->init_module('Libs/QuickForm');
 		$form->addElement('select', 'method', $this->t('Method'), array('fifo'=>$this->t('FIFO'), 'lifo'=>$this->t('LIFO')));
 		$form->addElement('select', 'prices', $this->t('Prices'), array('net'=>$this->t('Net'), 'gross'=>$this->t('Gross')));
-		$form->setDefaults(array('method'=>'fifo','prices'=>'net'));
+		$form->addElement('text', 'item_name', $this->t('Item Search'));
+		$form->setDefaults(array('method'=>'fifo','prices'=>'net','item_name'=>''));
 		$this->cats = array('Qty Sold','Earnings');
 		$this->range_type = $this->rbr->display_date_picker(array(), $form);
 		$order = '_earning_';
@@ -299,7 +373,9 @@ class Premium_Warehouse_SalesReport extends Module {
 		else $order = $order.'lifo';
 		if ($this->range_type['other']['prices']=='net') $order = 'n'.$order;
 		else $order = 'g'.$order;
-		$items_ids = DB::GetCol('SELECT od.f_item_name FROM (premium_warehouse_items_orders_details_data_1 AS od LEFT JOIN premium_warehouse_items_orders_data_1 AS o ON o.id=od.f_transaction_id) LEFT JOIN premium_warehouse_sales_report_earning AS se ON se.order_details_id=od.id WHERE od.active=1 AND o.f_transaction_type=1 AND o.f_status=20 AND o.f_transaction_date>=%D AND o.f_transaction_date<=%D GROUP BY od.f_item_name ORDER BY SUM('.$order.') DESC', array($this->range_type['start'], $this->range_type['end']));
+		if ($this->range_type['other']['item_name']) $item_filter = 'AND i.f_item_name LIKE '.DB::Concat(DB::qstr('%'), DB::qstr($this->range_type['other']['item_name']), DB::qstr('%')).' ';
+		else $item_filter = '';
+		$items_ids = DB::GetCol('SELECT od.f_item_name FROM ((premium_warehouse_items_orders_details_data_1 AS od LEFT JOIN premium_warehouse_items_orders_data_1 AS o ON o.id=od.f_transaction_id) LEFT JOIN premium_warehouse_sales_report_earning AS se ON se.order_details_id=od.id) LEFT JOIN premium_warehouse_items_data_1 AS i ON od.f_item_name=i.id WHERE od.active=1 AND o.f_transaction_type=1 AND o.f_status=20 AND o.f_transaction_date>=%D AND o.f_transaction_date<=%D '.$item_filter.'GROUP BY od.f_item_name ORDER BY SUM('.$order.') DESC', array($this->range_type['start'], $this->range_type['end']));
 		$warehouses = Utils_RecordBrowserCommon::get_records('premium_warehouse',array(),array(),array('warehouse'=>'ASC'));
 		$items_amount = Utils_RecordBrowserCommon::get_records_count('premium_warehouse_items',array('id'=>$items_ids));
 		$limit = $this->rbr->enable_paging($items_amount);
@@ -377,6 +453,7 @@ class Premium_Warehouse_SalesReport extends Module {
 	
 	public function sales_by_transaction() {
 		Base_ActionBarCommon::add('search', 'Scan', $this->create_callback_href(array($this, 'recalculate')));
+		Base_ActionBarCommon::add('folder', 'Currencies', $this->create_callback_href(array($this, 'currency_exchange_editor')));
 		print('<br><b>Numbers in brackets indicate items sold that were omitted in earning calculation.</b><br><br>');
 		$form = $this->init_module('Libs/QuickForm');
 		$form->addElement('select', 'method', $this->t('Method'), array('fifo'=>$this->t('FIFO'), 'lifo'=>$this->t('LIFO')));

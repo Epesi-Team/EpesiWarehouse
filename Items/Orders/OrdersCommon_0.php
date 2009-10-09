@@ -463,8 +463,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			$form->addElement('currency', $field, $label, array('id'=>$field));
 			$form->setDefaults(array($field=>$default));
 		} else {
-			$form->addElement('currency', $field, $label, array('id'=>$field));
-			$form->setDefaults(array($field=>$default));
+			$form->addElement('static', $field, $label, self::display_gross_price(Utils_RecordBrowser::$last_record, false));
 		}
 	}
 	
