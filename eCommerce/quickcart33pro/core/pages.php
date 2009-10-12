@@ -313,7 +313,7 @@ class Pages
 	while($row = $ret->FetchRow()) {
 		$cats = array_filter(explode('__',$row['f_category']));
    		foreach($cats as $c) {
-			$categories += explode('/',$c);
+			$categories = array_unique(array_merge($categories,explode('/',$c)));
 		}
 	}
 	$query = 'SELECT c.id, c.f_category_name, c.f_parent_category, c.f_show_as,
