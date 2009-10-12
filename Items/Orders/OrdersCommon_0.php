@@ -609,14 +609,19 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 
 	public static function check_qty_on_hand($data){
 		self::get_trans();
-		$ord_qty = $data['quantity'];
 		if (isset($data['quantity']) && intval($data['quantity'])!=$data['quantity']) return array('item_name'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders', 'Invalid amount'));
 		if (self::$trans['transaction_type']==0) return true;
 		if (isset(Utils_RecordBrowser::$last_record['quantity'])) {
-			if (isset($data['quantity'])) $data['quantity'] -= Utils_RecordBrowser::$last_record['quantity'];
-			if (isset($data['debit']) && $data['debit']) 
+			if (isset($data['quantity'])) {
+				$ord_qty = $data['quantity'];
+				$data['quantity'] -= Utils_RecordBrowser::$last_record['quantity'];
+			}
+			if (isset($data['debit']) && $data['debit']) {
+				$ord_qty = $data['debit'];
 				$data['debit'] += Utils_RecordBrowser::$last_record['quantity'];
-		}
+			}
+		} elseif (isset($data['quantity']))
+			$ord_qty = $data['quantity'];
 		if (!isset($data['item_name'])) {
 			$data['item_name'] = Utils_RecordBrowser::$last_record['item_name'];
 		} else { 
