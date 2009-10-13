@@ -445,6 +445,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Variable::set('icecat_user','');
 		Variable::set('icecat_pass','');
 		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_products', 'Premium_Warehouse_eCommerce', 'icecat_addon', 'Premium_Warehouse_eCommerceCommon::icecat_addon_parameters');
+		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items_categories',array('name'=>'Available languages',	'type'=>'calculated', 'required'=>false, 'filter'=>false, 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_eCommerceCommon','display_category_available_languages')));
 
 		Variable::set('ecommerce_autoprice',false);
 		Variable::set('ecommerce_minimal_profit','');
@@ -458,6 +459,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 	
 	public function uninstall() {
 		Base_ThemeCommon::uninstall_default_theme('Premium/Warehouse/eCommerce');
+		Utils_RecordBrowserCommon::delete_record_field('premium_warehouse_items_categories','Available languages');
 		DB::DropTable('premium_ecommerce_orders_temp');
 		DB::DropTable('premium_ecommerce_quickcart');
 		DB::DropTable('premium_ecommerce_products_stats');

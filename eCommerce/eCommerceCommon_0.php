@@ -737,6 +737,16 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 	    }
 	    return implode($ret,', ');
 	}
+
+	public static function display_category_available_languages($r, $nolink) {
+		$rr = Utils_RecordBrowserCommon::get_records('premium_ecommerce_cat_descriptions',array('category'=>$r['id']),array('language'));
+		$ret = array();
+		foreach($rr as $r) {
+			$ret[] = $r['language'];
+		}
+		sort($ret);
+		return implode(', ',$ret);
+	}
 	
 	public static function admin_caption() {
 		return 'eCommerce';
