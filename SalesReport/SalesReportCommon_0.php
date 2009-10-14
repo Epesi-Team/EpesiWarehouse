@@ -22,7 +22,8 @@ class Premium_Warehouse_SalesReportCommon extends ModuleCommon {
 		return array('Reports'=>array('__submenu__'=>1, 
 			'Sales by Warehouse'=>array('mode'=>'sales_by_warehouse'), 
 			'Sales by Transaction'=>array('mode'=>'sales_by_transaction'),	
-			'Sales by Item'=>array('mode'=>'sales_by_item')	
+			'Sales by Item'=>array('mode'=>'sales_by_item'),
+			'Stock Value by Warehouse'=>array('mode'=>'value_by_warehouse')	
 		));	
 	}
 	

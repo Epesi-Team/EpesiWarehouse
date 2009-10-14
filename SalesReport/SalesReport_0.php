@@ -575,15 +575,16 @@ class Premium_Warehouse_SalesReport extends Module {
 		$result[0] = array(	$this->cats[0]=>0,
 							$this->cats[1]=>array());
 
-		$result[0][0] = DB::GetOne('SELECT SUM(f_quantity) FROM (premium_warehouse_items_orders_location_data_1 WHERE active=1 AND f_warehouse=%d', array($ref_rec['id']));
+		$result[0][$this->cats[0]] = DB::GetOne('SELECT SUM(f_quantity) FROM premium_warehouse_location_data_1 WHERE active=1 AND f_warehouse=%d', array($ref_rec['id']));
 		
 		if ($this->range_type['other']['method']=='fifo') $method = 'fifo';
 		else $method = 'lifo';
 		if ($this->range_type['other']['prices']=='net') $prices = 'net_price';
 		else $prices = 'gross_price';
 		
-		$result[0][1][$currency] = $multip*DB::GetOne('SELECT SUM('.$prices.') FROM premium_warehouse_sales_report_purchase_'.$method.'_tmp WHERE warehouse=%s', array($ref_rec['id']));
+		$result[0][$this->cats[1]][$currency] = DB::GetOne('SELECT SUM('.$prices.') FROM premium_warehouse_sales_report_purchase_'.$method.'_tmp WHERE warehouse=%s', array($ref_rec['id']))/$multip;
 		
+
 		return $result;
 	}
 
