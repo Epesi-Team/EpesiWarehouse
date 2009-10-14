@@ -265,11 +265,11 @@ class Products
     if( $query ){
       $sBasketPage = ( isset( $GLOBALS['config']['basket_page'] ) && isset( $oPage->aPages[$GLOBALS['config']['basket_page']] ) ) ? $oPage->aPages[$GLOBALS['config']['basket_page']]['sLinkName'].((defined( 'FRIENDLY_LINKS' ) && FRIENDLY_LINKS == true)?'?':'&amp;') : null;
 
-      $iCount = DB::GetOne('SELECT 	count(it.id) 
+      $iCount = DB::GetOne('SELECT 	count(DISTINCT it.id) 
 					FROM premium_ecommerce_products_data_1 pr
 					INNER JOIN (premium_warehouse_items_data_1 it,premium_ecommerce_availability_data_1 av) ON (pr.f_item_name=it.id AND av.id=pr.f_available)
 					LEFT JOIN premium_ecommerce_descriptions_data_1 d ON (d.f_item_name=it.id AND d.f_language="'.LANGUAGE.'" AND d.active=1)
-					 WHERE pr.f_publish=1 AND pr.active=1 AND ('.$query.') ORDER BY pr.f_position');
+					 WHERE pr.f_publish=1 AND pr.active=1 AND ('.$query.')');
 
       if( !isset( $iList ) ){
         $iList = $GLOBALS['config']['products_list'];
