@@ -198,7 +198,8 @@
 <!-- END PRODUCTS_FOOT -->
 
 <!-- BEGIN PRODUCTS_GALLERY_LIST -->
-<td style="width:$aData[iWidth]%;">$aData[sImage]<h4><a href="$aData[sLinkName]">$aData[sName]</a></h4>$aData[sBasket]$aData[sPrice]</td>
+<!-- Old version --><!-- <td style="width:$aData[iWidth]%;">$aData[sImage]<h4><a href="$aData[sLinkName]">$aData[sName]</a></h4>$aData[sBasket]$aData[sPrice]</td> -->
+<td class="gallery">$aData[sImage]<h4><a href="$aData[sLinkName]">$aData[sName]</a></h4>$aData[sBasket]$aData[sPrice]</td>
 <!-- END PRODUCTS_GALLERY_LIST -->
 <!-- BEGIN PRODUCTS_GALLERY_BREAK --></tr><tr><!-- END PRODUCTS_GALLERY_BREAK -->
 <!-- BEGIN PRODUCTS_GALLERY_BLANK --><td>&nbsp;</td><!-- END PRODUCTS_GALLERY_BLANK -->

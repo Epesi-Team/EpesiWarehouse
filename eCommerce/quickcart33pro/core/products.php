@@ -78,6 +78,7 @@ class Products
 								d_en.f_keywords as sMetaKeywordsEn,
 								it.f_weight as sWeight,
 								it.f_manufacturer as iProducer,
+								it.f_sku as sSku,
 								SUM(loc.f_quantity) as f_quantity,
 								it.f_net_price fPrice2,
 								it.f_tax_rate tax2,
@@ -154,6 +155,32 @@ class Products
     		$products[$aExp['iProduct']] = $aExp;
 	        $products[$aExp['iProduct']]['sLinkName'] = '?'.$aExp['iProduct'].','.change2Url( $products[$aExp['iProduct']]['sName'] );
 		$products[$aExp['iProduct']]['aCategories'] = $pages;
+	}
+	
+	if(count($products)==1 && $limit===null && $offset===null) {
+		$p = array_shift(array_keys($products));
+		while(1) {
+			$pp = $this->getProducts($_SESSION['last_products_query'][0],$_SESSION['last_products_query'][1],$_SESSION['last_products_query'][2]);
+			$pos = array_search($p,array_keys($pp));
+			if(($pos!==false && $pos<$_SESSION['last_products_query'][1]-1 && $pos>0) || empty($pp)) break;
+			if($pos!==false && $pos>=$_SESSION['last_products_query'][1]-1) {
+				$_SESSION['last_products_query'][2] += 1;
+			} elseif($pos!==false && $pos==0) {
+				if($_SESSION['last_products_query'][2]==0)
+					break;
+				$_SESSION['last_products_query'][2] -= 1;
+ 			} else {
+				$_SESSION['last_products_query'][2] += $_SESSION['last_products_query'][1];
+			}
+		}
+		if(!empty($pp)) {
+			$ppkeys = array_keys($pp);
+			$pos = array_search($p,$ppkeys);
+			if(isset($ppkeys[$pos+1]))
+				$products[$p]['sNextLinkName'] = $pp[$ppkeys[$pos+1]]['sLinkName'];
+			if(isset($ppkeys[$pos-1]))
+				$products[$p]['sPrevLinkName'] = $pp[$ppkeys[$pos-1]]['sLinkName'];
+		}
 	}
 	
 	return $products;
@@ -259,6 +286,7 @@ class Products
 
       $this->mData = null;
 
+      $_SESSION['last_products_query'] = array($query,$iList,$iStart);
       $products = $this->getProducts($query,$iList,$iStart);
       $i=0;
       foreach($products as $aData){
@@ -364,6 +392,7 @@ class Products
 
       $this->mData = null;
 
+      $_SESSION['last_products_query'] = array($query,$iList,$iStart);
       $products = $this->getProducts($query,$iList,$iStart);
       $i = 0;
       foreach($products as $aData){

@@ -437,7 +437,7 @@ class Pages
 
 	//contact us
 	$id = 31;
-	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => $lang['Contact_us'], 'sNameTitle' => '', 'sDescriptionShort' => getVariable('ecommerce_contactus'), 'iPosition' => 1000, 'iType' => 1, 
+	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => $lang['Contact_us'], 'sNameTitle' => '', 'sDescriptionShort' => '<div id="contact">'.getVariable('ecommerce_contactus').'</div>', 'iPosition' => 1000, 'iType' => 1, 
 			'iSubpagesShow' => 1, 'iProducts' => 0, 'sDescriptionFull'=>'', 'sMetaDescription' => '', 'sMetaKeywords' =>'');
 	$this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
 	$this->aPagesParentsTypes[2][] = $id;

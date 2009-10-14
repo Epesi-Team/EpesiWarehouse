@@ -5,10 +5,12 @@
   var fPrice = Math.abs( "$aData[fPrice]" );
 //-->
 </script>
-<div id="product">
+<div id="product" name="product">
   $sTxtSize
   <h3>$aData[sName]</h3>
 $sRecommended
+$sNextProduct
+$sPrevProduct
   <h4>$aData[sPages]</h4>
   $aImages[3]
   $aImages[1]
@@ -17,9 +19,10 @@ $sRecommended
     $sPrice
     $sAvailable
     $sBasket
+    <font color="black">$aData[sSku]</font>
   </div>
-  <div class="content" id="productDescription">$aData[sDescriptionFull]</div>
-  $sFeatures
+  <div class="content" id="productDescription">$aData[sDescriptionFull]</div><a id="more-less" onClick="more_less('productDescription')" href="#product">More >>></a>
+  <div class="sFeatures">$sFeatures</div>
   $sFilesList
   $aImages[4]
   $sProductsRelated
@@ -28,6 +31,15 @@ $sRecommended
   $sCommentsForm
 </div>
 <!-- END CONTAINER -->
+
+<!-- BEGIN NEXT_PRODUCT -->
+<a href="$aData[sNextLinkName]">Następny</a>
+<!-- END NEXT_PRODUCT -->
+
+<!-- BEGIN PREV_PRODUCT -->
+<a href="$aData[sPrevLinkName]">Poprzedni</a>
+<!-- END PREV_PRODUCT -->
+
 <!-- BEGIN AVAILABLE -->
 <div id="available">$aData[sAvailable]</div>
 <!-- END AVAILABLE -->

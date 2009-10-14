@@ -71,11 +71,15 @@ div#searchform {
   background: url('img/search-box-2.gif') right no-repeat;
 }
 div#searchform .submit {
+	margin-top: -2px;
   width: 60px;
-  height: 15px;
-  background-image: url('img/button-search.gif');
+  height: 18px;
+  background-color: transparent;
+  background-image: url('img/button-search-2.gif');
   border: none;
   color: #fff;
+  line-height: 18px;
+  vertical-align: middle;
 }
 div#searchform .input {
   /*background-image: url('img/search-input.gif');*/
@@ -381,17 +385,27 @@ html, body, #container, #main, #body, #content {
 #orderbody #page{float:none;width:94%;margin:0 auto;}
 
 #page h3, .message h3 {
-  margin: 0 0 3px;
-  padding: 5px 0 5px;
-  border-bottom: 1px solid #d1bd9d;
-  background: inherit;
-  color: #993333;
-  font: normal 2.1em Verdana, sans-serif;
-  white-space: nowrap;
+	margin: 0 0 3px;
+	padding: 5px 0 5px 20px;
+	border-bottom: 1px solid #d1bd9d;
+	background: inherit;
+	color: #993333;
+	font: bold 2.1em Verdana, sans-serif;
+	white-space: nowrap;
+}
+
+#error h3 {
+	font-weight: normal;
+	font-size: 1.5em;
 }
 
 .message h3, #page .message h3{border:0;}
-#page div.content{font:1.08em Verdana, sans-serif;}
+
+#page div.content {
+	font: 1.08em Verdana, sans-serif;
+	padding: 0 20px 0 20px;
+	float: left;
+}
 
 #page div.content ul, #product div.content ul, .subpagesList li ol{margin:0 0 0 30px;padding:0;}
 #page div.content li, #product div.content li{margin:3px 0;padding:0;border-left:0;}
@@ -409,8 +423,15 @@ html, body, #container, #main, #body, #content {
 #products li{clear:both;float:left;width:96%;padding:5px 2% 10px;border-bottom:1px solid #d1bd9d;}
 * html #products li{width:100%;}
 #products li .photo{float:left;margin:0 7px 5px 0;font-size:0px;line-height:0px;}
-#products li .photo img{border:2px solid #f0efcd;}
-#products li .photo a:hover img{border:2px solid #dcc7a7;}
+
+#products li .photo img {
+	border:none;
+}
+
+#products li .photo a:hover img {
+	border: none;
+}
+
 #products li h3{padding:5px 8px 0;background:inherit;font-weight:normal;font-size:1.5em;border:0;}
 #products li h3 a{background:inherit;color:#993333;text-decoration:none;}
 #products li h3 a:hover{text-decoration:underline;}
@@ -420,12 +441,31 @@ html, body, #container, #main, #body, #content {
 #products li h4 a:hover{background-color:inherit;color:#993333;}
 #products li h5{font-size:1em;font-weight:normal;}
 #products li h5 a{background:inherit;color:#666;}
-#products li .price, #products li .noPrice{float:right;margin:14px 0 5px 0;padding:6px 0 0;background-color:inherit;color:#ee0f04;text-decoration:none;}
+
+#products li .price, #products li .noPrice {
+	float: right;
+	margin: 14px 0 5px 0;
+	padding: 6px 0 0;
+	background-color: inherit;
+	/*color: #ee0f04;*/
+	color: #993333;
+	text-decoration: none;
+}
+
 #products li .price em{padding:0 4px 0 0;background:inherit;color:#a78b65;font:bold 1.083em Verdana, sans-serif;font-style:normal;}
 #products li .price strong, #products li .noPrice strong{font:bold 1.167em Verdana, sans-serif;}
 #products li .price span{padding-left:4px;font:bold 1.083em sans-serif;}
 #products li .basket{float:right;margin:17px 0 5px 10px;font-size:0.8em;font-weight:bold;}
-#products li .basket a{display:block;padding:3px 25px 3px 5px;border:1px solid #f00;background:url('img/cart_bg2.png') no-repeat right center;background-color:inherit;color:#fff;text-decoration:none;}
+
+#products li .basket a {
+	display: block;
+	padding: 3px 25px 3px 5px;
+	border: none;
+	background: url('img/cart_bg.png') no-repeat right center;
+	background-color: inherit;
+	color: #fff;
+	text-decoration:none;
+}
 
 #products li.pages{border:0;background:inherit;color:#69401f;}
 #products li.pages a{background:inherit;color:#7f7f66;}
@@ -442,7 +482,7 @@ html, body, #container, #main, #body, #content {
 	padding: 5px 0px 5px 20px;
 	background: inherit;
 	color: #993333;
-	font: normal 2.1em Verdana, sans-serif;
+	font: bold 2.1em Verdana, sans-serif;
 }
 
 #product h4 {
@@ -453,7 +493,12 @@ html, body, #container, #main, #body, #content {
 	font-size: 0.917em;
 }
 
-#product h4, #product h4 a{background:inherit;color:#a78b65;}
+#product h4, #product h4 a {
+	background: inherit;
+	color: #a78b65;
+	text-decoration: none;
+}
+
 #product h4 a:hover{background-color:inherit;color:#993333;}
 #product h4 em{padding:0 5px;}
 
@@ -497,6 +542,21 @@ html, body, #container, #main, #body, #content {
 	clear: left;
 	padding: 0px 20px 10px 20px;
 	font: 1.08em Verdana, sans-serif;
+	
+	/*height: 295px;*/
+	overflow: hidden;
+}
+
+#more-less {
+	float: left;
+	margin: 5px 20px 10px 20px;
+	color: #993333;
+	font-weight: bold;
+	text-decoration: none;
+}
+
+#more_less:hover {
+	color: #000000;
 }
 
 /* BASKET AND ORDER */
@@ -559,9 +619,25 @@ html, body, #container, #main, #body, #content {
 
 /* IMAGES STYLES */
 .imagesList{list-style:none;}
-.imagesList li{margin:0 0 10px 0;background:inherit;color:#5b5b5b;font-size:0.917em;text-align:center;}
-.imagesList li img{border:2px solid #dcdac9;}
-.imagesList li a:hover img{border:2px solid #dcc7a7;}
+
+.imagesList li {
+	margin: 0 10px 10px 0;
+	background: inherit;
+	color: #5b5b5b;
+	font-size: 0.917em;
+	text-align: center;
+	float: left;
+}
+
+.imagesList li img {
+	/*border: 2px solid #dcdac9;*/
+	border: none;
+}
+
+.imagesList li a:hover img {
+	border: none;
+}
+
 .imagesList li div{text-align:center;}
 
 #imagesList1{float:left;}
@@ -596,8 +672,15 @@ html>/**/body #product .imagesList#imagesList2 li div{margin:0 auto;}
 
 * html .subpagesList li{width:100%;}
 .subpagesList li .photo{float:left;margin:0 6px 5px 0;}
-.subpagesList li img{border:2px solid #dcdac9;}
-.subpagesList li a:hover img{border:2px solid #dcc7a7;}
+
+.subpagesList li img {
+	border: none;
+}
+
+.subpagesList li a:hover img {
+	border: none;
+}
+
 .subpagesList li h4{padding-bottom:2px;}
 .subpagesList li h4, .subpagesList li h4 a{background:inherit;color:#993333;font-weight:bold;font-size:1.083em;}
 .subpagesList li h4 a:hover{background:inherit;color:#442;}
@@ -662,16 +745,37 @@ html>/**/body #product .imagesList#imagesList2 li div{margin:0 auto;}
 }
 
 #product #features {
-	margin: 0px 20px 0px 20px;
+	width: 100%;
+	font-size: 0.917em;
+}
+
+#product .sFeatures {
+	padding: 10px 20px 10px 20px;
 }
 
 #product #box {
-  float: right;
-  margin-right: 20px;
+	float: right;
+	margin-right: 20px;
+	position: absolute;
+	right: 0px;
 }
 
 #product .imagesList,
 #product #imagesList2 {
   float: left;
   margin-left: 20px;
+}
+
+.yes {
+	background: url('img/yes.gif') no-repeat;
+	width: 15px; height: 12px;
+	/*width: 14px; height: 14px;*/
+	color: transparent;
+}
+
+.no {
+	background: url('img/no.gif') no-repeat;
+	width: 11px; height: 11px;
+	/*width: 14px; height: 14px;*/
+	color: transparent;
 }

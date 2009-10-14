@@ -40,7 +40,7 @@
 <!-- END HEAD -->
 <!-- BEGIN BODY -->
 </head>
-<body>
+<body onLoad="emptyProdDesc('productDescription')">
 <div class="skiplink"><a href="#content" accesskey="2">$lang['Skip_navigation']</a></div>
 <div id="container">
   <div id="main">
