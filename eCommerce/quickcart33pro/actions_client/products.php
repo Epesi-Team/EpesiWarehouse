@@ -41,7 +41,7 @@ if( isset( $aActions['a'] ) && is_numeric( $aActions['a'] ) ){
       $aData['sDescriptionFull'] = $aData['sDescriptionShort'];
     $aData['sDescriptionFull'] = changeTxt( $aData['sDescriptionFull'], 'nlNds' );
 
-    $product = $oProduct->getProduct($iProduct);
+    $product = $oProduct->getProduct($iProduct,true);
     if($product)
 	    $aData['sPages'] = $oProduct->throwProductsPagesTree( $product['aCategories'] );
     else

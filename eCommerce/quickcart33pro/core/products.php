@@ -38,8 +38,8 @@ class Products
   }
   */
   
-  function getProduct($id) {
-	$arr = $this->getProducts('it.id='.(int)$id);
+  function getProduct($id,$nav = false) {
+	$arr = $this->getProducts('it.id='.(int)$id,null,null,$nav);
 	return array_shift($arr);
   }
 
@@ -47,7 +47,7 @@ class Products
   * Generate cache variables
   * @return void
   */
-  function getProducts($where = '',$limit=null,$offset=null){
+  function getProducts($where = '',$limit=null,$offset=null, $navigation = false){
 	global $config;
     $products = array();
 
@@ -157,7 +157,7 @@ class Products
 		$products[$aExp['iProduct']]['aCategories'] = $pages;
 	}
 	
-	if(count($products)==1 && $limit===null && $offset===null) {
+	if(count($products)==1 && $navigation) {
 		$p = array_shift(array_keys($products));
 		while(1) {
 			$pp = $this->getProducts($_SESSION['last_products_query'][0],$_SESSION['last_products_query'][1],$_SESSION['last_products_query'][2]);
