@@ -174,6 +174,7 @@ class Premium_Warehouse_SalesReport extends Module {
 			case 'sales_by_warehouse': $this->sales_by_warehouse(); break;
 			case 'sales_by_item': $this->sales_by_item(); break;
 			case 'sales_by_transaction': $this->sales_by_transaction(); break;
+			case 'value_by_warehouse': $this->value_by_warehouse(); break;
 			default: print($this->t('Unknown mode'));
 		}
 	}
@@ -533,6 +534,61 @@ class Premium_Warehouse_SalesReport extends Module {
 		}
 		return $ret;
 	}
+
+	public function value_by_warehouse() {
+		Base_ActionBarCommon::add('folder', 'Currencies', $this->create_callback_href(array($this, 'currency_exchange_editor')));
+		Base_ActionBarCommon::add('search', 'Scan', $this->create_callback_href(array($this, 'recalculate')));
+		$this->cats = array('Items Qty','Items Volume');
+		$recs = Utils_RecordBrowserCommon::get_records('premium_warehouse',array(),array(),array('warehouse'=>'ASC'));
+		$this->rbr->set_reference_records($recs);
+		$this->rbr->set_reference_record_display_callback(array('Premium_WarehouseCommon','display_warehouse'));
+
+		$form = $this->init_module('Libs/QuickForm');
+		$form->addElement('select', 'method', $this->t('Method'), array('fifo'=>$this->t('FIFO'), 'lifo'=>$this->t('LIFO')));
+		$form->addElement('select', 'prices', $this->t('Prices'), array('net'=>$this->t('Net'), 'gross'=>$this->t('Gross')));
+		$form->setDefaults(array('method'=>'fifo','prices'=>'net'));
+
+		$this->range_type = $this->rbr->display_date_picker(array(), $form, false);
+		$this->rbr->set_categories($this->cats);
+		$this->rbr->set_summary('col', array('label'=>'Total'));
+		$this->rbr->set_summary('row', array('label'=>'Total'));
+		$this->rbr->set_format(array(	$this->cats[0]=>'numeric', 
+										$this->cats[1]=>'currency'
+									));
+		$header = array('Warehouse', 'Stock');
+		$this->rbr->set_table_header($header);
+		$this->rbr->set_display_cell_callback(array($this, 'display_value_by_warehouse_cells'));
+		$this->rbr->set_pdf_title($this->t('Sales Report, %s',array(date('Y-m-d H:i:s'))));
+		$this->rbr->set_pdf_subject($this->rbr->pdf_subject_date_range());
+		$this->rbr->set_pdf_filename($this->t('Sales_Report_%s',array(date('Y_m_d__H_i_s'))));
+		$this->display_module($this->rbr);
+	}
+
+	
+/************************************************************************************/
+	public function display_value_by_warehouse_cells($ref_rec){
+		$currency = Variable::get('premium_warehouse_ex_currency');
+		$prec = Utils_CurrencyFieldCommon::get_precission($currency);
+		$multip = pow(10,$prec);
+
+		$result = array();
+		$result[0] = array(	$this->cats[0]=>0,
+							$this->cats[1]=>array());
+
+		$result[0][0] = DB::GetOne('SELECT SUM(f_quantity) FROM (premium_warehouse_items_orders_location_data_1 WHERE active=1 AND f_warehouse=%d', array($ref_rec['id']));
+		
+		if ($this->range_type['other']['method']=='fifo') $method = 'fifo';
+		else $method = 'lifo';
+		if ($this->range_type['other']['prices']=='net') $prices = 'net_price';
+		else $prices = 'gross_price';
+		
+		$result[0][1][$currency] = $multip*DB::GetOne('SELECT SUM('.$prices.') FROM premium_warehouse_sales_report_purchase_'.$method.'_tmp WHERE warehouse=%s', array($ref_rec['id']));
+		
+		return $result;
+	}
+
+
+
 	
 /************************************************************************************/
 	public function display_sales($warehouse_id, $start, $end) {
