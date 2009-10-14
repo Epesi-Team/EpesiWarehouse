@@ -471,7 +471,7 @@ class Products
   * @param int  $iProduct
   */
   function throwProduct( $iProduct ){
-    $aData = $this->getProduct($iProduct);
+    $aData = $this->getProduct($iProduct, true);
     if( $aData ){
 	    $aData['sPrice'] = is_numeric( $aData['fPrice'] ) ? displayPrice( $aData['fPrice'] ) : $aData['fPrice'];
 	    return $aData;
