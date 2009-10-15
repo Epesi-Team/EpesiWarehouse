@@ -1,5 +1,5 @@
 {$form_open}
-	<table cellpadding="0" cellspacing="0" border="0">
+	<table cellpadding="0" cellspacing="0" border="0" style="width:120px;">
 		<tr>
 			<td style="border: 0px none ;">
 				{$form_data.$field_name.html}
