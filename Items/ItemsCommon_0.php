@@ -273,15 +273,16 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 
 	public static function submit_position($values, $mode) {
 		$recordset = 'premium_warehouse_items_categories';
-		if(!isset($values['position']))
-			$values['position'] = 0;
 		switch ($mode) {
 			case 'add':
 			case 'restore':
-			    $values['position'] = Utils_RecordBrowserCommon::get_records_count($recordset);
+			    $values['position'] = Utils_RecordBrowserCommon::get_records_count($recordset,array('parent_category'=>$values['parent_category']));
 			    break;
 			case 'delete':
-			    DB::Execute('UPDATE '.$recordset.'_data_1 SET f_position=f_position-1 WHERE f_position>%d',array($values['position']));
+				if($values['parent_category']!=='')
+				  	DB::Execute('UPDATE '.$recordset.'_data_1 SET f_position=f_position-1 WHERE f_position>%d and f_parent_category=%d',array($values['position'],$values['parent_category']));
+				else
+				  	DB::Execute('UPDATE '.$recordset.'_data_1 SET f_position=f_position-1 WHERE f_position>%d and f_parent_category is null',array($values['position']));
 			    break;
 		}
 		return $values;

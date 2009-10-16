@@ -96,17 +96,28 @@ class Premium_Warehouse_Items extends Module {
 				$master = $vals['master_cat'];
 			$cats = array();
 			foreach($vals['cats'] as $cat) {
-				$items = DB::GetAssoc('SELECT id,f_category FROM premium_warehouse_items_data_1 WHERE f_category LIKE '.DB::Concat(DB::qstr('%'),DB::qstr($cat),DB::qstr('%')));
-				foreach($items as $id=>$it_cats) {
-					DB::Execute('UPDATE premium_warehouse_items_data_1 SET f_category=%s WHERE id=%d',array(str_replace($it_cats,$cat,$vals['master_cat']),$id));
-				}
 				$cat2 = strrchr($cat,'/');
 				if($cat2!==false)
 					$cat2 = substr($cat2,1);
 				else
 					$cat2 = $cat;
+				if($cat2===$master) continue;
+				$items = DB::GetAssoc('SELECT id,f_category FROM premium_warehouse_items_data_1 WHERE f_category LIKE '.DB::Concat(DB::qstr('%'),DB::qstr($cat),DB::qstr('%')));
+				foreach($items as $id=>$it_cats) {
+					DB::Execute('UPDATE premium_warehouse_items_data_1 SET f_category=%s WHERE id=%d',array(str_replace($it_cats,$cat,$vals['master_cat']),$id));
+				}
 				$cats[] = $cat2;
 				DB::Execute('UPDATE premium_warehouse_items_categories_data_1 SET f_parent_category=%d WHERE f_parent_category=%d',array($master,$cat2));
+			}
+			
+			$ret = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_categories',array('parent_category'=>$master),array(),array('position'=>'ASC','category_name'=>'ASC'));
+			$data = array();
+			foreach($ret as $r) {
+				$data[] = $r['id'];
+			}
+
+			foreach($data as $k=>$v) {
+				Utils_RecordBrowserCommon::update_record('premium_warehouse_items_categories',$v,array('position'=>$k));
 			}
 			
 			if(ModuleManager::is_installed('Premium/Warehouse/eCommerce')>=0) {
@@ -119,6 +130,13 @@ class Premium_Warehouse_Items extends Module {
 				}
 			}
 			
+			foreach($cats as $cat) {
+				$values = DB::GetRow('SELECT f_parent_category as parent_category,f_position as position FROM premium_warehouse_items_categories_data_1 WHERE id=%d',array($cat));
+				if($values['parent_category']!=='')
+				  	DB::Execute('UPDATE premium_warehouse_items_categories_data_1 SET f_position=f_position-1 WHERE f_position>%d and f_parent_category=%d',array($values['position'],$values['parent_category']));
+				  else
+				  	DB::Execute('UPDATE premium_warehouse_items_categories_data_1 SET f_position=f_position-1 WHERE f_position>%d and f_parent_category is null',array($values['position']));
+			}
 			DB::Execute('DELETE FROM premium_warehouse_items_categories_data_1 WHERE id IN ('.implode(',',$cats).')');
 
 			location(array());
@@ -153,7 +171,7 @@ class Premium_Warehouse_Items extends Module {
 		    $gb_row->add_action(Module::create_href(array('pos_action'=>$r['id'],'old'=>$r['position'],'new'=>$r['position']-1)),'move-up');
 		static $max;
 		if(!isset($max))
-		    $max = Utils_RecordBrowserCommon::get_records_count($tab);
+		    $max = Utils_RecordBrowserCommon::get_records_count($tab,array('parent_category'=>$r['parent_category']));
 		if($r['position']<$max-1)
     		    $gb_row->add_action(Module::create_href(array('pos_action'=>$r['id'],'old'=>$r['position'],'new'=>$r['position']+1)),'move-down');
 	}
@@ -168,8 +186,9 @@ class Premium_Warehouse_Items extends Module {
 	
 	public function subcategories_addon($arg) {
 		$rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items_categories');
-		$order = array(array('parent_category'=>$arg['id']), array(), array('category_name'=>'ASC'));
+		$order = array(array('parent_category'=>$arg['id']), array(), array());
 		$rb->set_defaults(array('parent_category'=>$arg['id']));
+		$rb->force_order(array('position'=>'ASC','category_name'=>'ASC'));
 //		$rb->set_header_properties(array(
 //			'language'=>array('width'=>1, 'wrapmode'=>'nowrap'),
 //			'description'=>array('width'=>50, 'wrapmode'=>'nowrap')
