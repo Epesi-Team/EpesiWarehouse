@@ -174,6 +174,7 @@ class Premium_Warehouse_Items extends Module {
 //			'language'=>array('width'=>1, 'wrapmode'=>'nowrap'),
 //			'description'=>array('width'=>50, 'wrapmode'=>'nowrap')
 //									));
+		$rb->set_additional_actions_method(array($this, 'actions_for_position'));
 		$this->display_module($rb,$order,'show_data');
 	}
 

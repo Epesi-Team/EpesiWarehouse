@@ -273,6 +273,8 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 
 	public static function submit_position($values, $mode) {
 		$recordset = 'premium_warehouse_items_categories';
+		if(!isset($values['position']))
+			$values['position'] = 0;
 		switch ($mode) {
 			case 'add':
 			case 'restore':
