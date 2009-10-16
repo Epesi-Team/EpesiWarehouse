@@ -278,7 +278,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		//stats
 		$ret = DB::CreateTable('premium_ecommerce_products_stats','
 			obj I4 NOTNULL,
-			visited_on T DEFTIMESTAMP',
+			visited_on T NOTNULL',
 			array('constraints'=>' , FOREIGN KEY (obj) REFERENCES premium_warehouse_items_data_1(id)'));
 		if(!$ret){
 			print('Unable to create table premium_ecommerce_products_stats.<br>');
@@ -287,7 +287,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_products', 'Premium/Warehouse/eCommerce', 'products_stats_addon', 'Visits');
 		$ret = DB::CreateTable('premium_ecommerce_pages_stats','
 			obj I4 NOTNULL,
-			visited_on T DEFTIMESTAMP',
+			visited_on T NOTNULL',
 			array('constraints'=>' , FOREIGN KEY (obj) REFERENCES premium_ecommerce_pages_data_1(id)'));
 		if(!$ret){
 			print('Unable to create table premium_ecommerce_pages_stats.<br>');
@@ -296,7 +296,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_pages', 'Premium/Warehouse/eCommerce', 'pages_stats_addon', 'Visits');
 		$ret = DB::CreateTable('premium_ecommerce_categories_stats','
 			obj I4 NOTNULL,
-			visited_on T DEFTIMESTAMP',
+			visited_on T NOTNULL',
 			array('constraints'=>' , FOREIGN KEY (obj) REFERENCES premium_warehouse_items_categories_data_1(id)'));
 		if(!$ret){
 			print('Unable to create table premium_ecommerce_categories_stats.<br>');
@@ -305,7 +305,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::new_addon('premium_warehouse_items_categories', 'Premium/Warehouse/eCommerce', 'categories_stats_addon', 'Visits');
 		$ret = DB::CreateTable('premium_ecommerce_searched_stats','
 			obj X NOTNULL,
-			visited_on T DEFTIMESTAMP',
+			visited_on T NOTNULL',
 			array('constraints'=>''));
 		if(!$ret){
 			print('Unable to create table premium_ecommerce_searched_stats.<br>');
