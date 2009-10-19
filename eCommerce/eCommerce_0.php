@@ -903,16 +903,16 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 		}
 
 		$f = $this->init_module('Libs/OpenFlashChart');
-		$title = new title( $this->ht($tab) );
+		$title = new OFC_Elements_Title( $this->ht($tab) );
 		$f->set_title( $title );
 
 		$av_colors = array('#339933','#999933', '#993333', '#336699', '#808080','#339999','#993399');
 		$max = -1;
 		$i = 0;
 		while($row = $ret->FetchRow()) {
-			$bar = new bar();
+			$bar = new OFC_Charts_Bar();
 			$bar->set_colour($av_colors[$i%count($av_colors)]);
-			$bar->set_key($row['name'],3);
+			$bar->set_key($row['name'],10);
 			$bar->set_values( array((int)$row['num']) );
 			if($max<$row['num']) $max = $row['num'];
 			$f->add_element( $bar );
@@ -922,7 +922,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 		    print($this->t("No stats available"));
 		    return;
 		}
-		$y_ax = new y_axis();
+		$y_ax = new OFC_Elements_Axis_Y();
 		$y_ax->set_range(0,$max);
 		$y_ax->set_steps($max/10);
 		$f->set_y_axis($y_ax);
