@@ -628,8 +628,10 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			if (!is_numeric($data['item_name']))
 				$data['item_name'] = Utils_RecordBrowserCommon::get_id('premium_warehouse_items', 'item_name', $data['item_name']);
 			if (!is_numeric($data['item_name'])) {
-				$data['item_name'] = Utils_RecordBrowser::$last_record['item_name'];
-				//return array('item_name'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders', 'Item not found'));
+				if (isset(Utils_RecordBrowser::$last_record['item_name']))
+					$data['item_name'] = Utils_RecordBrowser::$last_record['item_name'];
+				else
+					return array('item_name'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders', 'Item not found'));
 			}
 		}
 		$item_type = Utils_RecordBrowserCommon::get_value('premium_warehouse_items',$data['item_name'],'item_type');
