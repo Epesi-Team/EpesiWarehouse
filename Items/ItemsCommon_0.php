@@ -108,7 +108,7 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
     }
     
     public static function build_category_tree(&$opts, $root='', $prefix='', $count=0) {
-		$cats = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_categories', array('parent_category'=>$root));
+		$cats = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_categories', array('parent_category'=>$root),array('category_name'),array('position'=>'ASC'));
 		foreach($cats as $v) {
 			$opts[$prefix.$v['id']] = str_pad('',$count*2,'* ').$v['category_name'];
 			self::build_category_tree($opts, $v['id'], $prefix.$v['id'].'/', $count+1);

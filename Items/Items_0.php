@@ -73,16 +73,32 @@ class Premium_Warehouse_Items extends Module {
 		$this->display_module($this->rb, array(array(),array(),$cols));
 	}
 	
-	public function merge_categories() {
-		if($this->is_back()) return false;
+	public function merge_categories($root='') {
+		$x = ModuleManager::get_instance('/Base_Box|0');
+		if(!$x) trigger_error('There is no base box module instance',E_USER_ERROR);
+		$x->push_main($this->get_type(),'merge_categories_body',array($root));
+	}
+	
+	public function merge_categories_body($root='') {
+		if($this->is_back()) {
+			$x = ModuleManager::get_instance('/Base_Box|0');
+			if(!$x) trigger_error('There is no base box module instance',E_USER_ERROR);
+			$x->pop_main();
+			return;
+		}
+		if(!isset($root)) $root = '';
+		else {
+			$m = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_categories', $root);
+			print('<h2>'.$m['category_name'].'</h2><br>');
+		}
 		
 		$qf = $this->init_module('Libs/QuickForm');
 		
 		$opts = array();
-		Premium_Warehouse_ItemsCommon::build_category_tree($opts);
+		Premium_Warehouse_ItemsCommon::build_category_tree($opts,$root);
 		$qf->addElement('select', 'master_cat', $this->t('Master category'), $opts);
 		$qf->addRule('master_cat',$this->t('Field required'),'required');
-		$qf->addElement('multiselect', 'cats', $this->t('Merge categories'), $opts);
+		$e = $qf->addElement('multiselect', 'cats', $this->t('Merge categories'), $opts,array('style'=>'height:380px;width:300px'));
 		$qf->addRule('cats',$this->t('Field required'),'required');
 		$qf->addRule(array('cats','master_cat'),$this->t('You must select at least one category different then master category'),'callback',array($this,'check_merge_cats'));
 		
@@ -147,8 +163,6 @@ class Premium_Warehouse_Items extends Module {
 	
 		Base_ActionBarCommon::add('save','Merge',$qf->get_submit_form_href());
 		Base_ActionBarCommon::add('back','Back',$this->create_back_href(true,'processing... this operation can take couple minutes...'));
-		
-		return true;
 	}
 	
 	public static function check_merge_cats($val) {
@@ -195,6 +209,7 @@ class Premium_Warehouse_Items extends Module {
 //									));
 		$rb->set_additional_actions_method(array($this, 'actions_for_position'));
 		$this->display_module($rb,$order,'show_data');
+		Base_ActionBarCommon::add('attach',$this->ht('Merge categories'),$this->create_callback_href(array($this,'merge_categories'),array($arg['id'])));
 	}
 
 	public function applet($conf,$opts) {
