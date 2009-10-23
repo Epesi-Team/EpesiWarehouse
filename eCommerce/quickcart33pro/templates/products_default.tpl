@@ -8,18 +8,20 @@
 <div id="product" name="product">
   $sTxtSize
   <h3>$aData[sName]</h3>
-$sRecommended
-$sNextProduct
-$sPrevProduct
+	$sRecommended
+	<span class="prev">$sPrevProduct</span>
+	<span class="next">$sNextProduct</span>
   <h4>$aData[sPages]</h4>
-  $aImages[3]
-  $aImages[1]
-  $aImages[2]
-  <div id="box">
-    $sPrice
-    $sAvailable
-    $sBasket
-    <font color="black">$aData[sSku]</font>
+  <div id="images_and_price">
+	$aImages[3]
+	$aImages[1]
+	$aImages[2]
+	<div id="box">
+		$sPrice
+		$sAvailable
+		$sBasket
+		<font color="black">$aData[sSku]</font>
+	</div>
   </div>
   <div class="content" id="productDescription">$aData[sDescriptionFull]</div><a id="more-less" onClick="more_less('productDescription')" href="#product">More >>></a>
   <div class="sFeatures">$sFeatures</div>

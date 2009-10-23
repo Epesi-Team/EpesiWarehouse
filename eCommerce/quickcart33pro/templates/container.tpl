@@ -40,7 +40,7 @@
 <!-- END HEAD -->
 <!-- BEGIN BODY -->
 </head>
-<body onLoad="emptyProdDesc('productDescription')">
+<body onLoad="emptyProdDesc('productDescription');initLightbox()">
 <div class="skiplink"><a href="#content" accesskey="2">$lang['Skip_navigation']</a></div>
 <div id="container">
   <div id="main">
