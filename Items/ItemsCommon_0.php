@@ -98,7 +98,7 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 			case 'browse_crits':	return $i->acl_check('browse items');
 			case 'browse':	return true;
 			case 'view':	if (!$i->acl_check('view items')) return false;
-							return array('position'=>false,'parent_category'=>false);
+							return array('position'=>false);
 			case 'clone':
 			case 'add':
 			case 'edit':	return $i->acl_check('edit items');
@@ -112,6 +112,14 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 		foreach($cats as $v) {
 			$opts[$prefix.$v['id']] = str_pad('',$count*2,'* ').$v['category_name'];
 			self::build_category_tree($opts, $v['id'], $prefix.$v['id'].'/', $count+1);
+		}
+    }
+
+    public static function build_category_tree_flat(&$opts, $root='', $count=0) {
+		$cats = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_categories', array('parent_category'=>$root),array('category_name'),array('position'=>'ASC'));
+		foreach($cats as $v) {
+			$opts[$v['id']] = str_pad('',$count*2,'* ').$v['category_name'];
+			self::build_category_tree_flat($opts, $v['id'], $count+1);
 		}
     }
     
@@ -183,6 +191,23 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 			}
 			$form->addElement('static', $field, $label, implode('<br/>',$def));
 		}
+    }
+
+    public static function QFfield_category_parent(&$form, $field, $label, $mode, $default,$x,$y) {
+		if ($mode=='edit' || $mode=='add') {
+			$opts = array();
+			self::build_category_tree_flat($opts);
+			$form->addElement('select', $field, $label, $opts, array('id'=>$field));
+			$form->registerRule('unique_category','callback','check_parent_category','Premium_Warehouse_ItemsCommon');
+			$form->addRule($field,'You cannot choose the same category as edited one','unique_category',$y->record['id']);
+			$form->setDefaults(array($field=>$default));
+		} else {
+			$form->addElement('static', $field, $label, $default!==''?Utils_RecordBrowserCommon::get_value('premium_warehouse_items_categories',$default,'category_name'):$default);
+		}
+    }
+    
+    public static function check_parent_category($v,$op) {
+    		return $v!=$op;
     }
 
     public static function menu() {

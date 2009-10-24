@@ -57,7 +57,7 @@ class Premium_Warehouse_ItemsInstall extends ModuleInstall {
 
 		$fields = array(
 			array('name'=>'Category Name', 	'type'=>'text', 'param'=>128, 'required'=>true, 'extra'=>false, 'visible'=>true),
-			array('name'=>'Parent Category','type'=>'select', 'param'=>'premium_warehouse_items_categories::Category Name' ,'required'=>false, 'extra'=>false, 'visible'=>false),
+			array('name'=>'Parent Category','type'=>'select', 'param'=>'premium_warehouse_items_categories::Category Name' ,'required'=>false, 'extra'=>false, 'visible'=>false, 'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_category_parent')),
 			array('name'=>'Position', 		'type'=>'integer', 'required'=>false, 'extra'=>false, 'visible'=>false)
 		);
 		Utils_RecordBrowserCommon::install_new_recordset('premium_warehouse_items_categories', $fields);
