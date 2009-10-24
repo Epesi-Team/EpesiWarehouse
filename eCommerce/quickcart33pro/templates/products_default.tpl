@@ -23,7 +23,7 @@
 		<font color="black">$aData[sSku]</font>
 	</div>
   </div>
-  <div class="content" id="productDescription">$aData[sDescriptionFull]</div><a id="more-less" onClick="more_less('productDescription')" href="#product">More >>></a>
+  <div class="content" id="productDescription">$aData[sDescriptionFull]</div><a id="more-less" onClick="more_less('productDescription')" href="#product"><span class="more">$lang['More'] &gt;&gt;&gt;</span><span class="less" style="display:none">$lang['Less'] &lt;&lt;&lt;&lt;</span></a>
   <div class="sFeatures">$sFeatures</div>
   $sFilesList
   $aImages[4]

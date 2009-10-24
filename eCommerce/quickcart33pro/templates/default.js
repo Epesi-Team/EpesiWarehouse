@@ -11,12 +11,25 @@ function more_less(element) {
 	if(document.getElementById(element).innerHTML != '') {
 		if(document.getElementById(element).style.height == 'auto') {
 			document.getElementById(element).style.height = '295px';
-			document.getElementById('more-less').innerHTML = 'More >>>';
-			//document.getElementById('more-less').href = '#product';
+			elems = document.getElementById('more-less').getElementsByClassName('more');
+			for(var el=0; el<elems.length; el++) {
+				elems[el].style.display='inline';
+			}
+			elems = document.getElementById('more-less').getElementsByClassName('less');
+			for(var el=0; el<elems.length; el++) {
+				elems[el].style.display='none';
+			}
 		}
 		else {
 			document.getElementById(element).style.height = 'auto';
-			document.getElementById('more-less').innerHTML = '<<< Less';
+			elems = document.getElementById('more-less').getElementsByClassName('more');
+			for(var el=0; el<elems.length; el++) {
+				elems[el].style.display='none';
+			}
+			elems = document.getElementById('more-less').getElementsByClassName('less');
+			for(var el=0; el<elems.length; el++) {
+				elems[el].style.display='inline';
+			}
 			//document.getElementById('more-less').href = '#';
 		}
 	}

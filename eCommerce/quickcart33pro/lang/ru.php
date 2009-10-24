@@ -338,4 +338,6 @@ $lang['Contact_us'] = 'Contact us';
 $lang['Codes'] = 'Codes';
 $lang['Product_Code'] = 'Manufacturer Product Code';
 $lang['Call_for_price'] = 'Call for price';
+$lang['Less'] = 'Less';
+$lang['More'] = 'More';
 ?>
