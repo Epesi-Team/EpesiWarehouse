@@ -309,6 +309,16 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 				else
 				  	DB::Execute('UPDATE '.$recordset.'_data_1 SET f_position=f_position-1 WHERE f_position>%d and f_parent_category is null',array($values['position']));
 			    break;
+			case 'edit':
+				$old = Utils_RecordBrowserCommon::get_record($recordset,$values['id']);
+				if($old['parent_category']!=$values['parent_category']) {
+					if($old['parent_category']!=='')
+					  	DB::Execute('UPDATE '.$recordset.'_data_1 SET f_position=f_position-1 WHERE f_position>%d and f_parent_category=%d',array($old['position'],$old['parent_category']));
+					else
+					  	DB::Execute('UPDATE '.$recordset.'_data_1 SET f_position=f_position-1 WHERE f_position>%d and f_parent_category is null',array($old['position']));
+					$values['position'] = Utils_RecordBrowserCommon::get_records_count($recordset,array('parent_category'=>$values['parent_category']));
+				}
+				break;
 		}
 		return $values;
 	}
