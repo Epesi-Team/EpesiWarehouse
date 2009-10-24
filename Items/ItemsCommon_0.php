@@ -195,7 +195,7 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 
     public static function QFfield_category_parent(&$form, $field, $label, $mode, $default,$x,$y) {
 		if ($mode=='edit' || $mode=='add') {
-			$opts = array();
+			$opts = array(''=>'---');
 			self::build_category_tree_flat($opts);
 			$form->addElement('select', $field, $label, $opts, array('id'=>$field));
 			$form->registerRule('unique_category','callback','check_parent_category','Premium_Warehouse_ItemsCommon');
