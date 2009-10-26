@@ -343,15 +343,56 @@ class Premium_Warehouse_eCommerce extends Module {
 	}
 	
 	public function start_page() {
-		return $this->edit_variable('Start page','ecommerce_start_page');
+		return $this->edit_variable_with_lang('Start page','ecommerce_start_page');
 	}
 	
 	public function contactus_page() {
-		return $this->edit_variable('Contact us','ecommerce_contactus');
+		return $this->edit_variable_with_lang('Contact us','ecommerce_contactus');
 	}
 	
 	public function rules_page() {
-		return $this->edit_variable('Rules and policies','ecommerce_rules');
+		return $this->edit_variable_with_lang('Rules and policies','ecommerce_rules');
+	}
+
+	private function edit_variable_with_lang($header,$v) {
+		if($this->is_back()) return false;
+		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
+		
+		print('<h1>'.$header.'</h1>'.$this->t('Choose language to edit:').'<ul>');
+
+		$langs = Utils_CommonDataCommon::get_array('Premium/Warehouse/eCommerce/Languages');
+		print('<li><a '.$this->create_callback_href(array($this,'edit_variable'),array($header,$v)).'>default (if translation is available)</a></li>');
+		foreach($langs as $k=>$name) {
+			print('<li><a '.$this->create_callback_href(array($this,'edit_variable'),array($header,$v.'_'.$k)).'>'.$name.'</a></li>');
+		}
+		print('</ul>');
+		return true;
+	}
+
+	public function edit_variable($header, $v) {
+		if($this->is_back()) return false;
+		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
+	
+		$f = $this->init_module('Libs/QuickForm');
+		
+		$f->addElement('header',null,$this->t($header));
+		
+		$fck = & $f->addElement('fckeditor', 'content', $this->t('Content'));
+		$fck->setFCKProps('800','300',true);
+		
+		$f->setDefaults(array('content'=>Variable::get($v,false)));
+
+		Base_ActionBarCommon::add('save','Save',$f->get_submit_form_href());
+		
+		if($f->validate()) {
+			$ret = $f->exportValues();
+			$content = str_replace("\n",'',$ret['content']);
+			Variable::set($v,$content);
+			Base_StatusBarCommon::message($this->t('Page saved'));
+			return false;
+		}
+		$f->display();	
+		return true;
 	}
 
 	public function QC_dirs() {
@@ -718,32 +759,6 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 	    return $response_code!=401;
 	}
 	
-	private function edit_variable($header, $v) {
-		if($this->is_back()) return false;
-		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
-	
-		$f = $this->init_module('Libs/QuickForm');
-		
-		$f->addElement('header',null,$this->t($header));
-
-		$fck = & $f->addElement('fckeditor', 'content', $this->t('Content'));
-		$fck->setFCKProps('800','300',true);
-		
-		$f->setDefaults(array('content'=>Variable::get($v)));
-
-		Base_ActionBarCommon::add('save','Save',$f->get_submit_form_href());
-		
-		if($f->validate()) {
-			$ret = $f->exportValues();
-			$content = str_replace("\n",'',$ret['content']);
-			Variable::set($v,$content);
-			Base_StatusBarCommon::message($this->t('Page saved'));
-			return false;
-		}
-		$f->display();	
-		return true;
-	}
-
 	public function attachment_product_addon($arg){
 		$a = $this->init_module('Utils/Attachment',array('Premium/Warehouse/eCommerce/Products/'.$arg['item_name']));
 		$a->allow_protected($this->acl_check('view protected notes'),$this->acl_check('edit protected notes'));

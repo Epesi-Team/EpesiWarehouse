@@ -398,10 +398,13 @@ class Pages
     $this->aPagesParentsTypes[5][] = $id;
 	//start page
 	$id = 11;
-	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => $lang['Start'], 'sNameTitle' => '', 'sDescriptionShort' => getVariable('ecommerce_start_page'), 'iPosition' => 0,
+	$start_page = getVariable('ecommerce_start_page_'.LANGUAGE);
+	if(!$start_page)
+		$start_page = getVariable('ecommerce_start_page');
+	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => $lang['Start'], 'sNameTitle' => '', 'sDescriptionShort' => $start_page, 'iPosition' => 0,
 					 'iType' => 2, 'iSubpagesShow' => 1, 'iProducts' => 0);
-    $this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
-    $this->aPagesParentsTypes[2][] = $id;
+	$this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
+	$this->aPagesParentsTypes[2][] = $id;
 
 	//recommended
 	$id = 35;
@@ -412,10 +415,14 @@ class Pages
 
 	//rules and policies
 	$id = 15;
-	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => $lang['Rules_and_Policies'], 'sNameTitle' => '', 'sDescriptionShort' => getVariable('ecommerce_rules'), 'iPosition' => 1,
+	$rulesandpol = getVariable('ecommerce_rules_'.LANGUAGE);
+	if(!$rulesandpol)
+		$rulesandpol = getVariable('ecommerce_rules');
+	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => $lang['Rules_and_Policies'], 'sNameTitle' => '', 'sDescriptionShort' => $rulesandpol, 'iPosition' => 1,
 					 'iType' => 2, 'iSubpagesShow' => 1, 'iProducts' => 0);
     $this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
     $this->aPagesParentsTypes[2][] = $id;
+
 	//search
 	$id = 19;
 	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => $lang['Search_results'], 'sNameTitle' => '', 'sDescriptionShort' => '', 'iPosition' => 0,
@@ -437,7 +444,10 @@ class Pages
 
 	//contact us
 	$id = 31;
-	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => $lang['Contact_us'], 'sNameTitle' => '', 'sDescriptionShort' => '<div id="contact">'.getVariable('ecommerce_contactus').'</div>', 'iPosition' => 1000, 'iType' => 1, 
+	$contactus = getVariable('ecommerce_contactus_'.LANGUAGE);
+	if(!$contactus)
+		$contactus = getVariable('ecommerce_contactus');
+	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => $lang['Contact_us'], 'sNameTitle' => '', 'sDescriptionShort' => '<div id="contact">'.$contactus.'</div>', 'iPosition' => 1000, 'iType' => 1, 
 			'iSubpagesShow' => 1, 'iProducts' => 0, 'sDescriptionFull'=>'', 'sMetaDescription' => '', 'sMetaKeywords' =>'');
 	$this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
 	$this->aPagesParentsTypes[2][] = $id;

@@ -469,6 +469,12 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::delete_addon('premium_warehouse_items_categories', 'Premium/Warehouse/eCommerce', 'categories_stats_addon');
 
 	
+		$langs = Utils_CommonDataCommon::get_array('Premium/Warehouse/eCommerce/Languages');
+		foreach($langs as $k=>$name) {
+			Variable::delete('ecommerce_start_page_'.$k);
+			Variable::delete('ecommerce_rules_'.$k);
+			Variable::delete('ecommerce_contactus_'.$k);
+		}
 		Variable::delete('ecommerce_start_page');
 		Variable::delete('ecommerce_rules');
 		Variable::delete('ecommerce_contactus');
