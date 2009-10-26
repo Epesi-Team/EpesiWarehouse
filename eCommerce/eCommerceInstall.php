@@ -171,15 +171,13 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 
 		//product availability
 		$fields = array(
-			array('name'=>'Availability Code', 'type'=>'text', 'param'=>128, 'required'=>true, 'extra'=>false, 'visible'=>true),
-			array('name'=>'Position', 		'type'=>'integer', 'required'=>true, 'extra'=>false,'visible'=>false)
+			array('name'=>'Availability Code', 'type'=>'text', 'param'=>128, 'required'=>true, 'extra'=>false, 'visible'=>true)
 		);
 		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_availability', $fields);
 
 		Utils_RecordBrowserCommon::set_favorites('premium_ecommerce_availability', false);
 		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_availability', 'eCommerce - Product Available');
 		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_availability', array('Premium_Warehouse_eCommerceCommon', 'access_parameters'));
-		Utils_RecordBrowserCommon::set_processing_callback('premium_ecommerce_availability', array('Premium_Warehouse_eCommerceCommon', 'submit_availability_position'));
 
 		$fields = array(
 			array('name'=>'Availability', 	'type'=>'select', 'param'=>'premium_ecommerce_availability::Availability Code', 'required'=>true, 'extra'=>false),

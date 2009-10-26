@@ -179,8 +179,6 @@ class Premium_Warehouse_eCommerce extends Module {
 	
 		$this->recordset = 'availability';
 		$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_availability');
-		$this->rb->set_additional_actions_method(array($this, 'actions_for_position'));
-		$this->rb->force_order(array('position'=>'ASC'));
 		$this->display_module($this->rb);
 
 		return true;

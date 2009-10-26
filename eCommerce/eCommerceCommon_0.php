@@ -492,9 +492,6 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 	public static function submit_parameter_groups_position($values, $mode) {
 		return self::submit_position($values, $mode, 'premium_ecommerce_parameter_groups');
 	}
-	public static function submit_availability_position($values, $mode) {
-		return self::submit_position($values, $mode, 'premium_ecommerce_availability');
-	}
 
 	public static function submit_position($values, $mode, $recordset) {
 		switch ($mode) {
