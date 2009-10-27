@@ -471,14 +471,13 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 	
 		$langs = Utils_CommonDataCommon::get_array('Premium/Warehouse/eCommerce/Languages');
 		foreach($langs as $k=>$name) {
-			Variable::delete('ecommerce_start_page_'.$k);
-			Variable::delete('ecommerce_rules_'.$k);
-			Variable::delete('ecommerce_contactus_'.$k);
+			Variable::delete('ecommerce_start_page_'.$k,false);
+			Variable::delete('ecommerce_rules_'.$k,false);
+			Variable::delete('ecommerce_contactus_'.$k,false);
 		}
 		Variable::delete('ecommerce_start_page');
 		Variable::delete('ecommerce_rules');
 		Variable::delete('ecommerce_contactus');
-		Variable::delete('quickcart_thumbnail_size');
 		Variable::delete('ecommerce_autoprice');
 		Variable::delete('ecommerce_minimal_profit');
 		Variable::delete('ecommerce_percentage_profit');
