@@ -5,7 +5,7 @@
  *
  * eCommerce
  *
- * @author Arkadiusz Bisaga <abisaga@telaxus.com>
+ * @author Paul Bukowski <pbukowski@telaxus.com>
  * @copyright Copyright &copy; 2008, Telaxus LLC
  * @license Commercial
  * @version 1.0
@@ -555,7 +555,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 	public static function info() {
 		return array(
 			'Description'=>'Warehouses - Premium Module',
-			'Author'=>'abisaga@telaxus.com',
+			'Author'=>'pbukowski@telaxus.com',
 			'License'=>'Commercial');
 	}
 	

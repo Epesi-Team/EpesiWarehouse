@@ -316,7 +316,15 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 		    }
 		    if($output) {
 			$got_data = true;
-			$obj = simplexml_load_string($output);
+			
+			$obj = @simplexml_load_string($output);
+			if($obj===false) {
+				$obj = @simplexml_load_string(iconv('iso8859-1','utf-8',$output));
+				if($obj===false) {
+					Epesi::alert('Unable to get icecat data in '.$name.' language');
+					continue;		
+				}
+			}
 			if(isset($obj->Product[0]['ErrorMessage'])) {
 				Epesi::alert($obj->Product[0]['ErrorMessage']);
 				return false;
