@@ -34,27 +34,32 @@ class Premium_Warehouse_SalesReport extends Module {
 		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
 
 		$form = $this->init_module('Libs/QuickForm');
+		$opts = Utils_CurrencyFieldCommon::get_currencies();
+		unset($opts[$currency]);
 		$form->addElement('checkbox', 'show_missing', 'Show only missing', null, array('onclick'=>$form->get_submit_form_js()));
+		$form->addElement('select', 'sel_curr', 'Show only missing', $opts, array('onchange'=>$form->get_submit_form_js()));
 
 		$show_missing = $this->get_module_variable('show_missing',1);
+		$sel_curr = $this->get_module_variable('sel_curr',$currency==1?2:1);
 		if ($form->validate()) {
 			$show_missing = $form->exportValue('show_missing');
+			$sel_curr = $form->exportValue('sel_curr');
 			$this->set_module_variable('show_missing',$show_missing?1:0);
+			$this->set_module_variable('sel_curr',$sel_curr);
 		}
-		$form->setDefaults(array('show_missing'=>$show_missing));
+		$form->setDefaults(array('show_missing'=>$show_missing, 'sel_curr'=>$sel_curr));
 		$form->display();
 
 		if (!$show_missing) $show_missing = '';
 		else $show_missing = 'AND re.exchange_rate IS NULL ';
 
 		$gb = $this->init_module('Utils/GenericBrowser', null, 'currency_exchange_editor');
-		$query = 'SELECT re.exchange_rate, o.f_transaction_date, od.f_net_price, o.id AS order_id FROM (premium_warehouse_items_orders_details_data_1 AS od LEFT JOIN premium_warehouse_items_orders_data_1 AS o ON o.id=od.f_transaction_id) LEFT JOIN premium_warehouse_sales_report_exchange AS re ON re.order_id=o.id WHERE o.active=1 '.$show_missing.'AND f_net_price!=\'\' AND f_net_price NOT LIKE '.DB::Concat(DB::qstr('%'), DB::qstr('__'.$currency)).' GROUP BY od.f_transaction_id';
-		$limit = $gb->get_limit(DB::GetOne('SELECT COUNT(*) FROM ('.$query.') AS tmp'));
-		$ret = DB::SelectLimit($query, $limit['numrows'], $limit['offset']);
+		$query = 'SELECT re.exchange_rate, o.f_transaction_date, od.f_net_price, o.id AS order_id FROM (premium_warehouse_items_orders_details_data_1 AS od LEFT JOIN premium_warehouse_items_orders_data_1 AS o ON o.id=od.f_transaction_id) LEFT JOIN premium_warehouse_sales_report_exchange AS re ON re.order_id=o.id AND re.currency=%d WHERE o.active=1 '.$show_missing.'AND (o.f_transaction_type=0 OR o.f_transaction_type=1) AND f_net_price!=\'\' AND f_net_price LIKE '.DB::Concat(DB::qstr('%'), DB::qstr('__'.$sel_curr)).' GROUP BY od.f_transaction_id';
+		$limit = $gb->get_limit(DB::GetOne('SELECT COUNT(*) FROM ('.$query.') AS tmp', array($sel_curr)));
+		$ret = DB::SelectLimit($query, $limit['numrows'], $limit['offset'], array($sel_curr));
 		$gb->set_table_columns(array(
 			array('name'=>'Transaction ID'),
 			array('name'=>'Transaction Date'),
-			array('name'=>'Currency'),
 			array('name'=>'Exchange')
 		));
 		$present = array();
@@ -78,23 +83,17 @@ class Premium_Warehouse_SalesReport extends Module {
 		load_js('modules/Premium/Warehouse/SalesReport/edit_exchange_rates.js');
 		while ($row = $ret->FetchRow()) {
 			$gb_row = $gb->get_new_row();
-			$currency = explode('__', $row['f_net_price']);
-			if (isset($currency[1])) {
-				$currency = $currency[1];
-				$cur_code = Utils_CurrencyFieldCommon::get_code($currency);
-			} else {
-				$currency = 0;
-				$cur_code = 'Error: '.$row['f_net_price'];
-			}
+			$xr = DB::GetOne('SELECT exchange_rate FROM premium_warehouse_sales_report_exchange WHERE order_id=%d AND currency=%d', array($row['order_id'], $sel_curr));
+//			$cur_code = Utils_CurrencyFieldCommon::get_code($sel_curr);
 			$ex_rate = 
-				'<a href="javascript:void(0)" onclick="edit_exchange_rate('.$row['order_id'].','.$currency.')">'.
+//				$cur_code.
+				'&nbsp;<a href="javascript:void(0)" onclick="edit_exchange_rate('.$row['order_id'].','.$sel_curr.')">'.
 					'<img border="0" src="'.Base_ThemeCommon::get_template_file('Utils/GenericBrowser', 'edit.png').'" />'.
 				'</a>&nbsp;'.
-				$row['exchange_rate'];
+				$xr;
 			$gb_row->add_data(
 				Utils_RecordBrowserCommon::create_linked_label('premium_warehouse_items_orders', 'transaction_id', $row['order_id']),
 				Base_RegionalSettingsCommon::time2reg($row['f_transaction_date'],false),
-				$cur_code,
 				$ex_rate
 			);
 		}
