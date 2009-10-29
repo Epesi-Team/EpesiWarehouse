@@ -811,6 +811,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
  		$m->add_row($this->t('Assigned category'),($arg['category']?$on:$off));
 		$quantity = Utils_RecordBrowserCommon::get_records('premium_warehouse_location',array('item_sku'=>$arg['id'],'>quantity'=>0));
  		$m->add_row($this->t('Available in warehouse'),(empty($quantity)?$off:$on));
+ 		$m->add_row($this->t('Common attachments'),Utils_AttachmentCommon::count('Premium/Warehouse/eCommerce/Products/'.$arg['id']));
  		$this->display_module($m);
 
 		//langs
@@ -820,13 +821,15 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 				array('name'=>$this->t('Name')),
 				array('name'=>$this->t('Description')),
 				array('name'=>$this->t('Parameters')),
+				array('name'=>$this->t('Attachments'))
 					    ));
 		$langs = Utils_CommonDataCommon::get_array('Premium/Warehouse/eCommerce/Languages');
 		foreach($langs as $code=>$name) {
 		    $descs = Utils_RecordBrowserCommon::get_records('premium_ecommerce_descriptions',array('item_name'=>$rec['item_name'],'language'=>$code),array('display_name','short_description'));
 		    $descs = array_pop($descs);
 		    $params = Utils_RecordBrowserCommon::get_records('premium_ecommerce_products_parameters',array('item_name'=>$rec['item_name'],'language'=>$code));
- 		    $m->add_row($name,($descs && isset($descs['display_name']) && $descs['display_name'])?$on:$off,($descs && isset($descs['short_description']) && $descs['short_description'])?$on:$off,empty($params)?$off:$on);
+		    $attachments = Utils_AttachmentCommon::count('Premium/Warehouse/eCommerce/ProductsDesc/'.$code.'/'.$arg['id']);
+ 		    $m->add_row($name,($descs && isset($descs['display_name']) && $descs['display_name'])?$on:$off,($descs && isset($descs['short_description']) && $descs['short_description'])?$on:$off,empty($params)?$off:$on,$attachments);
 		}
  		$this->display_module($m);
 
