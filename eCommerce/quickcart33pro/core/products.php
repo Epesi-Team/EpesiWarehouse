@@ -157,7 +157,7 @@ class Products
 		$products[$aExp['iProduct']]['aCategories'] = $pages;
 	}
 	
-	if(count($products)==1 && $navigation) {
+	if(count($products)==1 && $navigation && isset($_SESSION['last_products_query']) && count($_SESSION['last_products_query'])==3) {
 		$p = array_shift(array_keys($products));
 		while(1) {
 			$pp = $this->getProducts($_SESSION['last_products_query'][0],$_SESSION['last_products_query'][1],$_SESSION['last_products_query'][2]);
