@@ -324,7 +324,6 @@ $lang['Date'] = 'Data';
 //epesi
 $lang['Basket'] = 'Koszyk';
 $lang['Order_form'] = 'Formularz zamówienia';
-$lang['Start'] = 'Start';
 $lang['Rules_and_Policies'] = 'Regulamin';
 $lang['Search_results'] = 'Wyniki wyszukiwania';
 $lang['Uncategorized'] = 'Bez kategorii';

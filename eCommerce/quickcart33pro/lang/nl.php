@@ -326,7 +326,6 @@ $lang['Date'] = 'Date';
 //epesi
 $lang['Basket'] = 'Winkelmandje';
 $lang['Order_form'] = 'Order form';
-$lang['Start'] = 'Start';
 $lang['Rules_and_Policies'] = 'Rules and Policies';
 $lang['Search_results'] = 'Search results';
 $lang['Uncategorized'] = 'Uncategorized';

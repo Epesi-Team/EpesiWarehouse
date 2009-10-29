@@ -50,8 +50,6 @@ class Premium_Warehouse_eCommerce extends Module {
 						'icon'=>null);
 		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'rules_page')).'>'.$this->ht('Rules & Policies').'</a>',
 						'icon'=>null);
-		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'start_page')).'>'.$this->ht('Start Page').'</a>',
-						'icon'=>null);
 		$theme =  & $this->pack_module('Base/Theme');
 		$theme->assign('header', $this->t('eCommerce settings'));
 		$theme->assign('buttons', $buttons);
@@ -340,10 +338,6 @@ class Premium_Warehouse_eCommerce extends Module {
 		$rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_orders');
 		//$order = array(array('transaction_id'=>$arg['id']), array('transaction_id'=>false));
 		$this->display_module($rb,array('view',Premium_Warehouse_eCommerceCommon::orders_get_record(),null,false),'view_entry');
-	}
-	
-	public function start_page() {
-		return $this->edit_variable_with_lang('Start page','ecommerce_start_page');
 	}
 	
 	public function contactus_page() {

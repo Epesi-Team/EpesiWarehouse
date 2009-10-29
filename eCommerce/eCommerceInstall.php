@@ -435,7 +435,6 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		$this->add_aco('edit protected notes','Employee Administrator');
 		$this->add_aco('edit public notes','Employee');
 
-		Variable::set('ecommerce_start_page','This is start page of quickcart shop with epesi backend. You can edit it in Administration - eCommerce settings.');
 		Variable::set('ecommerce_rules','You can edit this page in Administration - eCommerce settings.');
 		Variable::set('ecommerce_contactus','You can edit this page in Administration - eCommerce settings.');
 
@@ -471,11 +470,9 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 	
 		$langs = Utils_CommonDataCommon::get_array('Premium/Warehouse/eCommerce/Languages');
 		foreach($langs as $k=>$name) {
-			Variable::delete('ecommerce_start_page_'.$k,false);
 			Variable::delete('ecommerce_rules_'.$k,false);
 			Variable::delete('ecommerce_contactus_'.$k,false);
 		}
-		Variable::delete('ecommerce_start_page');
 		Variable::delete('ecommerce_rules');
 		Variable::delete('ecommerce_contactus');
 		Variable::delete('ecommerce_autoprice');

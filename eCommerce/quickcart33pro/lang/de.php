@@ -323,7 +323,6 @@ $lang['Date'] = 'Date';
 //epesi
 $lang['Basket'] = 'Wahrenkorb';
 $lang['Order_form'] = 'Bestellungsformular';
-$lang['Start'] = 'Start';
 $lang['Rules_and_Policies'] = 'Reglement';
 $lang['Search_results'] = 'Suchen Resultat';
 $lang['Uncategorized'] = 'Ohne Kategorie';

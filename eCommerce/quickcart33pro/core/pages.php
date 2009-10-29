@@ -396,18 +396,9 @@ class Pages
 					 'iType' => 5, 'iSubpagesShow' => 1, 'iProducts' => 0, 'sTheme'=>'order.php');
     $this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
     $this->aPagesParentsTypes[5][] = $id;
-	//start page
-	$id = 11;
-	$start_page = getVariable('ecommerce_start_page_'.LANGUAGE);
-	if(!$start_page)
-		$start_page = getVariable('ecommerce_start_page');
-	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => $lang['Start'], 'sNameTitle' => '', 'sDescriptionShort' => $start_page, 'iPosition' => 0,
-					 'iType' => 2, 'iSubpagesShow' => 1, 'iProducts' => 0);
-	$this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
-	$this->aPagesParentsTypes[2][] = $id;
 
 	//recommended
-	$id = 35;
+	$id = 11;
 	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => $lang['Recommended'], 'sNameTitle' => '', 'sDescriptionShort' => '', 'iPosition' => 1, 
 			'iType' => 2, 'iSubpagesShow' => 4, 'iProducts' => 1, 'sDescriptionFull'=>'', 'sMetaDescription' => '', 'sMetaKeywords' =>'');
 	$this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
