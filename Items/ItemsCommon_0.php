@@ -199,7 +199,8 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 			self::build_category_tree_flat($opts);
 			$form->addElement('select', $field, $label, $opts, array('id'=>$field));
 			$form->registerRule('unique_category','callback','check_parent_category','Premium_Warehouse_ItemsCommon');
-			$form->addRule($field,'You cannot choose the same category as edited one','unique_category',$y->record['id']);
+			if(isset($y->record['id']))
+				$form->addRule($field,'You cannot choose the same category as edited one','unique_category',$y->record['id']);
 			$form->setDefaults(array($field=>$default));
 		} else {
 			$form->addElement('static', $field, $label, $default!==''?Utils_RecordBrowserCommon::get_value('premium_warehouse_items_categories',$default,'category_name'):$default);
