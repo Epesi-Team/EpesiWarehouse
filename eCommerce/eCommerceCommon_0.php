@@ -223,6 +223,8 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 		if(preg_match('/^\.(jpg|jpeg|gif|png|bmp)$/i',$ext)) {
     		    $th1 = Utils_ImageCommon::create_thumb($file,100,100);
 		    $th2 = Utils_ImageCommon::create_thumb($file,200,200);
+		    $file = Utils_ImageCommon::create_thumb($file,800,600);
+		    $file = $file['thumb'];
 		}
 		foreach($qcs as $q) {
 		    copy($file,$q.'/files/epesi/'.$id.'_'.$rev.$ext);
@@ -230,6 +232,11 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
     			copy($th1['thumb'],$q.'/files/100/epesi/'.$id.'_'.$rev.$ext);
     			copy($th2['thumb'],$q.'/files/200/epesi/'.$id.'_'.$rev.$ext);
 		    }
+		}
+		if(isset($th1)) {
+			@unlink($th1['thumb']);
+			@unlink($th2['thumb']);
+			@unlink($file);
 		}
 	}
 	
