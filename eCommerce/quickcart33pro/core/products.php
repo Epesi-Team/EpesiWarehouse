@@ -220,7 +220,7 @@ class Products
       else{
 	if($iContent==23) {
     	    $query .= 'it.f_category is null OR it.f_category=\'\'';
-	} elseif($iContent==35) {
+	} elseif($iContent==11) {
     	    $query .= 'pr.f_recommended=1';
 	} elseif($iContent%4==0) {
             if( DISPLAY_SUBCATEGORY_PRODUCTS === true ){
