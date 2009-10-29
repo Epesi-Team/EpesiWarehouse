@@ -812,6 +812,8 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 		$quantity = Utils_RecordBrowserCommon::get_records('premium_warehouse_location',array('item_sku'=>$arg['id'],'>quantity'=>0));
  		$m->add_row($this->t('Available in warehouse'),(empty($quantity)?$off:$on));
  		$m->add_row($this->t('Common attachments'),Utils_AttachmentCommon::count('Premium/Warehouse/eCommerce/Products/'.$arg['id']));
+//		$m->add_row('Related,recommended',Utils_RecordBrowserCommon::record_link_open_tag('premium_ecommerce_products',$rec['id'],false,'edit').$this->t('Edit item').Utils_RecordBrowserCommon::record_link_close_tag());
+		
  		$this->display_module($m);
 
 		//langs
@@ -821,7 +823,8 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 				array('name'=>$this->t('Name')),
 				array('name'=>$this->t('Description')),
 				array('name'=>$this->t('Parameters')),
-				array('name'=>$this->t('Attachments'))
+				array('name'=>$this->t('Attachments')),
+				array('name'=>$this->t('Actions'))
 					    ));
 		$langs = Utils_CommonDataCommon::get_array('Premium/Warehouse/eCommerce/Languages');
 		foreach($langs as $code=>$name) {
@@ -829,7 +832,8 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 		    $descs = array_pop($descs);
 		    $params = Utils_RecordBrowserCommon::get_records('premium_ecommerce_products_parameters',array('item_name'=>$rec['item_name'],'language'=>$code));
 		    $attachments = Utils_AttachmentCommon::count('Premium/Warehouse/eCommerce/ProductsDesc/'.$code.'/'.$arg['id']);
- 		    $m->add_row($name,($descs && isset($descs['display_name']) && $descs['display_name'])?$on:$off,($descs && isset($descs['short_description']) && $descs['short_description'])?$on:$off,empty($params)?$off:$on,$attachments);
+ 		    $m->add_row($name,($descs && isset($descs['display_name']) && $descs['display_name'])?$on:$off,($descs && isset($descs['short_description']) && $descs['short_description'])?$on:$off,empty($params)?$off:$on,$attachments,
+ 		    		$descs?Utils_RecordBrowserCommon::record_link_open_tag('premium_ecommerce_descriptions',$descs['id'],false,'edit').$this->t('Edit').Utils_RecordBrowserCommon::record_link_close_tag():'<a '.Utils_RecordBrowserCommon::create_new_record_href('premium_ecommerce_descriptions',array('language'=>$code,'item_name'=>$arg['id'])).'>'.$this->t('Add').'</a>');
 		}
  		$this->display_module($m);
 
@@ -839,6 +843,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 				array('name'=>$this->t('Currency')),
 				array('name'=>$this->t('Gross Price')),
 				array('name'=>$this->t('Tax Rate')),
+				array('name'=>$this->t('Actions'))
 					    ));
 		$curr_opts = Premium_Warehouse_eCommerceCommon::get_currencies();
 		foreach($curr_opts as $id=>$code) {
@@ -846,9 +851,12 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 		    $prices = array_pop($prices);
 		    if($prices && isset($prices['gross_price'])) {
     			    $tax = Utils_RecordBrowserCommon::get_record('data_tax_rates',$prices['tax_rate']);
-    			    $m->add_row($code,$prices['gross_price'],$tax['name']);
+    			    $m->add_row($code,$prices['gross_price'],$tax['name'],
+ 		    		Utils_RecordBrowserCommon::record_link_open_tag('premium_ecommerce_prices',$prices['id'],false,'edit').$this->t('Edit').Utils_RecordBrowserCommon::record_link_close_tag());
+ 		    		
 		    } else {
-         		    $m->add_row($code,$off,$off);
+         		    $m->add_row($code,$off,$off,
+         		    	'<a '.Utils_RecordBrowserCommon::create_new_record_href('premium_ecommerce_prices',array('currency'=>$id,'item_name'=>$arg['id'])).'>'.$this->t('Add').'</a>');
 		    }
 		}
  		$this->display_module($m);
