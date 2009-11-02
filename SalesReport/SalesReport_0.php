@@ -54,7 +54,7 @@ class Premium_Warehouse_SalesReport extends Module {
 		else $show_missing = 'AND re.exchange_rate IS NULL ';
 
 		$gb = $this->init_module('Utils/GenericBrowser', null, 'currency_exchange_editor');
-		$query = 'SELECT re.exchange_rate, o.f_transaction_date, od.f_net_price, o.id AS order_id FROM (premium_warehouse_items_orders_details_data_1 AS od LEFT JOIN premium_warehouse_items_orders_data_1 AS o ON o.id=od.f_transaction_id) LEFT JOIN premium_warehouse_sales_report_exchange AS re ON re.order_id=o.id AND re.currency=%d WHERE o.active=1 '.$show_missing.'AND (o.f_transaction_type=0 OR o.f_transaction_type=1) AND f_net_price!=\'\' AND f_net_price LIKE '.DB::Concat(DB::qstr('%'), DB::qstr('__'.$sel_curr)).' GROUP BY od.f_transaction_id';
+		$query = 'SELECT re.exchange_rate, o.f_transaction_date, od.f_net_price, o.id AS order_id FROM (premium_warehouse_items_orders_details_data_1 AS od LEFT JOIN premium_warehouse_items_orders_data_1 AS o ON o.id=od.f_transaction_id) LEFT JOIN premium_warehouse_sales_report_exchange AS re ON re.order_id=o.id AND re.currency=%d WHERE od.active=1 '.$show_missing.'AND (o.f_transaction_type=0 OR o.f_transaction_type=1) AND f_net_price!=\'\' AND f_net_price LIKE '.DB::Concat(DB::qstr('%'), DB::qstr('__'.$sel_curr)).' GROUP BY od.f_transaction_id';
 		$limit = $gb->get_limit(DB::GetOne('SELECT COUNT(*) FROM ('.$query.') AS tmp', array($sel_curr)));
 		$ret = DB::SelectLimit($query, $limit['numrows'], $limit['offset'], array($sel_curr));
 		$gb->set_table_columns(array(
