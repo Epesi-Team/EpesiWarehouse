@@ -627,7 +627,25 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 	}
 	
 	public function icecat_fill() {
-		print('fil');
+		$this->rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items');
+		$this->rb->set_default_order(array('item_name'=>'ASC'));
+		$this->rb->set_cut_lengths(array('item_name'=>50));
+			
+		$cols = array('quantity_on_hand'=>false,'quantity_en_route'=>false,'available_qty'=>false,'reserved_qty'=>false,'dist_qty'=>false,
+				'quantity_sold'=>false,'vendor'=>false,'manufacturer'=>true,'product_code'=>true,'upc'=>true);
+			
+		$this->rb->set_header_properties(array(
+						'manufacturer_part_number'=>array('name'=>'Part Number', 'width'=>1, 'wrapmode'=>'nowrap'),
+						'item_type'=>array('width'=>1, 'wrapmode'=>'nowrap'),
+						'gross_price'=>array('name'=>'Price','width'=>1, 'wrapmode'=>'nowrap'),
+						'item_name'=>array('wrapmode'=>'nowrap'),
+						'sku'=>array('width'=>1, 'wrapmode'=>'nowrap')
+						));
+
+//		if(ModuleManager::is_installed('Premium_Warehouse_eCommerce')>=0)
+  		$this->rb->set_additional_actions_method(array('Premium_Warehouse_eCommerceCommon', 'warehouse_item_actions'));
+
+		$this->display_module($this->rb, array(array(),array('upc'=>'','(manufacturer_part_number'=>'', '|manufacturer'=>'','(product_code'=>'', '|manufacturer'=>''),$cols));
 	}
 	
 	public function prices() {

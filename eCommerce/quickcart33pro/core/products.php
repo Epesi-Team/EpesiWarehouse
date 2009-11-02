@@ -228,11 +228,11 @@ class Products
     	      $aData = $oPage->throwAllChildrens( $iContent );
               if( isset( $aData ) ){
 	        foreach( $aData as $iValue ){
-	          $query .= 'it.f_category LIKE \'%__'.($iValue/4).'__%\' OR it.f_category LIKE \'%/'.($iValue/4).'__%\' OR ';
+	          $query .= 'it.f_category LIKE \'%\\_\\_'.($iValue/4).'\\_\\_%\' OR it.f_category LIKE \'%/'.($iValue/4).'\\_\\_%\' OR ';
         	}
               }
 	    }
-    	    $query .= 'it.f_category LIKE \'%__'.($iContent/4).'__%\' OR it.f_category LIKE \'%/'.($iContent/4).'__%\'';
+    	    $query .= 'it.f_category LIKE \'%\\_\\_'.($iContent/4).'\\_\\_%\' OR it.f_category LIKE \'%/'.($iContent/4).'\\_\\_%\'';
 	} else {
     	    $query .= 'it.f_manufacturer='.(($iContent-1)/4);	
 	}
@@ -519,7 +519,7 @@ class Products
           $aProducts[] = $prod['iProduct'];
         }
       }
-      $aProducts = $this->getProducts('it.f_category LIKE \'%__'.($iPage/4).'__%\' OR it.f_category LIKE \'%/'.($iPage/4).'__%\'');
+      $aProducts = $this->getProducts('it.f_category LIKE \'%\\_\\_'.($iPage/4).'\\_\\_%\' OR it.f_category LIKE \'%/'.($iPage/4).'\\_\\_%\'');
 
       if( isset( $aProducts ) ){
         $oTpl   =& TplParser::getInstance( );
