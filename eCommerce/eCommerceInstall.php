@@ -55,7 +55,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 
 		Utils_RecordBrowserCommon::set_favorites('premium_ecommerce_cat_descriptions', false);
 		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_cat_descriptions', 'eCommerce - Cat. Descriptions');
-		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_cat_descriptions', array('Premium_Warehouse_eCommerceCommon', 'access_cat_descriptions'));
+		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_cat_descriptions', array('Premium_Warehouse_eCommerceCommon', 'access_parameters'));
 
 		$fields = array(
 			array('name'=>'Item Name', 			'type'=>'select', 'required'=>true, 'param'=>'premium_warehouse_items::Item Name;Premium_Warehouse_Items_OrdersCommon::products_crits', 'extra'=>false, 'visible'=>true, 'display_callback'=>array($this->get_type().'Common', 'display_item_name')),
@@ -71,7 +71,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 
 		Utils_RecordBrowserCommon::set_favorites('premium_ecommerce_descriptions', false);
 		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_descriptions', 'eCommerce - Descriptions');
-		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_descriptions', array('Premium_Warehouse_eCommerceCommon', 'access_descriptions'));
+		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_descriptions', array('Premium_Warehouse_eCommerceCommon', 'access_parameters'));
 
 		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_descriptions', 'Premium/Warehouse/eCommerce', 'attachment_product_desc_addon', 'Notes');
 
@@ -101,7 +101,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 
 		Utils_RecordBrowserCommon::set_favorites('premium_ecommerce_prices', false);
 		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_prices', 'eCommerce - prices');
-		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_prices', array('Premium_Warehouse_eCommerceCommon', 'access_products'));
+		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_prices', array('Premium_Warehouse_eCommerceCommon', 'access_parameters'));
 
 		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_products', 'Premium/Warehouse/eCommerce', 'prices_addon', 'Prices');
 
@@ -152,7 +152,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 
 		Utils_RecordBrowserCommon::set_favorites('premium_ecommerce_parameter_group_labels', false);
 		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_parameter_group_labels', 'eCommerce - Parameters');
-		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_parameter_group_labels', array('Premium_Warehouse_eCommerceCommon', 'access_parameter_labels'));
+		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_parameter_group_labels', array('Premium_Warehouse_eCommerceCommon', 'access_parameters'));
 		//Utils_RecordBrowserCommon::set_processing_callback('premium_ecommerce_parameter_group_labels', array('Premium_Warehouse_eCommerceCommon', 'submit_parameter_labels'));
 		
 		//product-group-parameter-value
@@ -167,7 +167,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 
 		Utils_RecordBrowserCommon::set_favorites('premium_ecommerce_products_parameters', false);
 		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_products_parameters', 'eCommerce - Products Paramteres');
-		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_products_parameters', array('Premium_Warehouse_eCommerceCommon', 'access_products_parameters'));
+		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_products_parameters', array('Premium_Warehouse_eCommerceCommon', 'access_parameters'));
 
 		//product availability
 		$fields = array(
@@ -425,10 +425,10 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 				array('availability_code'=>'72h',
 					'position'=>0));
 
-		$this->add_aco('browse ecommerce',array('Employee Administrator'));
-		$this->add_aco('view ecommerce',array('Employee Administrator'));
-		$this->add_aco('edit ecommerce',array('Employee Administrator'));
-		$this->add_aco('delete ecommerce',array('Employee Administrator'));
+		$this->add_aco('browse ecommerce',array('Employee'));
+		$this->add_aco('view ecommerce',array('Employee'));
+		$this->add_aco('edit ecommerce',array('Employee'));
+		$this->add_aco('delete ecommerce',array('Employee'));
 
 		$this->add_aco('view protected notes','Employee');
 		$this->add_aco('view public notes','Employee');

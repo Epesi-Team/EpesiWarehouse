@@ -626,6 +626,10 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
     		return true;
 	}
 	
+	public function icecat_fill() {
+		print('fil');
+	}
+	
 	public function prices() {
 		if($this->is_back()) return false;
 	

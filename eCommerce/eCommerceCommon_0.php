@@ -200,13 +200,19 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 	}
 	
     public static function menu() {
-		return array('Warehouse'=>array(
+	    $user = Variable::get('icecat_user');
+	    $pass = Variable::get('icecat_pass');
+	    if($user && $pass)
+	    	$icecat = array('Icecat express'=>array('__function__'=>'icecat_fill'));
+	    else
+	    	$icecat = array();
+	    return array('Warehouse'=>array(
 			'__submenu__'=>1,
-			'eCommerce'=>array('__submenu__'=>1,
+			'eCommerce'=>array_merge($icecat,array('__submenu__'=>1,
 			    'Comments queue'=>array('__function__'=>'comments'),
 			    'Newsletter'=>array('__function__'=>'newsletter'),
 			    'Products'=>array(),
-			    'Stats'=>array('__function__'=>'stats'))
+			    'Stats'=>array('__function__'=>'stats')))
 		));
 	}
 	
