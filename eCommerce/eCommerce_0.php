@@ -627,25 +627,91 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 	}
 	
 	public function icecat_fill() {
+		$qf = $this->init_module('Libs/QuickForm');
+		$qf->addElement('hidden','id',null,array('id'=>'icecat_prod_id'));
+		$qf->addElement('hidden','item_name',null,array('id'=>'icecat_prod_nameh'));
+		$qf->addElement('static',null,$this->t('Item Name'),'<div id="icecat_prod_name" />');
+		$qf->addElement('text','upc',$this->t('UPC'),array('id'=>'icecat_prod_upc'));
+		$qf->addElement('text','product_code',$this->t('Product code'),array('id'=>'icecat_prod_code'));
+		$qf->addElement('text','manufacturer_part_number',$this->t('Part number'),array('id'=>'icecat_prod_part_num'));
+
+		$companies = CRM_ContactsCommon::get_companies(array('group'=>array('manufacturer')),array('company_name'));
+		$companies2 = array(''=>'---');
+		foreach($companies as $c) {
+			$companies2[$c['id']] = $c['company_name'];
+		}
+		$qf->addElement('select','manufacturer',$this->t('Manufacturer'),$companies2,array('id'=>'icecat_prod_manuf'));
+		
+		$qf->addElement('submit',null,$this->t('Zapisz'));
+		$qf->addFormRule(array($this,'check_icecat_fill'));
+		
+		if($qf->validate()) {
+			eval_js('leightbox_deactivate(\'icecat_fill_lb\');');
+			$vals = $qf->exportValues();
+			Utils_RecordBrowserCommon::update_record('premium_warehouse_items',$vals['id'],array('upc'=>$vals['upc'],'product_code'=>$vals['product_code'],'manufacturer_part_number'=>$vals['manufacturer_part_number'],'manufacturer'=>$vals['manufacturer']));
+		   	Premium_Warehouse_eCommerceCommon::publish_warehouse_item($vals['id']);
+		}
+
+		Libs_LeightboxCommon::display('icecat_fill_lb',$this->get_html_of_module($qf),'Icecat express fill');
+
 		$this->rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items');
 		$this->rb->set_default_order(array('item_name'=>'ASC'));
 		$this->rb->set_cut_lengths(array('item_name'=>50));
+		$this->rb->set_button(false);
+		$this->rb->disable_watchdog();
 			
 		$cols = array('quantity_on_hand'=>false,'quantity_en_route'=>false,'available_qty'=>false,'reserved_qty'=>false,'dist_qty'=>false,
-				'quantity_sold'=>false,'vendor'=>false,'manufacturer'=>true,'product_code'=>true,'upc'=>true);
+				'quantity_sold'=>false,'vendor'=>false,'manufacturer'=>true,'product_code'=>true,'upc'=>true,'gross_price'=>false);
 			
 		$this->rb->set_header_properties(array(
 						'manufacturer_part_number'=>array('name'=>'Part Number', 'width'=>1, 'wrapmode'=>'nowrap'),
 						'item_type'=>array('width'=>1, 'wrapmode'=>'nowrap'),
-						'gross_price'=>array('name'=>'Price','width'=>1, 'wrapmode'=>'nowrap'),
+//						'gross_price'=>array('name'=>'Price','width'=>1, 'wrapmode'=>'nowrap'),
 						'item_name'=>array('wrapmode'=>'nowrap'),
 						'sku'=>array('width'=>1, 'wrapmode'=>'nowrap')
 						));
 
-//		if(ModuleManager::is_installed('Premium_Warehouse_eCommerce')>=0)
-  		$this->rb->set_additional_actions_method(array('Premium_Warehouse_eCommerceCommon', 'warehouse_item_actions'));
+  		$this->rb->set_additional_actions_method(array($this,'icecat_fill_actions'));
 
-		$this->display_module($this->rb, array(array(),array('upc'=>'','(manufacturer_part_number'=>'', '|manufacturer'=>'','(product_code'=>'', '|manufacturer'=>''),$cols));
+		$this->display_module($this->rb, array(array(),Utils_RecordBrowserCommon::merge_crits(array('upc'=>'','(manufacturer_part_number'=>'', '|manufacturer'=>''),array('(product_code'=>'', '|manufacturer'=>'')),$cols));
+	}
+
+	public function check_icecat_fill($arg) {
+		if(!isset($arg['upc'])) $arg['upc'] = '';
+		if(!isset($arg['manufacturer'])) $arg['manufacturer'] = '';
+		if(!isset($arg['product_code'])) $arg['product_code'] = '';
+		if(!isset($arg['item_name'])) $arg['item_name'] = '';
+		if(!isset($arg['manufacturer_part_number'])) $arg['manufacturer_part_number'] = '';
+		if(!isset($arg['id']) || !is_numeric($arg['id'])) return array('upc'=>$this->t('Invalid request without ID. Hacker?'));
+		if(empty($arg['upc']) && 
+		    (empty($arg['manufacturer']) || empty($arg['product_code'])) && 
+		    (empty($arg['manufacturer']) || empty($arg['manufacturer_part_number']))
+		    ) {
+		    	eval_js('$(\'icecat_prod_id\').value=\''.$arg['id'].'\';'.
+					'$(\'icecat_prod_name\').innerHTML=\''.addcslashes($arg['item_name'],'\'\\').'\';'.
+					'$(\'icecat_prod_nameh\').value=\''.addcslashes($arg['item_name'],'\'\\').'\';'.
+					'$(\'icecat_prod_upc\').value=\''.addcslashes($arg['upc'],'\'\\').'\';'.
+					'$(\'icecat_prod_code\').value=\''.addcslashes($arg['product_code'],'\'\\').'\';'.
+					'$(\'icecat_prod_part_num\').value=\''.addcslashes($arg['manufacturer_part_number'],'\'\\').'\';'.
+					'$(\'icecat_prod_manuf\').value=\''.addcslashes($arg['manufacturer'],'\'\\').'\';');
+
+			return array('upc'=>'<span id="icecat_prod_err">'.$this->t('Please fill manufacturer and product code, or manufacturer and part number, or UPC').'</span>');
+		}
+		return true;
+	}
+	
+	public function icecat_fill_actions($r, $gb_row) {
+		$gb_row->add_action(Libs_LeightboxCommon::get_open_href('icecat_fill_lb').' id="icecat_button_'.$r['id'].'"','edit',$this->t('Click here to fill required data'));
+		$gb_row->add_js('Event.observe(\'icecat_button_'.$r['id'].'\',\'click\',function() {'.
+					'$(\'icecat_prod_id\').value=\''.$r['id'].'\';'.
+					'$(\'icecat_prod_name\').innerHTML=\''.addcslashes($r['item_name'],'\'\\').'\';'.
+					'$(\'icecat_prod_nameh\').value=\''.addcslashes($r['item_name'],'\'\\').'\';'.
+					'$(\'icecat_prod_upc\').value=\''.addcslashes($r['upc'],'\'\\').'\';'.
+					'$(\'icecat_prod_code\').value=\''.addcslashes($r['product_code'],'\'\\').'\';'.
+					'$(\'icecat_prod_part_num\').value=\''.addcslashes($r['manufacturer_part_number'],'\'\\').'\';'.
+					'$(\'icecat_prod_manuf\').value=\''.addcslashes($r['manufacturer'],'\'\\').'\';'.
+					'var err=$(\'icecat_prod_err\');if(err!=null)err.parentNode.parentNode.removeChild(err.parentNode);'.
+					'})');
 	}
 	
 	public function prices() {
