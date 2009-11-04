@@ -657,9 +657,11 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 		$this->rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items');
 		$this->rb->set_default_order(array('item_name'=>'ASC'));
 		$this->rb->set_cut_lengths(array('item_name'=>50));
+		
 		$this->rb->set_button(false);
 		$this->rb->disable_watchdog();
-			
+		$this->rb->disable_actions(array('delete'));
+					
 		$cols = array('quantity_on_hand'=>false,'quantity_en_route'=>false,'available_qty'=>false,'reserved_qty'=>false,'dist_qty'=>false,
 				'quantity_sold'=>false,'vendor'=>false,'manufacturer'=>true,'product_code'=>true,'upc'=>true,'gross_price'=>false);
 			
