@@ -635,7 +635,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 		$qf->addElement('text','product_code',$this->t('Product code'),array('id'=>'icecat_prod_code'));
 		$qf->addElement('text','manufacturer_part_number',$this->t('Part number'),array('id'=>'icecat_prod_part_num'));
 
-		$companies = CRM_ContactsCommon::get_companies(array('group'=>array('manufacturer')),array('company_name'));
+		$companies = CRM_ContactsCommon::get_companies(array('group'=>array('manufacturer')),array('company_name'),array('company_name'=>'ASC'));
 		$companies2 = array(''=>'---');
 		foreach($companies as $c) {
 			$companies2[$c['id']] = $c['company_name'];
