@@ -663,11 +663,14 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 		$this->rb->disable_actions(array('delete'));
 					
 		$cols = array('quantity_on_hand'=>false,'quantity_en_route'=>false,'available_qty'=>false,'reserved_qty'=>false,'dist_qty'=>false,
-				'quantity_sold'=>false,'vendor'=>false,'manufacturer'=>true,'product_code'=>true,'upc'=>true,'gross_price'=>false);
+				'quantity_sold'=>false,'vendor'=>false,'manufacturer'=>true,'product_code'=>true,'upc'=>true,'gross_price'=>false,'manufacturer_part_number'=>true);
 			
 		$this->rb->set_header_properties(array(
-						'manufacturer_part_number'=>array('name'=>'Part Number', 'width'=>1, 'wrapmode'=>'nowrap'),
-						'item_type'=>array('width'=>1, 'wrapmode'=>'nowrap'),
+						'manufacturer'=>array('width'=>25, 'wrapmode'=>'nowrap'),
+						'manufacturer_part_number'=>array('name'=>'Part Number', 'width'=>15, 'wrapmode'=>'nowrap'),
+						'product_code'=>array('width'=>15, 'wrapmode'=>'nowrap'),
+						'upc'=>array('width'=>20, 'wrapmode'=>'nowrap'),
+						'item_type'=>array('width'=>5, 'wrapmode'=>'nowrap'),
 //						'gross_price'=>array('name'=>'Price','width'=>1, 'wrapmode'=>'nowrap'),
 						'item_name'=>array('wrapmode'=>'nowrap'),
 						'sku'=>array('width'=>1, 'wrapmode'=>'nowrap')
