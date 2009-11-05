@@ -363,12 +363,12 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 						'display_name'=>substr((string)$obj->Product[0]['Name'],0,128),
 						'short_description'=>str_replace('\n','<br />',(string)(isset($obj->Product[0]->ProductDescription['ShortDesc'])?$obj->Product[0]->ProductDescription['ShortDesc']:$obj->Product[0]->ProductDescription[0])),
 						'long_description'=>str_replace('\n','<br />',(string)(isset($obj->Product[0]->ProductDescription['LongDesc'])?$obj->Product[0]->ProductDescription['LongDesc']:'')));
-			if($product_desc['display_name']=='') unset($product_desc['display_name']);
-			if($product_desc['short_description']=='') unset($product_desc['short_description']);
-			if($product_desc['long_description']=='') unset($product_desc['long_description']);
-			if(isset($descriptions[$code]))
+			if(isset($descriptions[$code])) {
+			    if($product_desc['display_name']=='') unset($product_desc['display_name']);
+			    if($product_desc['short_description']=='') unset($product_desc['short_description']);
+			    if($product_desc['long_description']=='') unset($product_desc['long_description']);
 			    Utils_RecordBrowserCommon::update_record('premium_ecommerce_descriptions',$descriptions[$code],$product_desc);
-			else
+			} else
 			    $descriptions[$code] = Utils_RecordBrowserCommon::new_record('premium_ecommerce_descriptions',$product_desc);
 
 			//parameters
