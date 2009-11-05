@@ -186,7 +186,7 @@ class Products
 	return $products;
   } // end function generateCache
 
-  function listProductsQuery($iContent,$aProducts) {
+  function listProductsQuery($iContent,$aProducts,&$sUrlExt) {
     $oPage  =& Pages::getInstance( );
     $query = '';
     if( !isset( $aProducts ) ){
@@ -260,7 +260,7 @@ class Products
     $content= null;
     $sUrlExt= null;
 
-    $query = $this->listProductsQuery($iContent,$aProducts);
+    $query = $this->listProductsQuery($iContent,$aProducts,$sUrlExt);
 
     if( $query ){
       $sBasketPage = ( isset( $GLOBALS['config']['basket_page'] ) && isset( $oPage->aPages[$GLOBALS['config']['basket_page']] ) ) ? $oPage->aPages[$GLOBALS['config']['basket_page']]['sLinkName'].((defined( 'FRIENDLY_LINKS' ) && FRIENDLY_LINKS == true)?'?':'&amp;') : null;
@@ -364,7 +364,7 @@ class Products
     $iColumns = 3;
     $iWidth   = (int) ( 100 / $iColumns );
 
-    $query = $this->listProductsQuery($iContent,$aProducts);
+    $query = $this->listProductsQuery($iContent,$aProducts,$sUrlExt);
     
     if( $query ){
       $sBasketPage = ( isset( $GLOBALS['config']['basket_page'] ) && isset( $oPage->aPages[$GLOBALS['config']['basket_page']] ) ) ? $oPage->aPages[$GLOBALS['config']['basket_page']]['sLinkName'].((defined( 'FRIENDLY_LINKS' ) && FRIENDLY_LINKS == true)?'?':'&amp;') : null;
