@@ -203,7 +203,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 	    $user = Variable::get('icecat_user');
 	    $pass = Variable::get('icecat_pass');
 	    if($user && $pass)
-	    	$icecat = array('Icecat express'=>array('__function__'=>'icecat_fill'));
+	    	$icecat = array('Express publish'=>array('__function__'=>'icecat_fill'));
 	    else
 	    	$icecat = array();
 	    return array('Warehouse'=>array(
@@ -531,16 +531,10 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 		Utils_RecordBrowserCommon::update_record('premium_ecommerce_products',$id,array('publish'=>$v?1:0));
 	}
 	
-	public static function publish_warehouse_item($id) {
+	public static function publish_warehouse_item($id,$icecat=true) {
 		Utils_RecordBrowserCommon::new_record('premium_ecommerce_products',array('item_name'=>$id,'publish'=>1,'available'=>1));
-    		Premium_Warehouse_eCommerceCommon::icecat_sync($id,false);
-		$r = Utils_RecordBrowserCommon::get_record('premium_warehouse_items',$id);
-		if($r['net_price']=='') return;
-		$price = Utils_CurrencyFieldCommon::get_values($r['net_price']);
-		if($price[0]=='') return;
-		$p = round(($price[0]*(100+Data_TaxRatesCommon::get_tax_rate($r['tax_rate'])))/100,Utils_CurrencyFieldCommon::get_precission($price[1]));
-		$c = $price[1];
-	        Utils_RecordBrowserCommon::new_record('premium_ecommerce_prices', array('item_name'=>$id, 'currency'=>$c, 'gross_price'=>$p,'tax_rate'=>$r['tax_rate']));
+		if($icecat)
+	    		Premium_Warehouse_eCommerceCommon::icecat_sync($id,false);
 	}
 	
 

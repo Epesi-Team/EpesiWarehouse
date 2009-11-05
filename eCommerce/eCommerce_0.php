@@ -641,6 +641,8 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 			$companies2[$c['id']] = $c['company_name'];
 		}
 		$qf->addElement('select','manufacturer',$this->t('Manufacturer'),$companies2,array('id'=>'icecat_prod_manuf'));
+
+		$qf->addElement('checkbox','skip',$this->t('Publish without getting icecat data'),'',array('id'=>'icecat_prod_skip'));
 		
 		$qf->addElement('submit',null,$this->t('Zapisz'));
 		$qf->addFormRule(array($this,'check_icecat_fill'));
@@ -649,7 +651,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 			eval_js('leightbox_deactivate(\'icecat_fill_lb\');');
 			$vals = $qf->exportValues();
 			Utils_RecordBrowserCommon::update_record('premium_warehouse_items',$vals['id'],array('upc'=>$vals['upc'],'product_code'=>$vals['product_code'],'manufacturer_part_number'=>$vals['manufacturer_part_number'],'manufacturer'=>$vals['manufacturer']));
-		   	Premium_Warehouse_eCommerceCommon::publish_warehouse_item($vals['id']);
+		   	Premium_Warehouse_eCommerceCommon::publish_warehouse_item($vals['id'],!(isset($vals['skip']) && $vals['skip']));
 		}
 
 		Libs_LeightboxCommon::display('icecat_fill_lb',$this->get_html_of_module($qf),'Icecat express fill');
@@ -677,11 +679,14 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 						));
 
   		$this->rb->set_additional_actions_method(array($this,'icecat_fill_actions'));
-
-		$this->display_module($this->rb, array(array(),Utils_RecordBrowserCommon::merge_crits(array('upc'=>'','(manufacturer_part_number'=>'', '|manufacturer'=>''),array('(product_code'=>'', '|manufacturer'=>'')),$cols));
+		
+		$crits = array('!id'=>Utils_RecordBrowserCommon::get_possible_values('premium_ecommerce_products','item_name'));
+		$this->display_module($this->rb, array(array(),$crits,$cols));
+//		Utils_RecordBrowserCommon::merge_crits(array('upc'=>'','(manufacturer_part_number'=>'', '|manufacturer'=>''),array('(product_code'=>'', '|manufacturer'=>''))
 	}
 
 	public function check_icecat_fill($arg) {
+		if(isset($arg['skip']) && $arg['skip']) return true;
 		if(!isset($arg['upc'])) $arg['upc'] = '';
 		if(!isset($arg['manufacturer'])) $arg['manufacturer'] = '';
 		if(!isset($arg['product_code'])) $arg['product_code'] = '';
@@ -700,7 +705,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 					'$(\'icecat_prod_part_num\').value=\''.addcslashes($arg['manufacturer_part_number'],'\'\\').'\';'.
 					'$(\'icecat_prod_manuf\').value=\''.addcslashes($arg['manufacturer'],'\'\\').'\';');
 
-			return array('upc'=>'<span id="icecat_prod_err">'.$this->t('Please fill manufacturer and product code, or manufacturer and part number, or UPC').'</span>');
+			return array('upc'=>'<span id="icecat_prod_err">'.$this->t('Please fill manufacturer and product code, or manufacturer and part number, or UPC, or skip gettin icecat data.').'</span>');
 		}
 		return true;
 	}
@@ -715,6 +720,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 					'$(\'icecat_prod_code\').value=\''.addcslashes($r['product_code'],'\'\\').'\';'.
 					'$(\'icecat_prod_part_num\').value=\''.addcslashes($r['manufacturer_part_number'],'\'\\').'\';'.
 					'$(\'icecat_prod_manuf\').value=\''.addcslashes($r['manufacturer'],'\'\\').'\';'.
+					'$(\'icecat_prod_skip\').checked=false;'.
 					'var err=$(\'icecat_prod_err\');if(err!=null)err.parentNode.parentNode.removeChild(err.parentNode);'.
 					'})');
 	}
