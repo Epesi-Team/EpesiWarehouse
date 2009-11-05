@@ -43,8 +43,7 @@ function listProductsCompare( $sFile, $sBlock ){
       $aData['sPagesOnet'] = preg_replace( '/&nbsp;&raquo;&nbsp;/', ' &gt; ', strip_tags( $GLOBALS['oProduct']->throwProductsPagesTree( $aData['aCategories'] ) ) );
       $aData['sDescriptionShort'] = changeTxt( $aData['sDescriptionShort'], 'nlNds' );
 
-      if( isset( $oFile->aImagesDefault[2][$aData['iProduct']] ) ){
-        $aDataImage = $oFile->aFilesImages[2][$oFile->aImagesDefault[2][$aData['iProduct']]];
+      if( $aDataImage = $oFile->throwDefaultImage($aData['iProduct'],2) ) {
         $oTpl->setVariables( 'aDataImage', $aDataImage );
         $aData['sImage'] = $oTpl->tbHtml( $sFile, $sBlock.'_LIST_IMAGE' );
       }

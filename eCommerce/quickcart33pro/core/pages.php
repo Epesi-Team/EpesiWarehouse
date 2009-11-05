@@ -271,8 +271,7 @@ class Pages
 
         $oTpl->setVariables( 'aData', $aData );
 
-        if( isset( $oFile ) && isset( $oFile->aImagesDefault[1][$aData['iPage']] ) ){
-          $aDataImage = $oFile->aFilesImages[1][$oFile->aImagesDefault[1][$aData['iPage']]];
+        if( isset( $oFile ) && ($aDataImage = $oFile->throwDefaultImage($aData['iPage'],1)) ){
           $oTpl->setVariables( 'aDataImage', $aDataImage );
           $aData['sImage'] = $oTpl->tbHtml( $sFile, 'SUBPAGES_IMAGE_'.$iType );
         }
@@ -342,7 +341,7 @@ class Pages
 	//companies - id mod 4 == 1
 	$query = 'SELECT c.id, c.f_company_name
 			FROM premium_warehouse_items_data_1 i INNER JOIN (company_data_1 c,premium_ecommerce_products_data_1 d) 
-			ON (c.id=i.f_manufacturer AND d.f_item_name=i.id AND d.active=1)
+			ON (c.id=i.f_manufacturer AND d.f_item_name=i.id AND d.active=1 AND d.publish=1)
 			WHERE i.active=1';
 			
 	$x = DB::GetAll($query);
@@ -573,8 +572,7 @@ class Pages
 
         $oTpl->setVariables( 'aData', $aData );
 
-        if( isset( $oFile->aImagesDefault[1][$aData['iPage']] ) ){
-          $aDataImage = $oFile->aFilesImages[1][$oFile->aImagesDefault[1][$aData['iPage']]];
+        if($aDataImage = $oFile->throwDefaultImage($aData['iPage'],1)){
           $oTpl->setVariables( 'aDataImage', $aDataImage );
           $aData['sImage'] = $oTpl->tbHtml( $sFile, 'SUBPAGES_GALLERY_IMAGE' );
         }
@@ -645,8 +643,7 @@ class Pages
 
         $oTpl->setVariables( 'aData', $aData );
 
-        if( isset( $oFile->aImagesDefault[1][$aData['iPage']] ) ){
-          $aDataImage = $oFile->aFilesImages[1][$oFile->aImagesDefault[1][$aData['iPage']]];
+        if($aDataImage = $oFile->throwDefaultImage($aData['iPage'],1)){
           $oTpl->setVariables( 'aDataImage', $aDataImage );
           $aData['sImage'] = $oTpl->tbHtml( $sFile, 'SUBPAGES_IMAGE_'.$iType );
         }

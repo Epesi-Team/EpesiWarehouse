@@ -13,15 +13,27 @@
 	<span class="next">$sNextProduct</span>
   <h4>$aData[sPages]</h4>
   <div id="images_and_price">
-	$aImages[3]
-	$aImages[1]
-	$aImages[2]
-	<div id="box">
-		$sPrice
-		$sAvailable
-		$sBasket
-		<font color="black">$aData[sSku]</font>
-	</div>
+	<table border="0" cellspacing="0" cellpadding="0">
+		<tbody>
+			<tr>
+				<td>
+					<div id="images">
+						$aImages[3]
+						$aImages[1]
+						$aImages[2]
+					</div>
+				</td>
+				<td>
+					<div id="box">
+						$sPrice
+						$sAvailable
+						$sBasket
+						<font color="black">$aData[sSku]</font>
+					</div>
+				</td>
+			</tr>
+		</tbody>
+	</table>
   </div>
   <div class="content" id="productDescription">$aData[sDescriptionFull]</div><a id="more-less" onClick="more_less('productDescription')" href="#product"><span class="more">$lang['More'] &gt;&gt;&gt;</span><span class="less" style="display:none">$lang['Less'] &lt;&lt;&lt;&lt;</span></a>
   <div class="sFeatures">$sFeatures</div>

@@ -18,14 +18,6 @@ class Files
   } // end function getInstance
 
   /**
-  * Constructor
-  * @return void
-  */
-  function Files( ){
-    $this->generateCache( );
-  } // end function Files
-
-  /**
   * List all images by types
   * @return array
   * @param string $sFile
@@ -33,6 +25,7 @@ class Files
   * @param int    $iLinkType
   */
   function listImagesByTypes( $sFile, $iLink, $iLinkType = 1 ){
+    $this->getFiles($iLink,$iLinkType);
     if( isset( $this->aImagesTypes[$iLinkType][$iLink] ) ){
       $aReturn  = Array( 1 => null, null, null, null );
       $oTpl     =& TplParser::getInstance( );
@@ -75,6 +68,7 @@ class Files
   * @param int    $iLinkType
   */
   function listFiles( $sFile, $iLink, $iLinkType = 1 ){
+    $this->getFiles($iLink,$iLinkType);
     $content = null;
     if( isset( $this->aFiles[$iLinkType][$iLink] ) ){
       $oTpl   =& TplParser::getInstance( );
@@ -115,65 +109,25 @@ class Files
   * @param int  $iLinkType
   */
   function throwDefaultImage( $iLink, $iLinkType ){
+    $this->getFiles($iLink,$iLinkType);
     if( isset( $this->aImagesDefault[$iLinkType][$iLink] ) )
       return $this->aFilesImages[$iLinkType][$this->aImagesDefault[$iLinkType][$iLink]];
+    return false;
   } // end function throwDefaultImage
 
   /**
   * Generate cache variables
   * @return void
   */
-  function generateCache( ){
+  function getFiles( $product ,$iKey){
     global $config;
-/*
-    $oFF    =& FlatFiles::getInstance( );
-    $aFiles = $this->throwDbNames( );
+    static $cache;
+    if(!isset($cache))
+    	$cache = array();
+    if(isset($cache[$product][$iKey]))
+    	return;
+    $cache[$product][$iKey] = 1;
 
-    foreach( $aFiles as $iKey => $sValue ){
-      if( $iKey == 1 ){
-        $iSize1 = 0;
-        $iSize2 = 0;
-      }
-
-      $this->aImages[$iKey]     = null;
-      $this->aFiles[$iKey]      = null;
-      $this->aImagesTypes[$iKey]= null;
-
-      if( is_file( $sValue ) ){
-        $aFile      = file( $sValue );
-        $iCount     = count( $aFile );
-        $sFunction  = $oFF->throwFunctionName( $sValue );
-        for( $i = 1; $i < $iCount; $i++ ){
-          $aExp = explode( '$', $aFile[$i] );
-
-          $this->aFilesImages[$iKey][$aExp[0]] = $sFunction( $aExp );
-
-          if( !empty( $aExp[4] ) && $aExp[4] == 1 ){
-            if( !isset( $this->aImagesDefault[$iKey][$aExp[1]] ) )
-              $this->aImagesDefault[$iKey][$aExp[1]] = $aExp[0];
-
-            $this->aImages[$iKey][$aExp[1]][] = $aExp[0];
-
-            if( !is_numeric( $this->aFilesImages[$iKey][$aExp[0]]['iSize1'] ) ){
-              $this->aFilesImages[$iKey][$aExp[0]]['iSize1'] = $iSize1;
-            }
-            if( !is_numeric( $this->aFilesImages[$iKey][$aExp[0]]['iSize2'] ) )
-              $this->aFilesImages[$iKey][$aExp[0]]['iSize2'] = $iSize2;
-
-            $this->aFilesImages[$iKey][$aExp[0]]['iSizeValue1'] = $config['pages_images_sizes'][$this->aFilesImages[$iKey][$aExp[0]]['iSize1']];
-            $this->aFilesImages[$iKey][$aExp[0]]['iSizeValue2'] = $config['pages_images_sizes'][$this->aFilesImages[$iKey][$aExp[0]]['iSize2']];
-
-            $this->aImagesTypes[$iKey][$aExp[1]][$aExp[6]][] = $aExp[0];
-          }
-          else{
-            $this->aFiles[$iKey][$aExp[1]][] = $aExp[0];
-          }
-
-        }
-      }
-    }
-    */
-    // { epesi
     //pages
     $this->aImages[1]     = null;
     $this->aFiles[1]      = null;
@@ -184,28 +138,29 @@ class Files
     $this->aFiles[2]      = null;
     $this->aImagesTypes[2]= null;
     
+    if($iKey==1) {
+    	$id = ($product-2)/4;
+    	$where = 'ual.local=CONCAT(\'Premium/Warehouse/eCommerce/Pages/\',%d) OR ual.local=CONCAT(\'Premium/Warehouse/eCommerce/PagesDesc/\',%s,\'/\',%d)';
+    } else {
+    	$id = $product;
+    	$where = 'ual.local=CONCAT(\'Premium/Warehouse/eCommerce/Products/\',%d) OR ual.local=CONCAT(\'Premium/Warehouse/eCommerce/ProductsDesc/\',%s,\'/\',%d)';
+    }
+    
     $ret = DB::Execute('SELECT ual.id,ual.local, f.original, ual.sticky, f.revision, d.text
 			FROM utils_attachment_link ual 
 			INNER JOIN utils_attachment_file f ON (f.attach_id=ual.id AND f.revision=(SELECT max(revision) FROM utils_attachment_file WHERE attach_id=ual.id)) 
 			INNER JOIN utils_attachment_note d ON (d.attach_id=ual.id AND d.revision=(SELECT max(revision) FROM utils_attachment_note WHERE attach_id=ual.id)) 
-			WHERE ual.deleted=0 AND ual.local LIKE \'Premium/Warehouse/eCommerce/%\'');
+			WHERE ual.deleted=0 AND ('.$where.')',array($id,LANGUAGE,$id));
     $th_size = $config['default_image_size'];
     
+    $isDuplicateFile = array();
     while($row = $ret->FetchRow()) {
+    	if(isset($isDuplicateFile[$row['original']]))
+    		continue;
+    	$isDuplicateFile[$row['original']] = 1;
 	$ext = strrchr($row['original'],'.');
 	if(!file_exists('files/epesi/'.$row['id'].'_'.$row['revision'].$ext)) continue;
 	$photo = preg_match('/^\.(jpg|jpeg|gif|png|bmp)$/i',$ext);
-	$product = basename($row['local']);
-	if(preg_match('/^Premium\/Warehouse\/eCommerce\/Products/',$row['local'])) {
-	    $iKey = 2;
-	    if(preg_match('/^Premium\/Warehouse\/eCommerce\/ProductsDesc/',$row['local'])) {
-		$lang = basename(dirname($row['local']));
-		if($lang!=LANGUAGE) continue;
-	    }
-	} else {
-	    $iKey = 1;
-	    $product = $product*4+2;
-	}	    
 	$type = 2; // ??????????
 	$this->aFilesImages[$iKey][$row['id']] = array( 'iFile' => $row['id'], 'iProduct' => $product, 'sFileName' => 'epesi/'.$row['id'].'_'.$row['revision'].$ext, 'sDescription' => $row['text'], 'iPhoto' => $photo, 'iPosition' => 0, 'iType' =>$type, 'iSize1' => $th_size, 'iSize2' => $th_size );
 
@@ -225,8 +180,6 @@ class Files
             $this->aFiles[$iKey][$product][] = $row['id'];
           }
     }
-    // } epesi
-
   } // end function generateCache
 
   /**
@@ -238,6 +191,7 @@ class Files
   * @param int    $iType
   */
   function listGalleryImages( $sFile, $iLink, $iLinkType, $iType ){
+    $this->getFiles($iLink,$iLinkType);
     $aImages  = $this->aImagesTypes[$iLinkType][$iLink][$iType];
     $iCount   = count( $aImages );
     $iColumns = 3;

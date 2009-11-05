@@ -306,8 +306,7 @@ class Products
 
         $oTpl->setVariables( 'aData', $aData );
 
-        if( isset( $oFile->aImagesDefault[2][$aData['iProduct']] ) ){
-          $aDataImage = $oFile->aFilesImages[2][$oFile->aImagesDefault[2][$aData['iProduct']]];
+        if($aDataImage = $oFile->throwDefaultImage($aData['iProduct'],2)){
           $oTpl->setVariables( 'aDataImage', $aDataImage );
           $aData['sImage'] = $oTpl->tbHtml( $sFile, 'PRODUCTS_IMAGE' );
         }
@@ -418,8 +417,7 @@ class Products
 
         $oTpl->setVariables( 'aData', $aData );
 
-        if( isset( $oFile->aImagesDefault[2][$aData['iProduct']] ) ){
-          $aDataImage = $oFile->aFilesImages[2][$oFile->aImagesDefault[2][$aData['iProduct']]];
+        if($aDataImage = $oFile->throwDefaultImage($aData['iProduct'],2)){
           $oTpl->setVariables( 'aDataImage', $aDataImage );
           $aData['sImage'] = $oTpl->tbHtml( $sFile, 'PRODUCTS_IMAGE' );
         }

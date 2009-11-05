@@ -308,7 +308,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 
 
 		$got_data = false;
-		set_time_limit(count($langs)*60);
+		set_time_limit(0);
 		foreach($langs as $code=>$name) {
 		    $url = 'http://data.icecat.biz/xml_s3/xml_server3.cgi?'.http_build_query($query_arr+array('lang'=>$code,'output'=>'productxml'));
 		    $c = curl_init();
@@ -431,7 +431,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 					$pic[] = $pp['Pic'];
 				}
 			$old_pics = array();
-			$ooo = Utils_AttachmentCommon::get('Premium/Warehouse/eCommerce/ProductsDesc/'.$code.'/'.$item_id);
+			$ooo = Utils_AttachmentCommon::get('Premium/Warehouse/eCommerce/Products/'.$item_id);
 			if(is_array($ooo))
 				foreach($ooo as $oo) {
 					$old_pics[$oo['original']] = 1;
@@ -454,7 +454,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 
 				if($response_code==200) {
 					file_put_contents($temp_file,$response);
-					Utils_AttachmentCommon::add('Premium/Warehouse/eCommerce/ProductsDesc/'.$code.'/'.$item_id,
+					Utils_AttachmentCommon::add('Premium/Warehouse/eCommerce/Products/'.$item_id,
 							    0,Acl::get_user(),'',$base_pp,$temp_file,null,null,array('Premium_Warehouse_eCommerceCommon','copy_attachment'));
 				}
 				@unlink($temp_file);
