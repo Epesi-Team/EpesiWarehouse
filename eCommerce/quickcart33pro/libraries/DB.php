@@ -1,12 +1,14 @@
 <?php
 /**
-* FlatFiles
-* @access   public 
-* @version  0.3.0
-* @require  FileJobs
-* @require  Trash
-*/
-
+ * Database file
+ * 
+ * This file defines class that maintains database connection.
+ * @author Paul Bukowski <pbukowski@telaxus.com>
+ * @copyright Copyright &copy; 2006, Telaxus LLC
+ * @version 1.0
+ * @license SPL
+ * @package epesi-base
+ */
 define('_VALID_ACCESS',1);
 require_once(EPESI_DATA_DIR.'/config.php');
 @include_once(EPESI_DATA_DIR.'/Base_Lang/'.LANGUAGE.'.php');
@@ -40,6 +42,7 @@ class DB {
     			trigger_error("Connect to database failed",E_USER_ERROR);
 //  		DB::$ado->raiseErrorFn = $errh;
 		DB::Execute('SET NAMES "utf8"');
+	//        DB::Execute('SET CHARACTER SET utf8');
 	}
 
 	/**
@@ -74,7 +77,8 @@ class DB {
 	
 	public static function CreateTable($name, $cols, $opts=null) {
 		$dict = &self::dict();
-		$arr = $dict->CreateTableSQL($name,$cols,isset($opts)?array_merge($opts,array('postgres'=>' WITH OIDS','mysql' => ' TYPE=InnoDB')):array('postgres'=>' WITH OIDS','mysql' => ' TYPE=InnoDB'));
+		$def_opts = array('postgres'=>' WITH OIDS','mysql' => ' TYPE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci');
+		$arr = $dict->CreateTableSQL($name,$cols,isset($opts)?array_merge($def_opts,$opts):$def_opts);
 		if($arr===false) return false;
 		$ret = $dict->ExecuteSQLArray($arr);
 		if($ret != 2) trigger_error(var_dump($arr).'\n'.self::ErrorMsg().'\n', E_USER_ERROR); 
@@ -104,7 +108,7 @@ class DB {
 
 		if (isset($arr) && !is_array($arr))
 			$arr = array($arr);
-
+	
 		$ret = '';
 		$j=0;
 		foreach($x as $y) {
@@ -132,7 +136,7 @@ class DB {
 					$ret .= '?';
 					break;
 				case '%s' :
-					if (!is_null($arr[$j]))
+					if (!is_null($arr[$j])) 
 						$arr[$j] = (string)$arr[$j];
 					$j++;
 					$ret .= '?';
@@ -908,6 +912,6 @@ return $ret;
 
 }
 
-set_magic_quotes_runtime(false);
+@set_magic_quotes_runtime(false);
 DB::connect();
 ?>
