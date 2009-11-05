@@ -375,8 +375,6 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	public static function check_no_empty_invoice($data) {
 		if (isset($data['receipt']) && $data['receipt']) return true;
 		$ret = array();
-		if (isset($data['last_name'])) $data['last_name'] = trim($data['last_name']);
-		if (isset($data['first_name'])) $data['first_name'] = trim($data['first_name']);
 		if (!isset($data['last_name']) || !$data['last_name']) $ret['last_name'] = 'Field required for non-receipt transactions'; 
 		if (!isset($data['first_name']) || !$data['first_name']) $ret['first_name'] = 'Field required for non-receipt transactions'; 
 		if (!isset($data['address_1']) || !$data['address_1']) $ret['address_1'] = 'Field required for non-receipt transactions'; 
@@ -1100,7 +1098,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 							'tax_id'=>$values['tax_id']
 						));
 				}
-				if ($values['contact']==0 && $values['last_name']) {
+				if ($values['contact']==0 && trim($values['last_name']) && trim($values['first_name'])) {
 					$values['contact'] = Utils_RecordBrowserCommon::new_record('contact',
 						array(
 							'first_name'=>$values['first_name'],
