@@ -402,25 +402,30 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 			foreach($parameter_labels_tmp as $rr)
 			    $parameter_labels[$rr['parameter']] = $rr['id'];
 			
-			foreach($obj->Product[0]->ProductFeature as $pf) {
-			    $key = 'icecat_'.$pf->Feature[0]['ID'];
-			    if(!isset($parameters[$key]))
-			        $parameters[$key] = Utils_RecordBrowserCommon::new_record('premium_ecommerce_parameters',array('parameter_code'=>$key));
-			    if(!isset($parameter_labels[$parameters[$key]])) {
-				$parameter_label = array('parameter'=>$parameters[$key],
+			if(!empty($obj->Product[0]->ProductFeature)) {
+				foreach($obj->Product[0]->ProductFeature as $pf) {
+				    $key = 'icecat_'.$pf->Feature[0]['ID'];
+				    if(!isset($parameters[$key]))
+				        $parameters[$key] = Utils_RecordBrowserCommon::new_record('premium_ecommerce_parameters',array('parameter_code'=>$key));
+				    if(!isset($parameter_labels[$parameters[$key]])) {
+					$parameter_label = array('parameter'=>$parameters[$key],
+								'language'=>$code,
+								'label'=>substr(str_replace('\n','<br>',(string)$pf->Feature[0]->Name[0]['Value']),0,128));
+					$parameter_labels[$parameters[$key]] = Utils_RecordBrowserCommon::new_record('premium_ecommerce_parameter_labels',$parameter_label);
+				    }
+				    $item_params = array('item_name'=>$item_id,
+							'parameter'=>$parameters[$key],
+							'group'=>$parameter_groups['icecat_'.$pf['CategoryFeatureGroup_ID']],
 							'language'=>$code,
-							'label'=>substr(str_replace('\n','<br>',(string)$pf->Feature[0]->Name[0]['Value']),0,128));
-				$parameter_labels[$parameters[$key]] = Utils_RecordBrowserCommon::new_record('premium_ecommerce_parameter_labels',$parameter_label);
-			    }
-			    $item_params = array('item_name'=>$item_id,
-						'parameter'=>$parameters[$key],
-						'group'=>$parameter_groups['icecat_'.$pf['CategoryFeatureGroup_ID']],
-						'language'=>$code,
-						'value'=>substr(str_replace('\n','<br />',(string)$pf['Presentation_Value']),0,256));
-			    if(isset($item_parameters[$parameters[$key]]))
-				Utils_RecordBrowserCommon::update_record('premium_ecommerce_products_parameters',$item_parameters[$parameters[$key]],$item_params);
-			    else
-				$item_parameters[$parameters[$key]] = Utils_RecordBrowserCommon::new_record('premium_ecommerce_products_parameters',$item_params);
+							'value'=>substr(str_replace('\n','<br />',(string)$pf['Presentation_Value']),0,256));
+				    if(isset($item_parameters[$parameters[$key]])) {
+					Utils_RecordBrowserCommon::update_record('premium_ecommerce_products_parameters',$item_parameters[$parameters[$key]],$item_params);
+					unset($item_parameters[$parameters[$key]]);
+				    } else
+					Utils_RecordBrowserCommon::new_record('premium_ecommerce_products_parameters',$item_params);
+				}
+				foreach($item_parameters as $pf=>$pf_id)
+					Utils_RecordBrowserCommon::delete_record('premium_ecommerce_products_parameters',$pf_id,true);
 			}
 
 			//picture
@@ -437,7 +442,8 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 			$ooo = Utils_AttachmentCommon::get('Premium/Warehouse/eCommerce/Products/'.$item_id);
 			if(is_array($ooo))
 				foreach($ooo as $oo) {
-					$old_pics[$oo['original']] = 1;
+					if(!$oo['text'])
+						$old_pics[$oo['original']] = $oo['id'];
 				}
 			foreach($pic as $pp) {
 			    $base_pp = basename($pp);
@@ -452,8 +458,6 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 		    		$response_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 				curl_close ($ch);
 //				fclose($fp);
-				//TODO: sprobowac bez pliku docelowego, na stdout i fileputcontents
-				
 
 				if($response_code==200) {
 					file_put_contents($temp_file,$response);
@@ -461,8 +465,12 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 							    0,Acl::get_user(),'',$base_pp,$temp_file,null,null,array('Premium_Warehouse_eCommerceCommon','copy_attachment'));
 				}
 				@unlink($temp_file);
+			    } else {
+			    	unset($old_pics[$base_pp]);
 			    }
 			}
+			Utils_AttachmentCommon::persistent_mass_delete('Premium/Warehouse/eCommerce/Products/'.$item_id,false,$old_pics);
+			Utils_AttachmentCommon::persistent_mass_delete('Premium/Warehouse/eCommerce/ProductsDesc/'.$code.'/'.$item_id);
 		    }
 		}
 		if($got_data)

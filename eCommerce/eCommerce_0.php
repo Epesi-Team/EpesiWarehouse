@@ -857,6 +857,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 		$a->allow_protected($this->acl_check('view protected notes'),$this->acl_check('edit protected notes'));
 		$a->allow_public($this->acl_check('view public notes'),$this->acl_check('edit public notes'));
 		$a->set_add_func(array('Premium_Warehouse_eCommerceCommon','copy_attachment'));
+		$a->set_persistent_delete();
 		$this->display_module($a);
 	}
 
@@ -865,6 +866,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 		$a->allow_protected($this->acl_check('view protected notes'),$this->acl_check('edit protected notes'));
 		$a->allow_public($this->acl_check('view public notes'),$this->acl_check('edit public notes'));
 		$a->set_add_func(array('Premium_Warehouse_eCommerceCommon','copy_attachment'));
+		$a->set_persistent_delete();
 		$this->display_module($a);
 	}
 
