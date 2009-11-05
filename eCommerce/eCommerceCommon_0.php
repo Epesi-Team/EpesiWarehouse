@@ -306,7 +306,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 		    $parameter_groups[$rr['group_code']] = $rr['id'];
 		unset($parameter_groups_tmp);
 
-
+		$langs = array('pl'=>'Polish');
 		$got_data = false;
 		set_time_limit(0);
 		foreach($langs as $code=>$name) {
@@ -469,7 +469,8 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 			    	unset($old_pics[$base_pp]);
 			    }
 			}
-			Utils_AttachmentCommon::persistent_mass_delete('Premium/Warehouse/eCommerce/Products/'.$item_id,false,$old_pics);
+			if(!empty($old_pics))
+				Utils_AttachmentCommon::persistent_mass_delete('Premium/Warehouse/eCommerce/Products/'.$item_id,false,array_values($old_pics));
 			Utils_AttachmentCommon::persistent_mass_delete('Premium/Warehouse/eCommerce/ProductsDesc/'.$code.'/'.$item_id);
 		    }
 		}
