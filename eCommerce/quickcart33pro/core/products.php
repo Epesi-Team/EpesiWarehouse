@@ -203,8 +203,8 @@ class Products
 	$query = '0';
 	$query_features = '0';
 	foreach($aWords as $w) {
-		$query .= ' OR it.f_sku LIKE \'%'.DB::addq($w).'%\' OR it.f_product_code LIKE \'%'.DB::addq($w).'%\' OR it.f_upc LIKE \'%'.DB::addq($w).'%\' OR it.f_item_name LIKE \'%'.DB::addq($w).'%\' OR d.f_display_name LIKE \'%'.DB::addq($w).'%\' OR d.f_long_description LIKE \'%'.DB::addq($w).'%\' OR d.f_short_description LIKE \'%'.DB::addq($w).'%\'';
-		$query_features .= ' OR pp.f_value LIKE \'%'.DB::addq($w).'%\'';
+		$query .= ' OR it.f_sku LIKE \'%%'.DB::addq($w).'%%\' OR it.f_product_code LIKE \'%%'.DB::addq($w).'%%\' OR it.f_upc LIKE \'%%'.DB::addq($w).'%%\' OR it.f_item_name LIKE \'%%'.DB::addq($w).'%%\' OR d.f_display_name LIKE \'%%'.DB::addq($w).'%%\' OR d.f_long_description LIKE \'%%'.DB::addq($w).'%%\' OR d.f_short_description LIKE \'%%'.DB::addq($w).'%%\'';
+		$query_features .= ' OR pp.f_value LIKE \'%%'.DB::addq($w).'%%\'';
 	}
 	$ret_features = DB::GetCol('SELECT pp.f_item_name
 						FROM premium_ecommerce_products_parameters_data_1 pp

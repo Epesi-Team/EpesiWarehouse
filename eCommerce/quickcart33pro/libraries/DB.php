@@ -108,6 +108,10 @@ class DB {
 		$ret = '';
 		$j=0;
 		foreach($x as $y) {
+			if(!isset($arr[$j])) {
+				$ret .= $y;
+				continue;
+			}
 			switch ($y) {
 				case '%d' :
 					if (!is_null($arr[$j])) {
