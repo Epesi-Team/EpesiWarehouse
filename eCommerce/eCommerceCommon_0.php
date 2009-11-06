@@ -461,10 +461,13 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 
 				if($response_code==200) {
 					file_put_contents($temp_file,$response);
+					$temp_file2 = Utils_ImageCommon::create_thumb($temp_file,800,600);
+					$temp_file2 = $temp_file2['thumb'];
 					Utils_AttachmentCommon::add('Premium/Warehouse/eCommerce/Products/'.$item_id,
-							    0,Acl::get_user(),'',$base_pp,$temp_file,null,null,array('Premium_Warehouse_eCommerceCommon','copy_attachment'));
+							    0,Acl::get_user(),'',$base_pp,$temp_file2,null,null,array('Premium_Warehouse_eCommerceCommon','copy_attachment'));
+					@unlink($temp_file2);
+					@unlink($temp_file);
 				}
-				@unlink($temp_file);
 			    } else {
 			    	unset($old_pics[$base_pp]);
 			    }
