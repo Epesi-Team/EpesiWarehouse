@@ -264,23 +264,24 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 		$query_arr = array();
 		if($item['upc']) {
 		    $query_arr['ean_upc'] = $item['upc'];
-		} else {
-    		    $prod_id = $item['manufacturer_part_number'];
-		    if(!$prod_id)
+		} 
+    		$prod_id = $item['manufacturer_part_number'];
+		if(!$prod_id)
     			$prod_id = $item['product_code'];
-		    if(!$prod_id) {
+		if(!$prod_id && !isset($query_arr['ean_upc'])) {
 			if($verbose)
     				Epesi::alert("Missing product code or manufacturer part number.");
 			return false;		
-		    }
-		    if(!$item['manufacturer']) {
+		}
+		if(!$item['manufacturer'] && !isset($query_arr['ean_upc'])) {
 			if($verbose)
 				Epesi::alert("Missing product manufacturer.");
 			return false;		
-		    }
-		    $manufacturer = CRM_ContactsCommon::get_company($item['manufacturer']);
-		    $query_arr['prod_id'] = $prod_id;
-		    $query_arr['manufacturer'] = $manufacturer['company_name'];
+		}
+		if($item['manufacturer'] && $prod_id) {
+			$manufacturer = CRM_ContactsCommon::get_company($item['manufacturer']);
+			$query_arr['prod_id'] = $prod_id;
+			$query_arr['vendor'] = $manufacturer['company_name'];
 		}
 		
 		$langs = Utils_CommonDataCommon::get_array('Premium/Warehouse/eCommerce/Languages');
@@ -306,7 +307,6 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 		    $parameter_groups[$rr['group_code']] = $rr['id'];
 		unset($parameter_groups_tmp);
 
-		$langs = array('pl'=>'Polish');
 		$got_data = false;
 		set_time_limit(0);
 		foreach($langs as $code=>$name) {
