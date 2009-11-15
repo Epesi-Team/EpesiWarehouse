@@ -577,20 +577,70 @@ html, body, #container, #main, #body, #content {
 #orderedProducts thead em{padding:0 4px 0 0;font-style:normal;}
 #orderedProducts tbody th{text-align:left;}
 #orderedProducts tbody th a{background:inherit;color:#915a3c;}
-#orderedProducts tbody .price, #orderedProducts tbody .summary{background:inherit;color:#f00;font-weight:bold;text-align:right;}
+
+#orderedProducts tbody .price, #orderedProducts tbody .summary {
+	background: inherit;
+	/*color: #f00;*/
+	color: #993333;
+	font-weight: bold;
+	text-align: right;
+}
+
 #orderedProducts tbody .quantity, #orderedProducts tbody .quantity input{text-align:right;}
 #orderedProducts tbody .quantity label{display:none;}
 #orderedProducts tbody a:hover{background:inherit;color:#993333;}
 #orderedProducts tfoot .summaryProducts, #orderedProducts tfoot .summaryDelivery, #orderedProducts tfoot .summaryOrder{text-align:right;}
 #orderedProducts tfoot .nextStep{text-align:right;}
-#orderedProducts tfoot .nextStep .submit{border:1px solid #993333;background: url('img/basket_button_fw.gif') repeat-x;background-color:inherit;color:#fff;font-size:1.1em;font-weight:bold;}
 
-#basket .info{padding:10px 0;background:transparent;color:#4f3728;text-align:left;}
+#orderedProducts tfoot .nextStep .submit {
+	/*border: 1px solid #993333;*/
+	border: none;
+	background: url('img/basket_button_fw.gif') repeat-x;
+	background-color: inherit;
+	color: #fff;
+	font-size: 1.1em;
+	font-weight: bold;
+}
+
+#basket .info {
+	padding: 10px 20px 10px 20px;
+	background: transparent;
+	color: #4f3728;
+	text-align: left;
+}
+
 #basket #recount td{border-bottom:1px solid #e8dac6;text-align:right;}
-#basket #recount .submit{padding:1px 3px;border:1px solid #945f43;background: url('img/basket_button.png') repeat-x;background-color:inherit;color:#fff;font-weight:bold;}
+
+#basket #recount .submit {
+	padding: 1px 3px;
+	/*border: 1px solid #945f43;*/
+	border: none;
+	background: url('img/basket_button_fw.gif') repeat-x;
+	background-color: inherit;
+	color: #fff;
+	font-weight: bold;
+}
+
 #basket .summaryProducts{background:inherit;color:#764830;font-size:1.36em;font-weight:bold;}
-#basket .summaryProducts #summary{background:inherit;color:#f00;}
-#basket #save .submit{padding:2px 10px;border:1px solid #945f43;background: url('img/basket_button.png') repeat-x;background-color:inherit;color:#fff;font-weight:bold;}
+
+#basket .summaryProducts #summary {
+	background: inherit;
+	/*color: #f00;*/
+	color: #993333;
+}
+
+#basket #save .submit {
+	padding: 2px 10px;
+	/*border: 1px solid #945f43;*/
+	/*border: 1px solid #993333;*/
+	border: none;
+	/*background: url('img/basket_button.png') repeat-x;*/
+	background: url('img/basket_button_fw.gif') repeat-x;
+	background-color: inherit;
+	color: #fff;
+	font-weight: bold;
+}
+
 #basket .del{padding:0 5px 0 10px;}
 #basket .del a{background:inherit;color:#915a3c;}
 
@@ -706,7 +756,11 @@ html>/**/body #product .imagesList#imagesList2 li div{margin:0 auto;}
 
 /* OPTIONS LINK */
 #options{padding:10px 10px 0;background:inherit;color:#7f7f66;font-size:0.917em;text-align:right;}
-#options .back, #options .print{float:right;}
+
+#options .back, #options .print {
+	float: right;
+}
+
 #options a{padding:0 7px 0;}
 #options .print a{border-left:1px solid #7f7f66;}
 
@@ -801,15 +855,18 @@ html>/**/body #product .imagesList#imagesList2 li div{margin:0 auto;}
 
 #contact {
 	width: 260px;
-	height: 260px;
-	background: url('img/box.gif') no-repeat;
+	padding-top: 40px;
 	text-align: center;
-	margin-top: 20px;
 	display: table-cell;
     vertical-align: middle;
+	background: url('img/box-top-3.gif') no-repeat 0px 10px;
 }
 
 #contact p {
+	width: 220px;
+	padding-bottom: 30px;
+	padding: 0px 20px 30px 20px;
+	background: url('img/box-bottom-4.gif') no-repeat bottom;
 }
 
 #contact strong {
@@ -854,4 +911,8 @@ html>/**/body #product .imagesList#imagesList2 li div{margin:0 auto;}
 #product .prev a {
 	padding-left: 20px;
 	background: url('img/prev.gif') no-repeat left;
+}
+
+#orderedProducts {
+	padding: 0px 20px 0px 20px;
 }

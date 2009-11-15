@@ -38,7 +38,7 @@ function more_less(element) {
 function emptyProdDesc(element) {
 	var tmp = document.getElementById(element);
 	if(tmp != null) {
-		if(document.getElementById(element).innerHTML == '') {
+		if(document.getElementById(element).innerHTML == '' || document.getElementById(element).clientHeight < 295) {
 			document.getElementById(element).style.height = 'auto';
 			document.getElementById('more-less').innerHTML = '';
 		}

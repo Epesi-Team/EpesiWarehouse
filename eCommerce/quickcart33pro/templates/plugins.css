@@ -137,8 +137,16 @@ Quick.Cart default plugins stylesheet
 /* Contact form */
 #contactPanel {
 	float: left;
-	width: 195px;
+	/*width: 195px;*/
+	width: 260px;
+	padding-top: 30px;
 	margin: 10px 0 10px 20px;
+	background: url(img/box-top-3.gif) no-repeat;
+}
+
+#contactPanel fieldset {
+	padding: 0px 30px 30px 30px;
+	background: url(img/box-bottom-4.gif) no-repeat bottom;
 }
 
 #contactPanel dl, #contactPanel dt, #contactPanel dd{margin:0;padding:0;}
