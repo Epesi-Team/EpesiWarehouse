@@ -183,7 +183,7 @@ class Orders
 	} else {
 		$oProduct =& Products::getInstance( );
 		$prod = $oProduct->getProduct($iProduct);
-		DB::Execute('INSERT INTO premium_ecommerce_orders_temp(customer,product,quantity,price,name,tax,weight) VALUES (%s,%d,%d,%s,%s,%s,%f)',array($iOrder,$iProduct,$iQuantity,$prod['fPrice'],$prod['sName'],$prod['tax'],$prod['sWeight']));
+		DB::Execute('INSERT INTO premium_ecommerce_orders_temp(customer,product,quantity,price,name,tax,weight) VALUES (%s,%d,%d,%s,%s,%s,%f)',array($iOrder,$iProduct,$iQuantity,$prod['fPrice'],$prod['sName'],$prod['tax'],$prod['sWeight']?$prod['sWeight']:0));
 	}
 	//} epesi
   } // end function addToBasket
