@@ -639,12 +639,13 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 	}
 
 	public static function display_payment_channel($r) {
-		return self::get_payment_channel($r['payment_system'],$r['payment_channel']);
+		$r2 = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders',$r['transaction_id']);
+		return self::get_payment_channel($r2['payment_type'],$r['payment_channel']);
 	}
 
   	public static function QFfield_payment_channel(&$form, $field, $label, $mode, $default,$dupa,$parent_rb) {
 		$ord = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders',$parent_rb->record['transaction_id']);
-		$form->addElement('static', $field, $label, 'TODO:'.self::get_payment_channel($ord['payment_type'],$default));
+		$form->addElement('static', $field, $label, self::get_payment_channel($ord['payment_type'],$default));
 	}
 	
 	public static function display_payment_realized($r) {
