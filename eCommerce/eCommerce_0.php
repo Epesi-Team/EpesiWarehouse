@@ -462,7 +462,7 @@ class Premium_Warehouse_eCommerce extends Module {
 		$form->addRule(array('default_lang','available_lang'), $this->t('Default language must be one of quickcart available languages'), 'callback',array($this,'quickcart_check_default_lang'));
 
 		$form->addElement('text', 'email', $this->t('Shop e-mail'));
-		$form->addRule('email', $this->t('This is not valid email address'), 'email',true);
+		$form->addRule('email', $this->t('This is not valid email address'), 'email');
 
 		$form->addElement('text', 'products_list', $this->t('Number of products displayed on page'));
 		$form->addRule('products_list', $this->t('This field should be numeric'), 'numeric');
