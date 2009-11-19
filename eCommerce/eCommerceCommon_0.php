@@ -649,7 +649,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 	}
 	
 	public static function display_payment_realized($r) {
-		return $r['payment_realized']?'Yes':'No';
+		return Base_LangCommon::ts('Premium_Warehouse_eCommerce',$r['payment_realized']?'Yes':'No');
 	}
 
   	public static function QFfield_payment_realized(&$form, $field, $label, $mode, $default,$args) {
