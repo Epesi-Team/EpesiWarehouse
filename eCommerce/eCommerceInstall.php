@@ -402,6 +402,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		
 		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_products', 'Premium/Warehouse/eCommerce', 'product_comments_addon', 'Comments');
 		
+		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items_orders',array('name'=>'Online order',	'type'=>'calculated', 'required'=>false, 'filter'=>false, 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_eCommerceCommon','display_online_order')));
 		
 
 // ************* addons ************ //
@@ -495,6 +496,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::delete_record_field('premium_warehouse_items_categories', 'Page Title');
 		Utils_RecordBrowserCommon::delete_record_field('premium_warehouse_items_categories', 'Meta Description');
 		Utils_RecordBrowserCommon::delete_record_field('premium_warehouse_items_categories', 'Keywords');
+		Utils_RecordBrowserCommon::delete_record_field('premium_warehouse_items_orders', 'Online order');
 		
 		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_products', 'Premium/Warehouse/eCommerce', 'descriptions_addon');
 //		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_categories', 'Premium/Warehouse/eCommerce', 'cat_descriptions_addon');

@@ -775,6 +775,13 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 		sort($ret);
 		return implode(', ',$ret);
 	}
+
+	public static function display_online_order($r, $nolink) {
+		$rr = Utils_RecordBrowserCommon::get_records('premium_ecommerce_orders',array('transaction_id'=>$r['id']),array('language'));
+		$on = '<span class="checkbox_on" />';
+		$off = '<span class="checkbox_off" />';
+		return empty($rr)?$off:$on;
+	}
 	
 	public static function admin_caption() {
 		return 'eCommerce';
