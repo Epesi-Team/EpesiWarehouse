@@ -795,9 +795,14 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 		$html="Displays new eCommerce orders.";
 		return $html;
 	}
+
+	public static function applet_settings() {
+		return Utils_RecordBrowserCommon::applet_settings();
+	}
 	
 	public static function applet_info_format($r){
-		return print_r($r,true);
+		return Utils_TooltipCommon::format_info_tooltip(array('Contact'=>$r['first_name'].' '.$r['last_name'],
+					'Company'=>$r['company_name'],'Phone'=>$r['phone']),'Premium_Warehouse_eCommerce');
 	}
 
 	
