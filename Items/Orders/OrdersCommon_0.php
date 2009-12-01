@@ -575,7 +575,6 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 				load_js('modules/Premium/Warehouse/Items/Orders/check_item_price_cost.js');
 				$msg = 'Warning';
 				$sell_with_loss = self::Instance()->acl_check('sell with loss');
-				$sell_with_loss = false; // TODO: remove
 				if (!$sell_with_loss) {
 					$msg = 'Error';
 					$form->addFormRule(array('Premium_Warehouse_Items_OrdersCommon','check_sale_price'));
