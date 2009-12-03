@@ -13,7 +13,7 @@ function listProductsCompare( $sFile, $sBlock ){
   $content= null;
   $sBlock = strtoupper( $sBlock );
 
-  $aProducts = $GLOBALS['oProduct']->getProducts('pri.f_gross_price=concat(\'\', 0+pri.f_gross_price)');
+  $aProducts = $GLOBALS['oProduct']->getProducts('f_quantity>0 OR dist.quantity>0');
   
   $sFeaturesBlock = $oTpl->tbHtml( $sFile, $sBlock.'_FEATURES' );
   if(!empty($sFeaturesBlock)) {
@@ -39,6 +39,7 @@ function listProductsCompare( $sFile, $sBlock ){
 
   if( isset( $aProducts ) ){
     foreach($aProducts as $aData){
+      if(!$aData['fPrice']) continue;
       $aData['sPages'] = preg_replace( '/&nbsp;&raquo;&nbsp;/', '/', strip_tags( $GLOBALS['oProduct']->throwProductsPagesTree( $aData['aCategories'] ) ) );
       $aData['sPagesOnet'] = preg_replace( '/&nbsp;&raquo;&nbsp;/', ' &gt; ', strip_tags( $GLOBALS['oProduct']->throwProductsPagesTree( $aData['aCategories'] ) ) );
       $aData['sDescriptionShort'] = changeTxt( $aData['sDescriptionShort'], 'nlNds' );
