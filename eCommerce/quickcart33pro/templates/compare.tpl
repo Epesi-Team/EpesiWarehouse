@@ -29,6 +29,12 @@
         <categoryId><![CDATA[$aData[sPages]]]></categoryId>
         <description><![CDATA[$aData[sDescriptionShort]]]></description>
         <image width="" height="" title="$aData[sName]">$aData[sImage]</image>
+	<attributes>
+		<attribute>
+			<name>Producent</name>
+			<producer>$aData[sProducer]</producer>
+		</attribute>
+	</attributes>
       </offer>
 <!-- END CENEO_LIST -->
 <!-- BEGIN CENEO_FEATURES --><!-- END CENEO_FEATURES -->
