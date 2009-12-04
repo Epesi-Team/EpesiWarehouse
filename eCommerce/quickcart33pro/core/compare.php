@@ -19,7 +19,7 @@ function listProductsCompare( $sFile, $sBlock ){
   if(!empty($sFeaturesBlock)) {
     $ret2 = DB::Execute('SELECT pp.f_item_name as iProduct,
 				pp.f_value as sValue,
-				p.f_parameter_code as iFeature,
+				p.f_parameter_code as iFeature
 				FROM premium_ecommerce_products_parameters_data_1 pp
 				INNER JOIN premium_ecommerce_parameters_data_1 p ON (p.id=pp.f_parameter)
 				WHERE pp.active=1 AND pp.f_language="'.LANGUAGE.'"');
@@ -53,13 +53,7 @@ function listProductsCompare( $sFile, $sBlock ){
 
       $aPages = array_keys( $aData['aCategories'] );
       $aData['iPage'] = $aPages[0];
-      if( isset( $aCategoriesNokaut ) ){
-        $iCategoryNokaut = $GLOBALS['oPage']->aPages[$aPages[0]]['iCategoryNokaut'];
-        if( isset( $aCategoriesNokaut[$iCategoryNokaut] ) )
-          $aData['sCategoryNokaut'] = $aCategoriesNokaut[$iCategoryNokaut];
-        else
-          $aData['sCategoryNokaut'] = null;
-      }
+      $aData['sCategoryNokaut'] = preg_replace( '/&nbsp;&raquo;&nbsp;/', ' / ', strip_tags( $GLOBALS['oProduct']->throwProductsPagesTree( array($aData['iPage']=>$aData['iPage']) ) ) );
 
       if(empty( $aData['sDescriptionFull'] ) && !empty( $aData['sDescriptionShort'] ) )
     	$aData['sDescriptionFull'] = $aData['sDescriptionShort'];
