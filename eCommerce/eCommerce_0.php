@@ -75,6 +75,7 @@ class Premium_Warehouse_eCommerce extends Module {
 							  array('name'=>'Link','width'=>70)));
 		$site = $this->t('http://replace.with.quickcart.url/');
 		$m->add_row('Ceneo.pl',	$site.'?sLang=pl&p=compare-ceneo');
+		$m->add_row('Nokaut.pl', $site.'?sLang=pl&p=compare-nokaut');
 		$m->add_row('Skapiec.pl', $site.'?sLang=pl&p=compare-skapiec');
 		$m->add_row('Handelo.pl', $site.'?sLang=pl&p=compare-handelo');
 		$m->add_row('Szoker.pl', $site.'?sLang=pl&p=compare-szoker');
