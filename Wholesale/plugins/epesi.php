@@ -58,7 +58,7 @@ class Premium_Warehouse_Wholesale__Plugin_epesi implements Premium_Warehouse_Who
 		$dir = ModuleManager::get_data_dir('Premium_Warehouse_Wholesale');
 
 	    $c = curl_init();
-	    $url = rtrim($parameters['URL'],'/').'/modules/Premium/Warehouse/Wholesale/dist.php?'.http_build_query(array(
+	    $url = rtrim($parameters['URL'],'/').'/modules/Premium/Warehouse/Items/dist.php?'.http_build_query(array(
 			'user'=>$parameters['Login'],'pass'=>md5($parameters['Password'])));
 
 	    curl_setopt($c, CURLOPT_URL, $url);

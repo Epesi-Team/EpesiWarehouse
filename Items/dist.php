@@ -13,7 +13,7 @@ if(!isset($_GET['user']) || !isset($_GET['pass']))
 define('CID',false);
 require_once('../../../../include.php');
 ModuleManager::load_modules();
-if(ModuleManager::is_installed('Premium/Warehouse/Wholesale')<0) die('not installed');
+if(ModuleManager::is_installed('Premium/Warehouse/Items')<0) die('not installed');
 
 function login() {
 	$t = Variable::get('host_ban_time');
