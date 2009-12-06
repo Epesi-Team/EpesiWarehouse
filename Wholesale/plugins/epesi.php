@@ -12,14 +12,14 @@
  */
 defined("_VALID_ACCESS") || die('Direct access forbidden');
 
-class Premium_Warehouse_Wholesale__Plugin_action implements Premium_Warehouse_Wholesale__Plugin {
+class Premium_Warehouse_Wholesale__Plugin_epesi implements Premium_Warehouse_Wholesale__Plugin {
 	/**
 	 * Returns the name of the plugin
 	 * 
 	 * @return string plugin name 
 	 */
 	public function get_name() {
-		return 'Action';
+		return 'Epesi';
 	}
 	
 	/**
@@ -30,7 +30,7 @@ class Premium_Warehouse_Wholesale__Plugin_action implements Premium_Warehouse_Wh
 	 */
 	public function get_parameters() {
 		return array(
-			'ID'=>'text',
+			'URL'=>'text',
 			'Login'=>'text',
 			'Password'=>'password'
 		);
@@ -58,61 +58,40 @@ class Premium_Warehouse_Wholesale__Plugin_action implements Premium_Warehouse_Wh
 		$dir = ModuleManager::get_data_dir('Premium_Warehouse_Wholesale');
 
 	    $c = curl_init();
-		$url = 'https://i-serwis2.action.pl/Login.aspx';
+	    $url = rtrim($parameters['URL'],'/').'/modules/Premium/Warehouse/Wholesale/dist.php?'.http_build_query(array(
+			'user'=>$parameters['Login'],'pass'=>md5($parameters['Password'])));
 
 	    curl_setopt($c, CURLOPT_URL, $url);
 		curl_setopt($c, CURLOPT_SSL_VERIFYPEER, false);
-		curl_setopt($c, CURLOPT_SSL_VERIFYHOST,  2);
 		curl_setopt($c, CURLOPT_HEADER, false);
 		curl_setopt($c, CURLOPT_POST, true);
 		curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($c, CURLOPT_USERAGENT, "Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)");
-		curl_setopt($c, CURLOPT_FOLLOWLOCATION, false);
-		curl_setopt($c, CURLOPT_COOKIEFILE, $dir.'cookiefile.cf');
-		curl_setopt($c, CURLOPT_COOKIEJAR, $dir.'cookiefile.cf');
-
-		$output = curl_exec($c);
-	    
-	    preg_match('/id=\"\_\_VIEWSTATE\" value=\"(.*?)\"/', $output, $viewstate);	    
-
-	    if (empty($viewstate)) {
-			$output = curl_exec($c);
-		    preg_match('/id=\"\_\_VIEWSTATE\" value=\"(.*?)\"/', $output, $viewstate);	    
-	    }
-		preg_match('/id=\"\_\_EVENTVALIDATION\" value=\"(.*?)\"/', $output, $eventvalidation);	    
-
-		if (!isset($eventvalidation[1]) || !isset($viewstate[1])) {
-			Premium_Warehouse_WholesaleCommon::file_download_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Authentication failure, aborting.'), 2, true);
-			return false;
-		}
-
-	    curl_setopt($c, CURLOPT_POSTFIELDS, http_build_query(array(
-			'txtCustomerID'=>$parameters['ID'], 
-			'txtLogin'=>$parameters['Login'], 
-			'txtPassword'=>$parameters['Password'],
-			'__EVENTVALIDATION'=>$eventvalidation[1],
-			'__VIEWSTATE'=>$viewstate[1],
-			'ButtonLogIn'=>'Zaloguj'
-		)));
-		$output = curl_exec($c);
-
 		curl_setopt($c, CURLOPT_FOLLOWLOCATION, true);
+		curl_setopt($c, CURLOPT_COOKIEFILE, $dir.'cookiefile.cf');
+		curl_setopt($c, CURLOPT_COOKIEJAR, $dir.'cookiefile.cf'); 
 
-		$output = curl_exec($c);
+	    $output = curl_exec($c);
 
-		$url = 'http://i-serwis2.action.pl/ExportProxy.aspx?type=csv';
-	    curl_setopt($c, CURLOPT_URL, $url);
-
-		$output = curl_exec($c);
-		
-		if (!$output || strlen($output)<20000) {
+		if ($output=='not installed') {
+			Premium_Warehouse_WholesaleCommon::file_download_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Epesi distributor disabled.'), 2, true);
+			return false;
+		} elseif($output=='auth failed') {
 			Premium_Warehouse_WholesaleCommon::file_download_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Authentication failure, aborting.'), 2, true);
 			return false;
+		} elseif($output=='ban') {
+			Premium_Warehouse_WholesaleCommon::file_download_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Host banned, aborting.'), 2, true);
+			return false;
+		} elseif($output=='permission denied') {
+			Premium_Warehouse_WholesaleCommon::file_download_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Permission denied, aborting.'), 2, true);
+			return false;
 		}
+
+		
 	    $time = time();
 
-		$filename = $dir.'ab_data_'.$time.'.tmp';
-		file_put_contents($filename, iconv("cp1250","UTF-8",$output));
+		$filename = $dir.'epesi_'.$time.'.tmp';
+		file_put_contents($filename, $output);
 
 	    curl_close($c);
 
@@ -143,25 +122,14 @@ class Premium_Warehouse_Wholesale__Plugin_action implements Premium_Warehouse_Wh
 		$new_categories = 0;
 		
 		$keys = array(
-			'Grupa towarowa',
-			'Podgrupa towarowa',
-			'Producent',
-			'Nazwa produktu',
-			'Cena netto',
-			'Cena brutto',
-			'Kod produktu',
-			'Gwarancja',
-			'Stan mag',
-			'Kod producenta',
-			'Cena sugerowana',
-			'Oplata wielkogabarytowa'
+			'Category',
+			'Name',
+			'Price',
+			'Currency',
+			'Quantity',
+			'UPC'
 		);
 
-		$pln_id = Utils_CurrencyFieldCommon::get_id_by_code('PLN');
-		if ($pln_id===false || $pln_id===null) {
-			Premium_Warehouse_WholesaleCommon::file_scan_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Unable to find required currency (%s), aborting.', array('PLN')), 2, true);
-			return false;
-		}
 
 		DB::Execute('UPDATE premium_warehouse_wholesale_items SET quantity=%d, quantity_info=%s WHERE distributor_id=%d', array(0, '', $distributor['id']));
 		
@@ -176,46 +144,48 @@ class Premium_Warehouse_Wholesale__Plugin_action implements Premium_Warehouse_Wh
 			$scanned++;
 			
 			foreach ($row as $k=>$v) $row[$keys[$k]] = $v;
-			$row['Nazwa produktu'] = $row['Nazwa produktu'];
 			if (strlen($row['Nazwa produktu'])>127) $row['Nazwa produktu'] = substr($row['Nazwa produktu'],0,127);
+
+			$pln_id = Utils_CurrencyFieldCommon::get_id_by_code($row['Currency']);
+			if ($pln_id===false || $pln_id===null) {
+				continue; //no price
+			}
 			
-			if ($row['Stan mag']!=0) {
+			if ($row['Quantity']!=0) {
 				$available++;
 				/*** determine quantity and quantity info ***/
-				if (is_numeric($row['Stan mag'])) {
-					$quantity = $row['Stan mag'];
+				if (is_numeric($row['Quantity'])) {
+					$quantity = $row['Quantity'];
 					$quantity_info = '';
 				} else {
-					$quantity_info = $row['Stan mag'];
-					$quantity = 30;
+					$quantity = 0;
+					$quantity_info = 'Invalid quantity';
 				}
 				
-				if(!isset($categories[$row['Grupa towarowa'].' : '.$row['Podgrupa towarowa']])) {
-					$categories[$row['Grupa towarowa'].' : '.$row['Podgrupa towarowa']] = Utils_RecordBrowserCommon::new_record('premium_warehouse_distributor_categories',array('foreign_category_name'=>$row['Grupa towarowa'].' : '.$row['Podgrupa towarowa'],'distributor'=>$distributor['id']));
+				if(!isset($categories[$row['Category']])) {
+					$categories[$row['Category']] = Utils_RecordBrowserCommon::new_record('premium_warehouse_distributor_categories',array('foreign_category_name'=>$row['Category'],'distributor'=>$distributor['id']));
 					$new_categories++;
-				} elseif(isset($categories_to_del[$row['Grupa towarowa'].' : '.$row['Podgrupa towarowa']]))
-					unset($categories_to_del[$row['Grupa towarowa'].' : '.$row['Podgrupa towarowa']]);
-				$category = $categories[$row['Grupa towarowa'].' : '.$row['Podgrupa towarowa']];
+				} elseif(isset($categories_to_del[$row['Category']]))
+					unset($categories_to_del[$row['Category']]);
+				$category = $categories[$row['Category']];
 
 				/*** check for exact match ***/
-				$internal_key = DB::GetOne('SELECT internal_key FROM premium_warehouse_wholesale_items WHERE internal_key=%s AND distributor_id=%d', array($row['Kod produktu'], $distributor['id']));
-				if (($internal_key===false || $internal_key===null) && $row['Kod producenta']) {
+				$internal_key = DB::GetOne('SELECT internal_key FROM premium_warehouse_wholesale_items WHERE internal_key=%s AND distributor_id=%d', array($row['UPC'], $distributor['id']));
+				if (($internal_key===false || $internal_key===null) && $row['UPC']) {
 					$w_item = null;
 					/*** exact match not found, looking for candidates ***/
 					$matches = Utils_RecordBrowserCommon::get_records('premium_warehouse_items', array(
 						'(~"item_name'=>DB::Concat(DB::qstr('%'),DB::qstr($row['Nazwa produktu']),DB::qstr('%')),
-						'|manufacturer_part_number'=>$row['Kod producenta']
+						'|manufacturer_part_number'=>$row['UPC'],'|upc'=>$row['UPC']
 					));
 					if (!empty($matches))
 						if (count($matches)==1) {
-							/*** one candidate found, if product code is empty or matches, it's ok ***/
 							$v = array_pop($matches);
-							if ($v['manufacturer_part_number']==$row['Kod producenta'] || $v['manufacturer_part_number']=='')
-								$w_item = $v['id'];
+							$w_item = $v['id'];
 						} else {
 							/*** found more candidates, only product code is important now ***/
 							foreach ($matches as $v)
-								if ($v['manufacturer_part_number']==$row['Kod producenta']) {
+								if ($v['manufacturer_part_number']==$row['UPC'] || $v['upc']==$row['UPC']) {
 									$w_item = $v['id'];
 									break;
 								}
@@ -228,14 +198,14 @@ class Premium_Warehouse_Wholesale__Plugin_action implements Premium_Warehouse_Wh
 						$item_exist++;
 					}
 					if ($w_item!==null) {
-						DB::Execute('INSERT INTO premium_warehouse_wholesale_items (item_id, internal_key, distributor_item_name, distributor_id, quantity, quantity_info, price, price_currency,distributor_category) VALUES (%d, %s, %s, %d, %d, %s, %f, %d,%d)', array($w_item, $row['Kod producenta'], $row['Nazwa produktu'], $distributor['id'], $quantity, $quantity_info, $row['Cena netto'], $pln_id,$category));
+						DB::Execute('INSERT INTO premium_warehouse_wholesale_items (item_id, internal_key, distributor_item_name, distributor_id, quantity, quantity_info, price, price_currency,distributor_category) VALUES (%d, %s, %s, %d, %d, %s, %f, %d,%d)', array($w_item, $row['UPC'], $row['Nazwa produktu'], $distributor['id'], $quantity, $quantity_info, $row['Price'], $pln_id,$category));
 					} else {
-						DB::Execute('INSERT INTO premium_warehouse_wholesale_items (internal_key, distributor_item_name, distributor_id, quantity, quantity_info, price, price_currency,distributor_category) VALUES (%s, %s, %d, %d, %s, %f, %d,%d)', array($row['Kod producenta'], $row['Nazwa produktu'], $distributor['id'], $quantity, $quantity_info, $row['Cena netto'], $pln_id,$category));
+						DB::Execute('INSERT INTO premium_warehouse_wholesale_items (internal_key, distributor_item_name, distributor_id, quantity, quantity_info, price, price_currency,distributor_category) VALUES (%s, %s, %d, %d, %s, %f, %d,%d)', array($row['UPC'], $row['Nazwa produktu'], $distributor['id'], $quantity, $quantity_info, $row['Price'], $pln_id,$category));
 					}
 				} else {
 					/*** there's an exact match in the system already ***/
 					$link_exist++;
-					DB::Execute('UPDATE premium_warehouse_wholesale_items SET quantity=%d, quantity_info=%s, price=%f, price_currency=%d,distributor_category=%d WHERE internal_key=%s AND distributor_id=%d', array($quantity, $quantity_info, $row['Cena netto'], $pln_id, $category, $row['Kod producenta'], $distributor['id']));
+					DB::Execute('UPDATE premium_warehouse_wholesale_items SET quantity=%d, quantity_info=%s, price=%f, price_currency=%d,distributor_category=%d WHERE internal_key=%s AND distributor_id=%d', array($quantity, $quantity_info, $row['Price'], $pln_id, $category, $row['UPC'], $distributor['id']));
 				}
 			} 
 		}
