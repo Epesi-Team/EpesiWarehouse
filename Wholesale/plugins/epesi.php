@@ -173,9 +173,10 @@ class Premium_Warehouse_Wholesale__Plugin_epesi implements Premium_Warehouse_Who
 				$category = $categories[$row['Category']];
 
 				/*** check for exact match ***/
-				$internal_key = DB::GetOne('SELECT internal_key FROM premium_warehouse_wholesale_items WHERE internal_key=%s AND distributor_id=%d', array($row['SKU'], $distributor['id']));
-				if (($internal_key===false || $internal_key===null) && $row['SKU']) {
-					$w_item = null;
+				$old = DB::GetRow('SELECT internal_key,item_id FROM premium_warehouse_wholesale_items WHERE internal_key=%s AND distributor_id=%d', array($row['SKU'], $distributor['id']));
+				$internal_key = $old['internal_key'];
+				$w_item = null;
+				if (($internal_key===false || $internal_key===null || $old['item_id']===null) && $row['SKU']) {
 					$marr = array();
 					if($row['Manufacturer']) {
 						$cc = CRM_ContactsCommon::get_companies(array('company_name'=>$row['Manufacturer']),array());
@@ -186,8 +187,8 @@ class Premium_Warehouse_Wholesale__Plugin_epesi implements Premium_Warehouse_Who
 					}
 					if(isset($marr['manufacturer'])) {
 						$marr['(~"item_name']=DB::Concat(DB::qstr('%'),DB::qstr($row['Name']),DB::qstr('%'));
-						if($row['MPU'])
-							$marr['|manufacturer_part_number']=$row['MPU'];
+						if($row['MPN'])
+							$marr['|manufacturer_part_number']=$row['MPN'];
 						$matches = Utils_RecordBrowserCommon::get_records('premium_warehouse_items', $marr);
 					} else {
 						$matches = array();
@@ -202,7 +203,7 @@ class Premium_Warehouse_Wholesale__Plugin_epesi implements Premium_Warehouse_Who
 						} else {
 							/*** found more candidates, only product code is important now ***/
 							foreach ($matches as $v)
-								if ($v['manufacturer_part_number']==$row['MPU'] || $v['upc']==$row['UPC']) {
+								if ($v['manufacturer_part_number']==$row['MPN'] || $v['upc']==$row['UPC']) {
 									$w_item = $v['id'];
 									break;
 								}
@@ -214,6 +215,8 @@ class Premium_Warehouse_Wholesale__Plugin_epesi implements Premium_Warehouse_Who
 						/*** found match ***/
 						$item_exist++;
 					}
+				}
+				if($internal_key===false || $internal_key===null) {
 					if ($w_item!==null) {
 						DB::Execute('INSERT INTO premium_warehouse_wholesale_items (item_id, internal_key, distributor_item_name, distributor_id, quantity, quantity_info, price, price_currency,distributor_category) VALUES (%d, %s, %s, %d, %d, %s, %f, %d,%d)', array($w_item, $row['SKU'], $row['Name'], $distributor['id'], $quantity, $quantity_info, $row['Price'], $pln_id,$category));
 					} else {
@@ -223,6 +226,8 @@ class Premium_Warehouse_Wholesale__Plugin_epesi implements Premium_Warehouse_Who
 					/*** there's an exact match in the system already ***/
 					$link_exist++;
 					DB::Execute('UPDATE premium_warehouse_wholesale_items SET quantity=%d, quantity_info=%s, price=%f, price_currency=%d,distributor_category=%d WHERE internal_key=%s AND distributor_id=%d', array($quantity, $quantity_info, $row['Price'], $pln_id, $category, $row['SKU'], $distributor['id']));
+					if ($w_item!==null) 
+						DB::Execute('UPDATE premium_warehouse_wholesale_items SET item_id=%d WHERE internal_key=%s AND distributor_id=%d', array($w_item, $row['SKU'], $distributor['id']));
 				}
 			} 
 		}
