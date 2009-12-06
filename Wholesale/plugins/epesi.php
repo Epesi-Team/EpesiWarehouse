@@ -127,7 +127,10 @@ class Premium_Warehouse_Wholesale__Plugin_epesi implements Premium_Warehouse_Who
 			'Price',
 			'Currency',
 			'Quantity',
-			'UPC'
+			'UPC',
+			'Manufacturer',
+			'MPN',
+			'SKU'
 		);
 
 
@@ -144,7 +147,7 @@ class Premium_Warehouse_Wholesale__Plugin_epesi implements Premium_Warehouse_Who
 			$scanned++;
 			
 			foreach ($row as $k=>$v) $row[$keys[$k]] = $v;
-			if (strlen($row['Nazwa produktu'])>127) $row['Nazwa produktu'] = substr($row['Nazwa produktu'],0,127);
+			if (strlen($row['Name'])>127) $row['Name'] = substr($row['Name'],0,127);
 
 			$pln_id = Utils_CurrencyFieldCommon::get_id_by_code($row['Currency']);
 			if ($pln_id===false || $pln_id===null) {
@@ -170,14 +173,28 @@ class Premium_Warehouse_Wholesale__Plugin_epesi implements Premium_Warehouse_Who
 				$category = $categories[$row['Category']];
 
 				/*** check for exact match ***/
-				$internal_key = DB::GetOne('SELECT internal_key FROM premium_warehouse_wholesale_items WHERE internal_key=%s AND distributor_id=%d', array($row['UPC'], $distributor['id']));
-				if (($internal_key===false || $internal_key===null) && $row['UPC']) {
+				$internal_key = DB::GetOne('SELECT internal_key FROM premium_warehouse_wholesale_items WHERE internal_key=%s AND distributor_id=%d', array($row['SKU'], $distributor['id']));
+				if (($internal_key===false || $internal_key===null) && $row['SKU']) {
 					$w_item = null;
+					$marr = array();
+					if($row['Manufacturer']) {
+						$cc = CRM_ContactsCommon::get_companies(array('company_name'=>$row['Manufacturer']),array());
+						if($cc) {
+							$cc2 = array_shift($cc);
+							$marr['manufacturer'] = $cc2['id'];
+						}
+					}
+					if(isset($marr['manufacturer'])) {
+						$marr['(~"item_name']=DB::Concat(DB::qstr('%'),DB::qstr($row['Name']),DB::qstr('%'));
+						if($row['MPU'])
+							$marr['|manufacturer_part_number']=$row['MPU'];
+						$matches = Utils_RecordBrowserCommon::get_records('premium_warehouse_items', $marr);
+					} else {
+						$matches = array();
+					}
+					if($row['UPC'])
+						$matches = array_merge($matches,Utils_RecordBrowserCommon::get_records('premium_warehouse_items', array('upc'=>$row['UPC'])));
 					/*** exact match not found, looking for candidates ***/
-					$matches = Utils_RecordBrowserCommon::get_records('premium_warehouse_items', array(
-						'(~"item_name'=>DB::Concat(DB::qstr('%'),DB::qstr($row['Nazwa produktu']),DB::qstr('%')),
-						'|manufacturer_part_number'=>$row['UPC'],'|upc'=>$row['UPC']
-					));
 					if (!empty($matches))
 						if (count($matches)==1) {
 							$v = array_pop($matches);
@@ -185,7 +202,7 @@ class Premium_Warehouse_Wholesale__Plugin_epesi implements Premium_Warehouse_Who
 						} else {
 							/*** found more candidates, only product code is important now ***/
 							foreach ($matches as $v)
-								if ($v['manufacturer_part_number']==$row['UPC'] || $v['upc']==$row['UPC']) {
+								if ($v['manufacturer_part_number']==$row['MPU'] || $v['upc']==$row['UPC']) {
 									$w_item = $v['id'];
 									break;
 								}
@@ -198,14 +215,14 @@ class Premium_Warehouse_Wholesale__Plugin_epesi implements Premium_Warehouse_Who
 						$item_exist++;
 					}
 					if ($w_item!==null) {
-						DB::Execute('INSERT INTO premium_warehouse_wholesale_items (item_id, internal_key, distributor_item_name, distributor_id, quantity, quantity_info, price, price_currency,distributor_category) VALUES (%d, %s, %s, %d, %d, %s, %f, %d,%d)', array($w_item, $row['UPC'], $row['Nazwa produktu'], $distributor['id'], $quantity, $quantity_info, $row['Price'], $pln_id,$category));
+						DB::Execute('INSERT INTO premium_warehouse_wholesale_items (item_id, internal_key, distributor_item_name, distributor_id, quantity, quantity_info, price, price_currency,distributor_category) VALUES (%d, %s, %s, %d, %d, %s, %f, %d,%d)', array($w_item, $row['SKU'], $row['Name'], $distributor['id'], $quantity, $quantity_info, $row['Price'], $pln_id,$category));
 					} else {
-						DB::Execute('INSERT INTO premium_warehouse_wholesale_items (internal_key, distributor_item_name, distributor_id, quantity, quantity_info, price, price_currency,distributor_category) VALUES (%s, %s, %d, %d, %s, %f, %d,%d)', array($row['UPC'], $row['Nazwa produktu'], $distributor['id'], $quantity, $quantity_info, $row['Price'], $pln_id,$category));
+						DB::Execute('INSERT INTO premium_warehouse_wholesale_items (internal_key, distributor_item_name, distributor_id, quantity, quantity_info, price, price_currency,distributor_category) VALUES (%s, %s, %d, %d, %s, %f, %d,%d)', array($row['SKU'], $row['Name'], $distributor['id'], $quantity, $quantity_info, $row['Price'], $pln_id,$category));
 					}
-				} else {
+				} elseif($internal_key) {
 					/*** there's an exact match in the system already ***/
 					$link_exist++;
-					DB::Execute('UPDATE premium_warehouse_wholesale_items SET quantity=%d, quantity_info=%s, price=%f, price_currency=%d,distributor_category=%d WHERE internal_key=%s AND distributor_id=%d', array($quantity, $quantity_info, $row['Price'], $pln_id, $category, $row['UPC'], $distributor['id']));
+					DB::Execute('UPDATE premium_warehouse_wholesale_items SET quantity=%d, quantity_info=%s, price=%f, price_currency=%d,distributor_category=%d WHERE internal_key=%s AND distributor_id=%d', array($quantity, $quantity_info, $row['Price'], $pln_id, $category, $row['SKU'], $distributor['id']));
 				}
 			} 
 		}

@@ -48,7 +48,10 @@ $keys = array(
 			'Price',
 			'Currency',
 			'Quantity',
-			'UPC'
+			'UPC',
+			'Manufacturer',
+			'MPN',
+			'SKU'
 		);
 
 $fp = fopen('php://output','w');
@@ -62,7 +65,10 @@ foreach($prods as $p) {
 		$xx = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_categories',$v,array('category_name'));
 		$category[$k] = $xx['category_name'];
 	}
-	fputcsv($fp,array(implode('/',$category),$p['item_name'],$price[0],Utils_CurrencyFieldCommon::get_code($price[1]),$p['quantity_on_hand'],$p['upc']));
+	$manufacturer = CRM_ContactsCommon::get_company($p['manufacturer']);
+	$manufacturer = $manufacturer['company_name'];
+	fputcsv($fp,array(implode('/',$category),$p['item_name'],$price[0],Utils_CurrencyFieldCommon::get_code($price[1]),$p['quantity_on_hand'],$p['upc'],
+				$manufacturer, $p['manufacturer_part_number'],$p['sku']));
 }
 fclose($fp);
 ?>
