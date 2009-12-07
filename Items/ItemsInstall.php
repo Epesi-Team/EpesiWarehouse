@@ -122,10 +122,6 @@ class Premium_Warehouse_ItemsInstall extends ModuleInstall {
 	public static function simple_setup() {
 		return true;
 	}
-	
-	public static function backup() {
-		return Utils_RecordBrowserCommon::get_tables('premium_warehouse_items');		
-	}
 }
 
 ?>

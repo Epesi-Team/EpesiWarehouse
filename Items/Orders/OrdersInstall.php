@@ -211,13 +211,6 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 	public static function simple_setup() {
 		return true;
 	}
-	
-	public static function backup() {
-		return array_merge(
-				Utils_RecordBrowserCommon::get_tables('premium_warehouse_items_orders'),		
-				Utils_RecordBrowserCommon::get_tables('premium_warehouse_items_orders_details')
-			);
-	}
 }
 
 ?>

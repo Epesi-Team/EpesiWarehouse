@@ -563,22 +563,6 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 	public static function simple_setup() {
 		return true;
 	}
-
-	public static function backup() {
-		return array_merge(
-				Utils_RecordBrowserCommon::get_tables('premium_ecommerce_cat_descriptions'),
-				Utils_RecordBrowserCommon::get_tables('premium_ecommerce_products'),
-				Utils_RecordBrowserCommon::get_tables('premium_ecommerce_descriptions'),
-				Utils_RecordBrowserCommon::get_tables('premium_ecommerce_parameters'),
-				Utils_RecordBrowserCommon::get_tables('premium_ecommerce_products_parameters'),
-				Utils_RecordBrowserCommon::get_tables('premium_ecommerce_parameter_labels'),
-				Utils_RecordBrowserCommon::get_tables('premium_ecommerce_availability'),
-				Utils_RecordBrowserCommon::get_tables('premium_ecommerce_availability_labels'),
-				Utils_RecordBrowserCommon::get_tables('premium_ecommerce_pages'),
-				Utils_RecordBrowserCommon::get_tables('premium_ecommerce_pages_data'),
-				Utils_RecordBrowserCommon::get_tables('premium_ecommerce_payments_carriers')
-			);
-	}
 }
 
 ?>
