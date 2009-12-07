@@ -56,8 +56,21 @@ $keys = array(
 
 $fp = fopen('php://output','w');
 fputcsv($fp,$keys);
-$prods = Utils_RecordBrowserCommon::get_records('premium_warehouse_items',array('>net_price'=>0,'>quantity_on_hand'=>0));
+
+$crits = array('>net_price'=>0);
+if(ModuleManager::is_installed('Premium/Warehouse/Items/Location')<0) 
+	$crits['>quantity_on_hand']=0;
+$prods = Utils_RecordBrowserCommon::get_records('premium_warehouse_items',$crits);
+
 foreach($prods as $p) {
+	$quantity = $p['quantity_on_hand'];
+	if(ModuleManager::is_installed('Premium/Warehouse/Items/Location')>=0) {
+		$qqq = Utils_RecordBrowserCommon::get_records('premium_warehouse_location',array('item_sku'=>$p['id']),array('quantity'));
+		foreach($qqq as $qq) 
+			$quantity += $qq['quantity'];
+	}
+	if($quantity==0) continue;
+	
 	$price = Utils_CurrencyFieldCommon::get_values($p['net_price']);
 	$category = array_shift($p['category']);
 	$category = explode('/',$category);
@@ -67,7 +80,7 @@ foreach($prods as $p) {
 	}
 	$manufacturer = CRM_ContactsCommon::get_company($p['manufacturer']);
 	$manufacturer = $manufacturer['company_name'];
-	fputcsv($fp,array(implode('/',$category),$p['item_name'],$price[0],Utils_CurrencyFieldCommon::get_code($price[1]),$p['quantity_on_hand'],$p['upc'],
+	fputcsv($fp,array(implode('/',$category),$p['item_name'],$price[0],Utils_CurrencyFieldCommon::get_code($price[1]),$quantity,$p['upc'],
 				$manufacturer, $p['manufacturer_part_number'],$p['sku']));
 }
 fclose($fp);

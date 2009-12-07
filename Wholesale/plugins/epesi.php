@@ -166,6 +166,7 @@ class Premium_Warehouse_Wholesale__Plugin_epesi implements Premium_Warehouse_Who
 					$quantity_info = 'Invalid quantity';
 				}
 				
+				if($row['Category']=='') $row['Category'] = 'no category';
 				if(!isset($categories[$row['Category']])) {
 					$categories[$row['Category']] = Utils_RecordBrowserCommon::new_record('premium_warehouse_distributor_categories',array('foreign_category_name'=>$row['Category'],'distributor'=>$distributor['id']));
 					$new_categories++;
@@ -175,9 +176,15 @@ class Premium_Warehouse_Wholesale__Plugin_epesi implements Premium_Warehouse_Who
 
 				/*** check for exact match ***/
 				$old = DB::GetRow('SELECT internal_key,item_id FROM premium_warehouse_wholesale_items WHERE internal_key=%s AND distributor_id=%d', array($row['SKU'], $distributor['id']));
-				$internal_key = $old['internal_key'];
+				if($old) {
+					$internal_key = $old['internal_key'];
+					$item_id = $old['item_id'];
+				} else {
+					$internal_key = null;
+					$item_id = null;
+				}
 				$w_item = null;
-				if (($internal_key===false || $internal_key===null || $old['item_id']===null) && $row['SKU']) {
+				if (($internal_key===false || $internal_key===null || $item_id===null) && $row['SKU']) {
 					$marr = array();
 					if($row['Manufacturer']) {
 						$cc = CRM_ContactsCommon::get_companies(array('company_name'=>$row['Manufacturer']),array());
