@@ -314,16 +314,14 @@ class Products
           $aData['sImage'] = $oTpl->tbHtml( $sFile, 'PRODUCTS_NO_IMAGE' );
         }
 
-        if( is_numeric( $aData['fPrice'] ) && $aData['iQuantity']>0 ){
-          if( isset( $sBasketPage ) ){
+        if( is_numeric( $aData['fPrice'] ) ){
+          if( isset( $sBasketPage ) && $aData['iQuantity']>0 ){
             $aData['sBasketPage'] = $sBasketPage;
             $oTpl->setVariables( 'aData', $aData );
             $aData['sBasket'] = $oTpl->tbHtml( $sFile, 'PRODUCTS_BASKET' );
           }
           $oTpl->setVariables( 'aData', $aData );
           $aData['sPrice'] = $oTpl->tbHtml( $sFile, 'PRODUCTS_PRICE' );
-        } elseif( is_numeric( $aData['fPrice'] ) ) {
-          $aData['sPrice'] = $oTpl->tbHtml( $sFile, 'PRODUCTS_OUT_OF_STOCK' ) . $oTpl->tbHtml( $sFile, 'PRODUCTS_PRICE' );
         } else {
           $oTpl->setVariables( 'aData', $aData );
           $aData['sPrice'] = $oTpl->tbHtml( $sFile, 'PRODUCTS_NO_PRICE' );
