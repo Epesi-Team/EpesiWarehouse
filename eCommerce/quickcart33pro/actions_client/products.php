@@ -59,14 +59,15 @@ if( isset( $aActions['a'] ) && is_numeric( $aActions['a'] ) ){
 
     $oTpl->unsetVariables( );
 
-    if( is_numeric( $aData['fPrice'] ) ){
+    if( is_numeric( $aData['fPrice'] ) && $aData['iQuantity'] ){
       if( isset( $config['basket_page'] ) && isset( $oPage->aPages[$config['basket_page']] ) ){
         $sBasketPage = $oPage->aPages[$config['basket_page']]['sLinkName'];
         $sBasket = $oTpl->tbHtml( $aData['sTemplate'], 'BASKET' );
       }
       $sPrice = $oTpl->tbHtml( $aData['sTemplate'], 'PRICE' );
-    }
-    else{
+    } elseif( is_numeric( $aData['fPrice'] ) ) {
+      $sPrice = $oTpl->tbHtml( $aData['sTemplate'], 'OUT_OF_STOCK' ). $oTpl->tbHtml( $aData['sTemplate'], 'PRICE' );    
+    } else {
       $sPrice = $oTpl->tbHtml( $aData['sTemplate'], 'NO_PRICE' );
     }
 

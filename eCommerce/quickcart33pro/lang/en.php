@@ -333,4 +333,5 @@ $lang['Product_Code'] = 'Manufacturer Product Code';
 $lang['Call_for_price'] = 'Call for price';
 $lang['Less'] = 'Less';
 $lang['More'] = 'More';
+$lang['Out_of_stock'] = 'Out of stock';
 ?>

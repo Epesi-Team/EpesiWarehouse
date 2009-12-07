@@ -119,8 +119,7 @@ class Products
 			$aExp['fPrice'] = (float)($netto+$profit)*(100+$taxes[$aExp['tax2']])/100;
 			$aExp['tax'] = $aExp['tax2'];
 		}
-		if(!$aExp['f_quantity'] && !$aExp['distributorQuantity'])
-			$aExp['fPrice']='';
+		$aExp['iQuantity'] = 0+$aExp['f_quantity']+$aExp['distributorQuantity'];
 		if($aExp['fPrice'])
 			$aExp['fPrice'] = number_format($aExp['fPrice'],2,'.','');
 		$aExp['iComments'] = 1;

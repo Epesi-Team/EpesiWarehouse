@@ -332,6 +332,7 @@ $lang['Contact_us'] = 'Kontakt';
 $lang['Codes'] = 'Kody';
 $lang['Product_Code'] = 'Kod producenta';
 $lang['Call_for_price'] = 'Zadzwoń po najlepszą cenę';
+$lang['Out_of_stock'] = 'Produkt chwilowo niedostępny';
 $lang['Less'] = 'Zwiń';
 $lang['More'] = 'Rozwiń';
 ?>
