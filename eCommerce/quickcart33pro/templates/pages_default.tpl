@@ -176,7 +176,6 @@
 <!-- END PRODUCTS_LIST -->
 <!-- BEGIN PRODUCTS_PRICE --><div class="price"><em>$lang[Price]:</em><strong>$aData[sPrice]</strong><span>$config[currency_symbol]</span></div><!-- END PRODUCTS_PRICE -->
 <!-- BEGIN PRODUCTS_NO_PRICE --><div class="noPrice"><strong>$aData[sPrice]</strong></div><!-- END PRODUCTS_NO_PRICE -->
-<!-- BEGIN PRODUCTS_OUT_OF_STOCK --><div class="noPrice"><strong>$lang['Out_of_stock']</strong></div><!-- END PRODUCTS_OUT_OF_STOCK -->
 <!-- BEGIN PRODUCTS_DESCRIPTION -->
 <h5>$aData[sDescriptionShort]</h5>
 <!-- END PRODUCTS_DESCRIPTION -->
