@@ -314,7 +314,7 @@ class Products
           $aData['sImage'] = $oTpl->tbHtml( $sFile, 'PRODUCTS_NO_IMAGE' );
         }
 
-        if( is_numeric( $aData['fPrice'] ) ){
+        if( is_numeric( $aData['fPrice'] ) && $aData['iQuantity']>0 ){
           if( isset( $sBasketPage ) ){
             $aData['sBasketPage'] = $sBasketPage;
             $oTpl->setVariables( 'aData', $aData );
@@ -322,8 +322,9 @@ class Products
           }
           $oTpl->setVariables( 'aData', $aData );
           $aData['sPrice'] = $oTpl->tbHtml( $sFile, 'PRODUCTS_PRICE' );
-        }
-        else{
+        } elseif( is_numeric( $aData['fPrice'] ) ) {
+          $aData['sPrice'] = $oTpl->tbHtml( $sFile, 'PRODUCTS_OUT_OF_STOCK' ) . $oTpl->tbHtml( $sFile, 'PRODUCTS_PRICE' );
+        } else {
           $oTpl->setVariables( 'aData', $aData );
           $aData['sPrice'] = $oTpl->tbHtml( $sFile, 'PRODUCTS_NO_PRICE' );
         }
@@ -425,7 +426,7 @@ class Products
           $aData['sImage'] = $oTpl->tbHtml( $sFile, 'PRODUCTS_NO_IMAGE' );
         }
 
-        if( is_numeric( $aData['fPrice'] ) ){
+        if( is_numeric( $aData['fPrice'] ) && $aData['iQuantity']>0 ){
           if( isset( $sBasketPage ) ){
             $aData['sBasketPage'] = $sBasketPage;
             $oTpl->setVariables( 'aData', $aData );
@@ -433,8 +434,9 @@ class Products
           }
           $oTpl->setVariables( 'aData', $aData );
           $aData['sPrice'] = $oTpl->tbHtml( $sFile, 'PRODUCTS_PRICE' );
-        }
-        else{
+        } elseif( is_numeric( $aData['fPrice'] ) ) {
+          $aData['sPrice'] = $oTpl->tbHtml( $sFile, 'PRODUCTS_OUT_OF_STOCK' ) . $oTpl->tbHtml( $sFile, 'PRODUCTS_PRICE' );
+        } else{
           $oTpl->setVariables( 'aData', $aData );
           $aData['sPrice'] = $oTpl->tbHtml( $sFile, 'PRODUCTS_NO_PRICE' );
         }
