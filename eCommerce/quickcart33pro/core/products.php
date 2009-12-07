@@ -104,7 +104,7 @@ class Products
 			$aExp['sName'] = $aExp['sName2'];
 		if($aExp['sAvailable']=='') 
 			$aExp['sAvailable'] = $aExp['sAvailable2'];
-		if(!$aExp['fPrice'] && $aExp['f_quantity']) {
+		if(!$aExp['fPrice'] && ($aExp['f_quantity'] || $aExp['distributorQuantity'])) {
 			$rr = explode('__',$aExp['fPrice2']);
 			if($rr && $rr[0] && $rr[1]==$currency) {
 				$netto = $rr[0];
