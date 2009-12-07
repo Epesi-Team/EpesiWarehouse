@@ -266,7 +266,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	}
 	
 	public static function get_reserved_qty($item_id) {
-		$trans = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders', array('status'=>array(2,3,4,5), 'transaction_type'=>1), array('id', 'warehouse'));
+		$trans = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders', array('status'=>array(-1,2,3,4,5), 'transaction_type'=>1), array('id', 'warehouse'));
 		$trans = $trans+Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders', array('status'=>array(2,3), 'transaction_type'=>4), array('id', 'warehouse', 'target_warehouse'));
 		$qty = 0;
 		$ids = array();
@@ -278,7 +278,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		$reserved_qty = array();
 		foreach ($items as $i) {
 			$warehouse = $trans[$i['transaction_id']]['warehouse'];
-			if (!$warehouse) continue;
+			if (!$warehouse) $warehouse = -1;
 			if (!isset($reserved_qty[$warehouse])) $reserved_qty[$warehouse] = 0;
 			$reserved_qty[$warehouse] += $i['quantity'];
 			$qty+=$i['quantity'];
@@ -296,6 +296,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	public static function display_available_qty($r, $nolink) {
 		$qty = self::get_reserved_qty($r['id']);
 		$warehouses = Utils_RecordBrowserCommon::get_records('premium_warehouse');
+		$warehouses[-1] = array('id'=>-1);
 		foreach ($warehouses as $w) {
 			$l_id = Utils_RecordBrowserCommon::get_id('premium_warehouse_location', array('warehouse','item_sku'), array($w['id'], $r['id']));
 			if (isset($qty['per_warehouse'][$w['id']])) $minus = $qty['per_warehouse'][$w['id']];
@@ -449,9 +450,17 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	
 	public static function QFfield_net_price(&$form, $field, $label, $mode, $default, $desc, $rb_obj){
 		if ($mode!=='view') {
+			if ($default) {
+				$default = explode('__',$default);
+				$default = Utils_CurrencyFieldCommon::format_default($default[0], $default[1]);
+			}
 			Premium_Warehouse_ItemsCommon::init_net_gross_js_calculation($form, 'tax_rate', 'net_price', 'gross_price');
 			$form->addElement('currency', $field, $label, array('id'=>$field));
 			$form->setDefaults(array($field=>$default, 'use_net_price'=>1));
+			if ($default) {
+				$decp = Utils_CurrencyFieldCommon::get_decimal_point();
+				eval_js('update_gross("'.$decp.'","net_price","gross_price","tax_rate",0);');
+			}
 		} else {
 			$form->addElement('currency', $field, $label, array('id'=>$field));
 			$form->setDefaults(array($field=>$default));

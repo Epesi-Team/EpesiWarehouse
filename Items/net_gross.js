@@ -8,13 +8,13 @@ format_currency=function(val,decp){
 }
 update_net=function(decp,net,gross,tax,switch_field){
 	if (!$(gross).value) return;
-	$(switch_field).value=0;
+	if(switch_field)$(switch_field).value=0;
 	val=$(gross).value.split(decp).join(".");
 	$(net).value=format_currency(100*parseFloat(val)/(100+parseFloat(1*tax_values[$(tax).value])),decp);
 }
 update_gross=function(decp,net,gross,tax,switch_field){
 	if (!$(net).value) return;
-	$(switch_field).value=1;
+	if(switch_field)$(switch_field).value=1;
 	val=$(net).value.split(decp).join(".");
 	$(gross).value=format_currency(parseFloat(val)+parseFloat(val*tax_values[$(tax).value])/100,decp);
 }

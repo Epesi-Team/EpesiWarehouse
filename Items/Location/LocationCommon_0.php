@@ -132,11 +132,12 @@ class Premium_Warehouse_Items_LocationCommon extends ModuleCommon {
 				$quantities[$v['warehouse']] = $v['quantity'];
 				$warehouse_label = $warehouses[$v['warehouse']];
 				if ($v['warehouse']==$warehouse) $warehouse_label = '<b>'.$warehouse_label.'</b>';
-				$tooltip .= '<tr><td>'.
-					Base_LangCommon::ts('Premium_Warehouse_Items_Location',$custom_label['in_one'], array($warehouse_label)).
-					'</td><td bgcolor="#FFFFFF" WIDTH=50 style="text-align:right;">'.
-					$quantities[$v['warehouse']].
-					'</td></tr>';
+				if ($quantities[$v['warehouse']])
+					$tooltip .= '<tr><td>'.
+						Base_LangCommon::ts('Premium_Warehouse_Items_Location',$custom_label['in_one'], array($warehouse_label)).
+						'</td><td bgcolor="#FFFFFF" WIDTH=50 style="text-align:right;">'.
+						$quantities[$v['warehouse']].
+						'</td></tr>';
 				if ($max_shown<=0) {
 					$tooltip .= '<tr><td></td><td>...</td></tr>';
 					continue;
@@ -156,7 +157,10 @@ class Premium_Warehouse_Items_LocationCommon extends ModuleCommon {
 				$total += $v;
 				$quantities[$k] = $v;
 				if ($nolink) continue;
-				$warehouse_label = $warehouses[$k];
+				if ($k!=-1)
+					$warehouse_label = $warehouses[$k];
+				else
+					$warehouse_label = Base_LangCommon::ts('Premium_Warehouse_Items_Location','--');
 				if ($k==$warehouse) $warehouse_label = '<b>'.$warehouse_label.'</b>';
 				$tooltip .= '<tr><td>'.
 					Base_LangCommon::ts('Premium_Warehouse_Items_Location',$custom_label['in_one'], array($warehouse_label)).
