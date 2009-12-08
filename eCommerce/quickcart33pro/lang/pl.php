@@ -336,4 +336,5 @@ $lang['Out_of_stock'] = 'Produkt chwilowo niedostępny';
 $lang['Stock_exceeded'] = 'Przepraszamy, nie posiadamy obecnie żądanej ilości produktu.';
 $lang['Less'] = 'Zwiń';
 $lang['More'] = 'Rozwiń';
+$lang['Other_companies'] = 'Inne';
 ?>

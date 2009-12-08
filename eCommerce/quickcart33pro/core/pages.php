@@ -96,7 +96,7 @@ class Pages
       foreach( $this->mData[0] as $iPage => $bValue ){
         $aData = $this->aPages[$iPage];
 
-        $aData['sSubContent'] = isset( $this->mData[$iPage] ) ? $this->throwSubMenu( $sFile, $iPage, $iPageCurrent, 1 ) : null;
+        $aData['sSubContent'] = (isset( $this->mData[$iPage] ) && !$aData['noSubMenu']) ? $this->throwSubMenu( $sFile, $iPage, $iPageCurrent, 1 ) : null;
 
         $aData['iStyle']    = ( $i % 2 ) ? 0: 1;
         $aData['sStyle']    = ( $i == ( $iCount - 1 ) ) ? 'L': $i + 1;
@@ -339,17 +339,42 @@ class Pages
 	}
 
 	//companies - id mod 4 == 1
-	$query = 'SELECT c.id, c.f_company_name
+	$query = 'SELECT c.id, c.f_company_name, SUM(1) as qty
 			FROM premium_warehouse_items_data_1 i INNER JOIN (company_data_1 c,premium_ecommerce_products_data_1 d) 
 			ON (c.id=i.f_manufacturer AND d.f_item_name=i.id AND d.active=1 AND d.f_publish=1)
-			WHERE i.active=1 ORDER BY c.f_company_name';
+			WHERE i.active=1 GROUP BY c.id ORDER BY c.f_company_name';
 			
 	$x = DB::GetAll($query);
+	$max_companies = array();
+	$other_companies = false;
 	foreach($x as $r) {
 		$id = $r['id']*4+1;
-        $this->aPages[$id] = array('iPage' => $id, 'iPageParent' => 0, 'sName' => $r['f_company_name'], 'sNameTitle' => $r['f_company_name'], 'sDescriptionShort' => '', 'iPosition' => 0, 'iType' => 4, 'iSubpagesShow' => 1, 'iProducts' => 1, 'sDescriptionFull'=>'', 'sMetaDescription' => '', 'sMetaKeywords' =>'' );
-        $this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
-        $this->aPagesParentsTypes[4][] = $id;
+        	$this->aPages[$id] = array('iPage' => $id, 'iPageParent' => 0, 'sName' => $r['f_company_name'], 'sNameTitle' => $r['f_company_name'], 'sDescriptionShort' => '', 'iPosition' => 0, 'iType' => 4, 'iSubpagesShow' => 1, 'iProducts' => 1, 'sDescriptionFull'=>'', 'sMetaDescription' => '', 'sMetaKeywords' =>'' );
+	        $this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
+//        	$this->aPagesParentsTypes[4][] = $id;
+        	$max_companies[$id] = $r['qty'];
+	}
+	if(count($max_companies)>6) {
+		$companies = array_keys($max_companies);
+		asort($max_companies);
+		$other_companies = true;
+		$max_companies = array_slice($max_companies,-5,5,true); //5 most used companies
+		foreach($companies as $cc) {
+			if(isset($max_companies[$cc]))
+				$this->aPagesParentsTypes[4][] = $cc;
+			else {
+				$this->aPages[$cc]['iPageParent'] = 35;
+				$this->aPagesChildrens[35][] = $cc;
+				$this->aPagesParents[$cc] = 35;
+			}
+		}
+		unset($companies);
+		unset($max_companies);
+	} else {
+		foreach($max_companies as $id=>$qty) {
+			$this->aPagesParentsTypes[4][] = $id;
+		}
+		unset($max_companies);
 	}
 	
 	//pages - id mod 4 == 2
@@ -441,6 +466,15 @@ class Pages
 			'iSubpagesShow' => 1, 'iProducts' => 0, 'sDescriptionFull'=>'', 'sMetaDescription' => '', 'sMetaKeywords' =>'');
 	$this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
 	$this->aPagesParentsTypes[2][] = $id;
+
+	//companies select
+	if($other_companies) {
+		$id = 35;
+		$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => $lang['Other_companies'], 'sNameTitle' => '', 'sDescriptionShort' => '', 'iPosition' => 1000, 'iType' => 4, 
+			'iSubpagesShow' => 1, 'iProducts' => 0, 'sDescriptionFull'=>'', 'sMetaDescription' => '', 'sMetaKeywords' =>'', 'noSubMenu'=>1);
+		$this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
+		$this->aPagesParentsTypes[4][] = $id;
+	}
 	//} epesi
   } // end function generateCache
 
