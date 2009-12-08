@@ -908,12 +908,14 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
  		$m->set_table_columns(array(
 				array('name'=>$this->t('Option')),
 				array('name'=>$this->t('Value')),
+				array('name'=>$this->t('Actions'))
 					    ));
- 		$m->add_row($this->t('Published'),'<a '.$this->create_callback_href(array('Premium_Warehouse_eCommerceCommon','toggle_publish'),array($rec['id'],!$rec['publish'])).'>'.($rec['publish']?$on:$off).'</a>');
- 		$m->add_row($this->t('Assigned category'),($arg['category']?$on:$off));
+ 		$m->add_row($this->t('Published'),($rec['publish']?$on:$off),'<a '.$this->create_callback_href(array('Premium_Warehouse_eCommerceCommon','toggle_publish'),array($rec['id'],!$rec['publish'])).'>'.$this->t('toggle').'</a>');
+ 		$m->add_row($this->t('Recommended'),($rec['recommended']?$on:$off),'<a '.$this->create_callback_href(array('Premium_Warehouse_eCommerceCommon','toggle_recommended'),array($rec['id'],!$rec['recommended'])).'>'.$this->t('toggle').'</a>');
+ 		$m->add_row($this->t('Assigned category'),($arg['category']?$on:$off),'');
 		$quantity = Utils_RecordBrowserCommon::get_records('premium_warehouse_location',array('item_sku'=>$arg['id'],'>quantity'=>0));
- 		$m->add_row($this->t('Available in warehouse'),(empty($quantity)?$off:$on));
- 		$m->add_row($this->t('Common attachments'),Utils_AttachmentCommon::count('Premium/Warehouse/eCommerce/Products/'.$arg['id']));
+ 		$m->add_row($this->t('Available in warehouse'),(empty($quantity)?$off:$on),'');
+ 		$m->add_row($this->t('Common attachments'),Utils_AttachmentCommon::count('Premium/Warehouse/eCommerce/Products/'.$arg['id']),'');
 //		$m->add_row('Related,recommended',Utils_RecordBrowserCommon::record_link_open_tag('premium_ecommerce_products',$rec['id'],false,'edit').$this->t('Edit item').Utils_RecordBrowserCommon::record_link_close_tag());
 		
  		$this->display_module($m);

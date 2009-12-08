@@ -546,6 +546,10 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 		Utils_RecordBrowserCommon::update_record('premium_ecommerce_products',$id,array('publish'=>$v?1:0));
 	}
 	
+	public static function toggle_recommended($id,$v) {
+		Utils_RecordBrowserCommon::update_record('premium_ecommerce_products',$id,array('recommended'=>$v?1:0));
+	}
+	
 	public static function publish_warehouse_item($id,$icecat=true) {
 		Utils_RecordBrowserCommon::new_record('premium_ecommerce_products',array('item_name'=>$id,'publish'=>1,'available'=>1));
 		if($icecat)
