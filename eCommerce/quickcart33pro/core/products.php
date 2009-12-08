@@ -156,6 +156,15 @@ class Products
 		$products[$aExp['iProduct']]['aCategories'] = $pages;
 	}
 	
+	if(!$navigation) {
+		$pids = array_keys($products);
+		if($pids) {
+			$reserved = DB::GetAssoc('SELECT d.f_item_name, SUM(d.f_quantity) FROM premium_warehouse_items_orders_details_data_1 d INNER JOIN premium_warehouse_items_orders_data_1 o ON (o.id=d.f_transaction_id) WHERE o.f_transaction_type=1 AND o.f_status not in (7,20,21,22) AND d.active=1 AND o.active=1 AND d.f_item_name IN ('.implode(',',$pids).') GROUP BY d.f_item_name');
+			foreach($reserved as $id=>$qty)
+				$products[$id]['iQuantity'] -= $qty;
+		}
+	}
+	
 	if(count($products)==1 && $navigation && isset($_SESSION['last_products_query']) && count($_SESSION['last_products_query'])==3) {
 		$p = array_shift(array_keys($products));
 		while(1) {

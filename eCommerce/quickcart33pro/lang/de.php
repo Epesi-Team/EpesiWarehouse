@@ -334,4 +334,5 @@ $lang['Call_for_price'] = 'Call for price';
 $lang['Less'] = 'Less';
 $lang['More'] = 'More';
 $lang['Out_of_stock'] = 'Out of stock';
+$lang['Stock_exceeded'] = 'We are sorry, but we don\'t have requested product quantity.';
 ?>

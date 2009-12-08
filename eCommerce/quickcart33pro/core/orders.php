@@ -88,7 +88,11 @@ class Orders
     	$this->fProductsSummary   = null;
 	    $_SESSION['iOrderQuantity'.LANGUAGE]  = 0;
     	$_SESSION['fOrderSummary'.LANGUAGE]   = null;
-		
+	if($_SESSION['stock_exceeded']) {
+		print('<script type="text/javascript">alert(\''.addcslashes($GLOBALS['lang']['Stock_exceeded'],'\\\'').'\')</script>');
+		$_SESSION['stock_exceeded'] = false;
+	}
+	
 		$ret = DB::Execute('SELECT * FROM premium_ecommerce_orders_temp WHERE customer=%s',array($_SESSION['iCustomer'.LANGUAGE]));
 		while($row = $ret->FetchRow()) {
 	        $this->aProducts[$row['product']] = Array( 'iCustomer' => $row['customer'], 'iProduct' => $row['product'], 'iQuantity' => $row['quantity'], 'fPrice' => $row['price'], 'sName' => $row['name'], 'tax'=>$row['tax'], 'weight'=>$row['weight'] );
@@ -137,11 +141,19 @@ class Orders
   * @param array $aForm
   */
   function saveBasket( $aForm ){
+    global $lang;
     if( isset( $aForm['aProducts'] ) && is_array( $aForm['aProducts'] ) ){
 		$qty = DB::GetAssoc('SELECT product,quantity FROM premium_ecommerce_orders_temp WHERE customer=%s',array($_SESSION['iCustomer'.LANGUAGE]));
 		foreach($qty as $p=>$q) {
 			if(isset( $aForm['aProducts'][$p] ) && is_numeric( $aForm['aProducts'][$p] ) && $aForm['aProducts'][$p] > 0 && $aForm['aProducts'][$p] < 10000 && $q!=$aForm['aProducts'][$p]) {
-				DB::Execute('UPDATE premium_ecommerce_orders_temp SET quantity=%d WHERE customer=%s AND product=%d',array($aForm['aProducts'][$p],$_SESSION['iCustomer'.LANGUAGE],$p));
+				$iQuantity = $aForm['aProducts'][$p];
+				$oProduct =& Products::getInstance( );
+				$prod = $oProduct->getProduct($p);
+				if($iQuantity>$prod['iQuantity']) {
+					$iQuantity = $prod['iQuantity'];
+					$_SESSION['stock_exceeded'] = true;
+				}
+				DB::Execute('UPDATE premium_ecommerce_orders_temp SET quantity=%d WHERE customer=%s AND product=%d',array($iQuantity,$_SESSION['iCustomer'.LANGUAGE],$p));
 			}
 		}
     }
@@ -179,6 +191,12 @@ class Orders
 	$old_q = DB::GetOne('SELECT quantity FROM premium_ecommerce_orders_temp WHERE product=%d AND customer=%s',array($iProduct,$iOrder));
 	if($old_q) {
 		$iQuantity+=$old_q;
+		$oProduct =& Products::getInstance( );
+		$prod = $oProduct->getProduct($iProduct);
+		if($iQuantity>$prod['iQuantity']) {
+			$iQuantity = $prod['iQuantity'];
+			$_SESSION['stock_exceeded'] = true;
+		}
 		DB::Execute('UPDATE premium_ecommerce_orders_temp SET quantity=%d WHERE product=%d AND customer=%s',array($iQuantity,$iProduct,$iOrder));
 	} else {
 		$oProduct =& Products::getInstance( );

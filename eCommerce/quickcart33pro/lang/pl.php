@@ -333,6 +333,7 @@ $lang['Codes'] = 'Kody';
 $lang['Product_Code'] = 'Kod producenta';
 $lang['Call_for_price'] = 'Zadzwoń po najlepszą cenę';
 $lang['Out_of_stock'] = 'Produkt chwilowo niedostępny';
+$lang['Stock_exceeded'] = 'Przepraszamy, nie posiadamy obecnie żądanej ilości produktu.';
 $lang['Less'] = 'Zwiń';
 $lang['More'] = 'Rozwiń';
 ?>
