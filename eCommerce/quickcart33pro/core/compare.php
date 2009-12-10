@@ -26,7 +26,7 @@ function listProductsCompare( $sFile, $sBlock ){
 				LEFT JOIN premium_ecommerce_parameter_labels_data_1 pl ON (pl.f_parameter=p.id AND pl.f_language="'.LANGUAGE.'" AND pl.active=1)
 				WHERE pp.active=1 AND pp.f_language="'.LANGUAGE.'"');
     while($row = $ret2->FetchRow())
-	$aFeaturesProducts[$row['iProduct']][$row['f_label']] = $row['sValue'];
+	$aFeaturesProducts[$row['iProduct']][htmlspecialchars($row['f_label'])] = htmlspecialchars($row['sValue']);
   }
   
     $ret = DB::Execute('SELECT c.id, c.f_company_name
@@ -74,6 +74,9 @@ function listProductsCompare( $sFile, $sBlock ){
         $aData['sProducer'] = $aProducers[$aData['iProducer']];
       else
         $aData['sProducer'] = null;
+        
+      foreach($aData as & $s)
+      	$s = htmlspecialchars($s);
 
       $oTpl->setVariables( 'aData', $aData );
       $content .= $oTpl->tbHtml( $sFile, $sBlock.'_LIST' );
