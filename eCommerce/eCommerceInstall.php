@@ -26,6 +26,8 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 			array('name'=>'Item Name', 		'type'=>'select', 'required'=>true, 'param'=>'premium_warehouse_items::SKU|Item Name;Premium_Warehouse_eCommerceCommon::items_crits', 'extra'=>false, 'visible'=>true, 'display_callback'=>array($this->get_type().'Common', 'display_item_name')),
 			array('name'=>'Publish', 		'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>true),
 			array('name'=>'Recommended', 		'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>false),
+//			array('name'=>'Exclude compare services',	'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>false),
+//			array('name'=>'Always on stock',	'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>false),
 			array('name'=>'Position', 		'type'=>'integer', 'required'=>true, 'extra'=>false, 'visible'=>false),
 			array('name'=>'Available',	 	'type'=>'select', 'required'=>true, 'extra'=>false, 'visible'=>false, 'param'=>'premium_ecommerce_availability::Availability Code'),
 			array('name'=>'Description', 	'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>true, 'display_callback'=>array($this->get_type().'Common', 'display_description')),
