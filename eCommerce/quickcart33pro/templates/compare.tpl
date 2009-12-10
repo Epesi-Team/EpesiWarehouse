@@ -7,11 +7,11 @@
     <image>$aData[sImage]</image>
     <price>$aData[fPrice]</price>
     <category>$aData[sCategoryNokaut]</category>
-    <producer>$aData[sProducer]</producer>
+    <producer><![CDATA[$aData[sProducer]]]></producer>
     $aData[sFeatures]
   </offer><!-- END NOKAUT_LIST -->
 <!-- BEGIN NOKAUT_LIST_IMAGE -->$aUrl[scheme]://$aUrl[host]$aUrl[path]$config[dir_files]$aDataImage[sFileName]<!-- END NOKAUT_LIST_IMAGE -->
-<!-- BEGIN NOKAUT_FEATURES --><property name="$aData[sFeatureName]"><![CDATA[$aData[sFeatureValue]]]></property><!-- END NOKAUT_FEATURES -->
+<!-- BEGIN NOKAUT_FEATURES --><property name="$aData[sFeatureNameEscaped]"><![CDATA[$aData[sFeatureValue]]]></property><!-- END NOKAUT_FEATURES -->
 <!-- BEGIN NOKAUT_HEAD --><?xml version="1.0" encoding="$config[charset]"?>
 <!DOCTYPE nokaut SYSTEM "http://www.nokaut.pl/integracja/nokaut.dtd">
 <nokaut>
@@ -28,11 +28,11 @@
         <url>$aUrl[scheme]://$aUrl[host]$aUrl[path]$aData[sLinkName]</url>
         <categoryId><![CDATA[$aData[sPages]]]></categoryId>
         <description><![CDATA[$aData[sDescriptionShort]]]></description>
-        <image width="" height="" title="$aData[sName]">$aData[sImage]</image>
+        <image width="" height="" title="$aData[sNameEscaped]">$aData[sImage]</image>
 	<attributes>
 		<attribute>
 			<name>Producent</name>
-			<producer>$aData[sProducer]</producer>
+			<producer><![CDATA[$aData[sProducer]]]></producer>
 		</attribute>
 	</attributes>
       </offer>
@@ -72,7 +72,7 @@
 <xmldata>
 	<version>12.0</version>
 	<header>
-		<name>$config[title]</name>
+		<name><![CDATA[$config[title]]]></name>
 		<shopid>$config[skapiec_shop_id]</shopid>
 		<www>$aUrl[scheme]://$aUrl[host]$aUrl[path]</www>
 		<time>$aData[sSkapiecDate]</time>
@@ -109,8 +109,8 @@
 <!-- BEGIN FROOGLE_HEAD --><?xml version="1.0" encoding="$config[charset]" ?>
 <rss version ="2.0" xmlns:g="http://base.google.com/ns/1.0">
 <channel>
-	<title>$config[title]</title>
-	<description>$config[description]</description>
+	<title><![CDATA[$config[title]]]></title>
+	<description><![CDATA[$config[description]]]></description>
 	<link>$aUrl[scheme]://$aUrl[host]$aUrl[path]</link><!-- END FROOGLE_HEAD -->
 <!-- BEGIN FROOGLE_FOOT -->
 </channel>
@@ -206,7 +206,7 @@
     <cena>$aData[fPrice]</cena>
     <sciezka_kategorii><![CDATA[$aData[sPagesOnet]]]></sciezka_kategorii>
     <id_kategorii_sklepu>$aData[iPage]</id_kategorii_sklepu>
-    <marka_producent>$aData[sProducer]</marka_producent>
+    <marka_producent><![CDATA[$aData[sProducer]]]></marka_producent>
     <opis><![CDATA[$aData[sDescriptionFull]]]></opis>
     $aData[sImage]
   </oferta>

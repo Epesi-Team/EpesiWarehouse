@@ -26,7 +26,7 @@ function listProductsCompare( $sFile, $sBlock ){
 				LEFT JOIN premium_ecommerce_parameter_labels_data_1 pl ON (pl.f_parameter=p.id AND pl.f_language="'.LANGUAGE.'" AND pl.active=1)
 				WHERE pp.active=1 AND pp.f_language="'.LANGUAGE.'"');
     while($row = $ret2->FetchRow())
-	$aFeaturesProducts[$row['iProduct']][htmlspecialchars($row['f_label'])] = htmlspecialchars($row['sValue']);
+	$aFeaturesProducts[$row['iProduct']][$row['f_label']] = $row['sValue'];
   }
   
     $ret = DB::Execute('SELECT c.id, c.f_company_name
@@ -65,6 +65,8 @@ function listProductsCompare( $sFile, $sBlock ){
       $aData['sFeatures'] = null;
       if( isset( $aFeaturesProducts[$aData['iProduct']] ) ){
         foreach( $aFeaturesProducts[$aData['iProduct']] as $aData['sFeatureName'] => $aData['sFeatureValue'] ){
+          foreach(array_keys($aData) as $s)
+         	$aData[$s.'Escaped'] = htmlspecialchars($aData[$s]);
           $oTpl->setVariables( 'aData', $aData );
           $aData['sFeatures'] .= $oTpl->tbHtml( $sFile, $sBlock.'_FEATURES' );
         } // end for
@@ -75,8 +77,8 @@ function listProductsCompare( $sFile, $sBlock ){
       else
         $aData['sProducer'] = null;
         
-      foreach($aData as & $s)
-      	$s = htmlspecialchars($s);
+      foreach(array_keys($aData) as $s)
+      	$aData[$s.'Escaped'] = htmlspecialchars($aData[$s]);
 
       $oTpl->setVariables( 'aData', $aData );
       $content .= $oTpl->tbHtml( $sFile, $sBlock.'_LIST' );
