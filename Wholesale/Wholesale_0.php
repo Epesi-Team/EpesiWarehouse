@@ -48,7 +48,8 @@ class Premium_Warehouse_Wholesale extends Module {
 		));
 		$where = $gb->get_search_query();
 		if ($where) $where = 'AND '.$where;
-		$limit = $gb->get_limit(DB::GetOne('SELECT COUNT(*) FROM premium_warehouse_wholesale_items WHERE distributor_id=%d AND (quantity!=%d OR quantity_info!=%s) '.$where, array($arg['id'],0,'')));
+//		$limit = $gb->get_limit(DB::GetOne('SELECT COUNT(*) FROM premium_warehouse_wholesale_items WHERE distributor_id=%d AND (quantity!=%d OR quantity_info!=%s) '.$where, array($arg['id'],0,'')));
+		$limit = $gb->get_limit(DB::GetOne('SELECT COUNT(*) FROM premium_warehouse_wholesale_items WHERE distributor_id=%d'.$where, array($arg['id'])));
 		$gb->set_default_order(array('Item Name'=>'ASC'));
 		$order = $gb->get_query_order();
 
@@ -80,7 +81,9 @@ class Premium_Warehouse_Wholesale extends Module {
 			}
 		}
 		
-		$ret = DB::SelectLimit('SELECT *, whl.id AS id,cat.f_foreign_category_name as category FROM premium_warehouse_wholesale_items AS whl LEFT JOIN premium_warehouse_items_data_1 AS itm ON itm.id=whl.item_id LEFT JOIN premium_warehouse_distributor_categories_data_1 cat ON (cat.f_distributor=distributor_id AND cat.id=distributor_category) WHERE distributor_id=%d AND (quantity!=%d OR quantity_info!=%s) '.$where.' '.$order, $limit['numrows'], $limit['offset'], array($arg['id'],0,''));
+		// $ret = DB::SelectLimit('SELECT *, whl.id AS id,cat.f_foreign_category_name as category FROM premium_warehouse_wholesale_items AS whl LEFT JOIN premium_warehouse_items_data_1 AS itm ON itm.id=whl.item_id LEFT JOIN premium_warehouse_distributor_categories_data_1 cat ON (cat.f_distributor=distributor_id AND cat.id=distributor_category) WHERE distributor_id=%d AND (quantity!=%d OR quantity_info!=%s) '.$where.' '.$order, $limit['numrows'], $limit['offset'], array($arg['id'],0,''));
+
+		$ret = DB::SelectLimit('SELECT *, whl.id AS id,cat.f_foreign_category_name as category FROM premium_warehouse_wholesale_items AS whl LEFT JOIN premium_warehouse_items_data_1 AS itm ON itm.id=whl.item_id LEFT JOIN premium_warehouse_distributor_categories_data_1 cat ON (cat.f_distributor=distributor_id AND cat.id=distributor_category) WHERE distributor_id=%d'.$where.' '.$order, $limit['numrows'], $limit['offset'], array($arg['id']));
 
 		while ($row=$ret->FetchRow()) {
 			if ($row['item_id']) {
@@ -138,8 +141,14 @@ class Premium_Warehouse_Wholesale extends Module {
 			array('name'=>$this->t('Quantity Details'), 'width'=>7, 'wrapmode'=>'nowrap'),
 			array('name'=>$this->t('Last Update'), 'width'=>7, 'wrapmode'=>'nowrap')
 		));
+
+/*
 		$limit = $gb->get_limit(DB::GetOne('SELECT COUNT(*) FROM premium_warehouse_wholesale_items WHERE item_id=%d AND (quantity!=%d OR quantity_info!=%s)', array($arg['id'],0,'')));
 		$ret = DB::SelectLimit('SELECT * FROM premium_warehouse_wholesale_items WHERE item_id=%d AND (quantity!=%d OR quantity_info!=%s)', $limit['numrows'], $limit['offset'], array($arg['id'],0,''));
+*/
+		
+		$limit = $gb->get_limit(DB::GetOne('SELECT COUNT(*) FROM premium_warehouse_wholesale_items WHERE item_id=%d', array($arg['id'])));
+		$ret = DB::SelectLimit('SELECT * FROM premium_warehouse_wholesale_items WHERE item_id=%d', $limit['numrows'], $limit['offset'], array($arg['id']));
 		while ($row=$ret->FetchRow()) {
 			$dist = Utils_RecordBrowserCommon::get_record('premium_warehouse_distributor', $row['distributor_id']);
 			$gb->add_row(
