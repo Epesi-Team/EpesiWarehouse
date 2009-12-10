@@ -28,7 +28,7 @@
 						$sPrice
 						$sAvailable
 						$sBasket
-						<font color="black">$aData[sSku]</font>
+						<font color="black">SKU: <i>$aData[sSku]</i></font>
 					</div>
 				</td>
 			</tr>

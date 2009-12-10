@@ -177,7 +177,7 @@
 <!-- BEGIN PRODUCTS_PRICE --><div class="price"><em>$lang[Price]:</em><strong>$aData[sPrice]</strong><span>$config[currency_symbol]</span></div><!-- END PRODUCTS_PRICE -->
 <!-- BEGIN PRODUCTS_NO_PRICE --><div class="noPrice"><strong>$aData[sPrice]</strong></div><!-- END PRODUCTS_NO_PRICE -->
 <!-- BEGIN PRODUCTS_DESCRIPTION -->
-<h5>$aData[sDescriptionShort]</h5>
+<h5>$aData[sDescriptionShort]<small><br><br><i>SKU:</i> $aData[sSku]</small></h5>
 <!-- END PRODUCTS_DESCRIPTION -->
 <!-- BEGIN PRODUCTS_IMAGE -->
 <div class="photo"><a href="$aData[sLinkName]"><img src="$config[dir_files]$aDataImage[iSizeValue1]/$aDataImage[sFileName]" alt="$aDataImage[sFileDescription]" /></a></div>
@@ -199,7 +199,7 @@
 
 <!-- BEGIN PRODUCTS_GALLERY_LIST -->
 <!-- Old version --><!-- <td style="width:$aData[iWidth]%;">$aData[sImage]<h4><a href="$aData[sLinkName]">$aData[sName]</a></h4>$aData[sBasket]$aData[sPrice]</td> -->
-<td class="gallery">$aData[sImage]<h4><a href="$aData[sLinkName]">$aData[sName]</a></h4>$aData[sBasket]$aData[sPrice]</td>
+<td class="gallery">$aData[sImage]<h4><a href="$aData[sLinkName]">$aData[sName]</a></h4>$aData[sBasket]$aData[sPrice]<small><i>SKU:</i> $aData[sSku]</small></td>
 <!-- END PRODUCTS_GALLERY_LIST -->
 <!-- BEGIN PRODUCTS_GALLERY_BREAK --></tr><tr><!-- END PRODUCTS_GALLERY_BREAK -->
 <!-- BEGIN PRODUCTS_GALLERY_BLANK --><td>&nbsp;</td><!-- END PRODUCTS_GALLERY_BLANK -->
