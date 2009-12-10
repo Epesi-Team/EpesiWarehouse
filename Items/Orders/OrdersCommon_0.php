@@ -362,7 +362,6 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	}
 	
 	public static function check_if_no_duplicate_company_contact($data) {
-		if (isset($data['receipt']) && $data['receipt']) return true;
 		if (!isset($data['company']) && !isset($data['contact'])) return true;
 		if (((!isset($data['company']) || $data['company']<=0) && $data['company_name']) ||
 			((!isset($data['contact']) || $data['contact']<=0) && ($data['first_name'] || $data['last_name']))) {
@@ -387,9 +386,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	
 	public static function QFfield_receipt(&$form, $field, $label, $mode, $default, $desc, $rb_obj) {
 		if ($mode!='view') {
-			load_js('modules/Premium/Warehouse/Items/Orders/order_disable_contact_details.js');
-			$form->addElement('checkbox', $field, $label, null, array('id'=>$field, 'onclick'=>'order_disable_contact_details(this.checked)'));
-			eval_js('order_disable_contact_details($("'.$field.'").checked);');
+			$form->addElement('checkbox', $field, $label, null, array('id'=>$field));
 			$form->setDefaults(array($field=>$default));
 		} else {
 			if ($default) {
@@ -397,8 +394,8 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 				$form->freeze('checkbox');
 				$form->setDefaults(array($field=>$default));
 				eval_js('hide_rb_field=function(arg){if($("_"+arg+"__label"))$("_"+arg+"__label").parentNode.parentNode.style.display="none"}');
-				foreach(array('last_name','first_name','company_name','address_1','address_2','city','country','zone','postal_code','phone','tax_id') as $v)
-					eval_js('hide_rb_field("'.$v.'");');
+//				foreach(array('last_name','first_name','company_name','address_1','address_2','city','country','zone','postal_code','phone','tax_id') as $v)
+//					eval_js('hide_rb_field("'.$v.'");');
 			}
 		}
 	}
@@ -589,7 +586,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 					$form->addFormRule(array('Premium_Warehouse_Items_OrdersCommon','check_sale_price'));
 				}
 				$warning = Base_LangCommon::ts('Premium_Warehouse_Items_Orders',$msg.': Sale price is lower than the last purchase price!');
-				$form->addElement('button', 'submit', Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Submit'), array('onclick'=>'if(check_item_price_cost_difference("'.$decp.'","'.$warning.'","'.((int)(!$sell_with_loss)).'")){'.$form->get_submit_form_js().'};'));
+				$form->addElement('button', 'submit', Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Submit'), array('style'=>'width:auto;', 'onclick'=>'if(check_item_price_cost_difference("'.$decp.'","'.$warning.'","'.((int)(!$sell_with_loss)).'")){'.$form->get_submit_form_js().'};'));
 				$form->addElement('hidden', 'last_item_price', '', array('id'=>'last_item_price'));
 			}
 			$form->addElement('text', $field, $label, array('id'=>$field));
@@ -1107,6 +1104,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 						));
 				}
 				if ($values['contact']==0 && trim($values['last_name']) && trim($values['first_name'])) {
+					if ($values['company']==-1) $values['company']='';
 					$values['contact'] = Utils_RecordBrowserCommon::new_record('contact',
 						array(
 							'first_name'=>$values['first_name'],
