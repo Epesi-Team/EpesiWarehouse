@@ -12,9 +12,11 @@ function listProductsCompare( $sFile, $sBlock ){
   //$oFF =& FlatFiles::getInstance( );//epesi commented out
   $content= null;
   $sBlock = strtoupper( $sBlock );
-
-  $aProducts = $GLOBALS['oProduct']->getProducts('f_quantity>0 OR dist.quantity>0');
   
+  set_time_limit(0);
+
+  $aProducts = $GLOBALS['oProduct']->getProducts('');
+
   $sFeaturesBlock = $oTpl->tbHtml( $sFile, $sBlock.'_FEATURES' );
   if(!empty($sFeaturesBlock)) {
     $ret2 = DB::Execute('SELECT pp.f_item_name as iProduct,
@@ -42,6 +44,8 @@ function listProductsCompare( $sFile, $sBlock ){
   if( isset( $aProducts ) ){
     foreach($aProducts as $aData){
       if(!$aData['fPrice']) continue;
+      if((!isset($_REQUEST['outOfStock']) || !$_REQUEST['outOfStock']) && !$aData['iQuantity'])
+      	continue;
       $aData['sPages'] = preg_replace( '/&nbsp;&raquo;&nbsp;/', '/', strip_tags( $GLOBALS['oProduct']->throwProductsPagesTree( $aData['aCategories'] ) ) );
       $aData['sPagesOnet'] = preg_replace( '/&nbsp;&raquo;&nbsp;/', ' &gt; ', strip_tags( $GLOBALS['oProduct']->throwProductsPagesTree( $aData['aCategories'] ) ) );
       $aData['sDescriptionShort'] = changeTxt( $aData['sDescriptionShort'], 'nlNds' );

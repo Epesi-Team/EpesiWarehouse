@@ -76,15 +76,23 @@ class Premium_Warehouse_eCommerce extends Module {
  		$m->set_table_columns(array(array('name'=>$this->t('Site'),'width'=>30),
 							  array('name'=>'Link','width'=>70)));
 		$site = $this->t('http://replace.with.quickcart.url/');
-		$m->add_row('Ceneo.pl',	$site.'?sLang=pl&p=compare-ceneo');
-		$m->add_row('Nokaut.pl', $site.'?sLang=pl&p=compare-nokaut');
-		$m->add_row('Skapiec.pl', $site.'?sLang=pl&p=compare-skapiec');
-		$m->add_row('Handelo.pl', $site.'?sLang=pl&p=compare-handelo');
-		$m->add_row('Szoker.pl', $site.'?sLang=pl&p=compare-szoker');
-		$m->add_row('Cenus.pl', $site.'?sLang=pl&p=compare-cenus');
-		$m->add_row('Zakupy.Onet.pl', $site.'?sLang=pl&p=compare-onet');
-		$m->add_row('Froogle.com', $site.'?sLang=en&p=compare-froogle');
-		$m->add_row('Shopping.com', $site.'?sLang=en&p=compare-shopping');
+		$a = array('Ceneo.pl'=>'ceneo',
+			'Nokaut.pl'=>'nokaut',
+			'Skapiec.pl'=>'skapiec',
+			'Handelo.pl'=>'handelo',
+			'Szoker.pl'=>'szoker',
+			'Cenus.pl'=>'cenus',
+			'Zakupy.Onet.pl'=>'onet');
+		foreach($a as $k=>$url) {
+			$m->add_row($k,	$site.'?sLang=pl&p=compare-'.$url);
+			$m->add_row($k.' ('.$this->t('includes out of stock items').')',	$site.'?sLang=pl&p=compare-'.$url.'&outOfStock=1');
+		}
+		$a = array('Froogle.com'=>'froogle',
+			'Shopping.com'=>'shopping');
+		foreach($a as $k=>$url) {
+			$m->add_row($k,	$site.'?sLang=en&p=compare-'.$url);
+			$m->add_row($k.' ('.$this->t('includes out of stock items').')',	$site.'?sLang=en&p=compare-'.$url.'&outOfStock=1');
+		}
  		$this->display_module($m);
 
 		return true;
