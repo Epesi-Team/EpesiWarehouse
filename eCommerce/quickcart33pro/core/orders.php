@@ -607,11 +607,20 @@ class Orders
     if( !empty( $aPayment['sDescription'] ) )
       $aData['sPaymentDescription'] = $aPayment['sDescription'];
 
+    $aData['contactus'] = getVariable('ecommerce_contactus_'.LANGUAGE);
+    if(!$aData['contactus'])
+	$aData['contactus'] = getVariable('ecommerce_contactus');
+
+    $aData['sCustomHello'] = getVariable('ecommerce_order_email_'.LANGUAGE);
+    if(!$aData['sCustomHello'])
+	$aData['sCustomHello'] = getVariable('ecommerce_order_email');
+
     $oTpl->setVariables( 'aData', $aData );
-    $aSend['sMailContent'] = preg_replace( '/\|n\|/', "\n", $oTpl->tbHtml( $sFile, 'ORDER_EMAIL_BODY' ) );
+    $aSend['sMailContent'] = $oTpl->tbHtml( $sFile, 'ORDER_EMAIL_BODY' );
     $aSend['sTopic'] = $oTpl->tbHtml( $sFile, 'ORDER_EMAIL_TITLE' );
     $aSend['sSender']= $GLOBALS['config']['email'];
-    sendEmail( $aSend, null, $aData['sEmail'] ); //send e-mail to client
+
+    sendEmail( $aSend, null, $aData['sEmail'], true ); //send e-mail to client
   } // end function sendEmailWithOrderDetails
 };
 ?>

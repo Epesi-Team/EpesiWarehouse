@@ -208,23 +208,25 @@ function checkEmail( $sEmail ){
 * @param string $sFile
 * @param string $sTargetMail
 */
-function sendEmail( $aForm, $sFile = 'messages.tpl', $sTargetEmail = null ){
+function sendEmail( $aForm, $sFile = 'messages.tpl', $sTargetEmail = null, $html=false ){
   extract( $aForm );
   $oTpl =& TplParser::getInstance( );
 
   if( !empty( $sTopic ) && !empty( $sMailContent ) && checkEmail( $sSender ) === true ){
-    $sMailContent = change2Latin( $sMailContent );
-    $sTopic       = change2Latin( $sTopic );
 
     if( !empty( $sPhone ) )
-      $sMailContent = $GLOBALS['lang']['Phone'].': '.change2Latin( $sPhone )."\n".$sMailContent;
+      $sMailContent = $GLOBALS['lang']['Phone'].': '.$sPhone."\n".$sMailContent;
     if( !empty( $sName ) )
-      $sMailContent = $GLOBALS['lang']['Name_and_surname'].': '.change2Latin( $sName )."\n".$sMailContent;
+      $sMailContent = $GLOBALS['lang']['Name_and_surname'].': '.$sName."\n".$sMailContent;
 
     if( !isset( $sTargetEmail ) )
       $sTargetEmail = $GLOBALS['config']['email'];
 
-    if( @mail( $sTargetEmail, $sTopic, $sMailContent, 'From: '.$sSender ) ){
+    $headers = 'From: '.$sSender. "\r\n";
+    if($html) $headers .= "Content-type: text/html; charset=utf-8\r\n";
+    	else $headers .= "Content-type: text/plain; charset=utf-8\r\n";
+
+    if( @mail( $sTargetEmail, $sTopic, $sMailContent, $headers) ){
       if( isset( $sFile ) )
         return $oTpl->tbHtml( $sFile, 'MAIL_SEND_CORRECT' );
     }

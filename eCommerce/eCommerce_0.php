@@ -36,6 +36,8 @@ class Premium_Warehouse_eCommerce extends Module {
 						'icon'=>null);
 		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'compare_services')).'>'.$this->ht('Links for compare services').'</a>',
 						'icon'=>null);
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'order_email_page')).'>'.$this->ht('Order e-mail header').'</a>',
+						'icon'=>null);
 		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'pages')).'>'.$this->ht('Pages').'</a>',
 						'icon'=>null);
 		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'parameters')).'>'.$this->ht('Parameters').'</a>',
@@ -343,6 +345,10 @@ class Premium_Warehouse_eCommerce extends Module {
 	
 	public function contactus_page() {
 		return $this->edit_variable_with_lang('Contact us','ecommerce_contactus');
+	}
+	
+	public function order_email_page() {
+		return $this->edit_variable_with_lang('Order e-mail header','ecommerce_order_email');
 	}
 	
 	public function rules_page() {

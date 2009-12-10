@@ -67,7 +67,7 @@ if( !isset( $_SESSION['iCustomer'.LANGUAGE] ) ){
 
 $sKeywords    = $config['keywords'];
 $sDescription = $config['description'];
-ob_start( 'changeCharset' );
+ob_start();
 
 if( isset( $aActions ) && is_file( 'actions_client/'.$aActions['f'].'.php' ) )
   require 'actions_client/'.$aActions['f'].'.php';

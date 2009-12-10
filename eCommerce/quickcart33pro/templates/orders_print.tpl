@@ -84,23 +84,64 @@
 
 <!-- BEGIN ORDER_EMAIL_TITLE -->$lang[Order_info_title] $aData[iOrder]<!-- END ORDER_EMAIL_TITLE -->
 <!-- BEGIN ORDER_EMAIL_BODY -->
-$aData[sFirstName] $aData[sLastName]
-$aData[sCompanyName]
-$aData[sNip]
-$aData[sStreet]
-$aData[sZipCode] $aData[sCity]
-$aData[sCountry]
-$aData[sPhone]
-$aData[sEmail]
-------------$aData[sProducts]
-- $aData[sCarrierName] ($aData[sPaymentName]) = $aData[sPaymentCarrierPrice] $config[currency_symbol]
-- $lang[Payment_channel]: $aData[sPaymentChannel]
----
-$lang[Summary_cost]: $aData[sOrderSummary] $config[currency_symbol]
----
+<table border="0" cellpadding="0" cellspacing="0" style="width: 100%; font-family: Tahoma; font-size: 12px;">
+    <tbody>
+        <tr>
+            <td colspan="2" style="height: 80px; background: url('http://www.prosperixgroup.com/templates/img/logo.gif') no-repeat; vertical-align: bottom; text-align: right;">
+                <div style="height: 80px; width: 300px; float: right; color: #4c4c4c; font-size: 11px; font-weight: bold; background: url('http://www.prosperixgroup.com/templates/img/gradient.gif') right repeat-y;">
+                    <div style="padding: 10px;">$config['title']</div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="height: 20px; background: url('http://www.prosperixgroup.com/templates/img/top-menu.gif') repeat-x"></td>
+        </tr>
+        <tr>
+            <td colspan="2" style="height: 20px; background: url('http://www.prosperixgroup.com/templates/img/path.gif') repeat-x"></td>
+        </tr>
+        <tr>
+            <td style="width: 300px; vertical-align: top; font-size: 11px;">
+                <div style="width: 10px; height: 10px; float: right; background: url('http://www.prosperixgroup.com/templates/img/shadow-corner.gif') no-repeat;"></div>
+                <div style="width: 300px; background: #993333 url('http://www.prosperixgroup.com/templates/img/shadow-left.gif') right repeat-y; color: white; font-weight: bold; padding: 5px 0px 5px 20px;">$lang['Contact_us']</div>
+                <div style="width: 280px; background: #f2f2f2 url('http://www.prosperixgroup.com/templates/img/shadow-left.gif') right repeat-y; padding: 20px;">
+$aData[contactus]
+                </div>
+                <div style="width: 320px; height: 10px; background: url('http://www.prosperixgroup.com/templates/img/shadow-top.gif') right repeat-x;">
+                    <div style="width: 10px; height: 10px; float: right; background: url('http://www.prosperixgroup.com/templates/img/shadow-corner-2.gif') no-repeat;"></div>
+                </div>
+            </td>
+            <td style="vertical-align: top;">
+                <div style="padding: 20px; background: url('http://www.prosperixgroup.com/templates/img/shadow-top.gif') repeat-x;">
+                    <div style="width: 100%; text-align: left;">
+<h3>$lang['Order_info_title'] $aData[iOrder]</h3>
+$aData[sCustomHello]
 $aData[sPaymentDescription]
+<br>
+<h4>$lang[Your_personal_information]</h4>
+$lang[First_and_last_name]: <i>$aData[sFirstName] $aData[sLastName]</i><br>
+$lang[Company]: <i>$aData[sCompanyName]</i><br>
+$lang[Nip]: <i>$aData[sNip]</i><br>
+$lang[Street]: <i>$aData[sStreet]</i><br>
+$lang[Zip_code]: <i>$aData[sZipCode]</i><br>
+$lang[City]: <i>$aData[sCity]</i><br>
+$lang[Country]: <i>$aData[sCountry]</i><br>
+$lang[Telephone]: <i>$aData[sPhone]</i><br>
+$lang[Email]: <i>$aData[sEmail]</i><br>
+<h4>$lang[Order_summary]</h4>
+<ul>
+$aData[sProducts]
+<li>$aData[sCarrierName] ($aData[sPaymentName]) = $aData[sPaymentCarrierPrice] $config[currency_symbol]</li>
+<li>$lang[Payment_channel]: $aData[sPaymentChannel]</li>
+</ul>
+$lang[Summary_cost]: $aData[sOrderSummary] $config[currency_symbol]
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
 <!-- END ORDER_EMAIL_BODY -->
 
-<!-- BEGIN ORDER_EMAIL_LIST -->|n|- $aData[sName] - $aData[sPrice] $config[currency_symbol] * $aData[iQuantity] = $aData[sSummary] $config[currency_symbol]<!-- END ORDER_EMAIL_LIST -->
+<!-- BEGIN ORDER_EMAIL_LIST --><li>$aData[sName] - $aData[sPrice] $config[currency_symbol] * $aData[iQuantity] = $aData[sSummary] $config[currency_symbol]</li><!-- END ORDER_EMAIL_LIST -->
 <!-- BEGIN ORDER_EMAIL_HEAD --><!-- END ORDER_EMAIL_HEAD -->
 <!-- BEGIN ORDER_EMAIL_FOOT --><!-- END ORDER_EMAIL_FOOT -->

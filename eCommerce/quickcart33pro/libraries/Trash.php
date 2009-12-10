@@ -371,28 +371,6 @@ function countPagesClassic( $iMax, $iMaxPerPage, $iPage, $sAddress, $sSeparator 
   return $sPages;
 } // end function countPagesClassic
 
-/**
-* Change string to latin
-* @return string
-* @param string $sContent
-*/
-function change2Latin( $sContent ){
-  return str_replace(
-    Array( 'ś', 'ą', 'ź', 'ż', 'ę', 'ł', 'ó', 'ć', 'ń', 'Ś', 'Ą', 'Ź', 'Ż', 'Ę', 'Ł', 'Ó', 'Ć', 'Ń', 'á', 'č', 'ď', 'é', 'ě', 'í', 'ň', 'ř', 'š', 'ť', 'ú', 'ů', 'ý', 'ž', 'Á', 'Č', 'Ď', 'É', 'Ě', 'Í', 'Ň', 'Ř', 'Š', 'Ť', 'Ú', 'Ů', 'Ý', 'Ž', 'ä', 'ľ', 'ĺ', 'ŕ', 'Ä', 'Ľ', 'Ĺ', 'Ŕ', 'ö', 'ü', 'ß', 'Ö', 'Ü' ),
-    Array( 's', 'a', 'z', 'z', 'e', 'l', 'o', 'c', 'n', 'S', 'A', 'Z', 'Z', 'E', 'L', 'O', 'C', 'N', 'a', 'c', 'd', 'e', 'e', 'i', 'n', 'r', 's', 't', 'u', 'u', 'y', 'z', 'A', 'C', 'D', 'E', 'E', 'I', 'N', 'R', 'S', 'T', 'U', 'U', 'Y', 'Z', 'a', 'l', 'l', 'r', 'A', 'L', 'L', 'R', 'o', 'u', 'S', 'O', 'U' ),
-    $sContent
-  );
-} // end function change2Latin
-
-/**
-* Changes charset to default iso-8859-2
-* @return string
-* @param string $sContent
-*/
-function changeCharset( $sContent ){
-  return $sContent;
-  //return str_replace( Array( 'ś', 'ą', 'ź', 'Ś', 'Ą', 'Ź' ), Array( '¶', '±', 'Ľ', '¦', 'ˇ', '¬' ), $sContent );
-} // end function changeCharset
 
 /**
 * Change '$' to '&#36;'
@@ -505,10 +483,10 @@ function getAction( $p ){
 * @param string $sContent
 */
 function change2Url( $sContent ){
-  return strtolower( change2Latin( str_replace( 
+  return strtolower( str_replace( 
     Array( ' ', '&raquo;', '/', '$', '\'', '"', '~', '\\', '?', '#', '%', '+', '^', '*', '>', '<', '@', '|', '&quot;', '%', ':', '&', ',', '=', '--', '--', '[', ']' ),
     Array( '-', '',        '-', '-', '',   '',  '-', '-',  '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-',      '-', '-', '',  '-', '-', '-',  '-', '(', ')' ),
     trim( $sContent )
-  ) ) );
+  ) );
 } // end function change2Url
 ?>

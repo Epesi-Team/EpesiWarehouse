@@ -113,7 +113,7 @@ class FileJobs
   * @param string $sFileName
   */
   function changeFileName( $sFileName ){
-    return change2Latin( str_replace( Array( '$', '\'', '"', '~', '/', '\\', '?', '#', '%', '+', '*', ':', '|', '<', '>' ), '_', $sFileName ) );
+    return str_replace( Array( '$', '\'', '"', '~', '/', '\\', '?', '#', '%', '+', '*', ':', '|', '<', '>' ), '_', $sFileName );
   } // end function changeFileName
 
   /**

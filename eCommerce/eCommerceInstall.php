@@ -437,14 +437,15 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		$this->add_aco('edit protected notes','Employee Administrator');
 		$this->add_aco('edit public notes','Employee');
 
-		Variable::set('ecommerce_rules','You can edit this page in Administration - eCommerce settings.');
-		Variable::set('ecommerce_contactus','You can edit this page in Administration - eCommerce settings.');
-
 		//icecat
 		Variable::set('icecat_user','');
 		Variable::set('icecat_pass','');
 		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_products', 'Premium_Warehouse_eCommerce', 'icecat_addon', 'Premium_Warehouse_eCommerceCommon::icecat_addon_parameters');
 		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items_categories',array('name'=>'Available languages',	'type'=>'calculated', 'required'=>false, 'filter'=>false, 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_eCommerceCommon','display_category_available_languages')));
+
+		Variable::set('ecommerce_rules','You can edit this page in Administration - eCommerce settings.');
+		Variable::set('ecommerce_contactus','You can edit this page in Administration - eCommerce settings.');
+		Variable::set('ecommerce_order_email','');
 
 		Variable::set('ecommerce_autoprice',false);
 		Variable::set('ecommerce_minimal_profit','');
@@ -475,6 +476,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 			Variable::delete('ecommerce_rules_'.$k,false);
 			Variable::delete('ecommerce_contactus_'.$k,false);
 		}
+		Variable::delete('ecommerce_order_email');
 		Variable::delete('ecommerce_rules');
 		Variable::delete('ecommerce_contactus');
 		Variable::delete('ecommerce_autoprice');
