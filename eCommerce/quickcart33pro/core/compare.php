@@ -14,8 +14,8 @@ function listProductsCompare( $sFile, $sBlock ){
   $sBlock = strtoupper( $sBlock );
   
   set_time_limit(0);
+  ini_set('memory_limit', '256M');
 
-  $aProducts = $GLOBALS['oProduct']->getProducts('');
 
   $sFeaturesBlock = $oTpl->tbHtml( $sFile, $sBlock.'_FEATURES' );
   if(!empty($sFeaturesBlock)) {
@@ -41,7 +41,9 @@ function listProductsCompare( $sFile, $sBlock ){
     }
 
 
-  if( isset( $aProducts ) ){
+  for($part=0;; $part++) {
+    $aProducts = $GLOBALS['oProduct']->getProducts('',200,200*$part);
+    if( !$aProducts) break;
     foreach($aProducts as $aData){
       if(!$aData['fPrice']) continue;
       if((!isset($_REQUEST['outOfStock']) || !$_REQUEST['outOfStock']) && !$aData['iQuantity'])
@@ -87,7 +89,9 @@ function listProductsCompare( $sFile, $sBlock ){
       $oTpl->setVariables( 'aData', $aData );
       $content .= $oTpl->tbHtml( $sFile, $sBlock.'_LIST' );
     } // end for
+    
 
+    }
     if( $sBlock == 'SKAPIEC' ){
       $aData['sSkapiecDate'] = date( 'Y-m-d' );
       $aData['fSkapiecMinCourier'] = throwCourierMinPrice( );
@@ -100,7 +104,7 @@ function listProductsCompare( $sFile, $sBlock ){
     }
     else
       return null;
-  }
+
 } // end function listProductsCompare
 
 /**

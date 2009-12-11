@@ -56,7 +56,7 @@
 <!-- BEGIN SKAPIEC_LIST -->
 		<item>
 			<compid>$aData[iProduct]</compid>
-			<vendor>$aData[sProducer]</vendor>
+			<vendor><![CDATA[$aData[sProducer]]]></vendor>
 			<desc><![CDATA[$aData[sName]]]></desc>
 			<price>$aData[fPrice]</price>
 			<dprice></dprice>

@@ -58,6 +58,9 @@ class Premium_Warehouse_Wholesale extends Module {
 		$form2->addElement('commondata', 'item_type', $this->t('Item Type'), 'Premium_Warehouse_Items_Type', array('empty_option'=>true, 'order_by_key'=>true));
 		$form2->addElement('text', 'product_code', $this->t('Product Code'));
 		$form2->addElement('text', 'manufacturer_part_number', $this->t('Manufacturer Part Number'));
+		$form2->addElement('text', 'weight', $this->t('Weight'));
+		$form2->addRule('weight',$this->t('Field required'),'required');
+		$form2->addRule('weight',$this->t('Invalid number'),'numeric');
 		$form2->setDefaults(array('item_type'=>1));
 		$lp = $this->init_module('Utils_LeightboxPrompt');
 		$lp->add_option('add', 'Add', '', $form2);
