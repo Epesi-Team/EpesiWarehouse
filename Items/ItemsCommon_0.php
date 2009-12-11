@@ -172,9 +172,9 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
     
     public static function QFfield_item_category(&$form, $field, $label, $mode, $default) {
 		if ($mode=='edit' || $mode=='add') {
-			$opts = array();
-			self::build_category_tree($opts);
-			$form->addElement('multiselect', $field, $label, $opts, array('id'=>$field));
+//			$opts = array();
+//			self::build_category_tree($opts);
+			$form->addElement('automulti', $field, $label, array('Premium_Warehouse_ItemsCommon', 'automulti_search'), array(), array('Premium_Warehouse_ItemsCommon', 'automulti_format'));
 			$form->setDefaults(array($field=>$default));
 		} else {
 			$def = array();
@@ -191,6 +191,36 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 			}
 			$form->addElement('static', $field, $label, implode('<br/>',$def));
 		}
+    }
+    
+    public static function resolve_category($id, &$i, &$n) {
+    	$i = $id.'/'.$i;
+    	$rec = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_categories', $id);
+    	$n = $rec['category_name'].'/'.$n;
+    	if(isset($rec['parent_category'])) self::resolve_category($rec['parent_category'],$i,$n);
+    }
+    
+    public static function automulti_search($arg) {
+	$arg = DB::Concat(DB::qstr('%'),DB::qstr($arg),DB::qstr('%'));
+	$cats = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_categories', array('~"category_name'=>$arg),array('category_name','parent_category'),array('position'=>'ASC'));
+	$ret = array();
+    	foreach($cats as $c) {
+    		self::resolve_category($c['parent_category'], $c['id'], $c['category_name']);
+    		$ret[ltrim($c['id'],'/')] = ltrim($c['category_name'],'/');
+    	}
+    	return $ret;
+    }
+    
+    public static function automulti_format($id) {
+	$keys = explode('/',$id);
+	if (!is_numeric($keys[0])) return; // TODO: it's just a fail-safe
+	$next = self::get_category_name($keys[0]);
+	if (count($keys)>1) {
+		if (count($keys)>2) $next .= '/.../';
+		else $next .= '/';
+		$next .= self::get_category_name($keys[count($keys)-1]);
+	}
+    	return $next;
     }
 
     public static function QFfield_category_parent(&$form, $field, $label, $mode, $default,$x,$y) {
