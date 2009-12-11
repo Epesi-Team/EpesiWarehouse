@@ -115,7 +115,9 @@ $aData[contactus]
                     <div style="width: 100%; text-align: left;">
 <h3>$lang['Order_info_title'] $aData[iOrder]</h3>
 $aData[sCustomHello]
+<pre>
 $aData[sPaymentDescription]
+</pre>
 <br>
 <h4>$lang[Your_personal_information]</h4>
 $lang[First_and_last_name]: <i>$aData[sFirstName] $aData[sLastName]</i><br>
