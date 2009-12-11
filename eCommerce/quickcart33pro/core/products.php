@@ -84,7 +84,9 @@ class Products
 								it.f_tax_rate tax2,
 								dist.quantity as distributorQuantity,
 								dist.price fPrice3,
-								dist.price_currency
+								dist.price_currency,
+								pr.f_exclude_compare_services,
+								pr.f_always_on_stock
 					FROM premium_ecommerce_products_data_1 pr
 					INNER JOIN (premium_warehouse_items_data_1 it,premium_ecommerce_availability_data_1 av) ON (pr.f_item_name=it.id AND av.id=pr.f_available)
 					LEFT JOIN premium_ecommerce_prices_data_1 pri ON (pri.f_item_name=it.id AND pri.active=1 AND pri.f_currency='.$currency.')
@@ -121,6 +123,11 @@ class Products
 		}
 		if(!$aExp['tax']) $aExp['tax'] = 0;
 		$aExp['iQuantity'] = 0+$aExp['f_quantity']+$aExp['distributorQuantity'];
+		if($aExp['f_always_on_stock']) {
+			if($aExp['iQuantity']<10) $aExp['iQuantity'] = 10;
+		} else {
+			unset($aExp['f_always_on_stock']);
+		}
 		if($aExp['fPrice'])
 			$aExp['fPrice'] = number_format($aExp['fPrice'],2,'.','');
 		$aExp['iComments'] = 1;
@@ -161,8 +168,10 @@ class Products
 		$pids = array_keys($products);
 		if($pids) {
 			$reserved = DB::GetAssoc('SELECT d.f_item_name, SUM(d.f_quantity) FROM premium_warehouse_items_orders_details_data_1 d INNER JOIN premium_warehouse_items_orders_data_1 o ON (o.id=d.f_transaction_id) WHERE o.f_transaction_type=1 AND o.f_status not in (7,20,21,22) AND d.active=1 AND o.active=1 AND d.f_item_name IN ('.implode(',',$pids).') GROUP BY d.f_item_name');
-			foreach($reserved as $id=>$qty)
-				$products[$id]['iQuantity'] -= $qty;
+			foreach($reserved as $id=>$qty) {
+				if(!isset($products[$id]['f_always_on_stock']))
+					$products[$id]['iQuantity'] -= $qty;
+			}
 		}
 	}
 	

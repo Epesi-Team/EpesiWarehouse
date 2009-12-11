@@ -932,6 +932,8 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 					    ));
  		$m->add_row($this->t('Published'),($rec['publish']?$on:$off),'<a '.$this->create_callback_href(array('Premium_Warehouse_eCommerceCommon','toggle_publish'),array($rec['id'],!$rec['publish'])).'>'.$this->t('toggle').'</a>');
  		$m->add_row($this->t('Recommended'),($rec['recommended']?$on:$off),'<a '.$this->create_callback_href(array('Premium_Warehouse_eCommerceCommon','toggle_recommended'),array($rec['id'],!$rec['recommended'])).'>'.$this->t('toggle').'</a>');
+ 		$m->add_row($this->t('Exclude compare services'),($rec['exclude_compare_services']?$on:$off),'<a '.$this->create_callback_href(array('Premium_Warehouse_eCommerceCommon','toggle_exclude_compare_services'),array($rec['id'],!$rec['exclude_compare_services'])).'>'.$this->t('toggle').'</a>');
+ 		$m->add_row($this->t('Always on stock'),($rec['always_on_stock']?$on:$off),'<a '.$this->create_callback_href(array('Premium_Warehouse_eCommerceCommon','toggle_always_on_stock'),array($rec['id'],!$rec['always_on_stock'])).'>'.$this->t('toggle').'</a>');
  		$m->add_row($this->t('Assigned category'),($arg['category']?$on:$off),'');
 		$quantity = Utils_RecordBrowserCommon::get_records('premium_warehouse_location',array('item_sku'=>$arg['id'],'>quantity'=>0));
  		$m->add_row($this->t('Available in warehouse'),(empty($quantity)?$off:$on),'');
