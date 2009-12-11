@@ -31,7 +31,7 @@ class Premium_Warehouse_Items extends Module {
 		$this->rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items');
 		$this->rb->set_default_order(array('item_name'=>'ASC'));
 		$this->rb->set_cut_lengths(array('item_name'=>50,'vendor'=>35));
-		$defaults = array('quantity_on_hand'=>'0','reorder_point'=>'0');
+		$defaults = array('quantity_on_hand'=>'0','reorder_point'=>'0','weight'=>1);
 		$this->rb->set_defaults(array(
 			$this->t('Inv. Item')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'inv_item.png'), 'defaults'=>array_merge($defaults,array('item_type'=>0))),
 			$this->t('Serialized Item')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'serialized.png'), 'defaults'=>array_merge($defaults,array('item_type'=>1))),
