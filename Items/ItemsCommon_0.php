@@ -206,7 +206,12 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 	$ret = array();
     	foreach($cats as $c) {
     		self::resolve_category($c['parent_category'], $c['id'], $c['category_name']);
-    		$ret[ltrim($c['id'],'/')] = ltrim($c['category_name'],'/');
+    		$name = ltrim($c['category_name'],'/');
+    		$r = explode('/',$name);
+    		if(count($r)>3) {
+    			$name = $r[0].'/.../'.$r[count($r)-1];
+    		}
+    		$ret[ltrim($c['id'],'/')] = $name;
     	}
     	return $ret;
     }
