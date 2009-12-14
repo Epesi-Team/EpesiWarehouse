@@ -3,8 +3,9 @@
   <div class="message" id="ok">
     <h3>$lang[Order_sent]</h3>
   </div>
+  <pre>
   $sPaymentDescription
-	
+  </pre>	
   <h4>$lang[Your_personal_information]</h4>
   <dl>
     <dt class="orderId">ID:</dt><dd class="orderId">$aOrder[iOrder]</dd>

@@ -412,14 +412,8 @@ class Orders
     }
     $currency = $this->getCurrencyId();
     $weight = $this->getWeight();
-    $row = DB::GetRow('SELECT f_price,f_description FROM premium_ecommerce_payments_carriers_data_1 WHERE active=1 AND f_payment=%s AND f_shipment=%d AND f_currency=%d
-    			AND (
-			f_max_weight=(SELECT MIN(f_max_weight) FROM premium_ecommerce_payments_carriers_data_1 WHERE active=1 AND f_currency=%s AND f_max_weight>=%f)
-			OR
-			(f_max_weight is null 
-			    AND
-			(SELECT 1 FROM premium_ecommerce_payments_carriers_data_1 WHERE active=1 AND f_currency=%s AND f_max_weight>=%f LIMIT 1) is null
-			))',array($iPayment,$iCarrier,$currency,$currency,$weight,$currency,$weight));
+    $row = DB::GetRow('SELECT MIN(f_price),f_description FROM premium_ecommerce_payments_carriers_data_1 WHERE active=1 AND f_payment=%s AND f_shipment=%d AND f_currency=%d
+    			AND (f_max_weight>=%f OR f_max_weight is null) GROUP BY f_payment,f_shipment,f_currency',array($iPayment,$iCarrier,$currency,$weight));
     if($row) {
 	    return array('fPrice'=>$row['f_price'],'sDescription'=>changeTxt( $row['f_description'], 'Ndsnl' ), 'iPayment'=>$iPayment, 'iCarrier'=>$iCarrier);
     }
@@ -449,14 +443,8 @@ class Orders
     if( $aPayments && $aShipments ){
       $currency = $this->getCurrencyId();
       //get possible configurations
-      $ret = DB::Execute('SELECT f_payment,f_shipment,f_price FROM premium_ecommerce_payments_carriers_data_1 
-    			WHERE active=1 AND f_currency=%s AND (
-			f_max_weight=(SELECT MIN(f_max_weight) FROM premium_ecommerce_payments_carriers_data_1 WHERE active=1 AND f_currency=%s AND f_max_weight>=%f)
-			OR
-			(f_max_weight is null 
-			    AND
-			(SELECT 1 FROM premium_ecommerce_payments_carriers_data_1 WHERE active=1 AND f_currency=%s AND f_max_weight>=%f LIMIT 1) is null
-			))',array($currency,$currency,$weight,$currency,$weight));
+      $ret = DB::Execute('SELECT f_payment,f_shipment,MIN(f_price) as f_price FROM premium_ecommerce_payments_carriers_data_1 
+    			WHERE active=1 AND f_currency=%s AND (f_max_weight>=%f OR f_max_weight is null) GROUP BY f_payment,f_shipment',array($currency,$weight));
       $aOuterPayments = array();
       while($aExp = $ret->FetchRow()) {
         if($freeDelivery)
