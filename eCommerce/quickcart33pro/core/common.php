@@ -213,7 +213,6 @@ function sendEmail( $aForm, $sFile = 'messages.tpl', $sTargetEmail = null, $html
   $oTpl =& TplParser::getInstance( );
 
   if( !empty( $sTopic ) && !empty( $sMailContent ) && checkEmail( $sSender ) === true ){
-
     if( !empty( $sPhone ) )
       $sMailContent = $GLOBALS['lang']['Phone'].': '.$sPhone."\n".$sMailContent;
     if( !empty( $sName ) )
@@ -222,17 +221,32 @@ function sendEmail( $aForm, $sFile = 'messages.tpl', $sTargetEmail = null, $html
     if( !isset( $sTargetEmail ) )
       $sTargetEmail = $GLOBALS['config']['email'];
 
-    $headers = 'From: '.$sSender. "\r\n";
-    if($html) $headers .= "Content-type: text/html; charset=utf-8\r\n";
-    	else $headers .= "Content-type: text/plain; charset=utf-8\r\n";
+    require_once(DIR_LIBRARIES.'class.phpmailer-lite.php');
 
-    if( @mail( $sTargetEmail, $sTopic, $sMailContent, $headers) ){
+    global $mail;
+    $mail = new PHPMailerLite(); // defaults to using php "Sendmail" (or Qmail, depending on availability)
+
+    try {
+        $mail->IsMail(); // telling the class to use native PHP mail()
+  	$mail->SetFrom($sSender);
+  	$mail->AddAddress($sTargetEmail);
+        $mail->CharSet = 'UTF-8';
+  	$mail->Subject = $sTopic;
+  	$mail->MsgHTML($sMailContent);
+
+  	$mail->Send();
+        if( isset( $sFile ) )
+  	  return $oTpl->tbHtml( $sFile, 'MAIL_SEND_CORRECT' );
+    } catch (phpmailerException $e) {
       if( isset( $sFile ) )
-        return $oTpl->tbHtml( $sFile, 'MAIL_SEND_CORRECT' );
-    }
-    else{
+        return $oTpl->tbHtml( $sFile, 'MAIL_SEND_ERROR' ).$e->errorMessage(); //Pretty error messages from PHPMailer
+      else
+        return $e->errorMessage(); //Pretty error messages from PHPMailer
+    } catch (Exception $e) {
       if( isset( $sFile ) )
-        return $oTpl->tbHtml( $sFile, 'MAIL_SEND_ERROR' );
+        return $oTpl->tbHtml( $sFile, 'MAIL_SEND_ERROR' ).$e->getMessage(); //Boring error messages from anything else!
+      else
+        return $e->getMessage(); //Boring error messages from anything else!
     }
   }
   else{

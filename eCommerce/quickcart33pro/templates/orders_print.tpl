@@ -84,60 +84,107 @@
 
 <!-- BEGIN ORDER_EMAIL_TITLE -->$lang[Order_info_title] $aData[iOrder]<!-- END ORDER_EMAIL_TITLE -->
 <!-- BEGIN ORDER_EMAIL_BODY -->
-<table border="0" cellpadding="0" cellspacing="0" style="width: 100%; font-family: Tahoma; font-size: 12px;">
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
     <tbody>
         <tr>
-            <td colspan="2" style="height: 80px; background: url('http://www.prosperixgroup.com/templates/img/logo.gif') no-repeat; vertical-align: bottom; text-align: right;">
-                <div style="height: 80px; width: 300px; float: right; color: #4c4c4c; font-size: 11px; font-weight: bold; background: url('http://www.prosperixgroup.com/templates/img/gradient.gif') right repeat-y;">
-                    <div style="padding: 10px;">$config['title']</div>
-                </div>
+            <td colspan="2" height="80" width="430"><img src="templates/img/logo.gif"></td>
+            <td height="80" width="100%"><font size="4" face="Arial,sans-serif" color="#4c4c4c"><center><strong>$config['title']</strong></center></font></td>
+            <td height="80" width="270"><img src="templates/img/gradient.gif"></td>
+        </tr>
+    </tbody>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+    <tbody>
+        <tr>
+            <td height="20" width="100%" align="right" background="templates/img/top-menu.gif">
+            	&nbsp;
             </td>
         </tr>
+    </tbody>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+    <tbody>
         <tr>
-            <td colspan="2" style="height: 20px; background: url('http://www.prosperixgroup.com/templates/img/top-menu.gif') repeat-x"></td>
+            <td height="20" background="templates/img/path.gif"></td>
         </tr>
+    </tbody>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+    <tbody>
         <tr>
-            <td colspan="2" style="height: 20px; background: url('http://www.prosperixgroup.com/templates/img/path.gif') repeat-x"></td>
-        </tr>
-        <tr>
-            <td style="width: 300px; vertical-align: top; font-size: 11px;">
-                <div style="width: 10px; height: 10px; float: right; background: url('http://www.prosperixgroup.com/templates/img/shadow-corner.gif') no-repeat;"></div>
-                <div style="width: 300px; background: #993333 url('http://www.prosperixgroup.com/templates/img/shadow-left.gif') right repeat-y; color: white; font-weight: bold; padding: 5px 0px 5px 20px;">$lang['Contact_us']</div>
-                <div style="width: 280px; background: #f2f2f2 url('http://www.prosperixgroup.com/templates/img/shadow-left.gif') right repeat-y; padding: 20px;">
-$aData[contactus]
-                </div>
-                <div style="width: 320px; height: 10px; background: url('http://www.prosperixgroup.com/templates/img/shadow-top.gif') right repeat-x;">
-                    <div style="width: 10px; height: 10px; float: right; background: url('http://www.prosperixgroup.com/templates/img/shadow-corner-2.gif') no-repeat;"></div>
-                </div>
+            <td width="300" valign="top">
+                <table border="0" cellpadding="0" cellspacing="0" width="300" height="20">
+                    <tbody>
+                        <tr>
+                            <td height="30" width="20"  bgcolor="#993333"></td>
+                            <td height="30" width="250" bgcolor="#993333" valign="middle"><font size="2" face="Arial,sans-serif" color="white"><strong>$lang['Contact_us']</strong></font></td>
+                            <td height="30" width="20"  bgcolor="#993333"></td>
+                            <td height="30" width="10"><img src="templates/img/shadow-corner-3.gif"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table border="0" cellpadding="0" cellspacing="0" width="300">
+                    <tbody>
+                        <tr>
+                            <td width="20"  bgcolor="#f2f2f2"></td>
+                            <td width="250" bgcolor="#f2f2f2"><font size="2" face="Arial,sans-serif" color="black"><br>$aData[contactus]<br><br><br><br><br><br><br><br></font></td>
+                            <td width="20"  bgcolor="#f2f2f2"></td>
+                            <td width="10" background="templates/img/shadow-left.gif"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table border="0" cellpadding="0" cellspacing="0" width="300">
+                    <tbody>
+                        <tr>
+                            <td width="340" height="10" background="templates/img/shadow-top.gif"></td>
+                            <td width="10" height="10"><img src="templates/img/shadow-corner-2.gif"></td>
+                        </tr>
+                    </tbody>
+                </table>
             </td>
-            <td style="vertical-align: top;">
-                <div style="padding: 20px; background: url('http://www.prosperixgroup.com/templates/img/shadow-top.gif') repeat-x;">
-                    <div style="width: 100%; text-align: left;">
-<h3>$lang['Order_info_title'] $aData[iOrder]</h3>
-$aData[sCustomHello]
-<pre>
-$aData[sPaymentDescription]
-</pre>
-<br>
-<h4>$lang[Your_personal_information]</h4>
-$lang[First_and_last_name]: <i>$aData[sFirstName] $aData[sLastName]</i><br>
-$lang[Company]: <i>$aData[sCompanyName]</i><br>
-$lang[Nip]: <i>$aData[sNip]</i><br>
-$lang[Street]: <i>$aData[sStreet]</i><br>
-$lang[Zip_code]: <i>$aData[sZipCode]</i><br>
-$lang[City]: <i>$aData[sCity]</i><br>
-$lang[Country]: <i>$aData[sCountry]</i><br>
-$lang[Telephone]: <i>$aData[sPhone]</i><br>
-$lang[Email]: <i>$aData[sEmail]</i><br>
-<h4>$lang[Order_summary]</h4>
-<ul>
-$aData[sProducts]
-<li>$aData[sCarrierName] ($aData[sPaymentName]) = $aData[sPaymentCarrierPrice] $config[currency_symbol]</li>
-<li>$lang[Payment_channel]: $aData[sPaymentChannel]</li>
-</ul>
-$lang[Summary_cost]: $aData[sOrderSummary] $config[currency_symbol]
-                    </div>
-                </div>
+            <td width="100%" valign="top">
+                <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                    <tbody>
+                        <tr>
+                            <td width="100%" height="10" background="templates/img/shadow-top.gif"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                    <tbody>
+                        <tr>
+                            <td width="20"></td>
+                            <td>
+                                <font size="2" face="Arial,sans-serif" color="black">
+                                    <font color="#993333"><h3>$lang['Order_info_title'] $aData[iOrder]</h3></font>
+                                    $aData[sCustomHello]
+                                    <pre>
+                                    $aData[sPaymentDescription]
+                                    </pre>
+                                    <br>
+                                    <h4>$lang[Your_personal_information]</h4>
+                                    $lang[First_and_last_name]: <i>$aData[sFirstName] $aData[sLastName]</i><br>
+                                    $lang[Company]: <i>$aData[sCompanyName]</i><br>
+                                    $lang[Nip]: <i>$aData[sNip]</i><br>
+                                    $lang[Street]: <i>$aData[sStreet]</i><br>
+                                    $lang[Zip_code]: <i>$aData[sZipCode]</i><br>
+                                    $lang[City]: <i>$aData[sCity]</i><br>
+                                    $lang[Country]: <i>$aData[sCountry]</i><br>
+                                    $lang[Telephone]: <i>$aData[sPhone]</i><br>
+                                    $lang[Email]: <i>$aData[sEmail]</i><br>
+                                    <h4>$lang[Order_summary]</h4>
+                                    <ul>
+                                    $aData[sProducts]
+                                    <li>$aData[sCarrierName] ($aData[sPaymentName]) = $aData[sPaymentCarrierPrice] $config[currency_symbol]</li>
+                                    <li>$lang[Payment_channel]: $aData[sPaymentChannel]</li>
+                                    </ul>
+                                    $lang[Summary_cost]: $aData[sOrderSummary] $config[currency_symbol]
+                                </font>
+                            </td>
+                            <td width="20"></td>
+                        </tr>
+                    </tbody>
+                </table>
             </td>
         </tr>
     </tbody>
