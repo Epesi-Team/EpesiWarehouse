@@ -3,9 +3,8 @@
   <div class="message" id="ok">
     <h3>$lang[Order_sent]</h3>
   </div>
-  <pre>
   $sPaymentDescription
-  </pre>	
+
   <h4>$lang[Your_personal_information]</h4>
   <dl>
     <dt class="orderId">ID:</dt><dd class="orderId">$aOrder[iOrder]</dd>
@@ -159,9 +158,9 @@
                                 <font size="2" face="Arial,sans-serif" color="black">
                                     <font color="#993333"><h3>$lang['Order_info_title'] $aData[iOrder]</h3></font>
                                     $aData[sCustomHello]
-                                    <pre>
+
                                     $aData[sPaymentDescription]
-                                    </pre>
+
                                     <br>
                                     <h4>$lang[Your_personal_information]</h4>
                                     $lang[First_and_last_name]: <i>$aData[sFirstName] $aData[sLastName]</i><br>

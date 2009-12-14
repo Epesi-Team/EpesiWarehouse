@@ -415,7 +415,7 @@ class Orders
     $row = DB::GetRow('SELECT MIN(f_price),f_description FROM premium_ecommerce_payments_carriers_data_1 WHERE active=1 AND f_payment=%s AND f_shipment=%d AND f_currency=%d
     			AND (f_max_weight>=%f OR f_max_weight is null) GROUP BY f_payment,f_shipment,f_currency',array($iPayment,$iCarrier,$currency,$weight));
     if($row) {
-	    return array('fPrice'=>$row['f_price'],'sDescription'=>changeTxt( $row['f_description'], 'Ndsnl' ), 'iPayment'=>$iPayment, 'iCarrier'=>$iCarrier);
+	    return array('fPrice'=>$row['f_price'],'sDescription'=>str_replace("\n",'<br>',$row['f_description']), 'iPayment'=>$iPayment, 'iCarrier'=>$iCarrier);
     }
     return false;
   } // end function throwPaymentCarrier
