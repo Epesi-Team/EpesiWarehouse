@@ -110,7 +110,7 @@ class Products
 			$rr = explode('__',$aExp['fPrice2']);
 			if($rr && $rr[0] && $rr[1]==$currency) {
 				$netto = $rr[0];
-				$aExp['fPrice'] = (float)($netto)*(100+$taxes[$aExp['tax2']])/100;
+				$aExp['fPrice'] = round((float)($netto)*(100+$taxes[$aExp['tax2']])/100,2);
 				$aExp['tax'] = $aExp['tax2'];
 			} 
 		}
@@ -118,7 +118,7 @@ class Products
 			$netto = $aExp['fPrice3'];
 			$profit = $netto*$percentage/100;
 			if($profit<$minimal) $profit = $minimal;
-			$aExp['fPrice'] = (float)($netto+$profit)*(100+$taxes[$aExp['tax2']])/100;
+			$aExp['fPrice'] = round((float)($netto+$profit)*(100+$taxes[$aExp['tax2']])/100,2);
 			$aExp['tax'] = $aExp['tax2'];
 		}
 		if(!$aExp['tax']) $aExp['tax'] = 0;
