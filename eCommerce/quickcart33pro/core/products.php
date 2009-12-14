@@ -110,7 +110,7 @@ class Products
 			$rr = explode('__',$aExp['fPrice2']);
 			if($rr && $rr[0] && $rr[1]==$currency) {
 				$netto = $rr[0];
-				$aExp['fPrice'] = round((float)($netto)*(100+$taxes[$aExp['tax2']])/100,2);
+				$aExp['fPrice'] = round(((float)$netto)*(100+$taxes[$aExp['tax2']])/100,2);
 				$aExp['tax'] = $aExp['tax2'];
 			} 
 		}
@@ -128,8 +128,9 @@ class Products
 		} else {
 			unset($aExp['f_always_on_stock']);
 		}
-		if($aExp['fPrice'])
+		if($aExp['fPrice']) {
 			$aExp['fPrice'] = number_format($aExp['fPrice'],2,'.','');
+		}
 		$aExp['iComments'] = 1;
 		unset($aExp['sName2']);
 		$cats = array_filter(explode('__',$aExp['f_category']));
