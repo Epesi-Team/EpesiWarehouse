@@ -16,6 +16,7 @@ if(!isset($_POST['item_name']) || !isset($_GET['cid'])  || !isset($_GET['transac
 	die('alert(\'Invalid request\')');
 
 define('CID',$_GET['cid']); 
+define('READ_ONLY_SESSION',true);
 require_once('../../../../../include.php');
 ModuleManager::load_modules();
 
