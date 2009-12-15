@@ -45,8 +45,8 @@ function listProductsCompare( $sFile, $sBlock ){
     $aProducts = $GLOBALS['oProduct']->getProducts('',200,200*$part);
     if( !$aProducts) break;
     foreach($aProducts as $aData){
-      if(!$aData['fPrice'] || $aData['f_exclude_compare_services']) continue;
-      if((!isset($_REQUEST['outOfStock']) || !$_REQUEST['outOfStock']) && !$aData['iQuantity'])
+      if(!$aData['fPrice']) continue;
+      if((!isset($_REQUEST['outOfStock']) || !$_REQUEST['outOfStock']) && (!$aData['iQuantity'] || $aData['f_exclude_compare_services']))
       	continue;
       $aData['sPages'] = preg_replace( '/&nbsp;&raquo;&nbsp;/', '/', strip_tags( $GLOBALS['oProduct']->throwProductsPagesTree( $aData['aCategories'] ) ) );
       $aData['sPagesOnet'] = preg_replace( '/&nbsp;&raquo;&nbsp;/', ' &gt; ', strip_tags( $GLOBALS['oProduct']->throwProductsPagesTree( $aData['aCategories'] ) ) );
