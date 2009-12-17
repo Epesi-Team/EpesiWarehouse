@@ -56,7 +56,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 
 	public function warehouse_filter($choice) {
 		if ($choice=='__NULL__') return array();
-		return array('(warehouse'=>$choice, '|target_warehouse'=>$choice);
+		return array('(warehouse'=>array($choice,''), '|target_warehouse'=>$choice);
 	}	
 
 	public function applet($conf,$opts) {
