@@ -212,9 +212,11 @@ class Orders
   * @param array  $aForm
   */
   function checkFields( $aForm ){
+    $carrier = null;
     if( isset( $aForm['sPaymentCarrier'] ) ){
       $aExp = explode( ';', $aForm['sPaymentCarrier'] );
       if( isset( $aExp[0] ) && isset( $aExp[1] ) )
+      	$carrier = $aExp[0];
         $sPrice = $this->throwPaymentCarrier( $aExp[0], $aExp[1]);
 	if($sPrice===false) unset($sPrice);
     }
@@ -222,6 +224,8 @@ class Orders
       return false;
     }
 
+    $shops = DB::GetAssoc('SELECT id,1 FROM premium_warehouse_data_1 WHERE active=1 AND f_pickup_place=1');
+    
     if(
       throwStrLen( $aForm['sFirstName'] ) > 1
       && throwStrLen( $aForm['sLastName'] ) > 1
@@ -230,6 +234,7 @@ class Orders
       && throwStrLen( $aForm['sCity'] ) > 1
       && throwStrLen( $aForm['sPhone'] ) > 1
       && throwStrLen( $aForm['sCountry'] ) > 1
+      && ((throwStrLen( $aForm['iPickupShop'] ) > 0 && $shops[$aForm['iPickupShop']]) || empty($shops) || $carrier!=0)
       && checkEmail( $aForm['sEmail'] )
       && isset( $sPrice )
       && ( ( isset( $aForm['iRules'] ) && isset( $aForm['iRulesAccept'] ) ) || !isset( $aForm['iRules'] ) )
@@ -284,15 +289,15 @@ class Orders
       $aForm['mPaymentChannel'] = null;
     }
     $aForm['iPaymentRealized']  = 0;
-	
+
     $t = time();
     //$memo = "Language: ".LANGUAGE."\ne-mail: ".$aForm['sEmail']."\nIp: ".$_SERVER['REMOTE_ADDR']."\nComment:\n".$aForm['sComment'];
     DB::Execute('INSERT INTO premium_warehouse_items_orders_data_1(f_transaction_type,f_transaction_date,f_status,
 						f_company_name,f_last_name,f_first_name,f_address_1,f_city,f_postal_code,f_phone,f_country,f_zone,f_memo,created_on,
-						f_shipment_type,f_shipment_cost,f_payment,f_payment_type,f_tax_id) VALUES 
-						(1,%D,"-1",%s,%s,%s,%s,%s,%s,%s,%s,"",%s,%T,%s,%s,1,%s,%s)',
+						f_shipment_type,f_shipment_cost,f_payment,f_payment_type,f_tax_id,f_warehouse) VALUES 
+						(1,%D,"-1",%s,%s,%s,%s,%s,%s,%s,%s,"",%s,%T,%s,%s,1,%s,%s,%d)',
 					array($t,$aForm['sCompanyName'],$aForm['sLastName'],$aForm['sFirstName'],$aForm['sStreet'],$aForm['sCity'],
-					$aForm['sZipCode'],$aForm['sPhone'],$aForm['sCountry'],$memo,$t,$carrier,$price.'__'.$currency,$payment,$aForm['sNip']));
+					$aForm['sZipCode'],$aForm['sPhone'],$aForm['sCountry'],$memo,$t,$carrier,$price.'__'.$currency,$payment,$aForm['sNip'],$carrier==0?$aForm['iPickupShop']:null));
     $id = DB::Insert_ID('premium_warehouse_items_orders_data_1','id');
     $trans_id = '#'.str_pad($id, 6, '0', STR_PAD_LEFT);
     DB::Execute('UPDATE premium_warehouse_items_orders_data_1 SET f_transaction_id=%s WHERE id=%d',array($trans_id,$id));
@@ -421,6 +426,7 @@ class Orders
   } // end function throwPaymentCarrier
   
   static $payments_to_qcpayments = array('DotPay'=>1,'Przelewy24'=>2,'PayPal'=>3, 'Platnosci.pl'=>4, 'Zagiel'=>5);
+  private $is_pickup = false;
 
   /**
   * Return list of payments and carriers
@@ -457,6 +463,7 @@ class Orders
       foreach( $aShipments as $iCarrier => $carrier_name ) {
         if(!isset($aPaymentsCarriers[$iCarrier])) continue;
         $aData = array('sName'=>$carrier_name, 'iCarrier'=>$iCarrier, 'sPayments'=>null, 'fPrice'=>0);
+        if($iCarrier==0) $this->is_pickup = true; //pickup
         foreach( $aPayments as $iPayment => $sName ){
           if( isset( $aPaymentsCarriers[$iCarrier][$iPayment] ) ){
             $aData['fPaymentCarrierPrice'] = normalizePrice( $aPaymentsCarriers[$iCarrier][$iPayment] );
@@ -488,6 +495,7 @@ class Orders
         $sPaymentList .= $oTpl->tbHtml( $sFile, 'ORDER_PAYMENTS' );
 	$aData = array(); //epesi team quickcart bug fix
       } // end foreach
+      
 
       if( isset( $content ) ){
         $oTpl->setVariables( 'aData', Array( 'sPaymentList' => $sPaymentList ) );
@@ -496,7 +504,26 @@ class Orders
     }
   } // end function listCarriersPayments
 
-  // { epesi
+  function listPickupShops($sFile) {
+    $oTpl       =& TplParser::getInstance( );
+    $content = null;
+    if($this->is_pickup) {
+          $shops = DB::GetAll('SELECT id,f_warehouse,f_address_1,f_address_2,f_city FROM premium_warehouse_data_1 WHERE active=1 AND f_pickup_place=1');
+	  if( $shops ) {
+	        $content .= $oTpl->tbHtml( $sFile, 'ORDER_PICKUP_SHOP_HEAD' );
+		foreach($shops as $sh) {
+			$aData = array();
+			$aData['iShop'] = $sh['id'];
+			$aData['sName'] = $sh['f_warehouse'].': '.$sh['f_address_1'].($sh['f_address_2']?', '.$sh['f_address_2']:'').', '.$sh['f_city'];
+          		$oTpl->setVariables( 'aData', $aData );
+		        $content .= $oTpl->tbHtml( $sFile, 'ORDER_PICKUP_SHOP_LIST' );
+          	}
+	        $content .= $oTpl->tbHtml( $sFile, 'ORDER_PICKUP_SHOP_FOOT' );
+          }
+      }
+      return $content;
+  }
+  
   /**
   * Return currency id
   * @return array

@@ -444,6 +444,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Variable::set('icecat_pass','');
 		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_products', 'Premium_Warehouse_eCommerce', 'icecat_addon', 'Premium_Warehouse_eCommerceCommon::icecat_addon_parameters');
 		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items_categories',array('name'=>'Available languages',	'type'=>'calculated', 'required'=>false, 'filter'=>false, 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_eCommerceCommon','display_category_available_languages')));
+		Utils_RecordBrowserCommon::new_record_field('premium_warehouse',array('name'=>'Pickup Place',	'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>true));
 
 		Variable::set('ecommerce_rules','You can edit this page in Administration - eCommerce settings.');
 		Variable::set('ecommerce_contactus','You can edit this page in Administration - eCommerce settings.');
@@ -501,6 +502,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::delete_record_field('premium_warehouse_items_categories', 'Meta Description');
 		Utils_RecordBrowserCommon::delete_record_field('premium_warehouse_items_categories', 'Keywords');
 		Utils_RecordBrowserCommon::delete_record_field('premium_warehouse_items_orders', 'Online order');
+		Utils_RecordBrowserCommon::delete_record_field('premium_warehouse','Pickup Place');
 		
 		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_products', 'Premium/Warehouse/eCommerce', 'descriptions_addon');
 //		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_categories', 'Premium/Warehouse/eCommerce', 'cat_descriptions_addon');

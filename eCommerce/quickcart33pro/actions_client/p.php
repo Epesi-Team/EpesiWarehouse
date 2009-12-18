@@ -197,6 +197,7 @@ if( isset( $iContent ) && is_numeric( $iContent ) ){
           }
           $sOrderProducts = $oOrder->listProducts( 'orders_form.tpl', null, 'ORDER_PRODUCTS_' );
           $sPaymentCarriers = $oOrder->listCarriersPayments( 'orders_form.tpl' );
+          $sPickupShops = $oOrder->listPickupShops( 'orders_form.tpl' );
           $oTpl->unsetVariables( );
 	  
 	  $countries_id = DB::GetOne('SELECT id FROM utils_commondata_tree WHERE akey="Countries"');

@@ -65,6 +65,10 @@
       <legend>$lang[Delivery_and_payment]</legend>
       $sPaymentCarriers
     </fieldset>
+    <fieldset id="pickupShop" style="display:none">
+      <legend>$lang[Pickup_shop]</legend>
+      $sPickupShops
+    </fieldset>
     <fieldset id="orderedProducts">
       <legend>$lang[Ordered_products]</legend>
       $sOrderProducts
@@ -74,7 +78,7 @@
 <!-- END ORDER_FORM -->
 <!-- BEGIN RULES_ACCEPT -->
 <input type="hidden" name="iRules" value="1" />
-<em><input type="checkbox" name="iRulesAccept" value="1" alt="box;$lang[Require_rules_accept]" /></em>
+<em><input type="checkbox" name="iRulesAccept" value="1" alt="box;$lang[Require_rules_accept]" onChange="saveUserData( this.name, this.checked )" /></em>
 <span>$lang[Rules_accept] (<a href="$aRules[sLinkName]" class="new-window">$lang[rules_read] &raquo;</a>).</span>
 <!-- END RULES_ACCEPT -->
 
@@ -171,12 +175,39 @@ AddOnload( checkSavedUserData );
 <!-- END ORDER_PAYMENTS -->
 <!-- BEGIN ORDER_CARRIERS -->
 <tr>
-  <th>$aData[sName]</th>
+  <th>$aData[sName]&nbsp;$aData[sPickupShop]</th>
   $aData[sPayments]
 </tr>
 <!-- END ORDER_CARRIERS -->
+<!-- BEGIN ORDER_PICKUP_SHOP_HEAD -->
+<script type="text/javascript">
+function pickupShopCheck(e) {
+	var k = e.value.split(';');
+	var list = e.form['iPickupShop'];
+	if(typeof list.length == 'undefined') list = new Array(list);
+	if(k[0]==0) {
+		document.getElementById('pickupShop').style.display = 'block';
+		for(var j=0; j<list.length; j++)
+			list[j].alt = "radio;$lang['Select_pickup_shop']";
+	} else {
+		document.getElementById('pickupShop').style.display = 'none';
+		for(var j=0; j<list.length; j++)
+			list[j].alt = '';
+	}
+}
+</script>
+<table cellspacing="0">
+  <tbody>
+<!-- END ORDER_PICKUP_SHOP_HEAD -->
+<!-- BEGIN ORDER_PICKUP_SHOP_FOOT -->
+  </tbody>
+</table>
+<!-- END ORDER_PICKUP_SHOP_FOOT -->
+<!-- BEGIN ORDER_PICKUP_SHOP_LIST -->
+<td><input type="radio" name="iPickupShop" value="$aData[iShop]" onChange="saveUserData( this.name, this.value )" />$aData[sName]</td>
+<!-- END ORDER_PICKUP_SHOP_LIST -->
 <!-- BEGIN ORDER_PAYMENT_CARRIERS_LIST -->
-<td><input type="radio" name="sPaymentCarrier" value="$aData[iCarrier];$aData[iPayment];$aData[fPaymentCarrierPrice]" onclick="countCarrierPrice( this )" alt="radio;$lang['Select_delivery_and_payment']" />$aData[sPaymentCarrierPrice]</td>
+<td><input type="radio" name="sPaymentCarrier" value="$aData[iCarrier];$aData[iPayment];$aData[fPaymentCarrierPrice]" alt="radio;$lang['Select_delivery_and_payment']" onChange="countCarrierPrice( this );saveUserData( this.name, this.value );if(typeof pickupShopCheck != 'undefined')pickupShopCheck(this)" />$aData[sPaymentCarrierPrice]</td>
 <!-- END ORDER_PAYMENT_CARRIERS_LIST -->
 <!-- BEGIN ORDER_PAYMENT_CARRIERS_EMPTY -->
 <td>&nbsp;</td>

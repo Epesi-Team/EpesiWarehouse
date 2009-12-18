@@ -337,4 +337,6 @@ $lang['Stock_exceeded'] = 'Przepraszamy, nie posiadamy obecnie żądanej ilości
 $lang['Less'] = 'Zwiń';
 $lang['More'] = 'Rozwiń';
 $lang['Other_companies'] = 'Inni';
+$lang['Pickup_shop'] = 'Miejsce odbioru osobistego';
+$lang['Select_pickup_shop'] = 'Wypełnij miejsce odbioru osobistego';
 ?>

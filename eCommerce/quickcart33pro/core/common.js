@@ -171,7 +171,7 @@ function countCarrierPrice( oObj ){
 } // end function 
 
 
-var aUserDataNames = new Array( 'sFirstName', 'sLastName', 'sCompanyName', 'sStreet', 'sZipCode', 'sCity', 'sPhone', 'sEmail', 'sNip' );
+var aUserDataNames = new Array( 'sFirstName', 'sLastName', 'sCompanyName', 'sStreet', 'sZipCode', 'sCity', 'sPhone', 'sEmail', 'sNip', 'iPickupShop', 'iRulesAccept', 'sPaymentCarrier' );
 
 function saveUserData( sName, sValue ){
   createCookie( sName, sValue, 2 );
@@ -184,10 +184,29 @@ function checkSavedUserData( ){
   for( var i = 0; i < iCount; i++ ){
     sCookie = throwCookie( aUserDataNames[i] );
     if( sCookie && sCookie != '' ){
-      if( gEBI( aUserDataNames[i] ) )
-        gEBI( aUserDataNames[i] ).value = unescape( sCookie );
-      else if( oForm[aUserDataNames[i]] )
-        oForm[aUserDataNames[i]].value = unescape( sCookie );
+      var elem = gEBI( aUserDataNames[i] );
+      if( !elem )
+      	elem = oForm[aUserDataNames[i]];
+      if(elem) {
+        var value = unescape( sCookie );
+      	if(aUserDataNames[i] == 'sPaymentCarrier' || aUserDataNames[i] == 'iPickupShop') {
+     		if(typeof elem.length == 'undefined') elem = new Array(elem);
+      		for(var k=0; k<elem.length; k++) {
+      			if(elem[k].value == value) {
+      				elem[k].checked = true;
+      				if(aUserDataNames[i] == 'sPaymentCarrier') {
+	      				countCarrierPrice( elem[k] );
+	      				if(typeof pickupShopCheck != 'undefined')
+		      				pickupShopCheck( elem[k] );
+	      			}
+	      			break;
+      			}
+      		}
+	} else if(elem.type=='checkbox') {
+		elem.checked = eval(value);
+      	} else
+      		elem.value = value;
+      }
     }
   } // end for
 } // end function checkSavedUserData
