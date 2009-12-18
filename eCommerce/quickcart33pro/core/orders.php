@@ -508,13 +508,13 @@ class Orders
     $oTpl       =& TplParser::getInstance( );
     $content = null;
     if($this->is_pickup) {
-          $shops = DB::GetAll('SELECT id,f_warehouse,f_address_1,f_address_2,f_city FROM premium_warehouse_data_1 WHERE active=1 AND f_pickup_place=1');
+          $shops = DB::GetAll('SELECT id,f_address_1,f_address_2,f_city FROM premium_warehouse_data_1 WHERE active=1 AND f_pickup_place=1');
 	  if( $shops ) {
 	        $content .= $oTpl->tbHtml( $sFile, 'ORDER_PICKUP_SHOP_HEAD' );
 		foreach($shops as $sh) {
 			$aData = array();
 			$aData['iShop'] = $sh['id'];
-			$aData['sName'] = $sh['f_warehouse'].': '.$sh['f_address_1'].($sh['f_address_2']?', '.$sh['f_address_2']:'').', '.$sh['f_city'];
+			$aData['sName'] = $sh['f_address_1'].($sh['f_address_2']?', '.$sh['f_address_2']:'').', '.$sh['f_city'];
           		$oTpl->setVariables( 'aData', $aData );
 		        $content .= $oTpl->tbHtml( $sFile, 'ORDER_PICKUP_SHOP_LIST' );
           	}

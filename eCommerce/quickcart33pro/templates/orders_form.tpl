@@ -204,7 +204,7 @@ function pickupShopCheck(e) {
 </table>
 <!-- END ORDER_PICKUP_SHOP_FOOT -->
 <!-- BEGIN ORDER_PICKUP_SHOP_LIST -->
-<td><input type="radio" name="iPickupShop" value="$aData[iShop]" onChange="saveUserData( this.name, this.value )" />$aData[sName]</td>
+<tr><td><input type="radio" name="iPickupShop" value="$aData[iShop]" onChange="saveUserData( this.name, this.value )" />$aData[sName]</td></tr>
 <!-- END ORDER_PICKUP_SHOP_LIST -->
 <!-- BEGIN ORDER_PAYMENT_CARRIERS_LIST -->
 <td><input type="radio" name="sPaymentCarrier" value="$aData[iCarrier];$aData[iPayment];$aData[fPaymentCarrierPrice]" alt="radio;$lang['Select_delivery_and_payment']" onChange="countCarrierPrice( this );saveUserData( this.name, this.value );if(typeof pickupShopCheck != 'undefined')pickupShopCheck(this)" />$aData[sPaymentCarrierPrice]</td>
