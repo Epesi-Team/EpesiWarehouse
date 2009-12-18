@@ -514,7 +514,7 @@ class Orders
 		foreach($shops as $sh) {
 			$aData = array();
 			$aData['iShop'] = $sh['id'];
-			$aData['sName'] = $sh['f_address_1'].($sh['f_address_2']?'<br />'.$sh['f_address_2']:'').'<br />'.$sh['f_city'];
+			$aData['sName'] = '<span>'.$sh['f_address_1'].($sh['f_address_2']?'<br />'.$sh['f_address_2']:'').'<br />'.$sh['f_city'].'</span>';
           		$oTpl->setVariables( 'aData', $aData );
 		        $content .= $oTpl->tbHtml( $sFile, 'ORDER_PICKUP_SHOP_LIST' );
           	}
