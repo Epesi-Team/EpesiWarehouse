@@ -223,7 +223,7 @@ class Products
 //	$query_features = '1';
 	foreach($aWords as $w) {
 //		$query .= ' AND (it.f_sku LIKE \'%%'.DB::addq($w).'%%\' OR it.f_product_code LIKE \'%%'.DB::addq($w).'%%\' OR it.f_upc LIKE \'%%'.DB::addq($w).'%%\' OR it.f_item_name LIKE \'%%'.DB::addq($w).'%%\' OR d.f_display_name LIKE \'%%'.DB::addq($w).'%%\' OR d.f_long_description LIKE \'%%'.DB::addq($w).'%%\' OR d.f_short_description LIKE \'%%'.DB::addq($w).'%%\')';
-		$query .= ' AND (it.f_sku LIKE \'%%'.DB::addq($w).'%%\' OR it.f_product_code LIKE \'%%'.DB::addq($w).'%%\' OR it.f_upc LIKE \'%%'.DB::addq($w).'%%\' OR it.f_item_name LIKE \'%%'.DB::addq($w).'%%\' OR d.f_display_name LIKE \'%%'.DB::addq($w).'%%\' OR d.f_short_description LIKE \'%%'.DB::addq($w).'%%\')';
+		$query .= ' AND (it.f_sku LIKE \'%%'.DB::addq($w).'%%\' OR it.f_product_code LIKE \'%%'.DB::addq($w).'%%\' OR it.f_upc LIKE \'%%'.DB::addq($w).'%%\' OR it.f_item_name LIKE \'%%'.DB::addq($w).'%%\' OR d.f_display_name LIKE \'%%'.DB::addq($w).'%%\')';
 //		$query_features .= ' AND pp.f_value LIKE \'%%'.DB::addq($w).'%%\'';
 	}
 /*	$ret_features = DB::GetCol('SELECT pp.f_item_name
