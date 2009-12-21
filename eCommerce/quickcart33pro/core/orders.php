@@ -355,7 +355,8 @@ class Orders
 				    o.f_email as sEmail,
 				    o.f_language as sLanguage,
 				    o.f_payment_channel as mPaymentChannel,
-				    o.f_payment_realized as iPaymentRealized
+				    o.f_payment_realized as iPaymentRealized,
+				    o.f_invoice as iInvoice
 				    FROM premium_warehouse_items_orders_data_1 w INNER JOIN premium_ecommerce_orders_data_1 o ON o.f_transaction_id=w.id WHERE w.id=%d',array($iOrder));
 
     if( isset( $aData ) ){

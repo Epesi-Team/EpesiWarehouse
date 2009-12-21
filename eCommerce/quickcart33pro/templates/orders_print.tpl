@@ -166,6 +166,7 @@
                                     $lang[First_and_last_name]: <i>$aData[sFirstName] $aData[sLastName]</i><br>
                                     $lang[Company]: <i>$aData[sCompanyName]</i><br>
                                     $lang[Nip]: <i>$aData[sNip]</i><br>
+				    $lang[Invoice]: <i>$aData[sInvoice]</i><br>
                                     $lang[Street]: <i>$aData[sStreet]</i><br>
                                     $lang[Zip_code]: <i>$aData[sZipCode]</i><br>
                                     $lang[City]: <i>$aData[sCity]</i><br>
