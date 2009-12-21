@@ -417,10 +417,10 @@ class Orders
     }
     $currency = $this->getCurrencyId();
     $weight = $this->getWeight();
-    $row = DB::GetRow('SELECT MIN(f_price) as f_price,f_description FROM premium_ecommerce_payments_carriers_data_1 WHERE active=1 AND f_payment=%s AND f_shipment=%d AND f_currency=%d
-    			AND (f_max_weight>=%f OR f_max_weight is null) GROUP BY f_payment,f_shipment,f_currency',array($iPayment,$iCarrier,$currency,$weight));
+    $row = DB::GetRow('SELECT f_price,f_description,f_percentage_of_amount FROM premium_ecommerce_payments_carriers_data_1 WHERE active=1 AND f_payment=%s AND f_shipment=%d AND f_currency=%d
+    			AND (f_max_weight>=%f OR f_max_weight is null) ORDER BY (f_price+%f*f_percentage_of_amount/100)',array($iPayment,$iCarrier,$currency,$weight,$_SESSION['fOrderSummary'.LANGUAGE]));
     if($row) {
-	    return array('fPrice'=>$row['f_price'],'sDescription'=>str_replace("\n",'<br>',$row['f_description']), 'iPayment'=>$iPayment, 'iCarrier'=>$iCarrier);
+	    return array('fPrice'=>$row['f_price']+$_SESSION['fOrderSummary'.LANGUAGE]*$row['f_percentage_of_amount']/100,'sDescription'=>str_replace("\n",'<br>',$row['f_description']), 'iPayment'=>$iPayment, 'iCarrier'=>$iCarrier);
     }
     return false;
   } // end function throwPaymentCarrier
@@ -449,8 +449,8 @@ class Orders
     if( $aPayments && $aShipments ){
       $currency = $this->getCurrencyId();
       //get possible configurations
-      $ret = DB::Execute('SELECT f_payment,f_shipment,MIN(f_price) as f_price FROM premium_ecommerce_payments_carriers_data_1 
-    			WHERE active=1 AND f_currency=%s AND (f_max_weight>=%f OR f_max_weight is null) GROUP BY f_payment,f_shipment',array($currency,$weight));
+      $ret = DB::Execute('SELECT f_payment,f_shipment,MIN(f_price+%f*f_percentage_of_amount/100) as f_price FROM premium_ecommerce_payments_carriers_data_1 
+    			WHERE active=1 AND f_currency=%s AND (f_max_weight>=%f OR f_max_weight is null) GROUP BY f_payment,f_shipment',array($_SESSION['fOrderSummary'.LANGUAGE],$currency,$weight));
       $aOuterPayments = array();
       while($aExp = $ret->FetchRow()) {
         if($freeDelivery)

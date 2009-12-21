@@ -212,6 +212,7 @@ class Premium_Warehouse_eCommerce extends Module {
 		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
 	
 		$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_payments_carriers');
+		$this->rb->set_defaults(array('percentage_of_amount'=>0));
 		$this->display_module($this->rb);
 		
 		return true;
