@@ -85,7 +85,7 @@
 
 <!-- BEGIN BANNER_NORMAL_NO_LINK --><div class="banner"><img src="$config[dir_files]$aData[sFile]" style="width:$aData[iWidth]px;height:$aData[iHeight]px;" alt="" /></div><!-- END BANNER_NORMAL_NO_LINK -->
 
-<!-- BEGIN BANNER_FLASH --><div class="bannerFlash"><object type="application/x-shockwave-flash" data="$config[dir_files]$aData[sFile]" width="$aData[iWidth]" height="$aData[iHeight]"><param name="bgcolor" value="$aData[sColor]" /><param name="movie" value="$config[dir_files]$aData[sFile]" /></object></div><!-- END BANNER_FLASH -->
+<!-- BEGIN BANNER_FLASH --><div class="bannerFlash"><object type="application/x-shockwave-flash" data="$config[dir_files]$aData[sFile]" width="$aData[iWidth]" height="$aData[iHeight]"><param name="bgcolor" value="$aData[sColor]" /><param name="movie" value="$config[dir_files]$aData[sFile]" /><param name="wmode" value="opaque"></object></div><!-- END BANNER_FLASH -->
 <!-- BEGIN BOX --><div class="box" id="box$aData[iBox]">
   <div class="name">$aData[sName]</div>
   <div class="content">
