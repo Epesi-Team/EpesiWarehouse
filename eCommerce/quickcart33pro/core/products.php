@@ -86,7 +86,8 @@ class Products
 								dist.price fPrice3,
 								dist.price_currency,
 								pr.f_exclude_compare_services,
-								pr.f_always_on_stock
+								pr.f_always_on_stock,
+								it.f_upc
 					FROM premium_ecommerce_products_data_1 pr
 					INNER JOIN (premium_warehouse_items_data_1 it,premium_ecommerce_availability_data_1 av) ON (pr.f_item_name=it.id AND av.id=pr.f_available)
 					LEFT JOIN premium_ecommerce_prices_data_1 pri ON (pri.f_item_name=it.id AND pri.active=1 AND pri.f_currency='.$currency.')
@@ -159,6 +160,15 @@ class Products
 				$aExp[$kkk] = $aExp[$kkk.'En'];
 			unset($aExp[$kkk.'En']);
 		}
+		
+		if(!$aExp['sMetaDescription']) $aExp['sMetaDescription'] = $aExp['sDescriptionShort'];
+		if(!$aExp['sMetaKeywords']) $aExp['sMetaKeywords'] = str_replace(array(' ','	'),',', $aExp['sName']).($aExp['f_upc']?','.$aExp['f_upc']:'');
+		while(1) {
+			$keywords = str_replace(',,',',',$aExp['sMetaKeywords']);
+			if($keywords == $aExp['sMetaKeywords']) break;
+			$aExp['sMetaKeywords'] = $keywords;
+		}
+		unset($aExp['f_upc']);
 
     		$products[$aExp['iProduct']] = $aExp;
 	        $products[$aExp['iProduct']]['sLinkName'] = '?'.$aExp['iProduct'].','.change2Url( $products[$aExp['iProduct']]['sName'] );
