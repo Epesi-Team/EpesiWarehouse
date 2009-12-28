@@ -167,7 +167,7 @@ class Products
 		}
 		
 		$meta_cats = ($meta_cats?implode(',',array_unique($meta_cats)):'');
-		if(!$aExp['sMetaDescription']) $aExp['sMetaDescription'] = $aExp['sName'].'. '.strip_tags($aExp['sDescriptionShort']).'. '.$meta_cats;
+		if(!$aExp['sMetaDescription']) $aExp['sMetaDescription'] = $aExp['sName'].'. '.strip_tags($aExp['sDescriptionShort'],'').'. '.$meta_cats;
 		if(!$aExp['sMetaKeywords']) $aExp['sMetaKeywords'] = str_replace(array(' ','	'),',', $aExp['sName']).($aExp['f_upc']?','.$aExp['f_upc']:'').($meta_cats?','.$meta_cats:'');
 		while(1) {
 			$keywords = str_replace(',,',',',$aExp['sMetaKeywords']);
