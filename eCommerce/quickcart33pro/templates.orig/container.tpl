@@ -8,7 +8,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=$config[charset]" />
   <meta name="Description" content="$sDescription" />
   <meta name="Keywords" content="$sKeywords" />
-  <meta name="Author" content="OpenSolution.org" />
+  <meta name="Author" content="EpesiBIM eCommerce premium module" />
   <meta http-equiv="Content-Style-Type" content="text/css" />
   $sRssMeta
 

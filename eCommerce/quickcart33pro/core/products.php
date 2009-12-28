@@ -50,6 +50,7 @@ class Products
   function getProducts($where = '',$limit=null,$offset=null, $navigation = false){
 	global $config;
     $products = array();
+    $oPage  =& Pages::getInstance( );
 
 	$currency = DB::GetOne('SELECT id FROM utils_currency WHERE code=%s',array($config['currency_symbol']));
 	if($currency===false) 
@@ -137,8 +138,12 @@ class Products
 		$cats = array_filter(explode('__',$aExp['f_category']));
 		unset($aExp['f_category']);
 		$pages = array();
+		$meta_cats = array();
 		if(!empty($cats)) {
     		    foreach($cats as $c) {
+    		    	foreach(explode('/',$c) as $iPage) {
+	    		    	$meta_cats[] = $oPage->aPages[$iPage*4]['sName'];
+	    		}
 			$pos = strrpos($c,'/');
 			if($pos!==false)
 				$last_cat = substr($c,$pos+1);
@@ -161,8 +166,9 @@ class Products
 			unset($aExp[$kkk.'En']);
 		}
 		
-		if(!$aExp['sMetaDescription']) $aExp['sMetaDescription'] = $aExp['sDescriptionShort'];
-		if(!$aExp['sMetaKeywords']) $aExp['sMetaKeywords'] = str_replace(array(' ','	'),',', $aExp['sName']).($aExp['f_upc']?','.$aExp['f_upc']:'');
+		$meta_cats = ($meta_cats?implode(',',array_unique($meta_cats)):'');
+		if(!$aExp['sMetaDescription']) $aExp['sMetaDescription'] = $aExp['sName'].'. '.$aExp['sDescriptionShort'].'. '.$meta_cats;
+		if(!$aExp['sMetaKeywords']) $aExp['sMetaKeywords'] = str_replace(array(' ','	'),',', $aExp['sName']).($aExp['f_upc']?','.$aExp['f_upc']:'').($meta_cats?','.$meta_cats:'');
 		while(1) {
 			$keywords = str_replace(',,',',',$aExp['sMetaKeywords']);
 			if($keywords == $aExp['sMetaKeywords']) break;
