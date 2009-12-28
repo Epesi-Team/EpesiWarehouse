@@ -116,12 +116,21 @@ class Products
 				$aExp['tax'] = $aExp['tax2'];
 			} 
 		}
+		if($aExp['fPrice'] && $aExp['f_quantity']==0 && $aExp['distributorQuantity']) {
+			$user_price = $aExp['fPrice'];
+			$aExp['fPrice'] = null;
+		}
 		if($autoprice && !$aExp['fPrice'] && $aExp['distributorQuantity'] && $aExp['fPrice3'] && $aExp['price_currency']==$currency) {
 			$netto = $aExp['fPrice3'];
 			$profit = $netto*$percentage/100;
 			if($profit<$minimal) $profit = $minimal;
-			$aExp['fPrice'] = round((float)($netto+$profit)*(100+$taxes[$aExp['tax2']])/100,2);
-			$aExp['tax'] = $aExp['tax2'];
+			$auto_price = round((float)($netto+$profit)*(100+$taxes[$aExp['tax2']])/100,2);
+			if($aExp['f_quantity']==0 && $user_price>$auto_price) {
+				$aExp['fPrice'] = $user_price;
+			} else {
+				$aExp['fPrice'] = $auto_price;
+				$aExp['tax'] = $aExp['tax2'];		
+			}
 		}
 		if(!$aExp['tax']) $aExp['tax'] = 0;
 		$aExp['iQuantity'] = 0+$aExp['f_quantity']+$aExp['distributorQuantity'];
