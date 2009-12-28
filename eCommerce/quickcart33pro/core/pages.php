@@ -346,7 +346,7 @@ class Pages
 			
 	$x = DB::GetAll($query);
 	$max_companies = array();
-	$other_companies = false;
+	$all_companies = false;
 	foreach($x as $r) {
 		$id = $r['id']*4+1;
         	$this->aPages[$id] = array('iPage' => $id, 'iPageParent' => 0, 'sName' => $r['f_company_name'], 'sNameTitle' => $r['f_company_name'], 'sDescriptionShort' => '', 'iPosition' => 0, 'iType' => 4, 'iSubpagesShow' => 1, 'iProducts' => 1, 'sDescriptionFull'=>'', 'sMetaDescription' => '', 'sMetaKeywords' =>'' );
@@ -357,12 +357,13 @@ class Pages
 	if(count($max_companies)>6) {
 		$companies = array_keys($max_companies);
 		asort($max_companies);
-		$other_companies = true;
+		$all_companies = true;
 		$max_companies = array_slice($max_companies,-5,5,true); //5 most used companies
 		foreach($companies as $cc) {
-			if(isset($max_companies[$cc]))
+			if(isset($max_companies[$cc])) {
 				$this->aPagesParentsTypes[4][] = $cc;
-			else {
+				$this->aPagesChildrens[35][] = $cc;
+			} else {
 				$this->aPages[$cc]['iPageParent'] = 35;
 				$this->aPagesChildrens[35][] = $cc;
 				$this->aPagesParents[$cc] = 35;
@@ -468,9 +469,9 @@ class Pages
 	$this->aPagesParentsTypes[2][] = $id;
 
 	//companies select
-	if($other_companies) {
+	if($all_companies) {
 		$id = 35;
-		$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => $lang['Other_companies'], 'sNameTitle' => '', 'sDescriptionShort' => '', 'iPosition' => 1000, 'iType' => 4, 
+		$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => $lang['All_companies'], 'sNameTitle' => '', 'sDescriptionShort' => '', 'iPosition' => 1000, 'iType' => 4, 
 			'iSubpagesShow' => 1, 'iProducts' => 0, 'sDescriptionFull'=>'', 'sMetaDescription' => '', 'sMetaKeywords' =>'', 'noSubMenu'=>1);
 		$this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
 		$this->aPagesParentsTypes[4][] = $id;

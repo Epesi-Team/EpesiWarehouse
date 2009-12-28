@@ -336,7 +336,7 @@ $lang['Out_of_stock'] = 'Produkt chwilowo niedostępny';
 $lang['Stock_exceeded'] = 'Przepraszamy, nie posiadamy obecnie żądanej ilości produktu.';
 $lang['Less'] = 'Zwiń';
 $lang['More'] = 'Rozwiń';
-$lang['Other_companies'] = 'Inni';
+$lang['All_companies'] = 'Wszyscy producenci';
 $lang['Pickup_shop'] = 'Miejsce odbioru osobistego';
 $lang['Select_pickup_shop'] = 'Wypełnij miejsce odbioru osobistego';
 ?>

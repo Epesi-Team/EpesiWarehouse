@@ -341,7 +341,7 @@ $lang['Out_of_stock'] = 'Out of stock';
 $lang['Stock_exceeded'] = 'We are sorry, but we don\'t have requested product quantity.';
 $lang['Less'] = 'Less';
 $lang['More'] = 'More';
-$lang['Other_companies'] = 'Other';
+$lang['All_companies'] = 'All';
 $lang['Pickup_shop'] = 'Pickup place';
 $lang['Select_pickup_shop'] = 'Choose pickup place';
 ?>
