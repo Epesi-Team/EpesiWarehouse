@@ -313,6 +313,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 		    $url = 'http://data.icecat.biz/xml_s3/xml_server3.cgi?'.http_build_query($query_arr+array('lang'=>$code,'output'=>'productxml'));
 		    $c = curl_init();
 		    curl_setopt($c, CURLOPT_URL, $url);
+		    curl_setopt($c, CURLOPT_USERAGENT, "Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)");
 		    curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
 		    curl_setopt($c, CURLOPT_USERPWD,$user.':'.$pass);
 		    $httpHeader = array(
@@ -339,16 +340,16 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 				}
 			}
 			if(isset($obj->Product[0]['ErrorMessage'])) {
-				Epesi::alert($obj->Product[0]['ErrorMessage']);
-				return false;
+				Epesi::alert('Unable to get icecat data in '.$name.' language:'."\n".$obj->Product[0]['ErrorMessage']);
+				continue;
 		    	}
 		    	
 		    	//supplier
-		    	$warehouse_item = Utils_RecordBrowserCommon::get_record('premium_warehouse_items',$item_id);
-		    	if(!$warehouse_item['manufacturer'] && isset($obj->Supplier['Name'])); {
-		    		$manufacturers = CRM_ContactsCommon::get_companies(array('company_name'=>$obj->Supplier['Name']), array('group'));
+		    	if(!$item['manufacturer'] && isset($obj->Supplier['Name'])); {
+		    		$manufacturers = CRM_ContactsCommon::get_companies(array('company_name'=>$obj->Supplier['Name']), array('group','company_name'));
 		    		if($manufacturer = array_shift($manufacturers)) {
 			    		Utils_RecordBrowserCommon::update_record('premium_warehouse_items',$item_id,array('manufacturer'=>$manufacturer['id']));
+			    		$item['manufacturer'] = $manufacturer['id'];
 			    		if(!in_array('manufacturer', $manufacturer['group'])) {
 			    			$manufacturer['group']['manufacturer'] = 'manufacturer';
 				    		Utils_RecordBrowserCommon::update_record('company',$manufacturer['id'],array('group'=>$manufacturer['group']));
@@ -358,9 +359,17 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 				
 			
 			//description
+			$display_name = (string)$obj->Product[0]['Name'];
+			if(strlen($display_name)<128 && $item['manufacturer']) {
+				if(!isset($manufacturer) || !$manufacturer)
+					$manufacturer = CRM_ContactsCommon::get_company($item['manufacturer']);
+				if(!preg_match('/'.$manufacturer['company_name'].'/i',$display_name) && strlen($manufacturer['company_name'].' '.$display_name)<128)
+					$display_name = $manufacturer['company_name'].' '.$display_name;
+				
+			}
 			$product_desc = array('item_name'=>$item_id,
 						'language'=>$code,
-						'display_name'=>substr((string)$obj->Product[0]['Name'],0,128),
+						'display_name'=>substr($display_name,0,128),
 						'short_description'=>str_replace('\n','<br />',(string)(isset($obj->Product[0]->ProductDescription['ShortDesc'])?$obj->Product[0]->ProductDescription['ShortDesc']:(isset($obj->Product[0]->ProductDescription[0])?$obj->Product[0]->ProductDescription[0]:''))),
 						'long_description'=>str_replace('\n','<br />',(string)(isset($obj->Product[0]->ProductDescription['LongDesc'])?$obj->Product[0]->ProductDescription['LongDesc']:'')));
 			if(isset($descriptions[$code])) {
