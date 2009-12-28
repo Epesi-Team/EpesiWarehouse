@@ -131,7 +131,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 		return self::$subpage_as_opts[$r['show_subpages_as']];
 	}
 
-	private static $products_as_opts = array(1=>"List (name, description, photo)",4=>'Gallery (name, picture)');
+	private static $products_as_opts = array(0=>"List (name, description, photo)",1=>"List with subcategories (name, description, photo)",4=>'Gallery (name, picture)');
 
   	public static function QFfield_products_as(&$form, $field, $label, $mode, $default) {
   		if($default!=1 && $default!=4)
@@ -147,8 +147,8 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 	}
 
   	public static function display_products_as($r, $nolink=false) {
-  		if($r['show_as']!=1 && $r['show_as']!=4)
-  			$r['show_as'] = 1;
+  		if($r['show_as']!=1 && $r['show_as']!=4 && $r['show_as']!=0)
+  			$r['show_as'] = 0;
 		return self::$products_as_opts[$r['show_as']];
 	}
 
