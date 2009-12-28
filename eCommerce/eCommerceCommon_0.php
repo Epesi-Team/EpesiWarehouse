@@ -147,7 +147,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 	}
 
   	public static function display_products_as($r, $nolink=false) {
-  		if($r['show_as']!=1 && $r['show_as']!=4 && $r['show_as']!=0)
+  		if($r['show_as']!=1 && $r['show_as']!=4 && $r['show_as']!==0)
   			$r['show_as'] = 0;
 		return self::$products_as_opts[$r['show_as']];
 	}
