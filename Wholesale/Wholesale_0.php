@@ -59,9 +59,9 @@ class Premium_Warehouse_Wholesale extends Module {
 		$form2->addElement('text', 'product_code', $this->t('Product Code'));
 		$form2->addElement('text', 'manufacturer_part_number', $this->t('Manufacturer Part Number'));
 		$form2->addElement('text', 'weight', $this->t('Weight'));
-		$form2->addRule('weight',$this->t('Field required'),'required');
-		$form2->addRule('weight',$this->t('Invalid number'),'numeric');
-		$form2->setDefaults(array('item_type'=>1));
+		$taxes = array(''=>'---',)+Data_TaxRatesCommon::get_tax_rates();
+		$form2->addElement('select', 'tax_rate', $this->t('Tax Rate'),$taxes);
+		$form2->setDefaults(array('item_type'=>1, 'tax_rate'=>$arg['tax_rate']));
 		$lp = $this->init_module('Utils_LeightboxPrompt');
 		$lp->add_option('add', 'Add', '', $form2);
 		$this->display_module($lp, array($this->t('Create new item'), array('internal_id')));
@@ -69,13 +69,18 @@ class Premium_Warehouse_Wholesale extends Module {
 		if ($vals) {
 			$validate = true;
 			if (!isset($vals['form']['item_name']) || !$vals['form']['item_name']) {
-				print('<b>'.$this->t('Item name is required').'</b><br>');
+				Epesi::alert($this->ht('Item name is required'));
 				$validate = false;
 			}
 			if (!isset($vals['form']['item_type']) || !$vals['form']['item_type']) {
-				print('<b>'.$this->t('Item type is required').'</b><br>');
+				Epesi::alert($this->ht('Item type is required'));
 				$validate = false;
 			}
+			if(!isset($vals['form']['weight']) || !is_numeric($vals['form']['weight'])) {
+				Epesi::alert($this->ht('Weight is required and should be numeric'));
+				$validate = false;
+			}
+			
 			if ($validate) { 
 				$dist_cat = DB::GetOne('SELECT distributor_category FROM premium_warehouse_wholesale_items WHERE id=%d',array($vals['params']['internal_id']));
 				$categories = Utils_RecordBrowserCommon::get_record('premium_warehouse_distributor_categories',$dist_cat);
