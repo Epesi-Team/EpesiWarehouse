@@ -10,7 +10,6 @@
 if(!isset($_GET['user']) || !isset($_GET['pass']))
 	die('Invalid request');
 
-$_GET['pass'] = md5($_GET['pass']);
 define('CID',false);
 require_once('../../../../include.php');
 ModuleManager::load_modules();
