@@ -19,7 +19,7 @@ class Premium_Warehouse_Wholesale__Plugin_epesi_with_tax implements Premium_Ware
 	 * @return string plugin name 
 	 */
 	public function get_name() {
-		return 'Epesi';
+		return 'Epesi with tax';
 	}
 	
 	/**
