@@ -813,12 +813,17 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 	}
 
 	public static function applet_info() {
-		$html="Displays new eCommerce orders.";
+		$html="Displays eCommerce orders.";
 		return $html;
 	}
 
 	public static function applet_settings() {
-		return Utils_RecordBrowserCommon::applet_settings();
+		$opts = array(-1=>'New Online Order', 2=>'Order Received', 3=>'Payment Confirmed', 4=>'Order Confirmed', 5=>'On Hold', 6=>'Order Ready to Ship', 7=>'Shipped', 20=>'Delivered', 21=>'Canceled', 22=>'Missing');
+		return array_merge(Utils_RecordBrowserCommon::applet_settings(),
+			array(
+				array('name'=>'settings_header','label'=>'Settings','type'=>'header'),
+				array('name'=>'status','label'=>'Transaction status','type'=>'select','default'=>-1,'rule'=>array(array('message'=>'Field required', 'type'=>'required')),'values'=>$opts)
+				));
 	}
 	
 	public static function applet_info_format($r){
