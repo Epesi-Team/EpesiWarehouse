@@ -9,7 +9,8 @@
  */
 if(!isset($_GET['user']) || !isset($_GET['pass']))
 	die('Invalid request');
-	
+
+$_GET['pass'] = md5($_GET['pass']);
 define('CID',false);
 require_once('../../../../include.php');
 ModuleManager::load_modules();
@@ -46,6 +47,8 @@ $keys = array(
 			'Category',
 			'Name',
 			'Price',
+			'Tax',
+			'Gross Price',
 			'Currency',
 			'Quantity',
 			'UPC',
@@ -72,6 +75,8 @@ foreach($prods as $p) {
 	if($quantity==0) continue;
 	
 	$price = Utils_CurrencyFieldCommon::get_values($p['net_price']);
+	$tax = Data_TaxRatesCommon::get_tax_rate($p['tax_rate']);
+	$g_price = round($price[0]*(100+$tax)/100,Utils_CurrencyFieldCommon::get_precission($price[1]));
 	$category = array_shift($p['category']);
 	$category = explode('/',$category);
 	foreach($category as $k=>$v) {
@@ -80,7 +85,7 @@ foreach($prods as $p) {
 	}
 	$manufacturer = CRM_ContactsCommon::get_company($p['manufacturer']);
 	$manufacturer = $manufacturer['company_name'];
-	fputcsv($fp,array(implode('/',$category),$p['item_name'],$price[0],Utils_CurrencyFieldCommon::get_code($price[1]),$quantity,$p['upc'],
+	fputcsv($fp,array(implode('/',$category),$p['item_name'],$price[0],$tax,$g_price,Utils_CurrencyFieldCommon::get_code($price[1]),$quantity,$p['upc'],
 				$manufacturer, $p['manufacturer_part_number'],$p['sku']));
 }
 fclose($fp);

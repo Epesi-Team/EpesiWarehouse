@@ -228,6 +228,12 @@ class Premium_Warehouse_Wholesale__Plugin_epesi implements Premium_Warehouse_Who
 				}
 				if($internal_key===false || $internal_key===null) {
 					if ($w_item!==null) {
+						$remote_tax = $row['Tax'];
+						$iii = Utils_RecordBrowserCommon::get_record('premium_warehouse_items',$w_item);
+						$local_tax = Data_TaxRates::get_tax_rate($iii['tax_rate']);
+						if($local_tax>$remote_tax) {
+							$row['Price'] = $row['Gross Price']*100/($local_tax+100);
+						}
 						DB::Execute('INSERT INTO premium_warehouse_wholesale_items (item_id, internal_key, distributor_item_name, distributor_id, quantity, quantity_info, price, price_currency,distributor_category) VALUES (%d, %s, %s, %d, %d, %s, %f, %d,%d)', array($w_item, $row['SKU'], $row['Name'], $distributor['id'], $quantity, $quantity_info, $row['Price'], $pln_id,$category));
 					} else {
 						DB::Execute('INSERT INTO premium_warehouse_wholesale_items (internal_key, distributor_item_name, distributor_id, quantity, quantity_info, price, price_currency,distributor_category) VALUES (%s, %s, %d, %d, %s, %f, %d,%d)', array($row['SKU'], $row['Name'], $distributor['id'], $quantity, $quantity_info, $row['Price'], $pln_id,$category));
@@ -235,6 +241,14 @@ class Premium_Warehouse_Wholesale__Plugin_epesi implements Premium_Warehouse_Who
 				} elseif($internal_key) {
 					/*** there's an exact match in the system already ***/
 					$link_exist++;
+					if($w_item!==null)
+						$item_id = $w_item;
+					$remote_tax = $row['Tax'];
+					$iii = Utils_RecordBrowserCommon::get_record('premium_warehouse_items',$item_id);
+					$local_tax = Data_TaxRates::get_tax_rate($iii['tax_rate']);
+					if($local_tax>$remote_tax) {
+						$row['Price'] = $row['Gross Price']*100/($local_tax+100);
+					}
 					DB::Execute('UPDATE premium_warehouse_wholesale_items SET quantity=%d, quantity_info=%s, price=%f, price_currency=%d,distributor_category=%d WHERE internal_key=%s AND distributor_id=%d', array($quantity, $quantity_info, $row['Price'], $pln_id, $category, $row['SKU'], $distributor['id']));
 					if ($w_item!==null) 
 						DB::Execute('UPDATE premium_warehouse_wholesale_items SET item_id=%d WHERE internal_key=%s AND distributor_id=%d', array($w_item, $row['SKU'], $distributor['id']));
