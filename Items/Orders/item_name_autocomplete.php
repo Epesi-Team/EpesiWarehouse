@@ -45,7 +45,7 @@ print('<ul>');
 
 $header = '<li><table>'.
 		'<tr>'.
-			'<th width="200px;" align="center">'.
+			'<th width="300px;" align="center">'.
 				'<span class="informal">'.
 					Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Item Name').
 				'</span>'.
@@ -80,7 +80,7 @@ while ($row = $ret->FetchRow()) {
 	$empty = false;
 	$l = '<li><table>'.
 			'<tr>'.
-				'<td width="200px;">'.
+				'<td width="300px;">'.
 					$row['f_item_name'].
 				'</td>'.
 				'<td>'.
