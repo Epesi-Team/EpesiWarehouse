@@ -12,7 +12,7 @@
  */
 defined("_VALID_ACCESS") || die('Direct access forbidden');
 
-class Premium_Warehouse_Wholesale__Plugin_epesi implements Premium_Warehouse_Wholesale__Plugin {
+class Premium_Warehouse_Wholesale__Plugin_epesi_with_tax implements Premium_Warehouse_Wholesale__Plugin {
 	/**
 	 * Returns the name of the plugin
 	 * 
