@@ -136,7 +136,7 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 			if ($id) $next = Utils_RecordBrowserCommon::get_value('premium_ecommerce_cat_descriptions',$id,'display_name');
 		}
 		if (!$ecommerce_on || !$next) $next = Utils_RecordBrowserCommon::get_value('premium_warehouse_items_categories',$c_id,'category_name');
-		return $next;
+		return trim($next);
     }
     
     public static function QFfield_gross_price(&$form, $field, $label, $mode, $default) {
@@ -179,15 +179,9 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 		} else {
 			$def = array();
 			foreach ($default as $d) {
-				$keys = explode('/',$d);
-				if (!is_numeric($keys[0])) return; // TODO: it's just a fail-safe
-				$next = self::get_category_name($keys[0]);
-				if (count($keys)>1) {
-					if (count($keys)>2) $next .= '/.../';
-					else $next .= '/';
-					$next .= self::get_category_name($keys[count($keys)-1]);
-				}
-				$def[] = $next;
+				$next = self::automulti_format($d);
+				if($next)
+					$def[] = $next;
 			}
 			$form->addElement('static', $field, $label, implode('<br/>',$def));
 		}
@@ -202,14 +196,14 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
     
     public static function automulti_search($arg) {
 	$arg = DB::Concat(DB::qstr('%'),DB::qstr($arg),DB::qstr('%'));
-	$cats = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_categories', array('~"category_name'=>$arg),array('category_name','parent_category'),array('position'=>'ASC'));
+	$cats = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_categories', array('~"category_name'=>$arg),array('category_name','parent_category'),array('position'=>'ASC'),10);
 	$ret = array();
     	foreach($cats as $c) {
     		self::resolve_category($c['parent_category'], $c['id'], $c['category_name']);
     		$name = ltrim($c['category_name'],'/');
     		$r = explode('/',$name);
     		if(count($r)>3) {
-    			$name = $r[0].'/.../'.$r[count($r)-1];
+    			$name = $r[0].'/../'.$r[count($r)-2].'/'.$r[count($r)-1];
     		}
     		$ret[ltrim($c['id'],'/')] = $name;
     	}
@@ -221,9 +215,9 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 	if (!is_numeric($keys[0])) return; // TODO: it's just a fail-safe
 	$next = self::get_category_name($keys[0]);
 	if (count($keys)>1) {
-		if (count($keys)>2) $next .= '/.../';
+		if (count($keys)>3) $next .= '/../';
 		else $next .= '/';
-		$next .= self::get_category_name($keys[count($keys)-1]);
+		$next .= (count($keys)>2?self::get_category_name($keys[count($keys)-2]).'/':'').self::get_category_name($keys[count($keys)-1]);
 	}
     	return $next;
     }
