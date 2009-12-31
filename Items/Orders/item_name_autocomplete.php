@@ -43,7 +43,7 @@ if (!$my_warehouse) $my_warehouse = Base_User_SettingsCommon::get('Premium_Wareh
 
 print('<ul>');
 
-$header = '<li><table>'.
+$header = '<li><table style="width: 600px;">'.
 		'<tr>'.
 			'<th width="300px;" align="center">'.
 				'<span class="informal">'.
@@ -78,7 +78,7 @@ $empty = true;
 while ($row = $ret->FetchRow()) {
 	if ($empty) print($header);
 	$empty = false;
-	$l = '<li><table>'.
+	$l = '<li><table style="width: 600px;">'.
 			'<tr>'.
 				'<td width="300px;">'.
 					$row['f_item_name'].
