@@ -230,7 +230,7 @@ class Premium_Warehouse_Wholesale__Plugin_epesi_with_tax implements Premium_Ware
 					if ($w_item!==null) {
 						$remote_tax = $row['Tax'];
 						$iii = Utils_RecordBrowserCommon::get_record('premium_warehouse_items',$w_item);
-						$local_tax = Data_TaxRates::get_tax_rate($iii['tax_rate']);
+						$local_tax = Data_TaxRatesCommon::get_tax_rate($iii['tax_rate']);
 						if($local_tax>$remote_tax) {
 							$row['Price'] = $row['Gross Price']*100/($local_tax+100);
 						}
@@ -245,7 +245,7 @@ class Premium_Warehouse_Wholesale__Plugin_epesi_with_tax implements Premium_Ware
 						$item_id = $w_item;
 					$remote_tax = $row['Tax'];
 					$iii = Utils_RecordBrowserCommon::get_record('premium_warehouse_items',$item_id);
-					$local_tax = Data_TaxRates::get_tax_rate($iii['tax_rate']);
+					$local_tax = Data_TaxRatesCommon::get_tax_rate($iii['tax_rate']);
 					if($local_tax>$remote_tax) {
 						$row['Price'] = $row['Gross Price']*100/($local_tax+100);
 					}
