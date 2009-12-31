@@ -121,14 +121,14 @@ class Products
 			$aExp['fPrice'] = null;
 		}
 		if($autoprice && !$aExp['fPrice'] && $aExp['distributorQuantity'] && $aExp['fPrice3'] && $aExp['price_currency']==$currency) {
-			$netto = $aExp['fPrice3'];
-			$profit = $netto*$percentage/100;
-			if($profit<$minimal) $profit = $minimal;
-			$auto_price = round((float)($netto+$profit)*(100+$taxes[$aExp['tax2']])/100,2);
-			if($aExp['f_quantity']==0 && $user_price>$auto_price) {
+			$dist_price = round((float)$aExp['fPrice3']*(100+$taxes[$aExp['tax2']])/100,2);
+			if($aExp['f_quantity']==0 && $user_price>$dist_price) {
 				$aExp['fPrice'] = $user_price;
 			} else {
-				$aExp['fPrice'] = $auto_price;
+				$netto = $aExp['fPrice3'];
+				$profit = $netto*$percentage/100;
+				if($profit<$minimal) $profit = $minimal;
+				$aExp['fPrice'] = round((float)($netto+$profit)*(100+$taxes[$aExp['tax2']])/100,2);
 				$aExp['tax'] = $aExp['tax2'];		
 			}
 		}
