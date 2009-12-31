@@ -1162,7 +1162,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 									array(	array('field'=>'transaction_id', 'width'=>10),
 										array('field'=>'transaction_date', 'width'=>20)
 									),
-									array('status'=>$conf['status'],'online_order'=>1),
+									array('status'=>$conf['status']),
 									array('transaction_date'=>'DESC'),
 									array('Premium_Warehouse_eCommerceCommon','applet_info_format'),
 									15,
