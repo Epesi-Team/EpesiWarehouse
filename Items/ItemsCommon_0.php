@@ -250,7 +250,7 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 	}
 
 	public static function applet_caption() {
-		return 'Items';
+		return 'Not sold items';
 	}
 	public static function applet_info() {
 		return 'List of not sold items';
