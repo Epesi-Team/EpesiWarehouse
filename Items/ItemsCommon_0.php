@@ -253,13 +253,22 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 		return 'Items';
 	}
 	public static function applet_info() {
-		return 'List of Items';
+		return 'List of not sold items';
 	}
 
 	public static function applet_info_format($r){
 		return
 			'Item Name: '.$r['item_name'].'<HR>'.
 			'Description: '.$r['description'];
+	}
+
+	public static function applet_settings() {
+		$opts = array(1209600=>'2 weeks', 2419200=>'4 weeks', 4838400=>'2 months', 10281600=>'4 months');
+		return array_merge(Utils_RecordBrowserCommon::applet_settings(),
+			array(
+				array('name'=>'settings_header','label'=>'Settings','type'=>'header'),
+				array('name'=>'older','label'=>'Items not sold for','type'=>'select','default'=>2419200,'rule'=>array(array('message'=>'Field required', 'type'=>'required')),'values'=>$opts)
+				));
 	}
 
 	public static function watchdog_label($rid = null, $events = array(), $details = true) {
