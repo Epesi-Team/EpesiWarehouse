@@ -217,12 +217,10 @@ class Premium_Warehouse_Items extends Module {
 		$rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items','premium_warehouse_items');
 		$limit = null;
 		$crits = array();
-		$rr = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details',array(':Created_on'=>array('>=',date('Y-m-d H:i:s',time()-$conf['older']))),array('item_name'));
-		$sold = array();
-		foreach($rr as $r) {
-			$sold[] = $r['item_name'];
-		}
+		$av = DB::GetCol('(SELECT DISTINCT f_item_sku FROM premium_warehouse_location_data_1 WHERE f_quantity>0) UNION (SELECT id FROM premium_warehouse_items_data_1 WHERE f_quantity_on_hand>0)');
+		$sold = DB::GetCol('SELECT DISTINCT f_item_name FROM premium_warehouse_items_orders_details_data_1 WHERE created_on>=%T',array(date('Y-m-d H:i:s',time()-$conf['older'])));
 		$crits['!id'] = $sold;
+		$crits['id'] = $av;
 
 		
 		$sorting = array('item_name'=>'ASC');
