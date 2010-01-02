@@ -1154,15 +1154,24 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 	public function applet($conf,$opts) {
 		//available applet options: toggle,href,title,go,go_function,go_arguments,go_contruct_arguments
 		$opts['go'] = false; // enable/disable full screen
-		$xxx = array(-1=>'New Online Order', 2=>'Order Received', 3=>'Payment Confirmed', 4=>'Order Confirmed', 5=>'On Hold', 6=>'Order Ready to Ship', 7=>'Shipped', 20=>'Delivered', 21=>'Canceled', 22=>'Missing');
+		$xxx = array(-1=>'New Online Order', 2=>'Order Received', 3=>'Payment Confirmed', 4=>'Order Confirmed', 5=>'On Hold', 6=>'Order Ready to Ship', 7=>'Shipped', 20=>'Delivered', 21=>'Canceled', 22=>'Missing','active'=>'Active');
 		$opts['title'] = 'eCommerce - '.$xxx[$conf['status']];
 		
+		$crits = array('online_order'=>1);
+		if($conf['status']=='active')
+			$crits['status'] = array(2,3,4,5,6);
+		else
+			$crits['status'] = $conf['status'];
+		if($conf['my']) {
+			$my_rec = CRM_ContactsCommon::get_my_record();
+			$crits['employee'] = array('',$my_rec['id']);
+		}
 		$rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items_orders','premium_warehouse_items_orders');
 		$conds = array(
 									array(	array('field'=>'transaction_id', 'width'=>10),
 										array('field'=>'transaction_date', 'width'=>20)
 									),
-									array('status'=>$conf['status']),
+									$crits,
 									array('transaction_date'=>'DESC'),
 									array('Premium_Warehouse_eCommerceCommon','applet_info_format'),
 									15,

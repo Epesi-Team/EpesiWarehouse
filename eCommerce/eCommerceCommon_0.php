@@ -797,11 +797,9 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 		return implode(', ',$ret);
 	}
 
-	public static function display_online_order($r, $nolink) {
-		$rr = Utils_RecordBrowserCommon::get_records('premium_ecommerce_orders',array('transaction_id'=>$r['id']),array('language'));
-		$on = '<span class="checkbox_on" />';
-		$off = '<span class="checkbox_off" />';
-		return empty($rr)?$off:$on;
+	public static function QFfield_online_order(&$form, $field, $label, $mode, $default) {
+		$form->addElement('checkbox', $field, $label)->freeze();
+		$form->setDefaults(array($field=>$default));
 	}
 	
 	public static function admin_caption() {
@@ -818,11 +816,12 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 	}
 
 	public static function applet_settings() {
-		$opts = array(-1=>'New Online Order', 2=>'Order Received', 3=>'Payment Confirmed', 4=>'Order Confirmed', 5=>'On Hold', 6=>'Order Ready to Ship', 7=>'Shipped', 20=>'Delivered', 21=>'Canceled', 22=>'Missing');
+		$opts = array(-1=>'New Online Order', 2=>'Order Received', 3=>'Payment Confirmed', 4=>'Order Confirmed', 5=>'On Hold', 6=>'Order Ready to Ship', 7=>'Shipped', 20=>'Delivered', 21=>'Canceled', 22=>'Missing','active'=>'[Active]');
 		return array_merge(Utils_RecordBrowserCommon::applet_settings(),
 			array(
 				array('name'=>'settings_header','label'=>'Settings','type'=>'header'),
-				array('name'=>'status','label'=>'Transaction status','type'=>'select','default'=>-1,'rule'=>array(array('message'=>'Field required', 'type'=>'required')),'values'=>$opts)
+				array('name'=>'status','label'=>'Transaction status','type'=>'select','default'=>-1,'rule'=>array(array('message'=>'Field required', 'type'=>'required')),'values'=>$opts),
+				array('name'=>'my','label'=>'Only my and not assigned','type'=>'checkbox','default'=>0)
 				));
 	}
 	

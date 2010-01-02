@@ -405,7 +405,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		
 		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_products', 'Premium/Warehouse/eCommerce', 'product_comments_addon', 'Comments');
 		
-		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items_orders',array('name'=>'Online order',	'type'=>'calculated', 'required'=>false, 'filter'=>false, 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_eCommerceCommon','display_online_order')));
+		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items_orders',array('name'=>'Online order',	'type'=>'checkbox', 'required'=>false, 'filter'=>true, 'extra'=>false, 'visible'=>true, 'QFfield_callback'=>array('Premium_Warehouse_eCommerceCommon','QFfield_online_order')));
 		
 
 // ************* addons ************ //
