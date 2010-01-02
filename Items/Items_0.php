@@ -221,7 +221,7 @@ class Premium_Warehouse_Items extends Module {
 			$av = DB::GetCol('SELECT DISTINCT f_item_sku FROM premium_warehouse_location_data_1 WHERE f_quantity>0 AND active=1');
 		else
 			$av = DB::GetCol('SELECT id FROM premium_warehouse_items_data_1 WHERE f_quantity_on_hand>0 AND active=1');
-		$sold = DB::GetCol('SELECT DISTINCT f_item_name FROM premium_warehouse_items_orders_details_data_1 WHERE created_on>=%T AND active=1',array(date('Y-m-d H:i:s',time()-$conf['older'])));
+		$sold = DB::GetCol('SELECT DISTINCT d.f_item_name FROM premium_warehouse_items_orders_details_data_1 d INNER JOIN premium_warehouse_items_orders_data_1 o ON o.id=d.f_transaction_id WHERE o.created_on>=%T AND d.active=1 AND o.active=1 AND o.f_transaction_type=1',array(date('Y-m-d H:i:s',time()-$conf['older'])));
 		$crits['!id'] = $sold;
 		$crits['id'] = $av;
 
