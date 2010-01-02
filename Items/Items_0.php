@@ -217,8 +217,8 @@ class Premium_Warehouse_Items extends Module {
 		$rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items','premium_warehouse_items');
 		$limit = null;
 		$crits = array();
-		$av = DB::GetCol('(SELECT DISTINCT f_item_sku FROM premium_warehouse_location_data_1 WHERE f_quantity>0) UNION (SELECT id FROM premium_warehouse_items_data_1 WHERE f_quantity_on_hand>0)');
-		$sold = DB::GetCol('SELECT DISTINCT f_item_name FROM premium_warehouse_items_orders_details_data_1 WHERE created_on>=%T',array(date('Y-m-d H:i:s',time()-$conf['older'])));
+		$av = DB::GetCol('(SELECT DISTINCT f_item_sku FROM premium_warehouse_location_data_1 WHERE f_quantity>0 AND active=1) UNION (SELECT id FROM premium_warehouse_items_data_1 WHERE f_quantity_on_hand>0 AND active=1)');
+		$sold = DB::GetCol('SELECT DISTINCT f_item_name FROM premium_warehouse_items_orders_details_data_1 WHERE created_on>=%T AND active=1',array(date('Y-m-d H:i:s',time()-$conf['older'])));
 		$crits['!id'] = $sold;
 		$crits['id'] = $av;
 
