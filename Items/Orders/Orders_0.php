@@ -63,7 +63,16 @@ class Premium_Warehouse_Items_Orders extends Module {
 		$opts['go'] = true; // enable full screen
 		$rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items_orders','premium_warehouse_items_orders');
 		$limit = 15;
-		$crits = array();
+		$crits = array('transaction_type'=>1, 'status'=>array(1,2,3,4,5,6));
+		if($conf['older']!='all')
+			$crits[':Created_on'] = array('<',date('Y-m-d H:i:s',time()-$conf['older']));
+
+		if($conf['my']) {
+			$my_rec = CRM_ContactsCommon::get_my_record();
+			$crits['employee'] = array('',$my_rec['id']);
+		}
+
+		
 		$sorting = array();
 		$cols = array(
 							array('field'=>'transaction_id', 'width'=>1, 'label'=>'Trans. ID'),

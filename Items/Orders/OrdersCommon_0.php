@@ -909,10 +909,10 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	}
 
 	public static function applet_caption() {
-		return 'Items Orders';
+		return 'Active Orders';
 	}
 	public static function applet_info() {
-		return 'List of Orders on Items';
+		return 'Active Orders';
 	}
 
 	public static function applet_info_format($r){
@@ -920,6 +920,17 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			'Transaction ID: '.$r['transaction_id'].'<HR>'.
 			'Status: '.$r['status'].'<br>';
 	}
+
+	public static function applet_settings() {
+		$opts = array('all'=>'---', 604800=>'1 week', 1209600=>'2 weeks', 2419200=>'4 weeks');
+		return array_merge(Utils_RecordBrowserCommon::applet_settings(),
+			array(
+				array('name'=>'settings_header','label'=>'Settings','type'=>'header'),
+				array('name'=>'older','label'=>'Transaction older then','type'=>'select','default'=>'all','rule'=>array(array('message'=>'Field required', 'type'=>'required')),'values'=>$opts),
+				array('name'=>'my','label'=>'Only my and not assigned','type'=>'checkbox','default'=>0)
+				));
+	}
+	
 
 	public static function watchdog_label($rid = null, $events = array(), $details = true) {
 		return Utils_RecordBrowserCommon::watchdog_label(
