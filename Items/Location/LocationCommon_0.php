@@ -85,9 +85,13 @@ class Premium_Warehouse_Items_LocationCommon extends ModuleCommon {
 		return $my_quantity;
 	}
 
-	public static function display_item_quantity($r, $nolink) {
+	public static function display_item_quantity($r, $nolink=false) {
 		$my_warehouse = Base_User_SettingsCommon::get('Premium_Warehouse','my_warehouse');
 		return self::display_item_quantity_in_warehouse_and_total($r, $my_warehouse, $nolink);
+	}
+	
+	public static function QFfield_item_quantity(&$form, $field, $label, $mode, $default) {
+		$form->addElement('static', $field, $label, self::display_item_quantity(Utils_RecordBrowser::$last_record, false));
 	}
 	
 	public static function display_item_quantity_in_warehouse_and_total($r, $warehouse, $nolink=false, $enroute=null, $custom_label=null) {

@@ -48,6 +48,7 @@ class Premium_Warehouse_Items_LocationInstall extends ModuleInstall {
 // ************ other ************** //
 		Utils_RecordBrowserCommon::set_access_callback('premium_warehouse_location', array('Premium_Warehouse_Items_LocationCommon', 'access_location'));
 		Utils_RecordBrowserCommon::set_display_callback('premium_warehouse_items', 'Quantity on Hand', array('Premium_Warehouse_Items_LocationCommon', 'display_item_quantity'));
+		Utils_RecordBrowserCommon::set_QFfield_callback('premium_warehouse_items', 'Quantity on Hand', array('Premium_Warehouse_Items_LocationCommon', 'QFfield_item_quantity'));
 		
 		DB::CreateTable('premium_warehouse_location_serial',
 					'id I AUTO KEY,'.
