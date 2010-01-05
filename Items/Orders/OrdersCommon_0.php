@@ -1100,40 +1100,41 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 				return $values;
 			case 'clone':
 			case 'add':
-				if ($values['company']<0 && $values['company_name']) {
-					$values['company'] = Utils_RecordBrowserCommon::new_record('company',
-						array(
-							'company_name'=>$values['company_name'],
-							'permission'=>0,
-							'address_1'=>$values['address_1'],
-							'address_2'=>$values['address_2'],
-							'city'=>$values['city'],
-							'country'=>$values['country'],
-							'zone'=>$values['zone'],
-							'postal_code'=>$values['postal_code'],
-							'phone'=>$values['phone'],
-							'tax_id'=>$values['tax_id']
-						));
-				}
-				if ($values['contact']==0 && trim($values['last_name']) && trim($values['first_name'])) {
-					if ($values['company']==-1) $values['company']='';
-					$values['contact'] = Utils_RecordBrowserCommon::new_record('contact',
-						array(
-							'first_name'=>$values['first_name'],
-							'last_name'=>$values['last_name'],
-							'company_name'=>$values['company'],
-							'permission'=>0,
-							'address_1'=>$values['address_1'],
-							'address_2'=>$values['address_2'],
-							'city'=>$values['city'],
-							'country'=>$values['country'],
-							'zone'=>$values['zone'],
-							'postal_code'=>$values['postal_code'],
-							'work_phone'=>$values['phone']
-						));
-				}
-				return $values;
 			case 'edit':
+				if ($values['status']!=21) {
+					if ($values['company']<0 && $values['company_name']) {
+						$values['company'] = Utils_RecordBrowserCommon::new_record('company',
+							array(
+								'company_name'=>$values['company_name'],
+								'permission'=>0,
+								'address_1'=>$values['address_1'],
+								'address_2'=>$values['address_2'],
+								'city'=>$values['city'],
+								'country'=>$values['country'],
+								'zone'=>$values['zone'],
+								'postal_code'=>$values['postal_code'],
+								'phone'=>$values['phone'],
+								'tax_id'=>$values['tax_id']
+							));
+					}
+					if ($values['contact']==0 && trim($values['last_name']) && trim($values['first_name'])) {
+						if ($values['company']==-1) $values['company']='';
+						$values['contact'] = Utils_RecordBrowserCommon::new_record('contact',
+							array(
+								'first_name'=>$values['first_name'],
+								'last_name'=>$values['last_name'],
+								'company_name'=>$values['company'],
+								'permission'=>0,
+								'address_1'=>$values['address_1'],
+								'address_2'=>$values['address_2'],
+								'city'=>$values['city'],
+								'country'=>$values['country'],
+								'zone'=>$values['zone'],
+								'postal_code'=>$values['postal_code'],
+								'work_phone'=>$values['phone']
+							));
+					}
+				}
 				if (!$values['warehouse'] && $values['status']>=2) {
 					self::$status_blocked = true;
 					$values['status'] = Utils_RecordBrowserCommon::get_value('premium_warehouse_items_orders', $values['id'], 'status');
