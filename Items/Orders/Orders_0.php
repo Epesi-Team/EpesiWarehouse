@@ -482,17 +482,15 @@ class Premium_Warehouse_Items_Orders extends Module {
 					$me = CRM_ContactsCommon::get_my_record();
 					$table_rows = Utils_RecordBrowserCommon::init('premium_warehouse_items_orders');
 					CRM_ContactsCommon::QFfield_contact($new_form, 'employee', 'Employee', 'add', $me['id'], $table_rows['Employee']);
-					if(!$trans['warehouse']) {
-						$warehouses = array(''=>'---');
-						$records = Utils_RecordBrowserCommon::get_records('premium_warehouse');
-						foreach ($records as $v) $warehouses[$v['id']] = $v['warehouse'];
-						$new_form->addElement('select', 'warehouse', $this->t('Warehouse'), $warehouses);
-						$new_form->setDefaults(array('warehouse'=>Base_User_SettingsCommon::get('Premium_Warehouse','my_warehouse')));
-					}
+					$warehouses = array(''=>'---');
+					$records = Utils_RecordBrowserCommon::get_records('premium_warehouse');
+					foreach ($records as $v) $warehouses[$v['id']] = $v['warehouse'];
+					$new_form->addElement('select', 'warehouse', $this->t('Warehouse'), $warehouses);
+					$new_form->setDefaults(array('warehouse'=>!$trans['warehouse']?Base_User_SettingsCommon::get('Premium_Warehouse', 'my_warehouse'):$trans['warehouse']));
 					$new_form->setDefaults(array('employee'=>$me['id']));
 					$lp->add_option('new', $this->t('Order received'), null, $new_form);
-
-					$this->display_module($lp, array($this->t('Recieve Online Order')));
+					$items_availability_table = $this->get_items_availability_table($trans);
+					$this->display_module($lp, array($this->t('Recieve Online Order'), array(), $items_availability_table));
 					$this->href = $lp->get_href();
 					$vals = $lp->export_values();
 					if ($vals!==null) {
@@ -948,7 +946,64 @@ class Premium_Warehouse_Items_Orders extends Module {
 			}
 		}
 	}
-	
+
+	public function get_items_availability_table($trans) {
+		$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$trans['id']));
+		$gb = $this->init_module('Utils_GenericBrowser',null,'item_availability');
+		$warehouses = array();
+		$warehouse_score = array();
+		$totals = array();
+		$qts = array();
+		$records = Utils_RecordBrowserCommon::get_records('premium_warehouse');
+		foreach ($records as $v) {
+			$warehouses[$v['id']] = $v['warehouse'];
+			$warehouse_score[$v['id']] = 0;
+		}
+		foreach ($items as $k=>$v) {
+			$item_id = $v['item_name'];
+			$totals[$item_id] = 0;
+			$qts[$item_id] = array();
+			$locs = Utils_RecordBrowserCommon::get_records('premium_warehouse_location', array('item_sku'=>$item_id));
+			foreach ($locs as $l) {
+				$qts[$item_id][$l['warehouse']] = $l['quantity'];
+				$totals[$item_id] += $l['quantity'];
+				$warehouse_score[$l['warehouse']] += min($l['quantity'], $v['quantity']);
+				if ($l['quantity']>$v['quantity']) $warehouse_score[$l['warehouse']] += ($l['quantity']-$v['quantity'])/1000;
+				if ($l['quantity']>=$v['quantity']) $warehouse_score[$l['warehouse']] += 1000;
+			}
+		}
+		arsort($warehouse_score);
+		$header = array();
+		$header[] = 'Item Name';
+		$header[] = 'Required Quantity';
+		foreach ($warehouse_score as $w=>$v) {
+			if ($v==0) {
+				unset($warehouse_score[$w]);
+				continue;
+			}
+			$header[] = $warehouses[$w];
+		}
+		$gb->set_table_columns($header);
+		foreach ($items as $i) {
+			$item_id = $i['item_name'];
+			$row = array();
+			$row[] = Utils_RecordBrowserCommon::get_value('premium_warehouse_items', $item_id, 'item_name');
+			if ($i['quantity']>$totals[$item_id]) $qty_req = '<span style="color:red;"><b>'.$i['quantity'].'</b></span>';
+			else $qty_req = $i['quantity'];
+			$row[] = $qty_req;
+			foreach ($warehouse_score as $w=>$v) {
+				if (!isset($qts[$item_id][$w])) $qts[$item_id][$w] = 0;
+				if ($qts[$item_id][$w]<$i['quantity']) $qts[$item_id][$w] = '<span style="color:#FF9999;"><b>'.$qts[$item_id][$w].'</b></span>';
+				else $qts[$item_id][$w] = '<span style="color:#009911;"><b>'.$qts[$item_id][$w].'</b></span>';
+				$row[] = $qts[$item_id][$w];
+			}
+			$gb->add_row_array($row);
+		}
+		$gb->set_inline_display();
+		$html = '<br><br>'.$this->get_html_of_module($gb);
+		return $html;
+	}
+
 	public function get_href() {
 		return $this->href;
 	}
