@@ -878,7 +878,8 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 							if (!$i->acl_check('edit orders')) return false;
 							if ((($tt!=0 && $tt!=1) || (isset($param['status']) && $param['status']>=2)) && $param['warehouse'] && $action=='edit') 
 								$ret['warehouse'] = false;
-							$ret['status'] = false;
+							if (!Base_AclCommon::i_am_admin())
+								$ret['status'] = false;
 							$ret['transaction_type'] = false;
 							return $ret;
 			case 'delete':	if (Acl::get_user()==$param['created_by']) return true;
