@@ -63,7 +63,26 @@ class Premium_Warehouse_Items_Orders extends Module {
 		$opts['go'] = true; // enable full screen
 		$rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items_orders','premium_warehouse_items_orders');
 		$limit = 15;
-		$crits = array('transaction_type'=>1, 'status'=>array(1,2,3,4,5,6));
+		switch($conf['type']) {
+			// PURCHASE
+			case 0: $status = array(1, 2, 3, 4, 5); 
+				break;
+			// SALE
+			case 1: 
+			// RENTAL
+			case 3: 
+			// WAREHOUSE TRANSFER
+			case 4: 
+				$status = array(1,2,3,4,5,6);
+				break;
+			// INV. ADJUSTMENT
+			case 2: $status = array('');
+				break;
+			default:
+				print($this->t('Invalid transaction type, please go to applet options and select different one.'));
+				return;
+		}
+		$crits = array('transaction_type'=>$conf['type'], 'status'=>$status);
 		if($conf['older']!='all')
 			$crits[':Created_on'] = array('<',date('Y-m-d H:i:s',time()-$conf['older']));
 

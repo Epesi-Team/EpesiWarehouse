@@ -924,11 +924,13 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 
 	public static function applet_settings() {
 		$opts = array('all'=>'---', 604800=>'1 week', 1209600=>'2 weeks', 2419200=>'4 weeks');
+		$types = array(0=>'Purchase', 1=>'Sale', 2=>'Inv. Adjustment', 3=>'Rental', 4=>'Transfer');
 		return array_merge(Utils_RecordBrowserCommon::applet_settings(),
 			array(
 				array('name'=>'settings_header','label'=>'Settings','type'=>'header'),
 				array('name'=>'older','label'=>'Transaction older then','type'=>'select','default'=>'all','rule'=>array(array('message'=>'Field required', 'type'=>'required')),'values'=>$opts),
-				array('name'=>'my','label'=>'Only my and not assigned','type'=>'checkbox','default'=>0)
+				array('name'=>'my','label'=>'Only my and not assigned','type'=>'checkbox','default'=>0),
+				array('name'=>'type','label'=>'Transaction type','type'=>'select','default'=>1,'rule'=>array(array('message'=>'Field required', 'type'=>'required')),'values'=>$types)
 				));
 	}
 	

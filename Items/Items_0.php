@@ -214,14 +214,17 @@ class Premium_Warehouse_Items extends Module {
 
 	public function applet($conf,$opts) {
 		$opts['go'] = true; // enable full screen
+		$xxx = array(1209600=>'2 weeks', 2419200=>'4 weeks', 4838400=>'2 months', 10281600=>'4 months');
+		$opts['title'] = 'Not sold for '.$xxx[$conf['older']];
 		$rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items','premium_warehouse_items');
 		$limit = null;
 		$crits = array();
+
 		if(ModuleManager::is_installed('Premium_Warehouse_Items_Location')>=0)
-			$av = DB::GetCol('SELECT DISTINCT f_item_sku FROM premium_warehouse_location_data_1 WHERE f_quantity>0 AND active=1');
+			$av = DB::GetCol('SELECT DISTINCT l.f_item_sku FROM premium_warehouse_location_data_1 l INNER JOIN premium_warehouse_items_data_1 i ON i.id=l.f_item_sku WHERE l.f_quantity>0 AND l.active=1 AND i.active=1 AND i.created_on<%T',array(date('Y-m-d H:i:s',time()-$conf['older'])));
 		else
-			$av = DB::GetCol('SELECT id FROM premium_warehouse_items_data_1 WHERE f_quantity_on_hand>0 AND active=1');
-		$sold = DB::GetCol('SELECT DISTINCT d.f_item_name FROM premium_warehouse_items_orders_details_data_1 d INNER JOIN premium_warehouse_items_orders_data_1 o ON o.id=d.f_transaction_id WHERE o.created_on>=%T AND d.active=1 AND o.active=1 AND o.f_transaction_type=1',array(date('Y-m-d H:i:s',time()-$conf['older'])));
+			$av = DB::GetCol('SELECT id FROM premium_warehouse_items_data_1 WHERE f_quantity_on_hand>0 AND active=1 AND created_on<%T',array(date('Y-m-d H:i:s',time()-$conf['older'])));
+		$sold = DB::GetCol('SELECT DISTINCT d.f_item_name FROM premium_warehouse_items_orders_details_data_1 d INNER JOIN premium_warehouse_items_orders_data_1 o ON o.id=d.f_transaction_id INNER JOIN premium_warehouse_items_data_1 i ON i.id=d.f_item_name WHERE o.created_on>=%T AND d.active=1 AND o.active=1 AND o.f_transaction_type=1',array(date('Y-m-d H:i:s',time()-$conf['older'])));
 		$crits['!id'] = $sold;
 		$crits['id'] = $av;
 
