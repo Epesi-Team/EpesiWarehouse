@@ -21,8 +21,8 @@ define('READ_ONLY_SESSION',true);
 require_once('../../../../../include.php');
 ModuleManager::load_modules();
 
-$id = trim($_POST['rec_id'], '"');
-$trans_id = trim($_POST['trans'], '"');
+$id = json_decode($_POST['rec_id']);
+$trans_id = json_decode($_POST['trans']);
 if (!is_numeric($id)) {
 	$new_id = Utils_RecordBrowserCommon::get_id('premium_warehouse_items', 'item_name', $id);
 	if (!is_numeric($new_id)) {
