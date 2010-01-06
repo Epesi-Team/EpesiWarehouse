@@ -46,9 +46,24 @@ class Premium_Warehouse_Wholesale extends Module {
 			array('name'=>$this->t('Quantity Details'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'quantity_info'),
 			array('name'=>$this->t('Distributor Category'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'distributor_category')
 		));
+
+		$form = $this->init_module('Libs/QuickForm');
+		$form->addElement('select','link_status','Show',array('all'=>'all items','linked'=>'only linked items','unlinked'=>'only unlinked items'),array('onChange'=>$form->get_submit_form_js()));
+		$link_status = & $this->get_module_variable('link_status','all');
+		$form->setDefaults(array('link_status'=>$link_status));
+		if($form->validate()) {
+			$link_status = $form->exportValue('link_status');
+		}
+		$form->display();
 		
 		$where = $gb->get_search_query(false,true);
 		if ($where) $where = ' AND '.$where;
+		if($link_status!='all') {
+			if($link_status=='linked')
+				$where .= ' AND item_id is not null';
+			else
+				$where .= ' AND item_id is null';
+		}
 //		$limit = $gb->get_limit(DB::GetOne('SELECT COUNT(*) FROM premium_warehouse_wholesale_items WHERE distributor_id=%d AND (quantity!=%d OR quantity_info!=%s) '.$where, array($arg['id'],0,'')));
 		$limit = $gb->get_limit(DB::GetOne('SELECT COUNT(*) FROM premium_warehouse_wholesale_items WHERE distributor_id=%d '.$where, array($arg['id'])));
 		$gb->set_default_order(array('Item Name'=>'ASC'));
