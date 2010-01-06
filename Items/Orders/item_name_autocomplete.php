@@ -33,7 +33,9 @@ if (($trans_type==1 || $trans_type==4) && $trans['status']>=2 && $trans['warehou
 	$vals[] = $trans['warehouse'];
 }
 foreach ($words as $w) {
-	$qry[] = 'f_item_name LIKE '.DB::Concat(DB::qstr('%'), '%s', DB::qstr('%'));
+	$str = DB::Concat(DB::qstr('%'), '%s', DB::qstr('%'));
+	$qry[] = '(f_item_name LIKE '.$str.' OR f_sku LIKE '.$str.')';
+	$vals[] = $w;
 	$vals[] = $w;
 }
 $ret = DB::SelectLimit('SELECT * FROM premium_warehouse_items_data_1 AS pwi WHERE '.implode(' AND ',$qry).' AND active=1', 10, 0, $vals);
