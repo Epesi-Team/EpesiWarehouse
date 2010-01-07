@@ -109,7 +109,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		$res[$r['id']]['total'] = array();
 		foreach($recs as $rr){
 			$price = Utils_CurrencyFieldCommon::get_values($rr['net_price']);
-			$net_total = $price[0]*$rr['quantity'];
+			$net_total = round($price[0],Utils_CurrencyFieldCommon::get_precission($price[1]))*$rr['quantity'];
 			$tax_value = round(Data_TaxRatesCommon::get_tax_rate($rr['tax_rate'])*$price[0]/100, Utils_CurrencyFieldCommon::get_precission($price[1]))*$rr['quantity'];
 			if (!isset($res[$r['id']]['tax'][$price[1]]) && $tax_value)
 				$res[$r['id']]['tax'][$price[1]] = 0;
