@@ -58,6 +58,10 @@
             <label for="oComment">$lang[Order_comment]</label>
             <textarea name="sComment" cols="50" rows="9" id="oComment"></textarea>
           </div>
+          <div id="company">
+            <label for="oPromotionCode">$lang[Promotion_code]</label>
+            <input type="text" name="sPromotionCode" value="$aUser[sPromotionCode]" maxlength="100" class="input" onblur="saveUserData( this.name, this.value )" id="sPromotionCode" />
+          </div>
         </fieldset>
       </fieldset>
     </fieldset>

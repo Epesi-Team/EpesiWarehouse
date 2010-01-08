@@ -650,7 +650,7 @@ html, body, #container, #main, #body, #content {
 #order #personalData label{display:block;font-weight:bold;}
 #order #personalData #company label, #order #personalData #comment label{font-weight:normal;}
 #order #personalData .input, #order #personalData #oComment{width:90%;margin:0 0 5px;}
-#order #personalData #oComment{height:125px;}
+#order #personalData #oComment{height:113px;}
 
 #order #deliveryAndPayment table{border-top:2px solid #e8dac6;border-bottom:1px solid #e8dac6;background:#f4f3dd;color:#764830;font-size:1em;}
 #order #deliveryAndPayment table tbody td{padding:3px 13px;border-left:1px solid #e8dac6;border-bottom:1px solid #e8dac6;}

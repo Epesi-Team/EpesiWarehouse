@@ -339,4 +339,7 @@ $lang['More'] = 'Rozwiń';
 $lang['All_companies'] = 'Wszyscy producenci';
 $lang['Pickup_shop'] = 'Miejsce odbioru osobistego';
 $lang['Select_pickup_shop'] = 'Wypełnij miejsce odbioru osobistego';
+$lang['Promotion_code'] = 'Kod promocyjny (upoważnia do zniżki na wysyłkę)';
+$lang['Promotion_invalid'] = 'Kod promocyjny niepoprawny - popraw kod lub nie wpisuj go';
+$lang['Promotion_expired'] = 'Kod promocyjny wygasł, wprowadź nowy kod lub nie wpisuj żadnego';
 ?>

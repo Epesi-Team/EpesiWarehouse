@@ -48,6 +48,8 @@ class Premium_Warehouse_eCommerce extends Module {
 						'icon'=>null);
 		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'polls')).'>'.$this->ht('Polls').'</a>',
 						'icon'=>null);
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'promotion_codes')).'>'.$this->ht('Promotion Codes').'</a>',
+						'icon'=>null);
 		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'QC_dirs')).'>'.$this->ht('Quickcart settings').'</a>',
 						'icon'=>null);
 		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'rules_page')).'>'.$this->ht('Rules & Policies').'</a>',
@@ -160,6 +162,17 @@ class Premium_Warehouse_eCommerce extends Module {
 		$this->rb->set_defaults(array('publish'=>1,'language'=>Base_LangCommon::get_lang_code()));
 		$this->rb->set_additional_actions_method(array($this, 'actions_for_position'));
 		$this->rb->force_order(array('position'=>'ASC'));
+		$this->display_module($this->rb);
+
+		return true;
+	}
+	
+	public function promotion_codes() {
+		if($this->is_back()) return false;
+		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
+		
+		$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_promotion_codes');
+		$this->rb->force_order(array('expiration'=>'DESC'));
 		$this->display_module($this->rb);
 
 		return true;

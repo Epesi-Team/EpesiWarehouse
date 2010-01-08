@@ -51,6 +51,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 			'invoice_number'=>array('width'=>1, 'wrapmode'=>'nowrap', 'name'=>'Invoice'),
 			'transaction_date'=>array('width'=>1, 'wrapmode'=>'nowrap', 'name'=>'Date')
 		));
+		
 		$this->display_module($this->rb);
 	}
 
@@ -771,6 +772,10 @@ class Premium_Warehouse_Items_Orders extends Module {
 		} elseif ($trans['transaction_type']==4) {
 			switch ($status) {			
 				case '':
+					if (!$trans['warehouse']) {
+						$this->href = Utils_TooltipCommon::open_tag_attrs(Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Source warehouse not set, cannot proceed with processing.'),false);
+						break;
+					}
 //					$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$trans['id']));
 //					$so_form = $this->revise_items($items, $trans);
 					$lp->add_option('so', $this->t('Transfer pending'), null, null);
@@ -929,6 +934,10 @@ class Premium_Warehouse_Items_Orders extends Module {
 					}
 					break;
 				case 6:
+					if($trans['created_by']==Acl::get_user()) {
+						$this->href = Utils_TooltipCommon::open_tag_attrs(Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Only target warehouse employee can mark this transfer as delivered.'),false);
+						break;					
+					}
 					$lp->add_option('delivered', $this->t('Delivered'), null, null);
 					$lp->add_option('missing', $this->t('Missing'), null, null);
 					$this->display_module($lp, array($this->t('Was the shipment delivered?')));

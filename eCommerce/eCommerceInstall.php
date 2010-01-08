@@ -259,7 +259,8 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 			array('name'=>'Comment',		'type'=>'long text', 'required'=>false, 'extra'=>false),
 			array('name'=>'Invoice', 		'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>true),
 			array('name'=>'Payment Channel',	'type'=>'text', 'param'=>4,	'required'=>true, 'extra'=>false, 'visible'=>true,'display_callback'=>array($this->get_type().'Common', 'display_payment_channel'),'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_payment_channel')),
-			array('name'=>'Payment Realized',	'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>true,'display_callback'=>array($this->get_type().'Common', 'display_payment_realized'),'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_payment_realized'))
+			array('name'=>'Payment Realized',	'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>true,'display_callback'=>array($this->get_type().'Common', 'display_payment_realized'),'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_payment_realized')),
+			array('name'=>'Promotion Employee', 	'type'=>'crm_contact', 'param'=>array('field_type'=>'select','crits'=>array('Premium_Warehouse_ItemsCommon','employee_crits'), 'format'=>array('CRM_ContactsCommon','contact_format_no_company')), 'required'=>false, 'extra'=>false, 'visible'=>true)
 		);
 		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_orders', $fields);
 
@@ -356,6 +357,18 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_boxes', 'eCommerce - Boxes');
 		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_boxes', array('Premium_Warehouse_eCommerceCommon', 'access_parameters'));
 		Utils_RecordBrowserCommon::set_processing_callback('premium_ecommerce_boxes', array('Premium_Warehouse_eCommerceCommon', 'submit_boxes_position'));
+
+		//promotion codes
+		$fields = array(
+			array('name'=>'Employee', 	'type'=>'crm_contact', 'param'=>array('field_type'=>'select','crits'=>array('Premium_Warehouse_ItemsCommon','employee_crits'), 'format'=>array('CRM_ContactsCommon','contact_format_no_company')), 'required'=>true, 'extra'=>false, 'visible'=>true),
+			array('name'=>'Expiration', 	'type'=>'date', 'required'=>true, 'extra'=>false, 'visible'=>true),
+			array('name'=>'Promotion Code', 	'type'=>'text', 'param'=>64, 'required'=>true, 'extra'=>false, 'visible'=>true),
+		);
+		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_promotion_codes', $fields);
+
+		Utils_RecordBrowserCommon::set_favorites('premium_ecommerce_promotion_codes', false);
+		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_promotion_codes', 'eCommerce - Promotion codes');
+		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_promotion_codes', array('Premium_Warehouse_eCommerceCommon', 'access_parameters'));
 
 		//banners
 		$fields = array(
@@ -536,6 +549,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_polls');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_poll_answers');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_boxes');
+		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_promotion_codes');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_banners');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_product_comments');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_orders');

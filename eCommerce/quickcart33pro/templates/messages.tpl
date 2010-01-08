@@ -64,3 +64,17 @@
   <h3>$lang['Comment_added']</h3>
 </div>
 <!-- END COMMENT_ADDED -->
+<!-- BEGIN PROMOTION_INVALID -->
+<div class="message" id="error">
+  <h3>
+    $lang['Promotion_invalid']
+  </h3>
+</div>
+<!-- END PROMOTION_INVALID -->
+<!-- BEGIN PROMOTION_EXPIRED -->
+<div class="message" id="error">
+  <h3>
+    $lang['Promotion_expired']
+  </h3>
+</div>
+<!-- END PROMOTION_EXPIRED -->

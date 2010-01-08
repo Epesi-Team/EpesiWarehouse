@@ -389,6 +389,10 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			$form->addElement('checkbox', $field, $label, null, array('id'=>$field));
 			$form->setDefaults(array($field=>$default));
 		} else {
+			if(isset($_SESSION['client']['order_add'])) {
+				$rb_obj->switch_to_addon('Items');
+				unset($_SESSION['client']['order_add']);
+			}
 			if ($default) {
 				$form->addElement('checkbox', $field, $label);
 				$form->freeze('checkbox');
@@ -1102,6 +1106,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 				return $values;
 			case 'clone':
 			case 'add':
+				$_SESSION['client']['order_add']=1;
 			case 'edit':
 				if ($values['status']!=21) {
 					if ($values['company']<0 && $values['company_name']) {

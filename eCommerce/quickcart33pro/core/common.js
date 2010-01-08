@@ -171,7 +171,7 @@ function countCarrierPrice( oObj ){
 } // end function 
 
 
-var aUserDataNames = new Array( 'sFirstName', 'sLastName', 'sCompanyName', 'sStreet', 'sZipCode', 'sCity', 'sPhone', 'sEmail', 'sNip', 'iPickupShop', 'iRulesAccept', 'sPaymentCarrier' );
+var aUserDataNames = new Array( 'sFirstName', 'sLastName', 'sCompanyName', 'sStreet', 'sZipCode', 'sCity', 'sPhone', 'sEmail', 'sNip', 'iPickupShop', 'iRulesAccept', 'sPaymentCarrier', 'sPromotionCode' );
 
 function saveUserData( sName, sValue ){
   createCookie( sName, sValue, 2 );

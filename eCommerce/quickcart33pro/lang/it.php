@@ -338,4 +338,7 @@ $lang['More'] = 'More';
 $lang['All_companies'] = 'All';
 $lang['Pickup_shop'] = 'Pickup place';
 $lang['Select_pickup_shop'] = 'Choose pickup place';
+$lang['Promotion_code'] = 'Promotion code';
+$lang['Promotion_invalid'] = 'Promotion code invalid';
+$lang['Promotion_expired'] = 'Promotion code expired';
 ?>

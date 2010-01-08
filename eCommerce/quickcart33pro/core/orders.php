@@ -225,9 +225,18 @@ class Orders
     }
 
     $shops = DB::GetAssoc('SELECT id,1 FROM premium_warehouse_data_1 WHERE active=1 AND f_pickup_place=1');
+
+    if($aForm['sPromotionCode']) {
+	$promotion = $this->throwPromotions($aForm['sPromotionCode']);
+	if(!$promotion) {
+   		$c = DB::GetOne('SELECT 1 FROM premium_ecommerce_promotion_codes_data_1 WHERE f_promotion_code LIKE %s AND active=1',array($aForm['sPromotionCode']));
+   		if($c)
+			return 'promotion_expired';
+		return 'promotion_invalid';
+	}
+    } 
     
-    if(
-      throwStrLen( $aForm['sFirstName'] ) > 1
+    if(throwStrLen( $aForm['sFirstName'] ) > 1
       && throwStrLen( $aForm['sLastName'] ) > 1
       && throwStrLen( $aForm['sStreet'] ) > 1
       && throwStrLen( $aForm['sZipCode'] ) > 1
@@ -278,6 +287,21 @@ class Orders
     $price = $aPayment['fPrice'];
     $currency = $this->getCurrencyId();
 
+    $promo_employee = null;
+    if($aForm['sPromotionCode']) {
+	    $promotions = $this->throwPromotions($aForm['sPromotionCode']);
+	    if($promotions) {
+	    	foreach($promotions as $promo) {
+			$rr = explode('__',$promo['discount']);
+			if($rr && $rr[0] && $rr[1]==$currency) {
+				$price -= $rr[0];
+				if($price<0) $price = 0;
+				$promo_employee = $promo['employee'];
+				break;
+			}
+	    	}
+	    }
+    }
 
     if( isset( self::$payments_to_qcpayments[$payment] ) ){
       if( isset( $aForm['aPaymentChannel'][$aPayment['iPayment']] ) ) {
@@ -303,10 +327,10 @@ class Orders
     DB::Execute('UPDATE premium_warehouse_items_orders_data_1 SET f_transaction_id=%s WHERE id=%d',array($trans_id,$id));
 
 	DB::Execute('INSERT INTO premium_ecommerce_orders_data_1(f_transaction_id, f_language, f_email, f_ip, f_comment, f_invoice, 
-						f_payment_channel,f_payment_realized,created_on) VALUES
-						(%d,%s,%s,%s,%s,%b,%s,%b,%T)',
+						f_payment_channel,f_payment_realized,created_on,f_promotion_employee) VALUES
+						(%d,%s,%s,%s,%s,%b,%s,%b,%T,%d)',
 					array($id,LANGUAGE,$aForm['sEmail'],$_SERVER['REMOTE_ADDR'],$aForm['sComment'],$aForm['iInvoice']?true:false,
-					$aForm['mPaymentChannel'],$aForm['iPaymentRealized'],time()));
+					$aForm['mPaymentChannel'],$aForm['iPaymentRealized'],time(),$promo_employee));
 
     $taxes = DB::GetAssoc('SELECT id, f_percentage FROM data_tax_rates_data_1 WHERE active=1');
 
@@ -393,6 +417,14 @@ class Orders
       return $aData;
     }
   } // end function throwOrder
+  
+  function throwPromotions($code) {
+   	static $c;
+   	if(!isset($c)) {
+   		$c = DB::GetAll('SELECT f_employee as employee, f_discount as discount FROM premium_ecommerce_promotion_codes_data_1 WHERE f_expiration>%D AND f_promotion_code LIKE %s AND active=1',array(date('Y-m-d'),$code));
+   	}
+  	return $c;
+  }
 
   /**
   * Return saved order

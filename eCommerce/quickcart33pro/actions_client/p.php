@@ -155,7 +155,8 @@ if( isset( $iContent ) && is_numeric( $iContent ) ){
       // order
       if( $oOrder->checkEmptyBasket( ) === false ){
         if( isset( $_POST['sOrderSend'] ) ){
-          if( $oOrder->checkFields( $_POST ) === true ){
+          $checkFieldsRet = $oOrder->checkFields( $_POST );
+          if( $checkFieldsRet === true ){
             // save and print order
             $iOrder = $oOrder->addOrder( $_POST );
             if( !empty( $config['email'] ) ){
@@ -182,12 +183,15 @@ if( isset( $iContent ) && is_numeric( $iContent ) ){
             if( !empty( $aPayment['sDescription'] ) || !empty( $sPaymentOuter ) )
               $sPaymentDescription = $oTpl->tbHtml( 'orders_print.tpl', 'ORDER_PRINT_PAYMENT' );
             $sOrder = $oTpl->tbHtml( 'orders_print.tpl', 'ORDER_PRINT' );
-          }
-          else{
-            $sOrder = $oTpl->tbHtml( 'messages.tpl', 'REQUIRED_FIELDS' );
+          } elseif( $checkFieldsRet === 'promotion_invalid' ){
+            $sOrderError = $oTpl->tbHtml( 'messages.tpl', 'PROMOTION_INVALID' );          
+          } elseif( $checkFieldsRet === 'promotion_expired' ){
+            $sOrderError = $oTpl->tbHtml( 'messages.tpl', 'PROMOTION_EXPIRED' );          
+          } else {
+            $sOrderError = $oTpl->tbHtml( 'messages.tpl', 'REQUIRED_FIELDS' );
           }
         }
-        else{
+        if( !isset( $_POST['sOrderSend'] ) || isset($sOrderError)){
           // display order form
           $oTpl->unsetVariables( );
           $sRules = null;
@@ -214,7 +218,7 @@ if( isset( $iContent ) && is_numeric( $iContent ) ){
 	  }
 	  
 	  $oTpl->setVariables('countriesList',$countriesList);
-          $sOrder = $oTpl->tbHtml( 'orders_form.tpl', 'ORDER_FORM' );
+          $sOrder = $sOrderError.$oTpl->tbHtml( 'orders_form.tpl', 'ORDER_FORM' );
         }
       }
       else{

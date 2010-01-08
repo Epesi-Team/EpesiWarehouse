@@ -338,4 +338,7 @@ $lang['Stock_exceeded'] = 'We are sorry, but we don\'t have requested product qu
 $lang['All_companies'] = 'All';
 $lang['Pickup_shop'] = 'Pickup place';
 $lang['Select_pickup_shop'] = 'Choose pickup place';
+$lang['Promotion_code'] = 'Promotion code';
+$lang['Promotion_invalid'] = 'Promotion code invalid';
+$lang['Promotion_expired'] = 'Promotion code expired';
 ?>
