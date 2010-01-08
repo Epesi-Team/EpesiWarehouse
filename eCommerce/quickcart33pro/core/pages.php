@@ -377,6 +377,13 @@ class Pages
 		}
 		unset($max_companies);
 	}
+
+	//recommended //other pages - id mod 4 == 3
+	$id = 11;
+	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => $lang['Recommended'], 'sNameTitle' => '', 'sDescriptionShort' => '', 'iPosition' => 1, 
+			'iType' => 2, 'iSubpagesShow' => 4, 'iProducts' => 1, 'sDescriptionFull'=>'', 'sMetaDescription' => '', 'sMetaKeywords' =>'');
+	$this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
+	$this->aPagesParentsTypes[2][] = $id;
 	
 	//pages - id mod 4 == 2
 	$i = 0;
@@ -421,13 +428,6 @@ class Pages
 					 'iType' => 5, 'iSubpagesShow' => 1, 'iProducts' => 0, 'sTheme'=>'order.php');
     $this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
     $this->aPagesParentsTypes[5][] = $id;
-
-	//recommended
-	$id = 11;
-	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => $lang['Recommended'], 'sNameTitle' => '', 'sDescriptionShort' => '', 'iPosition' => 1, 
-			'iType' => 2, 'iSubpagesShow' => 4, 'iProducts' => 1, 'sDescriptionFull'=>'', 'sMetaDescription' => '', 'sMetaKeywords' =>'');
-	$this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
-	$this->aPagesParentsTypes[2][] = $id;
 
 	//rules and policies
 	$id = 15;
