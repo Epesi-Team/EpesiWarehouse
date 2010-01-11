@@ -347,4 +347,13 @@ $lang['Select_pickup_shop'] = 'Choose pickup place';
 $lang['Promotion_code'] = 'Promotion code';
 $lang['Promotion_invalid'] = 'Promotion code invalid';
 $lang['Promotion_expired'] = 'Promotion code expired';
+$lang['Password_new_user'] = 'Password (please fill to create user)';
+$lang['Password_confirmation'] = 'Confirm Password';
+$lang['New_password'] = 'New password';
+$lang['New_password_confirmation'] = 'Confirm new password';
+$lang['User_panel'] = 'User panel';
+$lang['Change_password'] = 'Change password';
+$lang['Password_mismatch'] = 'Password mismatch';
+$lang['Password_invalid'] = 'Password invalid';
+$lang['Password_too_short'] = 'Password too short';
 ?>

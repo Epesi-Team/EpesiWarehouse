@@ -98,6 +98,45 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 		return array();
 	}
 
+	public function customer_crits() {
+		return array('group'=>'custm');
+	}
+
+  	public static function QFfield_password(&$form, $field, $label, $mode, $default) {
+		if ($mode=='add' || $mode=='edit') {
+			$form->addElement('password', $field, $label);
+			$form->addRule($field, Base_LangCommon::ts('Premium_Warehouse_eCommerce','Field required'), 'required');
+		} else {
+			$form->addElement('static', $field, $label);
+			$form->setDefaults(array($field=>'*****'));
+		}
+	}
+
+  	public static function display_password($r, $nolink=false) {
+		return '*****';
+	}
+
+	public static function users_addon_parameters($r) {
+//	    $ret = Utils_RecordBrowserCommon::get_records('premium_ecommerce_users',array('contact'=>$r['id']));
+	    if(!in_array('custm',$r['group']))
+		    return array('show'=>false);
+	    return array('show'=>true, 'label'=>'eCommerce user');
+	}
+	
+	public static function access_users($action, $param=null){
+		return self::access_parameters($action,$param);
+    	}
+
+	public static function submit_user($values, $mode) {
+		switch ($mode) {
+			case 'add':
+			case 'edit':
+			    $values['password'] = md5($values['password']);
+			    break;
+		}
+		return $values;
+	}
+
 	private static $page_opts = array(''=>'---','1'=>'Top menu above logo','2'=>'Top menu under logo','5'=>'Hidden');
 
   	public static function QFfield_page_type(&$form, $field, $label, $mode, $default) {

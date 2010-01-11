@@ -476,6 +476,35 @@ class Pages
 		$this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
 		$this->aPagesParentsTypes[4][] = $id;
 	}
+
+	if(!logged()) {
+		//login
+		$id = 39;
+		$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => $lang['log_in'], 'sNameTitle' => '', 'sDescriptionShort' => '', 'iPosition' => 1000, 'iType' => 1, 'iSubpagesShow' => 1, 'iProducts' => 0, 'sDescriptionFull'=>'', 'sMetaDescription' => '', 'sMetaKeywords' =>'' );
+		$this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
+		$this->aPagesParentsTypes[1][] = $id;
+	} else {
+		//user panel
+		$id = 43;
+		$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => $lang['User_panel'], 'sNameTitle' => '', 'sDescriptionShort' => '', 'iPosition' => 1000, 'iType' => 1, 'iSubpagesShow' => 1, 'iProducts' => 0, 'sDescriptionFull'=>'', 'sMetaDescription' => '', 'sMetaKeywords' =>'' );
+		$this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
+		$this->aPagesParentsTypes[1][] = $id;
+
+		//logout
+		$id = 51;
+		$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 43, 'sName' => $lang['Change_password'], 'sNameTitle' => '', 'sDescriptionShort' => '', 'iPosition' => 1000, 'iType' => 1, 'iSubpagesShow' => 1, 'iProducts' => 0, 'sDescriptionFull'=>'', 'sMetaDescription' => '', 'sMetaKeywords' =>'' );
+		$this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
+	        $this->aPagesChildrens[43][] = $id;
+                $this->aPagesParents[$id] = 43;
+
+		//logout
+		$id = 47;
+		$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 43, 'sName' => $lang['log_out'], 'sNameTitle' => '', 'sDescriptionShort' => '', 'iPosition' => 1000, 'iType' => 1, 'iSubpagesShow' => 1, 'iProducts' => 0, 'sDescriptionFull'=>'', 'sMetaDescription' => '', 'sMetaKeywords' =>'' );
+		$this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
+	        $this->aPagesChildrens[43][] = $id;
+                $this->aPagesParents[$id] = 43;
+	}
+
 	//} epesi
   } // end function generateCache
 

@@ -22,6 +22,7 @@ require_once DIR_LIBRARIES.'FileJobs.php';
 require_once DIR_LIBRARIES.'DB.php';
 require_once DIR_LIBRARIES.'Trash.php';
 require_once DIR_CORE.'pages.php';
+require_once DIR_CORE.'users.php';
 require_once DIR_CORE.'files.php';
 require_once DIR_CORE.'poll.php';
 require_once DIR_CORE.'banners.php';

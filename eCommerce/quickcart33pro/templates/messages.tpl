@@ -78,3 +78,17 @@
   </h3>
 </div>
 <!-- END PROMOTION_EXPIRED -->
+<!-- BEGIN PASSWORD_MISMATCH -->
+<div class="message" id="error">
+  <h3>
+    $lang['Password_mismatch']
+  </h3>
+</div>
+<!-- END PASSWORD_MISMATCH -->
+<!-- BEGIN PASSWORD_INVALID -->
+<div class="message" id="error">
+  <h3>
+    $lang['Password_invalid']
+  </h3>
+</div>
+<!-- END PASSWORD_INVALID -->

@@ -54,6 +54,36 @@ if( isset( $iContent ) && is_numeric( $iContent ) ){
       $sContactPanel = null;
     }
 
+    if( $iContent == 39 ){ //login form
+      $sLoginPanel = '';
+      if(isset( $_POST['sSend'] )) {
+      	if(!login($_POST)) {
+            $sLoginPanel .= $oTpl->tbHtml( 'messages.tpl', 'PASSWORD_INVALID' );          
+        }
+      }
+      $sLoginPanel .= $oTpl->tbHtml( $aData['sTemplate'], 'LOGIN_FORM' );
+    } else{
+      $sLoginPanel = null;
+    }
+
+    if( $iContent == 51 ){ //change password form
+      $sChangePasswordPanel = '';
+      if(isset( $_POST['sSend'] )) {
+      	if(!change_password($_POST)) {
+            $sChangePasswordPanel .= $oTpl->tbHtml( 'messages.tpl', 'PASSWORD_INVALID' );          
+      	}
+      }
+      $sChangePasswordPanel .= $oTpl->tbHtml( $aData['sTemplate'], 'CHANGE_PASSWORD_FORM' );
+    } else{
+      $sChangePasswordPanel = null;
+    }
+    
+    if( $iContent == 47 ){ //logout
+      if(logged()) {
+      	logout();
+      }
+    }
+
     if( !empty( $aData['iRss'] ) && isset( $oPage->aPagesChildrens[$iContent] ) ){
       $sRssUrl  = throwRssUrl( $iContent, $aData['sLinkName'] );
       $sRssIco  = $oTpl->tbHtml( $aData['sTemplate'], 'RSS' );
@@ -185,8 +215,10 @@ if( isset( $iContent ) && is_numeric( $iContent ) ){
             $sOrder = $oTpl->tbHtml( 'orders_print.tpl', 'ORDER_PRINT' );
           } elseif( $checkFieldsRet === 'promotion_invalid' ){
             $sOrderError = $oTpl->tbHtml( 'messages.tpl', 'PROMOTION_INVALID' );          
-          } elseif( $checkFieldsRet === 'promotion_expired' ){
-            $sOrderError = $oTpl->tbHtml( 'messages.tpl', 'PROMOTION_EXPIRED' );          
+          } elseif( $checkFieldsRet === 'promotion_invalid' ){
+            $sOrderError = $oTpl->tbHtml( 'messages.tpl', 'PROMOTION_INVALID' );          
+          } elseif( $checkFieldsRet === 'password_mismatch' ){
+            $sOrderError = $oTpl->tbHtml( 'messages.tpl', 'PASSWORD_MISMATCH' );          
           } else {
             $sOrderError = $oTpl->tbHtml( 'messages.tpl', 'REQUIRED_FIELDS' );
           }
@@ -218,7 +250,7 @@ if( isset( $iContent ) && is_numeric( $iContent ) ){
 	  }
 	  
 	  $oTpl->setVariables('countriesList',$countriesList);
-          $sOrder = $sOrderError.$oTpl->tbHtml( 'orders_form.tpl', 'ORDER_FORM' );
+          $sOrder = $sOrderError.$oTpl->tbHtml( 'orders_form.tpl', 'ORDER_FORM'.(logged()?'_LOGGED':'') );
         }
       }
       else{

@@ -7,6 +7,8 @@
   $sRssIco
   <h3>$aData[sName]</h3>
   $sContactPanel
+  $sLoginPanel
+  $sChangePasswordPanel
   <div class="content" id="pageDescription">$aData[sDescriptionFull]</div>
   $sPages
   $sSiteMap
@@ -167,6 +169,42 @@
   </fieldset>
 </form>
 <!-- END CONTACT_FORM -->
+
+<!-- BEGIN LOGIN_FORM -->
+<script type="text/javascript" src="$config[dir_core]checkForm.js"></script>
+<form action="$aData[sLinkName]" method="post" onsubmit="return checkForm( this );" id="loginPanel">
+  <fieldset>
+    <input type="hidden" name="sSend" value="" />
+    <dl>
+      <dt><label for="email">$lang[Your_email]:</label></dt>
+      <dd><input type="text" name="sEmail" class="input" alt="email" id="email" value="$_POST[sEmail]"/></dd>
+      <dt><label for="password">$lang[Password]:</label></dt>
+      <dd><input type="password" name="sPassword" class="input" alt="simple" id="password" /></dd>
+    </dl>
+    <h6><input type="submit" value="$lang[log_in]" class="submit" /></h6>
+  </fieldset>
+</form>
+<!-- END LOGIN_FORM -->
+
+<!-- BEGIN CHANGE_PASSWORD_FORM -->
+<script type="text/javascript" src="$config[dir_core]checkForm.js"></script>
+<form action="$aData[sLinkName]" method="post" onsubmit="return checkForm( this );" id="loginPanel">
+  <fieldset>
+    <input type="hidden" name="sSend" value="" />
+    <dl>
+      <dt><label for="email">$lang[Your_email]:</label></dt>
+      <dd>$aUser[sEmail]</dd>
+      <dt><label for="oldPassword">$lang[Password]:</label></dt>
+      <dd><input type="password" name="sOldPassword" class="input" alt="simple" id="oldPassword" /></dd>
+      <dt><label for="password">$lang[New_password]:</label></dt>
+      <dd><input type="password" name="sPassword" class="input" id="password" alt="txt;4;$lang[Password_too_short]"/></dd>
+      <dt><label for="password2">$lang[New_password_confirmation]:</label></dt>
+      <dd><input type="password" name="sPassword2" class="input" id="password2" alt="txtValue;#password;$lang[Password_mismatch]"/></dd>
+    </dl>
+    <h6><input type="submit" value="$lang[Save]" class="submit" /></h6>
+  </fieldset>
+</form>
+<!-- END CHANGE_PASSWORD_FORM -->
 
 <!-- BEGIN RSS --><div id="rss"><a href="$sRssUrl"><img src="$config[dir_templates]img/ico_rss.gif" alt="$lang[Rss]" /></a></div><!-- END RSS -->
 <!-- BEGIN RSS_META --><link rel="alternate" type="application/rss+xml" title="$lang[Rss]" href="$sRssUrl" /><!-- END RSS_META -->

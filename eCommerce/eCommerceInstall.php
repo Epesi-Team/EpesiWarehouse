@@ -392,9 +392,20 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 
 		Utils_RecordBrowserCommon::set_processing_callback('premium_ecommerce_banners', array('Premium_Warehouse_eCommerceCommon','banners_processing'));
 		
+		//users
+		$fields = array(
+			array('name'=>'Contact', 	'type'=>'crm_contact', 'param'=>array('field_type'=>'select','crits'=>array('Premium_Warehouse_eCommerceCommon','customer_crits'), 'format'=>array('CRM_ContactsCommon','contact_format_default')), 'required'=>true, 'extra'=>false, 'visible'=>false),
+			array('name'=>'Password', 	'type'=>'text', 'required'=>true, 'param'=>'32', 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_eCommerceCommon', 'display_password'), 'QFfield_callback'=>array('Premium_Warehouse_eCommerceCommon', 'QFfield_password'))
+		);
+		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_users', $fields);
+		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_users', 'eCommerce - Users');
+		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_users', array('Premium_Warehouse_eCommerceCommon', 'access_users'));
+		Utils_RecordBrowserCommon::new_addon('contact', 'Premium/Warehouse/eCommerce', 'users_addon', 'Premium_Warehouse_eCommerceCommon::users_addon_parameters');
+		Utils_RecordBrowserCommon::set_processing_callback('premium_ecommerce_users', array('Premium_Warehouse_eCommerceCommon', 'submit_user'));
+		
 		//newsletter
 		$fields = array(
-			array('name'=>'Email', 		'type'=>'text', 'required'=>true, 'param'=>'128', 'extra'=>false, 'visible'=>true, 'display_callback'=>array('CRM_ContactsCommon', 'display_email'), 'QFfield_callback'=>array('CRM_ContactsCommon', 'QFfield_email'))
+			array('name'=>'Email', 		'type'=>'text', 'required'=>true, 'param'=>'128', 'extra'=>false, 'visible'=>true, 'display_callback'=>array('CRM_ContactsCommon', 'display_email'), 'QFfield_callback'=>array('CRM_ContactsCommon', 'QFfield_email')),
 		);
 		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_newsletter', $fields);
 
@@ -419,6 +430,8 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_products', 'Premium/Warehouse/eCommerce', 'product_comments_addon', 'Comments');
 		
 		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items_orders',array('name'=>'Online order',	'type'=>'checkbox', 'required'=>false, 'filter'=>true, 'extra'=>false, 'visible'=>true, 'QFfield_callback'=>array('Premium_Warehouse_eCommerceCommon','QFfield_online_order')));
+
+		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_distributor',array('name'=>'Items Availability', 'type'=>'select', 'required'=>true, 'extra'=>false, 'visible'=>false, 'param'=>'premium_ecommerce_availability::Availability Code'));
 		
 
 // ************* addons ************ //
@@ -477,6 +490,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 	public function uninstall() {
 		Base_ThemeCommon::uninstall_default_theme('Premium/Warehouse/eCommerce');
 		Utils_RecordBrowserCommon::delete_record_field('premium_warehouse_items_categories','Available languages');
+		Utils_RecordBrowserCommon::delete_record_field('premium_warehouse_distributor','Items Availability');
 		DB::DropTable('premium_ecommerce_orders_temp');
 		DB::DropTable('premium_ecommerce_quickcart');
 		DB::DropTable('premium_ecommerce_products_stats');
@@ -531,6 +545,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_polls', 'Premium/Warehouse/eCommerce', 'poll_answers');
 		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_products', 'Premium/Warehouse/eCommerce', 'product_comments_addon');
 		Utils_RecordBrowserCommon::delete_addon('premium_warehouse_items_orders', 'Premium/Warehouse/eCommerce', 'orders_addon');
+		Utils_RecordBrowserCommon::delete_addon('contact', 'Premium/Warehouse/eCommerce', 'users_addon');
 
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_products');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_cat_descriptions');
@@ -553,6 +568,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_banners');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_product_comments');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_orders');
+		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_users');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_newsletter');
 		return true;
 	}

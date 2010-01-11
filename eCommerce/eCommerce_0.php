@@ -1132,6 +1132,15 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 		$this->display_module($rb,$order,'show_data');
 	}
 	
+	public function users_addon($arg) {
+		$rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_users');
+		$order = array(array('contact'=>$arg['id']), array('contact'=>false), array());
+		$rb->set_defaults(array('contact'=>$arg['id']));
+		$ret = Utils_RecordBrowserCommon::get_records('premium_ecommerce_users',array('contact'=>$arg['id']));
+		if(count($ret)) $rb->set_button(false);
+		$this->display_module($rb,$order,'show_data');
+	}
+	
 	public function newsletter() {
 		$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_newsletter');
 		$args = array(array(), array(), array('email'=>'ASC'));

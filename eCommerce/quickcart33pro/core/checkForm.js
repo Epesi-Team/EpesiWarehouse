@@ -148,6 +148,22 @@ function checkTxt( oObj, iMin, sInfo ) {
   return fieldOperations( oObj, bCheck, sInfo );
 } // end function checkTxt
 
+function checkTxtValue( oObj, sVal, sInfo ) {
+	var check = oObj.value;
+	
+	if(sVal[0]=='#') {
+		sVal = document.getElementById(sVal.substring(1)).value;
+	}
+
+	var bCheck = true;
+	if( check != sVal ) {
+	    bCheck = false;
+	    if( !sInfo )
+	      var sInfo = cfWrongValue;
+	}
+	return fieldOperations( oObj, bCheck, sInfo );
+} // end function checkTxt
+
 function checkRadio( oObj, sInfo ) {
 
  var bCheck = false;
@@ -288,6 +304,9 @@ function checkFormElements( aInputs, bTitle, oForm ){
       }
       else if( ( sT == 'txt' ) && ( ( aParams[3] == 'if' && oO.value ) || !aParams[3] ) ){
         bAllGood = checkTxt( oO, aParams[1], aParams[2] );
+      }
+      else if( ( sT == 'txtValue' ) && ( ( aParams[3] == 'if' && oO.value ) || !aParams[3] ) ){
+        bAllGood = checkTxtValue( oO, aParams[1], aParams[2] );
       }
       else if( ( sT == 'extension' ) && ( ( aParams[3] == 'if' && ( oO.value ) ) || !aParams[3] ) ){
         bAllGood = checkExt( oO, aParams[1], aParams[2] );

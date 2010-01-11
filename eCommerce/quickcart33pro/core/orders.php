@@ -236,6 +236,11 @@ class Orders
 	}
     } 
     
+    if($aForm['sPassword']) {
+    	if($aForm['sPassword']!=$aForm['sPassword2'])
+	    	return 'password_mismatch';
+    }
+    
     if(throwStrLen( $aForm['sFirstName'] ) > 1
       && throwStrLen( $aForm['sLastName'] ) > 1
       && throwStrLen( $aForm['sStreet'] ) > 1
@@ -315,13 +320,69 @@ class Orders
     $aForm['iPaymentRealized']  = 0;
 
     $t = time();
+    
+    $contact = null;
+    $company = null;
+    if(logged()) {
+    	$contact = $_SESSION['contact'];
+    	$company = $_SESSION['company'];
+    	global $aUser;
+    	$colst = array('contact'=>array('email'=>'sEmail', 'last_name'=>'sLastName', 'first_name'=>'sFirstName', 'address_1'=>'sStreet', 'postal_code'=>'sZipCode', 'city'=>'sCity', 'country'=>'sCountry', 'work_phone'=>'sPhone'),
+    			'company'=>array('email'=>'sEmail', 'company_name'=>'sCompanyName', 'tax_id'=>'sNip', 'address_1'=>'sStreet', 'postal_code'=>'sZipCode', 'city'=>'sCity', 'country'=>'sCountry', 'phone'=>'sPhone'));
+	foreach($colst as $tab=>$cols) {    			
+	    	$modified = false;
+    		foreach($cols as $epesi=>$local)
+    			if($aUser[$local]!=$aForm[$local]) {
+    				$modified = true;
+	    			break;
+    			}
+	    	if($modified) {
+			DB::Execute('INSERT INTO '.$tab.'_edit_history(edited_on, '.$tab.'_id) VALUES (%T,%d)', array($t, ${$tab}));
+			$edit_id = DB::Insert_ID(''.$tab.'_edit_history','id');
+	    	    	foreach($cols as $epesi=>$local)
+		    		if($aUser[$local]!=$aForm[$local]) {
+	    				DB::Execute('UPDATE '.$tab.'_data_1 SET f_'.$epesi.'=%s WHERE id=%d', array($aForm[$local],${$tab}));
+	    				DB::Execute('INSERT INTO '.$tab.'_edit_history_data(edit_id, field, old_value) VALUES (%d,%s,%s)', array($edit_id, $epesi, $aUser[$local]!==null?$aUser[$local]:''));
+		    		}
+    		}
+    	}
+    } else {
+    	$company = DB::GetOne('SELECT id FROM company_data_1 WHERE f_email=%s AND f_company_name=%s AND active=1',array($aForm['sEmail'],$aForm['sCompanyName']));
+    	if(!$company) $company = null;
+    	$contact = DB::GetOne('SELECT id FROM contact_data_1 WHERE f_email=%s AND f_first_name=%s AND f_last_name=%s AND active=1',array($aForm['sEmail'],$aForm['sFirstName'],$aForm['sLastName']));
+    	if(!$contact) $contact = null;
+        //add user
+        if($aForm['sPassword']) {
+		if(!$contact) {
+	    		if($aForm['sCompanyName'] && !$company) {
+			    	DB::Execute('INSERT INTO company_data_1(created_on,f_company_name,f_tax_id,f_address_1,f_postal_code,f_city,f_country,f_phone,f_email,f_group) VALUES (%T,%s,%s,%s,%s,%s,%s,%s,%s,\'__customer__\')',
+    					array($t,$aForm['sCompanyName'],$aForm['sNip'],$aForm['sStreet'],$aForm['sZipCode'],$aForm['sCity'],$aForm['sCountry'],$aForm['sPhone'],$aForm['sEmail']));
+				$company = DB::Insert_ID('company_data_1','id');
+			}
+			if($company)
+				$company2 = '__'.$company.'__';
+			else
+				$company2 = null;
+		    	DB::Execute('INSERT INTO contact_data_1(created_on,f_first_name,f_last_name,f_address_1,f_postal_code,f_city,f_country,f_work_phone,f_email,f_company_name,f_group) VALUES (%T,%s,%s,%s,%s,%s,%s,%s,%s,%s,\'__custm__\')',
+    				array($t,$aForm['sFirstName'],$aForm['sLastName'],$aForm['sStreet'],$aForm['sZipCode'],$aForm['sCity'],$aForm['sCountry'],$aForm['sPhone'],$aForm['sEmail'],$company2));
+			$contact = DB::Insert_ID('contact_data_1','id');
+		}
+	    	DB::Execute('INSERT INTO premium_ecommerce_users_data_1(created_on,f_contact,f_password) VALUES (%T,%d,%s)',
+    			array($t,$contact,md5($aForm['sPassword'])));
+	    	//mark logged in
+		$_SESSION['user'] = DB::Insert_ID('premium_ecomerce_users_data_1','id');
+	    	$_SESSION['contact'] = $contact;
+    		$_SESSION['company'] = $company;
+	}
+    }
+    
     //$memo = "Language: ".LANGUAGE."\ne-mail: ".$aForm['sEmail']."\nIp: ".$_SERVER['REMOTE_ADDR']."\nComment:\n".$aForm['sComment'];
     DB::Execute('INSERT INTO premium_warehouse_items_orders_data_1(f_transaction_type,f_transaction_date,f_status,
 						f_company_name,f_last_name,f_first_name,f_address_1,f_city,f_postal_code,f_phone,f_country,f_zone,f_memo,created_on,
-						f_shipment_type,f_shipment_cost,f_payment,f_payment_type,f_tax_id,f_warehouse,f_online_order) VALUES 
-						(1,%D,"-1",%s,%s,%s,%s,%s,%s,%s,%s,"",%s,%T,%s,%s,1,%s,%s,%d,1)',
+						f_shipment_type,f_shipment_cost,f_payment,f_payment_type,f_tax_id,f_warehouse,f_online_order,f_contact,f_company) VALUES 
+						(1,%D,"-1",%s,%s,%s,%s,%s,%s,%s,%s,"",%s,%T,%s,%s,1,%s,%s,%d,1,%d,%d)',
 					array($t,$aForm['sCompanyName'],$aForm['sLastName'],$aForm['sFirstName'],$aForm['sStreet'],$aForm['sCity'],
-					$aForm['sZipCode'],$aForm['sPhone'],$aForm['sCountry'],$memo,$t,$carrier,$price.'__'.$currency,$payment,$aForm['sNip'],$carrier==0?$aForm['iPickupShop']:null));
+					$aForm['sZipCode'],$aForm['sPhone'],$aForm['sCountry'],$memo,$t,$carrier,$price.'__'.$currency,$payment,$aForm['sNip'],$carrier==0?$aForm['iPickupShop']:null,$contact,$company));
     $id = DB::Insert_ID('premium_warehouse_items_orders_data_1','id');
     $trans_id = '#'.str_pad($id, 6, '0', STR_PAD_LEFT);
     DB::Execute('UPDATE premium_warehouse_items_orders_data_1 SET f_transaction_id=%s WHERE id=%d',array($trans_id,$id));

@@ -55,6 +55,12 @@ class Products
 	$currency = DB::GetOne('SELECT id FROM utils_currency WHERE code=%s',array($config['currency_symbol']));
 	if($currency===false) 
 		die('Currency not defined in Epesi: '.$config['currency_symbol']);
+		
+	static $availability_labels,$availability_codes;
+	if(!isset($availability_labels)) {
+		$availability_codes = DB::GetAssoc('SELECT id, f_availability_code FROM premium_ecommerce_availability_data_1 WHERE active=1');
+		$availability_labels = DB::GetAssoc('SELECT f_availability, f_label FROM premium_ecommerce_availability_labels_data_1 WHERE f_language="'.LANGUAGE.'" AND active=1');
+	}
 
 	$ret = DB::Execute('SELECT 	it.id as iProduct, 
 								it.f_item_name as sName2, 
@@ -63,8 +69,7 @@ class Products
 								pr.f_position as iPosition, 
 								pr.f_recommended as sRecommended,
 								it.f_category,
-								av.f_availability_code as sAvailable2, 
-								avl.f_label as sAvailable, 
+								pr.f_available as iAvailable, 
 								d.f_display_name as sName,
 								d.f_short_description as sDescriptionShort,
 								d.f_long_description as sDescriptionFull,
@@ -83,20 +88,20 @@ class Products
 								SUM(loc.f_quantity) as f_quantity,
 								it.f_net_price fPrice2,
 								it.f_tax_rate tax2,
-								dist.quantity as distributorQuantity,
-								dist.price fPrice3,
-								dist.price_currency,
+								dist_item.quantity as distributorQuantity,
+								dist_item.price fPrice3,
+								dist_item.price_currency,
+								dist.f_items_availability as iAvailable2,
 								pr.f_exclude_compare_services,
 								pr.f_always_on_stock,
 								it.f_upc
 					FROM premium_ecommerce_products_data_1 pr
-					INNER JOIN (premium_warehouse_items_data_1 it,premium_ecommerce_availability_data_1 av) ON (pr.f_item_name=it.id AND av.id=pr.f_available)
+					INNER JOIN (premium_warehouse_items_data_1 it) ON (pr.f_item_name=it.id)
 					LEFT JOIN premium_ecommerce_prices_data_1 pri ON (pri.f_item_name=it.id AND pri.active=1 AND pri.f_currency='.$currency.')
 					LEFT JOIN premium_ecommerce_descriptions_data_1 d ON (d.f_item_name=it.id AND d.f_language="'.LANGUAGE.'" AND d.active=1)
 					LEFT JOIN premium_ecommerce_descriptions_data_1 d_en ON (d_en.f_item_name=it.id AND d_en.f_language="en" AND d_en.active=1)
-					LEFT JOIN premium_ecommerce_availability_labels_data_1 avl ON (pr.f_available=avl.f_availability AND avl.f_language="'.LANGUAGE.'" AND avl.active=1) 
 					LEFT JOIN premium_warehouse_location_data_1 loc ON (loc.f_item_sku=it.id AND loc.f_quantity>0 AND loc.active=1)
-					LEFT JOIN premium_warehouse_wholesale_items dist ON (dist.item_id=it.id AND dist.quantity>0 AND dist.price=(SELECT MIN(tmp.price) FROM premium_warehouse_wholesale_items tmp WHERE tmp.item_id=it.id))
+					LEFT JOIN (premium_warehouse_wholesale_items dist_item,premium_warehouse_distributor_data_1 dist) ON (dist_item.item_id=it.id AND dist_item.quantity>0 AND dist_item.price=(SELECT MIN(tmp.price) FROM premium_warehouse_wholesale_items tmp WHERE tmp.item_id=it.id) AND dist.id=dist_item.distributor_id)
 					 WHERE pr.f_publish=1 AND pr.active=1 AND it.active=1 '.($where?' AND ('.$where.')':'').' GROUP BY it.id ORDER BY pr.f_position'.($limit!==null?' LIMIT '.(int)$limit.($offset!==null?' OFFSET '.(int)$offset:''):''));
 
         $taxes = DB::GetAssoc('SELECT id, f_percentage FROM data_tax_rates_data_1 WHERE active=1');
@@ -106,8 +111,6 @@ class Products
 	while($aExp = $ret->FetchRow()) {
 		if($aExp['sName']=='') 
 			$aExp['sName'] = $aExp['sName2'];
-		if($aExp['sAvailable']=='') 
-			$aExp['sAvailable'] = $aExp['sAvailable2'];
 		if(!$aExp['fPrice']) {
 			$rr = explode('__',$aExp['fPrice2']);
 			if($rr && $rr[0] && $rr[1]==$currency) {
@@ -116,10 +119,25 @@ class Products
 				$aExp['tax'] = $aExp['tax2'];
 			} 
 		}
-		if($aExp['fPrice'] && $aExp['f_quantity']==0 && $aExp['distributorQuantity']) {
-			$user_price = $aExp['fPrice'];
-			$aExp['fPrice'] = null;
+		if($aExp['f_always_on_stock']) {
+			if($aExp['f_quantity']<10) $aExp['f_quantity'] = 10;
+		} else {
+			unset($aExp['f_always_on_stock']);
 		}
+		$user_price=0;
+		if($aExp['f_quantity']==0 && $aExp['distributorQuantity']) {
+			$aExp['iAvailable'] = $aExp['iAvailable2'];
+			if($aExp['fPrice']) {
+				$user_price = $aExp['fPrice'];
+				$aExp['fPrice'] = null;
+			}
+		}
+		if(isset($availability_labels[$aExp['iAvailable']]))
+			$aExp['sAvailable'] = $availability_labels[$aExp['iAvailable']];
+		elseif(isset($availability_codes[$aExp['iAvailable']]))
+			$aExp['sAvailable'] = $availability_codes[$aExp['iAvailable']];
+		unset($aExp['iAvailable']);
+		unset($aExp['iAvailable2']);
 		if($autoprice && !$aExp['fPrice'] && $aExp['distributorQuantity'] && $aExp['fPrice3'] && $aExp['price_currency']==$currency) {
 			$dist_price = round((float)$aExp['fPrice3']*(100+$taxes[$aExp['tax2']])/100,2);
 			if($aExp['f_quantity']==0 && $user_price>$dist_price) {
@@ -134,11 +152,6 @@ class Products
 		}
 		if(!$aExp['tax']) $aExp['tax'] = 0;
 		$aExp['iQuantity'] = 0+$aExp['f_quantity']+$aExp['distributorQuantity'];
-		if($aExp['f_always_on_stock']) {
-			if($aExp['iQuantity']<10) $aExp['iQuantity'] = 10;
-		} else {
-			unset($aExp['f_always_on_stock']);
-		}
 		if($aExp['fPrice']) {
 			$aExp['fPrice'] = number_format($aExp['fPrice'],2,'.','');
 		}
@@ -190,13 +203,13 @@ class Products
 		$products[$aExp['iProduct']]['aCategories'] = $pages;
 	}
 	
-	if(!$navigation) {
-		$pids = array_keys($products);
-		if($pids) {
-			$reserved = DB::GetAssoc('SELECT d.f_item_name, SUM(d.f_quantity) FROM premium_warehouse_items_orders_details_data_1 d INNER JOIN premium_warehouse_items_orders_data_1 o ON (o.id=d.f_transaction_id) WHERE o.f_transaction_type=1 AND o.f_status not in (7,20,21,22) AND d.active=1 AND o.active=1 AND d.f_item_name IN ('.implode(',',$pids).') GROUP BY d.f_item_name');
-			foreach($reserved as $id=>$qty) {
-				if(!isset($products[$id]['f_always_on_stock']))
-					$products[$id]['iQuantity'] -= $qty;
+	$pids = array_keys($products);
+	if($pids) {
+		$reserved = DB::GetAssoc('SELECT d.f_item_name, SUM(d.f_quantity) FROM premium_warehouse_items_orders_details_data_1 d INNER JOIN premium_warehouse_items_orders_data_1 o ON (o.id=d.f_transaction_id) WHERE o.f_transaction_type=1 AND o.f_status not in (7,20,21,22) AND d.active=1 AND o.active=1 AND d.f_item_name IN ('.implode(',',$pids).') GROUP BY d.f_item_name');
+		foreach($reserved as $id=>$qty) {
+			if(!isset($products[$id]['f_always_on_stock'])) {
+				$products[$id]['iQuantity'] -= $qty;
+				if($products[$id]['iQuantity']<0) $products[$id]['iQuantity'] = 0;
 			}
 		}
 	}
@@ -343,11 +356,9 @@ class Products
         $aData['sBasket']= null;
         $aData['sRecommended'] = $aData['sRecommended']? $oTpl->tbHtml( $sFile, 'PRODUCTS_RECOMMENDED' ) : null;
 
-        if( !empty( $aData['sDescriptionShort'] ) ){
-          $aData['sDescriptionShort'] = changeTxt( $aData['sDescriptionShort'], 'nlNds' );
-          $oTpl->setVariables( 'aData', $aData );
-          $aData['sDescriptionShort'] = $oTpl->tbHtml( $sFile, 'PRODUCTS_DESCRIPTION' );
-        }
+        $aData['sDescriptionShort'] = changeTxt( $aData['sDescriptionShort'], 'nlNds' );
+        $oTpl->setVariables( 'aData', $aData );
+        $aData['sDescriptionShort'] = $oTpl->tbHtml( $sFile, 'PRODUCTS_DESCRIPTION' );
 
         $oTpl->setVariables( 'aData', $aData );
 

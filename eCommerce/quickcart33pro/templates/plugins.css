@@ -135,7 +135,7 @@ Quick.Cart default plugins stylesheet
 #newsletter .input{width:150px;}
 
 /* Contact form */
-#contactPanel {
+#contactPanel, #loginPanel {
 	float: left;
 	/*width: 195px;*/
 	width: 260px;
@@ -144,16 +144,16 @@ Quick.Cart default plugins stylesheet
 	background: url(img/box-top-3.gif) no-repeat;
 }
 
-#contactPanel fieldset {
+#contactPanel fieldset, #loginPanel fieldset {
 	padding: 0px 30px 30px 30px;
 	background: url(img/box-bottom-4.gif) no-repeat bottom;
 }
 
-#contactPanel dl, #contactPanel dt, #contactPanel dd{margin:0;padding:0;}
-#contactPanel dl, #contactPanel h6{font-size:1em;}
-#contactPanel dt{padding-bottom:1px;}
-#contactPanel dd{padding-bottom:5px;}
-#contactPanel .input, #contactPanel textarea{width:180px;font-size:1em;}
+#contactPanel dl, #contactPanel dt, #contactPanel dd, #loginPanel dl, #loginPanel dt, #loginPanel dd{margin:0;padding:0;}
+#contactPanel dl, #contactPanel h6, #loginPanel dl, #loginPanel h6{font-size:1em;}
+#contactPanel dt, #loginPanel dt{padding-bottom:1px;}
+#contactPanel dd, #loginPanel dd{padding-bottom:5px;}
+#contactPanel .input, #contactPanel textarea, #loginPanel .input, #loginPanel textarea{width:180px;font-size:1em;}
 /* RSS */
 #rss{float:right;margin:2px 10px 0 0;}
 /* images gallery */
