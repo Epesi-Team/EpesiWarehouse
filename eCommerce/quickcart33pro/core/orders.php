@@ -347,18 +347,31 @@ class Orders
     		}
     	}
     } else {
-    	$company = DB::GetOne('SELECT id FROM company_data_1 WHERE f_email=%s AND f_company_name=%s AND active=1',array($aForm['sEmail'],$aForm['sCompanyName']));
-    	if(!$company) $company = null;
-    	$contact = DB::GetOne('SELECT id FROM contact_data_1 WHERE f_email=%s AND f_first_name=%s AND f_last_name=%s AND active=1',array($aForm['sEmail'],$aForm['sFirstName'],$aForm['sLastName']));
-    	if(!$contact) $contact = null;
+    	$company = DB::GetOne('SELECT id FROM company_data_1 WHERE f_email=%s AND active=1',array($aForm['sEmail']));
+	if(!$company) $company = null;
+    	$contact = DB::GetOne('SELECT id FROM contact_data_1 WHERE f_email=%s AND active=1',array($aForm['sEmail']));
+    	if(!$contact) {
+    		$contact = null;
+    	} elseif($company) { //jest kontakt i firma - sprawdz czy kontakt jest pod ta firma, jezeli nie to dodaj kontakt do firmy
+	    	$companies = DB::GetOne('SELECT f_company_name FROM contact_data_1 WHERE id=%d',array($contact));
+	    	if(strstr($companies,'__'.$company.'__')===false) {
+	    		if($companies) $companies .= $company.'__';
+	    		else $companies = '__'.$company.'__';
+	    		DB::Execute('UPDATE contact_data_1 SET f_company_name=%s WHERE id=%d',array($companies,$contact));
+	    	}
+    	}
         //add user
         if($aForm['sPassword']) {
-		if(!$contact) {
+        	$new_company = false;
+		if(!$contact || !$company) { // jezeli nie ma kontaktu, lub jest kontakt ale nie ma firmy, to dodaj firme
 	    		if($aForm['sCompanyName'] && !$company) {
+	    			$new_company = true;
 			    	DB::Execute('INSERT INTO company_data_1(created_on,f_company_name,f_tax_id,f_address_1,f_postal_code,f_city,f_country,f_phone,f_email,f_group) VALUES (%T,%s,%s,%s,%s,%s,%s,%s,%s,\'__customer__\')',
     					array($t,$aForm['sCompanyName'],$aForm['sNip'],$aForm['sStreet'],$aForm['sZipCode'],$aForm['sCity'],$aForm['sCountry'],$aForm['sPhone'],$aForm['sEmail']));
 				$company = DB::Insert_ID('company_data_1','id');
 			}
+		}
+		if(!$contact) { //jezeli nie ma kontaktu stworz go
 			if($company)
 				$company2 = '__'.$company.'__';
 			else
@@ -366,7 +379,15 @@ class Orders
 		    	DB::Execute('INSERT INTO contact_data_1(created_on,f_first_name,f_last_name,f_address_1,f_postal_code,f_city,f_country,f_work_phone,f_email,f_company_name,f_group) VALUES (%T,%s,%s,%s,%s,%s,%s,%s,%s,%s,\'__custm__\')',
     				array($t,$aForm['sFirstName'],$aForm['sLastName'],$aForm['sStreet'],$aForm['sZipCode'],$aForm['sCity'],$aForm['sCountry'],$aForm['sPhone'],$aForm['sEmail'],$company2));
 			$contact = DB::Insert_ID('contact_data_1','id');
+		} elseif($new_company) { //a jezeli jest kontakt o tym mailu, ale nie bylo firmy i zostala stworzona to dodaj ta firme do kontaktu
+		    	$companies = DB::GetOne('SELECT f_company_name FROM contact_data_1 WHERE id=%d',array($contact));
+		    	if(strstr($companies,'__'.$company.'__')===false) {
+	    			if($companies) $companies .= $company.'__';
+	    			else $companies = '__'.$company.'__';
+		    		DB::Execute('UPDATE contact_data_1 SET f_company_name=%s WHERE id=%d',array($companies,$contact));
+		    	}
 		}
+		//add ecommerce user
 	    	DB::Execute('INSERT INTO premium_ecommerce_users_data_1(created_on,f_contact,f_password) VALUES (%T,%d,%s)',
     			array($t,$contact,md5($aForm['sPassword'])));
 	    	//mark logged in
