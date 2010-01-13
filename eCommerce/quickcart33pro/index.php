@@ -47,6 +47,7 @@ $oTpl =& TplParser::getInstance( DIR_TEMPLATES, $config['embed_php'] );
 
 $oFile    =& Files::getInstance( );
 $oPage    =& Pages::getInstance( );
+$oUser    =& Users::getInstance( );
 $oProduct =& Products::getInstance( );
 $oOrder   = new Orders( );
 $content  = null;

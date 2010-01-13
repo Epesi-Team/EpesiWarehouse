@@ -18,6 +18,7 @@
   <script type="text/javascript" src="$config[dir_core]moo.fx.js"></script>
   <script type="text/javascript" src="$config[dir_core]litebox-1.0.js"></script>
   <script type="text/javascript" src="$config[dir_templates]default.js"></script>
+  <script type="text/javascript" src="$config[dir_templates]moo.fx.pack.js"></script>
   <script type="text/javascript">
     <!--
     var cfBorderColor     = "#d1bd9d";

@@ -113,8 +113,16 @@ class Orders
   */
   function generateProducts( $iOrder ){
     // { epesi
+    $taxes = DB::GetAssoc('SELECT id, f_percentage FROM data_tax_rates_data_1 WHERE active=1');
     $ret = DB::Execute('SELECT * FROM premium_warehouse_items_orders_details_data_1 WHERE f_transaction_id=%d',array($iOrder));
+    $currency = $this->getCurrencyId();
     while($row = $ret->FetchRow()) {
+    	$rr = explode('__',$row['f_net_price']);
+	if($rr && isset($rr[0]) && $rr[1]==$currency) {
+		$netto = $rr[0];
+		$row['f_gross_price'] = round(((float)$netto)*(100+$taxes[$row['f_tax_rate']])/100,2);
+	}
+
 	$this->aProducts[$row['id']] = array('iElement' => $row['id'], 'iOrder' => $iOrder, 'iProduct' => $row['f_item_name'], 'iQuantity' => $row['f_quantity'], 'fPrice' => $row['f_gross_price'], 'sName' => $row['f_description']);
         $this->aProducts[$row['id']]['fSummary'] = normalizePrice( $this->aProducts[$row['id']]['fPrice'] * $this->aProducts[$row['id']]['iQuantity'] );
         $this->fProductsSummary += $this->aProducts[$row['id']]['fPrice'] * $this->aProducts[$row['id']]['iQuantity'];
@@ -323,7 +331,7 @@ class Orders
     
     $contact = null;
     $company = null;
-    if(logged()) {
+    if(Users::logged()) {
     	$contact = $_SESSION['contact'];
     	$company = $_SESSION['company'];
     	global $aUser;
@@ -462,7 +470,8 @@ class Orders
 				    o.f_language as sLanguage,
 				    o.f_payment_channel as mPaymentChannel,
 				    o.f_payment_realized as iPaymentRealized,
-				    o.f_invoice as iInvoice
+				    o.f_invoice as iInvoice,
+				    w.f_status as iStatus
 				    FROM premium_warehouse_items_orders_data_1 w INNER JOIN premium_ecommerce_orders_data_1 o ON o.f_transaction_id=w.id WHERE w.id=%d',array($iOrder));
 
     if( isset( $aData ) ){
@@ -494,6 +503,11 @@ class Orders
       }
       else
         $aData['sPaymentChannel'] = '-';
+
+      $statusOpts = array(''=>'New', -1=>'New Online Order', 1=>'Sales Quote', 2=>'Order Received', 3=>'Payment Confirmed', 4=>'Order Confirmed', 5=>'On Hold', 6=>'Order Ready to Ship', 7=>'Shipped', 20=>'Delivered', 21=>'Canceled', 22=>'Missing');
+      $aData['sStatus'] = $statusOpts[$aData['iStatus']];
+      if(isset($translations['Premium_Warehouse_Items_Orders'][$aData['sStatus']]) && $translations['Premium_Warehouse_Items_Orders'][$aData['sStatus']])
+		$aData['sStatus'] = $translations['Premium_Warehouse_Items_Orders'][$aData['sStatus']];
 
       $this->aOrders[$iOrder] = $aData;
       return $aData;

@@ -1,5 +1,27 @@
 <?php
-function login( $v ){
+class Users
+{
+
+  function &getInstance( ){
+    static $oInstance = null;
+    if( !isset( $oInstance ) ){
+      $oInstance = new Users( );
+    }
+    return $oInstance;
+  } // end function getInstance
+  
+  function Users() {
+  	global $aUser;
+	$aUser = array();
+	if(self::logged()) {
+		$aUser = DB::GetRow('SELECT f_email as sEmail, f_last_name as sLastName, f_first_name as sFirstName, f_address_1 as sStreet, f_postal_code as sZipCode, f_city as sCity, f_country as sCountry, f_work_phone as sPhone, f_company_name FROM contact_data_1 WHERE id=%d',array($_SESSION['contact']));
+		if(isset($_SESSION['company'])) {
+			$aUser += DB::GetRow('SELECT f_company_name as sCompanyName, f_tax_id as sNip FROM company_data_1 WHERE id=%d',array($_SESSION['company']));
+		}
+	}
+  }
+
+  function login( $v ){
 	global $config;
 
 	$uid = DB::GetRow('SELECT e.id, c.id as cid, c.f_company_name FROM premium_ecommerce_users_data_1 e INNER JOIN contact_data_1 c ON c.id=e.f_contact WHERE e.f_password=%s AND c.f_email=%s AND e.active=1 AND c.active=1',array(md5($v['sPassword']),$v['sEmail']));
@@ -18,9 +40,9 @@ function login( $v ){
           header( 'Location: '.REDIRECT);
         }
         exit;
-} 
+  } 
 
-function change_password($v) {
+  function change_password($v) {
 	global $config;
 
 	if($v['sPassword']!=$v['sPassword2'])
@@ -34,25 +56,38 @@ function change_password($v) {
 	$oPage =& Pages::getInstance( );	
 	header( 'Location: '.REDIRECT.$oPage->aPages[43]['sLinkName'] );
         exit;
-}
+  }
 
-function logout( ){
+  function logout( ){
          unset($_SESSION['user']);
          unset($_SESSION['contact']);
          unset($_SESSION['company']);
          header( 'Location: '.REDIRECT);
          exit;
-} 
+  } 
 
-function logged() {
+  function logged() {
 	return isset($_SESSION['contact']);
+  }
+  
+  function orders($tpl) {
+  	global $oOrder, $oTpl;
+  	$ret = DB::Execute('SELECT id FROM premium_warehouse_items_orders_data_1 WHERE f_contact=%d ORDER BY created_on DESC LIMIT 10',array($_SESSION['contact']));
+  	$sOrder = '';
+        $sOrder .= $oTpl->tbHtml( 'orders_panel.tpl', 'ORDER_HEADER' );
+  	while($row = $ret->FetchRow()) {
+  	    global $aOrder, $aPayment, $sOrderProducts;
+  	    $oOrder->aProducts = null;
+	    $oOrder->fProductsSummary = null;
+            $aOrder = $oOrder->throwOrder( $row['id'] );
+            $aOrder['sComment'] = preg_replace( '/\|n\|/', '<br />' , $aOrder['sComment'] );
+            $sOrderProducts = $oOrder->listProducts( 'orders_panel.tpl', $row['id'], 'ORDER_PRINT_' );
+            $aPayment = $oOrder->throwPaymentCarrier( $aOrder['iCarrier'], $aOrder['iPayment'] );
+            $sOrder .= $oTpl->tbHtml( 'orders_panel.tpl', 'ORDER_PRINT' );
+        }
+        $sOrder .= $oTpl->tbHtml( 'orders_panel.tpl', 'ORDER_FOOTER' );
+        return $sOrder;
+  }
 }
 
-$aUser = array();
-if(logged()) {
-	$aUser = DB::GetRow('SELECT f_email as sEmail, f_last_name as sLastName, f_first_name as sFirstName, f_address_1 as sStreet, f_postal_code as sZipCode, f_city as sCity, f_country as sCountry, f_work_phone as sPhone, f_company_name FROM contact_data_1 WHERE id=%d',array($_SESSION['contact']));
-	if(isset($_SESSION['company'])) {
-		$aUser += DB::GetRow('SELECT f_company_name as sCompanyName, f_tax_id as sNip FROM company_data_1 WHERE id=%d',array($_SESSION['company']));
-	}
-}
 ?>

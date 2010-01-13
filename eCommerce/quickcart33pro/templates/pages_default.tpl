@@ -9,6 +9,7 @@
   $sContactPanel
   $sLoginPanel
   $sChangePasswordPanel
+  $sOrdersPanel
   <div class="content" id="pageDescription">$aData[sDescriptionFull]</div>
   $sPages
   $sSiteMap

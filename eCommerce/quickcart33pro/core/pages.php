@@ -477,7 +477,7 @@ class Pages
 		$this->aPagesParentsTypes[4][] = $id;
 	}
 
-	if(!logged()) {
+	if(!Users::logged()) {
 		//login
 		$id = 39;
 		$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => $lang['log_in'], 'sNameTitle' => '', 'sDescriptionShort' => '', 'iPosition' => 1000, 'iType' => 1, 'iSubpagesShow' => 1, 'iProducts' => 0, 'sDescriptionFull'=>'', 'sMetaDescription' => '', 'sMetaKeywords' =>'' );
@@ -490,7 +490,14 @@ class Pages
 		$this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
 		$this->aPagesParentsTypes[1][] = $id;
 
-		//logout
+		//Orders
+		$id = 55;
+		$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 43, 'sName' => $lang['Orders'], 'sNameTitle' => '', 'sDescriptionShort' => '', 'iPosition' => 1000, 'iType' => 1, 'iSubpagesShow' => 1, 'iProducts' => 0, 'sDescriptionFull'=>'', 'sMetaDescription' => '', 'sMetaKeywords' =>'' );
+		$this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
+	        $this->aPagesChildrens[43][] = $id;
+                $this->aPagesParents[$id] = 43;
+
+		//change pass
 		$id = 51;
 		$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 43, 'sName' => $lang['Change_password'], 'sNameTitle' => '', 'sDescriptionShort' => '', 'iPosition' => 1000, 'iType' => 1, 'iSubpagesShow' => 1, 'iProducts' => 0, 'sDescriptionFull'=>'', 'sMetaDescription' => '', 'sMetaKeywords' =>'' );
 		$this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
@@ -503,6 +510,7 @@ class Pages
 		$this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
 	        $this->aPagesChildrens[43][] = $id;
                 $this->aPagesParents[$id] = 43;
+
 	}
 
 	//} epesi

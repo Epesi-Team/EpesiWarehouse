@@ -57,7 +57,7 @@ if( isset( $iContent ) && is_numeric( $iContent ) ){
     if( $iContent == 39 ){ //login form
       $sLoginPanel = '';
       if(isset( $_POST['sSend'] )) {
-      	if(!login($_POST)) {
+      	if(!$oUser->login($_POST)) {
             $sLoginPanel .= $oTpl->tbHtml( 'messages.tpl', 'PASSWORD_INVALID' );          
         }
       }
@@ -69,7 +69,7 @@ if( isset( $iContent ) && is_numeric( $iContent ) ){
     if( $iContent == 51 ){ //change password form
       $sChangePasswordPanel = '';
       if(isset( $_POST['sSend'] )) {
-      	if(!change_password($_POST)) {
+      	if(!$oUser->change_password($_POST)) {
             $sChangePasswordPanel .= $oTpl->tbHtml( 'messages.tpl', 'PASSWORD_INVALID' );          
       	}
       }
@@ -78,9 +78,15 @@ if( isset( $iContent ) && is_numeric( $iContent ) ){
       $sChangePasswordPanel = null;
     }
     
+    if( $iContent == 55 ){ //orders
+      $sOrdersPanel = $oUser->orders('orders_panel.tpl');
+    } else{
+      $sOrdersPanel = null;
+    }
+    
     if( $iContent == 47 ){ //logout
-      if(logged()) {
-      	logout();
+      if($oUser->logged()) {
+      	$oUser->logout();
       }
     }
 
@@ -250,7 +256,7 @@ if( isset( $iContent ) && is_numeric( $iContent ) ){
 	  }
 	  
 	  $oTpl->setVariables('countriesList',$countriesList);
-          $sOrder = $sOrderError.$oTpl->tbHtml( 'orders_form.tpl', 'ORDER_FORM'.(logged()?'_LOGGED':'') );
+          $sOrder = $sOrderError.$oTpl->tbHtml( 'orders_form.tpl', 'ORDER_FORM'.($oUser->logged()?'_LOGGED':'') );
         }
       }
       else{

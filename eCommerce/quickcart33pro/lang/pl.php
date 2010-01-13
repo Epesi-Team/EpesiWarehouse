@@ -351,4 +351,5 @@ $lang['Change_password'] = 'Zmień hasło';
 $lang['Password_mismatch'] = 'Wpisane hasła różnią się';
 $lang['Password_invalid'] = 'Wpisane hasło jest nieprawidłowe';
 $lang['Password_too_short'] = 'Wpisane hasło jest za krótkie';
+$lang['Click_on_order_to_see_details'] = 'Kliknij na zamówieniu aby zobaczyć szczegóły.';
 ?>
