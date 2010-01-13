@@ -472,7 +472,7 @@ class Orders
 				    o.f_payment_realized as iPaymentRealized,
 				    o.f_invoice as iInvoice,
 				    w.f_status as iStatus
-				    FROM premium_warehouse_items_orders_data_1 w INNER JOIN premium_ecommerce_orders_data_1 o ON o.f_transaction_id=w.id WHERE w.id=%d',array($iOrder));
+				    FROM premium_warehouse_items_orders_data_1 w LEFT JOIN premium_ecommerce_orders_data_1 o ON o.f_transaction_id=w.id WHERE w.id=%d',array($iOrder));
 
     if( isset( $aData ) ){
       $aPayments = $this->getPayments();
