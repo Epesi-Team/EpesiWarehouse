@@ -162,7 +162,7 @@ class Files
 	if(!file_exists('files/epesi/'.$row['id'].'_'.$row['revision'].$ext)) continue;
 	$photo = preg_match('/^\.(jpg|jpeg|gif|png|bmp)$/i',$ext);
 	$type = 2; // ??????????
-	$this->aFilesImages[$iKey][$row['id']] = array( 'iFile' => $row['id'], 'iProduct' => $product, 'sFileName' => 'epesi/'.$row['id'].'_'.$row['revision'].$ext, 'sDescription' => $row['text'], 'iPhoto' => $photo, 'iPosition' => 0, 'iType' =>$type, 'iSize1' => $th_size, 'iSize2' => $th_size );
+	$this->aFilesImages[$iKey][$row['id']] = array( 'iFile' => $row['id'], 'iProduct' => $product, 'sFileName' => 'epesi/'.$row['id'].'_'.$row['revision'].$ext, 'sDescription' => $row['original']!=$row['text']?$row['text']:'', 'iPhoto' => $photo, 'iPosition' => 0, 'iType' =>$type, 'iSize1' => $th_size, 'iSize2' => $th_size );
 
 	if( $photo ){
 	    //sticky image is default one
