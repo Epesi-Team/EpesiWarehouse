@@ -428,7 +428,7 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 			$filename = @$plugin->download_file($params, $dist);
 			if(!$filename) continue;
 			$res = @$plugin->update_from_file($filename, $dist);
-			@unlink($filename);
+//			@unlink($filename);
 			ob_end_clean();
 			if ($res===true) { 
 				$ret .= 'updated '.$dist['name'].'<br>';

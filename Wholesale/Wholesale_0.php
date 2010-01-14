@@ -44,7 +44,8 @@ class Premium_Warehouse_Wholesale extends Module {
 			array('name'=>$this->t('Price'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'price'),
 			array('name'=>$this->t('Quantity'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'quantity'),
 			array('name'=>$this->t('Quantity Details'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'quantity_info'),
-			array('name'=>$this->t('Distributor Category'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'distributor_category')
+			array('name'=>$this->t('Distributor Category'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'distributor_category'),
+			array('name'=>$this->t('Manufacturer'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'manufacturer')
 		));
 
 		$form = $this->init_module('Libs/QuickForm');
@@ -98,9 +99,9 @@ class Premium_Warehouse_Wholesale extends Module {
 			}
 			
 			if ($validate) { 
-				$dist_cat = DB::GetOne('SELECT distributor_category FROM premium_warehouse_wholesale_items WHERE id=%d',array($vals['params']['internal_id']));
+				list($dist_cat,$manufacturer) = DB::GetRow('SELECT distributor_category,manufacturer FROM premium_warehouse_wholesale_items WHERE id=%d',array($vals['params']['internal_id']));
 				$categories = Utils_RecordBrowserCommon::get_record('premium_warehouse_distributor_categories',$dist_cat);
-				$iid = Utils_RecordBrowserCommon::new_record('premium_warehouse_items', array_merge($vals['form'],array('category'=>$categories['epesi_category'])));
+				$iid = Utils_RecordBrowserCommon::new_record('premium_warehouse_items', array_merge($vals['form'],array('category'=>$categories['epesi_category'],'manufacturer'=>$manufacturer,'vendor'=>$arg['company'])));
 				DB::Execute('UPDATE premium_warehouse_wholesale_items SET item_id=%d WHERE id=%d', array($iid, $vals['params']['internal_id']));
 			}
 		}
@@ -149,7 +150,8 @@ class Premium_Warehouse_Wholesale extends Module {
 				array('value'=>Utils_CurrencyFieldCommon::format($row['price'],$row['price_currency']), 'style'=>'text-align:right;'),
 				array('value'=>$row['quantity'], 'style'=>'text-align:right;'),
 				$row['quantity_info'],
-				$row['category']
+				$row['category'],
+				Utils_RecordBrowserCommon::create_linked_label('company', 'company_name', $row['manufacturer'])
 			);
 		}
 		$this->display_module($gb);

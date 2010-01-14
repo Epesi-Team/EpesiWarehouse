@@ -186,15 +186,22 @@ class Premium_Warehouse_Wholesale__Plugin_epesi_with_tax implements Premium_Ware
 					$item_id = null;
 				}
 				$w_item = null;
+				$manufacturer = null;
+				if($row['Manufacturer']) {
+					$cc = CRM_ContactsCommon::get_companies(array('company_name'=>$row['Manufacturer']),array('group'));
+					if($cc) {
+						$cc2 = array_shift($cc);
+						$manufacturer = $cc2['id'];
+				    		if(!in_array('manufacturer', $cc2['group'])) {
+				    			$cc2['group']['manufacturer'] = 'manufacturer';
+					    		Utils_RecordBrowserCommon::update_record('company',$cc2['id'],array('group'=>$cc2['group']));
+				    		}
+					}
+				}
 				if (($internal_key===false || $internal_key===null || $item_id===null) && $row['SKU']) {
 					$marr = array();
-					if($row['Manufacturer']) {
-						$cc = CRM_ContactsCommon::get_companies(array('company_name'=>$row['Manufacturer']),array());
-						if($cc) {
-							$cc2 = array_shift($cc);
-							$marr['manufacturer'] = $cc2['id'];
-						}
-					}
+					if($manufacturer)
+						$marr['manufacturer'] = $manufacturer;
 					if(isset($marr['manufacturer'])) {
 						$marr['(~"item_name']=DB::Concat(DB::qstr('%'),DB::qstr($row['Name']),DB::qstr('%'));
 						if($row['MPN'])
@@ -234,9 +241,9 @@ class Premium_Warehouse_Wholesale__Plugin_epesi_with_tax implements Premium_Ware
 						if($local_tax>$remote_tax) {
 							$row['Price'] = $row['Gross Price']*100/($local_tax+100);
 						}
-						DB::Execute('INSERT INTO premium_warehouse_wholesale_items (item_id, internal_key, distributor_item_name, distributor_id, quantity, quantity_info, price, price_currency,distributor_category) VALUES (%d, %s, %s, %d, %d, %s, %f, %d,%d)', array($w_item, $row['SKU'], $row['Name'], $distributor['id'], $quantity, $quantity_info, $row['Price'], $pln_id,$category));
+						DB::Execute('INSERT INTO premium_warehouse_wholesale_items (item_id, internal_key, distributor_item_name, distributor_id, quantity, quantity_info, price, price_currency,distributor_category,manufacturer) VALUES (%d, %s, %s, %d, %d, %s, %f, %d,%d,%d)', array($w_item, $row['SKU'], $row['Name'], $distributor['id'], $quantity, $quantity_info, $row['Price'], $pln_id,$category,$manufacturer));
 					} else {
-						DB::Execute('INSERT INTO premium_warehouse_wholesale_items (internal_key, distributor_item_name, distributor_id, quantity, quantity_info, price, price_currency,distributor_category) VALUES (%s, %s, %d, %d, %s, %f, %d,%d)', array($row['SKU'], $row['Name'], $distributor['id'], $quantity, $quantity_info, $row['Price'], $pln_id,$category));
+						DB::Execute('INSERT INTO premium_warehouse_wholesale_items (internal_key, distributor_item_name, distributor_id, quantity, quantity_info, price, price_currency,distributor_category,manufacturer) VALUES (%s, %s, %d, %d, %s, %f, %d,%d,%d)', array($row['SKU'], $row['Name'], $distributor['id'], $quantity, $quantity_info, $row['Price'], $pln_id,$category,$manufacturer));
 					}
 				} elseif($internal_key) {
 					/*** there's an exact match in the system already ***/
@@ -249,7 +256,7 @@ class Premium_Warehouse_Wholesale__Plugin_epesi_with_tax implements Premium_Ware
 					if($local_tax>$remote_tax) {
 						$row['Price'] = $row['Gross Price']*100/($local_tax+100);
 					}
-					DB::Execute('UPDATE premium_warehouse_wholesale_items SET quantity=%d, quantity_info=%s, price=%f, price_currency=%d,distributor_category=%d WHERE internal_key=%s AND distributor_id=%d', array($quantity, $quantity_info, $row['Price'], $pln_id, $category, $row['SKU'], $distributor['id']));
+					DB::Execute('UPDATE premium_warehouse_wholesale_items SET quantity=%d, quantity_info=%s, price=%f, price_currency=%d,distributor_category=%d, manufacturer=%d WHERE internal_key=%s AND distributor_id=%d', array($quantity, $quantity_info, $row['Price'], $pln_id, $category, $manufacturer, $row['SKU'], $distributor['id']));
 					if ($w_item!==null) 
 						DB::Execute('UPDATE premium_warehouse_wholesale_items SET item_id=%d WHERE internal_key=%s AND distributor_id=%d', array($w_item, $row['SKU'], $distributor['id']));
 				}
