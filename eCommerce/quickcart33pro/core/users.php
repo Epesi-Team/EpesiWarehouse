@@ -33,6 +33,8 @@ class Users
       	$_SESSION['contact'] = $uid['cid'];
       	$company = explode('__',trim($uid['f_company_name'],'__'));
       	$_SESSION['company'] = array_shift($company);
+      	if($_SESSION['company']==='')
+      		$_SESSION['company'] = null;
 
         if( $_SESSION['iOrderQuantity'.LANGUAGE] && isset( $config['order_page'] ) && isset( $oPage->aPages[$config['order_page']] ) ){
           header( 'Location: '.REDIRECT.$oPage->aPages[$config['order_page']]['sLinkName'] );
