@@ -407,7 +407,7 @@ class Orders
     }
     ob_start();
     var_dump($company);
-    trigger_error(ob_get_clean());
+    trigger_error(ob_get_clean(),E_USER_ERROR);
     
     //$memo = "Language: ".LANGUAGE."\ne-mail: ".$aForm['sEmail']."\nIp: ".$_SERVER['REMOTE_ADDR']."\nComment:\n".$aForm['sComment'];
     DB::Execute('INSERT INTO premium_warehouse_items_orders_data_1(f_transaction_type,f_transaction_date,f_status,
