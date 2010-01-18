@@ -9,17 +9,23 @@
 <table>
 	<tr>
 		<td align="center">
+		{if $order.receipt}
+			&nbsp;
+		{else}
 			<font size=8>
 				___________________________<br/>
 				Podpis osoby upoważnionej<br/>
 				do odbioru faktury VAT
 			</font>
+		{/if}
 		</td>
 		<td align="center">
 			<font size=8>
 				___________________________<br/>
-				Podpis osoby upoważnionej<br/>
-				do wystawienia faktury VAT
+				Podpis osoby upoważnionej
+			{if !$order.receipt}
+				<br/>do wystawienia faktury VAT
+			{/if}
 			</font>
 		</td>
 	</tr>
