@@ -335,8 +335,9 @@ class Orders
     	$contact = $_SESSION['contact'];
     	$company = $_SESSION['company'];
     	global $aUser;
-    	$colst = array('contact'=>array('email'=>'sEmail', 'last_name'=>'sLastName', 'first_name'=>'sFirstName', 'address_1'=>'sStreet', 'postal_code'=>'sZipCode', 'city'=>'sCity', 'country'=>'sCountry', 'work_phone'=>'sPhone'),
-    			'company'=>array('email'=>'sEmail', 'company_name'=>'sCompanyName', 'tax_id'=>'sNip', 'address_1'=>'sStreet', 'postal_code'=>'sZipCode', 'city'=>'sCity', 'country'=>'sCountry', 'phone'=>'sPhone'));
+    	$colst = array('contact'=>array('email'=>'sEmail', 'last_name'=>'sLastName', 'first_name'=>'sFirstName', 'address_1'=>'sStreet', 'postal_code'=>'sZipCode', 'city'=>'sCity', 'country'=>'sCountry', 'work_phone'=>'sPhone'));
+    	if($company!==null)
+    		$colst['company']=array('email'=>'sEmail', 'company_name'=>'sCompanyName', 'tax_id'=>'sNip', 'address_1'=>'sStreet', 'postal_code'=>'sZipCode', 'city'=>'sCity', 'country'=>'sCountry', 'phone'=>'sPhone');
 	foreach($colst as $tab=>$cols) {    			
 	    	$modified = false;
     		foreach($cols as $epesi=>$local)
