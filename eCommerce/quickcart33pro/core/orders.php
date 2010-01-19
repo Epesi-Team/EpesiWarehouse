@@ -403,6 +403,8 @@ class Orders
 		$_SESSION['user'] = DB::Insert_ID('premium_ecomerce_users_data_1','id');
 	    	$_SESSION['contact'] = $contact;
     		$_SESSION['company'] = $company;
+	      	if(!$_SESSION['company'])
+      			$_SESSION['company'] = null;
 	}
     }
     
