@@ -61,7 +61,7 @@ class Orders
       if( isset( $iId ) && isset( $this->aOrders[$iId] ) ){
         $this->aOrders[$iId]['fProductsSummary'] = $aData['fProductsSummary'];
         if( !empty( $this->aOrders[$iId]['fPaymentCarrierPrice'] ) ){
-          $this->aOrders[$iId]['fOrderSummary'] = $aData['fOrderSummary'] = normalizePrice( $aData['fProductsSummary'] +  $this->aOrders[$iId]['fPaymentCarrierPrice'] );
+          $this->aOrders[$iId]['fOrderSummary'] = $aData['fOrderSummary'] = normalizePrice( $aData['fProductsSummary'] +  $this->aOrders[$iId]['fPaymentCarrierPrice'] +  $this->aOrders[$iId]['fShipmentDiscount'] );
           $this->aOrders[$iId]['sOrderSummary'] = $aData['sOrderSummary'] = displayPrice( $aData['fOrderSummary'] );
           if( !empty( $GLOBALS['config']['zagiel_id'] ) && $sBlock == 'ZAGIEL_' ){
             $iItems++;
@@ -301,20 +301,22 @@ class Orders
     $currency = $this->getCurrencyId();
 
     $promo_employee = null;
+    $promo_discount = 0;
     if($aForm['sPromotionCode']) {
 	    $promotions = $this->throwPromotions($aForm['sPromotionCode']);
 	    if($promotions) {
 	    	foreach($promotions as $promo) {
 			$rr = explode('__',$promo['discount']);
 			if($rr && $rr[0] && $rr[1]==$currency) {
-				$price -= $rr[0];
-				if($price<0) $price = 0;
+				$promo_discount = $rr[0];
+				if($price<$promo_discount) $promo_discount = $price;
 				$promo_employee = $promo['employee'];
 				break;
 			}
 	    	}
 	    }
     }
+    $price -= $promo_discount;
 
     if( isset( self::$payments_to_qcpayments[$payment] ) ){
       if( isset( $aForm['aPaymentChannel'][$aPayment['iPayment']] ) ) {
@@ -420,10 +422,10 @@ class Orders
     DB::Execute('UPDATE premium_warehouse_items_orders_data_1 SET f_transaction_id=%s WHERE id=%d',array($trans_id,$id));
 
 	DB::Execute('INSERT INTO premium_ecommerce_orders_data_1(f_transaction_id, f_language, f_email, f_ip, f_comment, f_invoice, 
-						f_payment_channel,f_payment_realized,created_on,f_promotion_employee) VALUES
-						(%d,%s,%s,%s,%s,%b,%s,%b,%T,%d)',
+						f_payment_channel,f_payment_realized,created_on,f_promotion_employee,f_promotion_shipment_discount) VALUES
+						(%d,%s,%s,%s,%s,%b,%s,%b,%T,%d,%d)',
 					array($id,LANGUAGE,$aForm['sEmail'],$_SERVER['REMOTE_ADDR'],$aForm['sComment'],$aForm['iInvoice']?true:false,
-					$aForm['mPaymentChannel'],$aForm['iPaymentRealized'],time(),$promo_employee));
+					$aForm['mPaymentChannel'],$aForm['iPaymentRealized'],time(),$promo_employee,$promo_discount));
 
     $taxes = DB::GetAssoc('SELECT id, f_percentage FROM data_tax_rates_data_1 WHERE active=1');
 
@@ -474,6 +476,7 @@ class Orders
 				    o.f_payment_channel as mPaymentChannel,
 				    o.f_payment_realized as iPaymentRealized,
 				    o.f_invoice as iInvoice,
+				    o.f_promotion_shipment_discount as iShipmentDiscount,
 				    w.f_status as iStatus
 				    FROM premium_warehouse_items_orders_data_1 w LEFT JOIN premium_ecommerce_orders_data_1 o ON o.f_transaction_id=w.id WHERE w.id=%d',array($iOrder));
 
@@ -494,8 +497,10 @@ class Orders
       list($aData['sPaymentPrice']) = explode('_',$aData['sPaymentPrice']);
       $aData['iTime'] = strtotime($aData['iTime']);
       $aData['sInvoice'] = throwYesNoTxt( $aData['iInvoice'] );
-      $aData['fPaymentCarrierPrice'] = generatePrice( $aData['fCarrierPrice'], $aData['sPaymentPrice'] );
+      $aData['fPaymentCarrierPrice'] = generatePrice( $aData['sPaymentPrice'], $aData['iShipmentDiscount'] );
       $aData['sPaymentCarrierPrice'] = displayPrice( $aData['fPaymentCarrierPrice'] );
+      $aData['fShipmentDiscount'] = generatePrice( -$aData['iShipmentDiscount'] );
+      $aData['sShipmentDiscount'] = displayPrice( $aData['fShipmentDiscount'] );
       $aData['sDate'] = displayDate( $aData['iTime'] );
       $aData['sPaymentSystem'] = '';
       if( isset( self::$payments_to_qcpayments[$aData['iPayment']] ) && isset( $GLOBALS['aOuterPaymentOption'][self::$payments_to_qcpayments[$aData['iPayment']]] ) ){

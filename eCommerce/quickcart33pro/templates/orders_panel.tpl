@@ -72,6 +72,10 @@ $lang[Click_on_order_to_see_details]
         <th colspan="3">$lang[Delivery_and_payment]: $aOrder[sCarrierName], $aOrder[sPaymentName]</th>
         <td id="carrierCost">$aOrder[sPaymentCarrierPrice]</td>
       </tr>
+      <tr class="summaryDelivery">
+        <th colspan="3">$lang[Shipment_discount]</th>
+        <td>$aOrder[sShipmentDiscount]</td>
+      </tr>
       <tr class="summaryOrder">
         <th colspan="3">$lang[Summary_cost]</th>
         <td id="orderSummary">$aData[sOrderSummary]</td>
