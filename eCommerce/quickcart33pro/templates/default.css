@@ -74,7 +74,8 @@ div#searchform {
   position: absolute;
   display: block;
   float: right;
-  margin: 15px 450px;
+  left: 450px;
+  top: 15px;
   width: 245px;
   height: 50px;
   background: url('img/search-box-2.gif') right no-repeat;
@@ -102,7 +103,15 @@ div#searchform .input {
   margin: 20px 15px 4px 0;
   list-style: none;
 }
-#menu1 li{float:left;padding:12px 8px 0;}
+#menu1 li{
+  float:left;
+  padding:0px 8px 0;
+}
+#menu1 li li {
+  float:none;
+  padding:0px 0px 0px 12px;
+  list-style: none;
+}
 #menu1 li a {
   padding-left: 13px;
   background: url('img/point.gif') no-repeat 0 5px;
@@ -133,37 +142,32 @@ div#searchform .input {
 #menu1 li#langMenu {
   padding: 0px 0px 0px 0px;
 }
-#menu1 li#langMenu a {
+#menu1 span#langMenu {
+float:left;
+}
+#menu1 li#langMenu a, #menu1 span#langMenu a {
 	background: none;
 	color: #e62808;
 	padding: 3px 5px 3px 5px;
-	display: block
+	display: block;
 }
 
-#menu1 li#langMenu a:hover {
+#menu1 span#langMenu a:hover {
 	background-color:#c3bda6;
 }
 
-#menu1 li#langMenu .selected{
+#menu1 span#langMenu .selected{
 	background-color: #c3bda6;
 }
 
 #menu1 li#langMenu span{display:block;font-size:0.727em;font-family:sans-serif;}
 #menu1 li#langMenu span strong{background-color:inherit;color:#e62808;}
 
-#menu1 li#langMenu {
-
-}
-
-#menu1 li#langMenu a.selected {
-
-}
-
-#menu1 #lang {
+#menu1 #langPopup {
 	display: none;
 	z-index: 10;
 	position: absolute;
-	top: 81px;
+	top: 80px;
 	right: 0px;
 	background: #f2f2f2 url('img/lang-shadow.gif') left no-repeat;
 	padding: 5px 0px 5px 20px;

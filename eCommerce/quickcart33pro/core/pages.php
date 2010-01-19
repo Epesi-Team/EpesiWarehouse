@@ -53,7 +53,7 @@ class Pages
       $num_of_langs = count($config['available_lang']);
       if($iType==1 && $num_of_langs>1) {
     	$aData = array();
-	$aData['sName'] = '<img src="config/'.LANGUAGE_CONFIG.'.gif" />';
+	$aData['sName'] = '<img src="config/'.LANGUAGE_CONFIG.'.gif" style="width:29px;height:20px" />';
 	$aData['iCount'] = $num_of_langs;
 	$oTpl->setVariables( 'aData', $aData );
 	$content .= $oTpl->tbHtml( $sFile, 'HEAD_LANG' );
@@ -78,7 +78,7 @@ class Pages
 	foreach($config['available_lang'] as $lang) {
     	    $aData = array();
 	    $aData['sLinkName'] = $_SERVER['SCRIPT_NAME'].'?'.str_replace('__LANG__',$lang.LANGUAGE_SEPARATOR,$url);
-	    $aData['sName'] = '<img src="config/'.$lang.'.gif" />';
+	    $aData['sName'] = '<img src="config/'.$lang.'.gif" style="width:29px;height:20px" />';
     	    $aData['sStyle']    = ( $i == ( $iCount - 1 ) ) ? 'L': $i + 1;
     	    $aData['sSelected'] = ( $lang==LANGUAGE_CONFIG ) ? $oTpl->tbHtml( $sFile, 'SELECTED' ) : null;
     	
@@ -506,9 +506,10 @@ class Pages
 
 		//logout
 		$id = 47;
-		$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 43, 'sName' => $lang['log_out'], 'sNameTitle' => '', 'sDescriptionShort' => '', 'iPosition' => 1000, 'iType' => 1, 'iSubpagesShow' => 1, 'iProducts' => 0, 'sDescriptionFull'=>'', 'sMetaDescription' => '', 'sMetaKeywords' =>'' );
+		$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => $lang['log_out'], 'sNameTitle' => '', 'sDescriptionShort' => '', 'iPosition' => 1000, 'iType' => 1, 'iSubpagesShow' => 1, 'iProducts' => 0, 'sDescriptionFull'=>'', 'sMetaDescription' => '', 'sMetaKeywords' =>'' );
 		$this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
 	        $this->aPagesChildrens[43][] = $id;
+		$this->aPagesParentsTypes[1][] = $id;
                 $this->aPagesParents[$id] = 43;
 
 	}

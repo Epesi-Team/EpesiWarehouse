@@ -708,6 +708,17 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 		$form->addElement('static', $field, $label, self::get_payment_channel($ord['payment_type'],$default));
 	}
 	
+	public static function display_promotion_shipment_discount($r) {
+		if(!$r['promotion_shipment_discount']) return '---';
+		$r2 = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders',$r['transaction_id']);
+		list($cc,$curr) = Utils_CurrencyFieldCommon::get_values($r2['shipment_cost']);
+		return Utils_CurrencyFieldCommon::format($r['promotion_shipment_discount'],$curr).' ('.Base_LangCommon::ts('Premium_Warehouse_eCommerce','"Shipment Cost" is already discounted').')';
+	}
+
+  	public static function QFfield_promotion_shipment_discount(&$form, $field, $label, $mode, $default,$dupa,$parent_rb) {
+		$form->addElement('static', $field, $label, self::display_promotion_shipment_discount($parent_rb->record));
+	}
+	
 	public static function display_payment_realized($r) {
 		return Base_LangCommon::ts('Premium_Warehouse_eCommerce',$r['payment_realized']?'Yes':'No');
 	}
