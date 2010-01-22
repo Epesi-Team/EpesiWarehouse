@@ -66,7 +66,7 @@ function listProductsCompare( $sFile, $sBlock ){
       if(empty( $aData['sDescriptionFull'] ) && !empty( $aData['sDescriptionShort'] ) )
     	$aData['sDescriptionFull'] = $aData['sDescriptionShort'];
       else
-        $aData['sDescriptionFull'] = changeTxt( preg_replace( '/\|n\|/', '', $aData['sDescriptionFull'] ), 'nlNds' );;
+        $aData['sDescriptionFull'] = strip_tags( preg_replace( '/\|n\|/', '', $aData['sDescriptionFull'] ));;
 
       $aData['sFeatures'] = null;
       if( isset( $aFeaturesProducts[$aData['iProduct']] ) ){
