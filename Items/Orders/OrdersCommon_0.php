@@ -363,7 +363,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	
 	public static function check_if_no_duplicate_company_contact($data) {
 		if (!isset($data['company']) && !isset($data['contact'])) return true;
-		if (((!isset($data['company']) || $data['company']<=0) && $data['company_name']) ||
+		if (((!isset($data['company']) || $data['company']<0) && $data['company_name']) ||
 			((!isset($data['contact']) || $data['contact']<=0) && ($data['first_name'] || $data['last_name']))) {
 			$ret = CRM_ContactsCommon::check_for_duplicates($data);
 			if ($ret==false) return true;
