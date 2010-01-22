@@ -75,6 +75,8 @@ class Premium_Warehouse_SalesReport extends Module {
 		$form->display();
 		if ($form->validate()) {
 			$vals = $form->exportValues();
+			$vals['exchange_rate'] = str_replace(',','.',$vals['exchange_rate']);
+			if (!is_numeric($vals['exchange_rate'])) return true;
 			DB::Execute('DELETE FROM premium_warehouse_sales_report_exchange WHERE order_id=%d AND currency=%d', array($vals['order_id'], $vals['currency']));
 			DB::Execute('INSERT INTO premium_warehouse_sales_report_exchange (order_id,currency,exchange_rate) VALUES (%d,%d,%f)', array($vals['order_id'], $vals['currency'], $vals['exchange_rate']));
 			location(array());
