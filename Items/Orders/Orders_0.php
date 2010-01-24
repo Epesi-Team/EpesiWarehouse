@@ -118,7 +118,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 	public function transaction_history_addon($arg){
 		// TODO: service?
 		$rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items_orders_details');
-		$order = array(array('item_name'=>$arg['id']), array('quantity_on_hand'=>false,'item_name'=>false,'description'=>false,'item_name'=>false), array('transaction_date'=>'DESC', 'transaction_id'=>'DESC'));
+		$order = array(array('item_name'=>$arg['id']), array('quantity_on_hand'=>false,'description'=>false)+('item_name'=='item_name'?array('item_name'=>false):array()), array('transaction_date'=>'DESC', 'transaction_id'=>'DESC'));
 		$rb->set_button(false);
 		$rb->set_defaults(array('item_name'=>$arg['id']));
 		$rb->set_header_properties(array(
@@ -1030,6 +1030,29 @@ class Premium_Warehouse_Items_Orders extends Module {
 		$gb->set_inline_display();
 		$html = '<br><br>'.$this->get_html_of_module($gb);
 		return $html;
+	}
+	
+	public function contact_orders_addon($arg){
+		// TODO: service?
+		$rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items_orders');
+		$order = array(
+			array('contact'=>$arg['id']), 
+			array(), 
+			array('transaction_date'=>'DESC', 'transaction_id'=>'DESC'));
+		$rb->set_button(false);
+		$rb->set_defaults(array('contact'=>$arg['id']));
+		$this->display_module($rb,$order,'show_data');
+	}
+
+	public function company_orders_addon($arg){
+		$rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items_orders');
+		$order = array(
+			array('company'=>$arg['id']), 
+			array(), 
+			array('transaction_date'=>'DESC', 'transaction_id'=>'DESC'));
+		$rb->set_button(false);
+		$rb->set_defaults(array('company'=>$arg['id']));
+		$this->display_module($rb,$order,'show_data');
 	}
 
 	public function get_href() {

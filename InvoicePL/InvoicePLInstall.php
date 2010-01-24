@@ -29,14 +29,10 @@ class Premium_Warehouse_InvoicePLInstall extends ModuleInstall {
 
 		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items_orders_details','SWW','text', true, false, '32', 'integer', false, false, 12);
 
-		Utils_RecordBrowserCommon::set_processing_callback('premium_warehouse_items_orders', array('Premium_Warehouse_InvoicePLCommon', 'submit_order'));
-
 		return true;
 	}
 	
 	public function uninstall() {
-		Utils_RecordBrowserCommon::set_processing_callback('premium_warehouse_items_orders', array('Premium_Warehouse_Items_OrdersCommon', 'submit_order'));
-
 		Utils_RecordBrowserCommon::delete_addon('premium_warehouse_items_orders', 'Premium_Warehouse_InvoicePL', 'invoicepl');
 		Utils_RecordBrowserCommon::delete_record_field('premium_warehouse_items_orders','Invoice Number');
 		Utils_RecordBrowserCommon::delete_record_field('premium_warehouse_items_orders','Invoice Print Date');

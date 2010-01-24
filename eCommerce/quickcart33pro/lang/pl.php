@@ -342,7 +342,7 @@ $lang['Select_pickup_shop'] = 'Wypełnij miejsce odbioru osobistego';
 $lang['Promotion_code'] = 'Kod promocyjny (upoważnia do zniżki na wysyłkę)';
 $lang['Promotion_invalid'] = 'Kod promocyjny niepoprawny - popraw kod lub nie wpisuj go';
 $lang['Promotion_expired'] = 'Kod promocyjny wygasł, wprowadź nowy kod lub nie wpisuj żadnego';
-$lang['Password_new_user'] = 'Hasło (uzupełnij w celu utworzenia użytkownika)';
+$lang['Password_new_user'] = 'Hasło';
 $lang['Password_confirmation'] = 'Powtórz hasło';
 $lang['New_password'] = 'Nowe hasło';
 $lang['New_password_confirmation'] = 'Powtórz nowe hasło';
@@ -353,4 +353,6 @@ $lang['Password_invalid'] = 'Wpisane hasło jest nieprawidłowe';
 $lang['Password_too_short'] = 'Wpisane hasło jest za krótkie';
 $lang['Click_on_order_to_see_details'] = 'Kliknij na zamówieniu aby zobaczyć szczegóły.';
 $lang['Shipment_discount'] = 'Rabat udzielony na koszty dostawy';
+$lang['Create_account'] = 'Utwórz użytkownika';
+$lang['Tracking_info'] = 'Numer przesyłki';
 ?>

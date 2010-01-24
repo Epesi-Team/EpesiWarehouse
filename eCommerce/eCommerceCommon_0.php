@@ -880,6 +880,19 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 					'Company'=>$r['company_name'],'Phone'=>$r['phone']),'Premium_Warehouse_eCommerce');
 	}
 
+	public static function submit_warehouse_order($values, $mode) {
+		if ($mode=='edit' && $values['transaction_type']==1 && $values['online_order']) {
+			switch($values['status']) {
+				case 2:
+					Epesi::alert('Order received');
+					break;
+				case 7:
+					Epesi::alert('Sent');
+					break;
+			}
+		}
+		return null;//don't modify values
+	}
 	
 }
 ?>

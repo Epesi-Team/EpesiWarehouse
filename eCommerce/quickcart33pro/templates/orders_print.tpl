@@ -163,13 +163,8 @@
                                     <font color="#993333"><h3>$lang['Order_info_title'] $aData[iOrder]</h3></font>
                                     $aData[sCustomHello]
 
-                                    $aData[sPaymentDescription]
-
-                                    <br>
-                                    <h4>$lang[Your_personal_information]</h4>
                                     $lang[First_and_last_name]: <i>$aData[sFirstName] $aData[sLastName]</i><br>
-                                    $lang[Company]: <i>$aData[sCompanyName]</i><br>
-                                    $lang[Nip]: <i>$aData[sNip]</i><br>
+                                    $aData[sCompanyInfo]
 				    $lang[Invoice]: <i>$aData[sInvoice]</i><br>
                                     $lang[Street]: <i>$aData[sStreet]</i><br>
                                     $lang[Zip_code]: <i>$aData[sZipCode]</i><br>
@@ -177,12 +172,16 @@
                                     $lang[Country]: <i>$aData[sCountry]</i><br>
                                     $lang[Telephone]: <i>$aData[sPhone]</i><br>
                                     $lang[Email]: <i>$aData[sEmail]</i><br>
+                                    <br>
+                                    <h4>$lang[Your_personal_information]</h4>
+                                    $aData['sPersonalData']
                                     <h4>$lang[Order_summary]</h4>
                                     <ul>
                                     $aData[sProducts]
                                     <li>$aData[sCarrierName] ($aData[sPaymentName]) = $aData[sPaymentCarrierPrice] $config[currency_symbol]</li>
-                                    <li>$lang[Payment_channel]: $aData[sPaymentChannel]</li>
-				    <li>$lang[Shipment_discount]: $aOrder[sShipmentDiscount]</li>
+                                    $aData[sPaymentChannelInfo]
+                                    $aData[sShipmentDiscountInfo]
+				    
                                     </ul>
                                     $lang[Summary_cost]: $aData[sOrderSummary] $config[currency_symbol]
                                 </font>
@@ -197,6 +196,9 @@
 </table>
 <!-- END ORDER_EMAIL_BODY -->
 
+<!-- BEGIN ORDER_EMAIL_COMPANY -->$lang[Company]: <i>$aData[sCompanyName]</i><br>$lang[Nip]: <i>$aData[sNip]</i><br><!-- END ORDER_EMAIL_COMPANY -->
+<!-- BEGIN ORDER_EMAIL_PAYMENT_CHANNEL --><li>$lang[Payment_channel]: $aData[sPaymentChannel]</li><!-- END ORDER_EMAIL_PAYMENT_CHANNEL -->
+<!-- BEGIN_ORDER_SHIPMENT_DISCOUNT --><li>$lang[Shipment_discount]: $aOrder[sShipmentDiscount]</li><!-- END ORDER_EMAIL_SHIPMENT_DISCOUNT -->
 <!-- BEGIN ORDER_EMAIL_LIST --><li>$aData[sName] - $aData[sPrice] $config[currency_symbol] * $aData[iQuantity] = $aData[sSummary] $config[currency_symbol]</li><!-- END ORDER_EMAIL_LIST -->
 <!-- BEGIN ORDER_EMAIL_HEAD --><!-- END ORDER_EMAIL_HEAD -->
 <!-- BEGIN ORDER_EMAIL_FOOT --><!-- END ORDER_EMAIL_FOOT -->

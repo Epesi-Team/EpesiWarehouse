@@ -122,6 +122,8 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::new_addon('premium_warehouse_items_orders', 'Premium/Warehouse/Items/Orders', 'order_details_addon', 'Items');
 		Utils_RecordBrowserCommon::new_addon('premium_warehouse_items_orders', 'Premium/Warehouse/Items/Orders', 'attachment_addon', 'Notes');
 		Utils_RecordBrowserCommon::new_addon('premium_warehouse_items', 'Premium/Warehouse/Items/Orders', 'transaction_history_addon', 'Transaction History');
+		Utils_RecordBrowserCommon::new_addon('contact', 'Premium/Warehouse/Items/Orders', 'contact_orders_addon', 'Premium_Warehouse_Items_OrdersCommon::contact_orders_label');
+		Utils_RecordBrowserCommon::new_addon('company', 'Premium/Warehouse/Items/Orders', 'company_orders_addon', 'Premium_Warehouse_Items_OrdersCommon::company_orders_label');
 		
 		Utils_RecordBrowserCommon::set_addon_pos('premium_warehouse_items', 'Premium/Warehouse/Items/Orders', 'transaction_history_addon', 2);
 		Utils_RecordBrowserCommon::set_addon_pos('premium_warehouse_items', 'Premium/Warehouse/Items/Location', 'location_addon', 1);

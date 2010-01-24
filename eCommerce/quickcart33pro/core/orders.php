@@ -298,6 +298,7 @@ class Orders
     list($carrier,$payment) = explode( ';', $aForm['sPaymentCarrier'] );
     $aPayment = $this->throwPaymentCarrier($carrier,$payment);
     $price = $aPayment['fPrice'];
+    $order_terms = $aPayment['sTerms'];
     $currency = $this->getCurrencyId();
 
     $promo_employee = null;
@@ -413,10 +414,10 @@ class Orders
     //$memo = "Language: ".LANGUAGE."\ne-mail: ".$aForm['sEmail']."\nIp: ".$_SERVER['REMOTE_ADDR']."\nComment:\n".$aForm['sComment'];
     DB::Execute('INSERT INTO premium_warehouse_items_orders_data_1(f_transaction_type,f_transaction_date,f_status,
 						f_company_name,f_last_name,f_first_name,f_address_1,f_city,f_postal_code,f_phone,f_country,f_zone,f_memo,created_on,
-						f_shipment_type,f_shipment_cost,f_payment,f_payment_type,f_tax_id,f_warehouse,f_online_order,f_contact,f_company) VALUES 
-						(1,%D,"-1",%s,%s,%s,%s,%s,%s,%s,%s,"",%s,%T,%s,%s,1,%s,%s,%d,1,%d,%d)',
+						f_shipment_type,f_shipment_cost,f_payment,f_payment_type,f_tax_id,f_warehouse,f_online_order,f_contact,f_company,f_terms) VALUES 
+						(1,%D,"-1",%s,%s,%s,%s,%s,%s,%s,%s,"",%s,%T,%s,%s,1,%s,%s,%d,1,%d,%d,%s)',
 					array($t,$aForm['sCompanyName'],$aForm['sLastName'],$aForm['sFirstName'],$aForm['sStreet'],$aForm['sCity'],
-					$aForm['sZipCode'],$aForm['sPhone'],$aForm['sCountry'],$memo,$t,$carrier,$price.'__'.$currency,$payment,$aForm['sNip'],$carrier==0?$aForm['iPickupShop']:null,$contact,$company));
+					$aForm['sZipCode'],$aForm['sPhone'],$aForm['sCountry'],$memo,$t,$carrier,$price.'__'.$currency,$payment,$aForm['sNip'],$carrier==0?$aForm['iPickupShop']:null,$contact,$company,$order_terms));
     $id = DB::Insert_ID('premium_warehouse_items_orders_data_1','id');
     $trans_id = '#'.str_pad($id, 6, '0', STR_PAD_LEFT);
     DB::Execute('UPDATE premium_warehouse_items_orders_data_1 SET f_transaction_id=%s WHERE id=%d',array($trans_id,$id));
@@ -477,7 +478,8 @@ class Orders
 				    o.f_payment_realized as iPaymentRealized,
 				    o.f_invoice as iInvoice,
 				    o.f_promotion_shipment_discount as iShipmentDiscount,
-				    w.f_status as iStatus
+				    w.f_status as iStatus,
+				    w.f_tracking_info as sTrackingInfo
 				    FROM premium_warehouse_items_orders_data_1 w LEFT JOIN premium_ecommerce_orders_data_1 o ON o.f_transaction_id=w.id WHERE w.id=%d',array($iOrder));
 
     if( isset( $aData ) ){
@@ -499,8 +501,13 @@ class Orders
       $aData['sInvoice'] = throwYesNoTxt( $aData['iInvoice'] );
       $aData['fPaymentCarrierPrice'] = generatePrice( $aData['sPaymentPrice'], $aData['iShipmentDiscount'] );
       $aData['sPaymentCarrierPrice'] = displayPrice( $aData['fPaymentCarrierPrice'] );
-      $aData['fShipmentDiscount'] = generatePrice( -$aData['iShipmentDiscount'] );
-      $aData['sShipmentDiscount'] = displayPrice( $aData['fShipmentDiscount'] );
+      if(!$aData['iShipmentDiscount']) {
+	      $aData['fShipmentDiscount'] = 0;
+	      $aData['sShipmentDiscount'] = '-';
+      } else {
+	      $aData['fShipmentDiscount'] = generatePrice( -$aData['iShipmentDiscount'] );
+	      $aData['sShipmentDiscount'] = displayPrice( $aData['fShipmentDiscount'] );
+      }
       $aData['sDate'] = displayDate( $aData['iTime'] );
       $aData['sPaymentSystem'] = '';
       if( isset( self::$payments_to_qcpayments[$aData['iPayment']] ) && isset( $GLOBALS['aOuterPaymentOption'][self::$payments_to_qcpayments[$aData['iPayment']]] ) ){
@@ -516,6 +523,16 @@ class Orders
       $aData['sStatus'] = $statusOpts[$aData['iStatus']];
       if(isset($translations['Premium_Warehouse_Items_Orders'][$aData['sStatus']]) && $translations['Premium_Warehouse_Items_Orders'][$aData['sStatus']])
 		$aData['sStatus'] = $translations['Premium_Warehouse_Items_Orders'][$aData['sStatus']];
+
+      if(!$aData['sTrackingInfo'])
+	      $aData['sTrackingInfo'] = '-';
+      if(!$aData['sCompanyName'])
+	      $aData['sCompanyName'] = '-';
+      if(!$aData['sNip'])
+	      $aData['sNip'] = '-';
+      if(!$aData['sComment'])
+	      $aData['sComment'] = '-';
+
 
       $this->aOrders[$iOrder] = $aData;
       return $aData;
@@ -554,10 +571,10 @@ class Orders
     }
     $currency = $this->getCurrencyId();
     $weight = $this->getWeight();
-    $row = DB::GetRow('SELECT f_price,f_description,f_percentage_of_amount FROM premium_ecommerce_payments_carriers_data_1 WHERE active=1 AND f_payment=%s AND f_shipment=%d AND f_currency=%d
+    $row = DB::GetRow('SELECT f_price,f_description,f_percentage_of_amount,f_order_terms FROM premium_ecommerce_payments_carriers_data_1 WHERE active=1 AND f_payment=%s AND f_shipment=%d AND f_currency=%d
     			AND (f_max_weight>=%f OR f_max_weight is null) ORDER BY (f_price+%f*f_percentage_of_amount/100)',array($iPayment,$iCarrier,$currency,$weight,$_SESSION['fOrderSummary'.LANGUAGE]));
     if($row) {
-	    return array('fPrice'=>$row['f_price']+$_SESSION['fOrderSummary'.LANGUAGE]*$row['f_percentage_of_amount']/100,'sDescription'=>str_replace("\n",'<br>',$row['f_description']), 'iPayment'=>$iPayment, 'iCarrier'=>$iCarrier);
+	    return array('fPrice'=>$row['f_price']+$_SESSION['fOrderSummary'.LANGUAGE]*$row['f_percentage_of_amount']/100,'sDescription'=>str_replace("\n",'<br>',$row['f_description']), 'iPayment'=>$iPayment, 'iCarrier'=>$iCarrier, 'sTerms'=>$row['f_order_terms']);
     }
     return false;
   } // end function throwPaymentCarrier
@@ -768,6 +785,14 @@ class Orders
 	$aData['sCustomHello'] = getVariable('ecommerce_order_email');
 
     $oTpl->setVariables( 'aData', $aData );
+	
+    if($aData['sCompanyName']!='-' || $aData['sNip']!='-')
+	    $aData['sCompanyInfo'] = $oTpl->tbHtml( $sFile, 'ORDER_EMAIL_COMPANY' );
+    if($aData['sShipmentDiscount']!='-')
+	    $aData['sShipmentDiscountInfo'] = $oTpl->tbHtml( $sFile, 'ORDER_EMAIL_SHIPMENT_DISCOUNT' );
+    if($aData['sPaymentChannel']!='-')
+	    $aData['sPaymentChannelInfo'] = $oTpl->tbHtml( $sFile, 'ORDER_EMAIL_PAYMENT_CHANNEL' );
+
     $aSend['sMailContent'] = $oTpl->tbHtml( $sFile, 'ORDER_EMAIL_BODY' );
     $aSend['sTopic'] = $oTpl->tbHtml( $sFile, 'ORDER_EMAIL_TITLE' );
     $aSend['sSender']= $GLOBALS['config']['email'];

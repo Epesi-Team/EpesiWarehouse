@@ -241,6 +241,9 @@ if( isset( $iContent ) && is_numeric( $iContent ) ){
           $sPaymentCarriers = $oOrder->listCarriersPayments( 'orders_form.tpl' );
           $sPickupShops = $oOrder->listPickupShops( 'orders_form.tpl' );
           $oTpl->unsetVariables( );
+
+	  if(!$oUser->logged())
+	          $sNewAccount = $oTpl->tbHtml( 'orders_form.tpl', 'ORDER_NEW_ACCOUNT');
 	  
 	  $countries_id = DB::GetOne('SELECT id FROM utils_commondata_tree WHERE akey="Countries"');
 	  if($countries_id===false)
@@ -256,7 +259,7 @@ if( isset( $iContent ) && is_numeric( $iContent ) ){
 	  }
 	  
 	  $oTpl->setVariables('countriesList',$countriesList);
-          $sOrder = $sOrderError.$oTpl->tbHtml( 'orders_form.tpl', 'ORDER_FORM'.($oUser->logged()?'_LOGGED':'') );
+          $sOrder = $sOrderError.$oTpl->tbHtml( 'orders_form.tpl', 'ORDER_FORM');
         }
       }
       else{

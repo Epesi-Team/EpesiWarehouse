@@ -1158,6 +1158,12 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 				Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders',$values['id'],array('transaction_id'=>self::generate_id($values['id'])), false, null, true);
 				Base_User_SettingsCommon::save('Premium_Warehouse_Items_Orders','my_transaction',$values['id']);
 		}
+		$ret = ModuleManager::call_common_methods('submit_warehouse_order',false,array($values,$mode));
+		foreach($ret as $r) {
+			if($r && is_array($r)) {
+				$values = array_merge($values,$r);
+			}
+		}
 		return $values;
 	}
 
@@ -1247,6 +1253,24 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		if(!$row) return false;
 		$row = array_pop($row);
 		return Utils_RecordBrowserCommon::record_link_open_tag('premium_warehouse_items_orders', $row['id']).Base_LangCommon::ts('Premium_Warehouse_Items_Orders', 'Item order (attachment) #%d, %s %s', array($row['transaction_id'], $row['transaction_type'], $row['warehouse'])).Utils_RecordBrowserCommon::record_link_close_tag();
+	}
+
+	public static function contact_orders_label($r) {
+	    if(!isset(self::$orders_rec)) {
+		    $ret = Utils_RecordBrowserCommon::get_records_count('premium_warehouse_items_orders',array('contact'=>$r['id']));
+		    if(!$ret)
+			    return array('show'=>false);
+	    }
+	    return array('show'=>true, 'label'=>'Warehouse Orders');
+	}
+
+	public static function company_orders_label($r) {
+	    if(!isset(self::$orders_rec)) {
+		    $ret = Utils_RecordBrowserCommon::get_records_count('premium_warehouse_items_orders',array('company'=>$r['id']));
+		    if(!$ret)
+			    return array('show'=>false);
+	    }
+	    return array('show'=>true, 'label'=>'Warehouse Orders');
 	}
 }
 ?>
