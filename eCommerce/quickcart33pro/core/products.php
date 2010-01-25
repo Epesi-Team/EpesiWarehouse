@@ -313,7 +313,7 @@ class Products
 		$manufacturers .= '<option value="'.$k.'" '.($k==$_GET['iManufacturer']?'selected="1"':'').'>'.$v.'</option>';
                 if( $k==$_GET['iManufacturer'] && $k!=='' ) {
 		        $sUrlExt .= ((defined( 'FRIENDLY_LINKS' ) && FRIENDLY_LINKS == true)?null:'&amp;').'iManufacturer='.$_GET['iManufacturer'];
-		        $query .= ' AND it.f_manufacturer='.$k;
+		        $query = '('.$query.') AND it.f_manufacturer='.$k;
 	        }
 	      }
 	    }    
