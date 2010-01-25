@@ -914,7 +914,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 					$contactus = Variable::get('ecommerce_contactus');
 				$sm->assign('contact_us',$contactus);
 				ob_start();
-				Base_ThemeCommon::display_smarty($sm, 'Premium_Warehouse_eCommerce','mail.tpl');
+				Base_ThemeCommon::display_smarty($sm, 'Premium_Warehouse_eCommerce','mail');
 				$mail = ob_get_clean();
 				
 				Base_MailCommon::send($erec['email'],$title,$mail,null,null,true);
