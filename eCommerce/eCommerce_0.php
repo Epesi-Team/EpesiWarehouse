@@ -1203,7 +1203,8 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 		$rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items_orders','premium_warehouse_items_orders');
 		$conds = array(
 									array(	array('field'=>'transaction_id', 'width'=>10),
-										array('field'=>'transaction_date', 'width'=>20)
+										array('field'=>'transaction_date', 'width'=>10),
+										array('field'=>'warehouse', 'width'=>10)
 									),
 									$crits,
 									array('transaction_date'=>'DESC'),
