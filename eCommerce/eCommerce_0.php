@@ -36,7 +36,11 @@ class Premium_Warehouse_eCommerce extends Module {
 						'icon'=>null);
 		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'compare_services')).'>'.$this->ht('Links for compare services').'</a>',
 						'icon'=>null);
-		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'order_email_page')).'>'.$this->ht('Order e-mail header').'</a>',
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'order_email_page')).'>'.$this->ht('New order e-mail header').'</a>',
+						'icon'=>null);
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'order_received_email_page')).'>'.$this->ht('Order received e-mail').'</a>',
+						'icon'=>null);
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'order_shipped_email_page')).'>'.$this->ht('Order shipped e-mail').'</a>',
 						'icon'=>null);
 		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'pages')).'>'.$this->ht('Pages').'</a>',
 						'icon'=>null);
@@ -371,6 +375,14 @@ class Premium_Warehouse_eCommerce extends Module {
 	
 	public function order_email_page() {
 		return $this->edit_variable_with_lang('Order e-mail header','ecommerce_order_email');
+	}
+	
+	public function order_received_email_page() {
+		return $this->edit_variable_with_lang('Order e-mail header','ecommerce_order_received_email');
+	}
+	
+	public function order_shipped_email_page() {
+		return $this->edit_variable_with_lang('Order e-mail header','ecommerce_order_shipped_email');
 	}
 	
 	public function rules_page() {

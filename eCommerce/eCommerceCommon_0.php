@@ -882,13 +882,42 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 
 	public static function submit_warehouse_order($values, $mode) {
 		if ($mode=='edit' && $values['transaction_type']==1 && $values['online_order']) {
+			$txt = '';
 			switch($values['status']) {
 				case 2:
-					Epesi::alert('Order received');
+					$erec = Utils_RecordBrowserCommon::get_records('premium_ecommerce_orders',array('transaction_id'=>$values['id']));
+					if($erec && is_array($erec) && count($erec)==1) {
+						$erec = array_shift($erec);
+						$txt = Variable::get('ecommerce_order_received_email_'.$erec['language'],false);
+						if(!$txt)
+							$txt = Variable::get('ecommerce_order_received_email');
+						$title = Base_LangCommon::ts('Premium_Warehouse_eCommerce','Order received - id '.$values['id']);
+					}
 					break;
 				case 7:
-					Epesi::alert('Sent');
+					$erec = Utils_RecordBrowserCommon::get_records('premium_ecommerce_orders',array('transaction_id'=>$values['id']));
+					if($erec && is_array($erec) && count($erec)==1) {
+						$erec = array_shift($erec);
+						$txt = Variable::get('ecommerce_order_shipped_email_'.$erec['language'],false);
+						if(!$txt)
+							$txt = Variable::get('ecommerce_order_shipped_email');
+						$title = Base_LangCommon::ts('Premium_Warehouse_eCommerce','Order shipped - id '.$values['id']);
+					}
 					break;
+			}
+			if($txt) {
+				$sm = Base_ThemeCommon::init_smarty();
+				$sm->assign('txt',$txt);
+				$sm->assign('contact_us_title',Base_LangCommon::ts('Premium_Warehouse_eCommerce','Contact us'));
+				$contactus = Variable::get('ecommerce_contactus_'.$erec['language'],false);
+				if(!$contactus)
+					$contactus = Variable::get('ecommerce_contactus');
+				$sm->assign('contact_us',$contactus);
+				ob_start();
+				Base_ThemeCommon::display_smarty($sm, 'Premium_Warehouse_eCommerce','mail.tpl');
+				$mail = ob_get_clean();
+				
+				Base_MailCommon::send($erec['email'],$title,$mail,null,null,true);
 			}
 		}
 		return null;//don't modify values
