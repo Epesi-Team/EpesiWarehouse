@@ -355,4 +355,5 @@ $lang['Click_on_order_to_see_details'] = 'Kliknij na zamówieniu aby zobaczyć s
 $lang['Shipment_discount'] = 'Rabat udzielony na koszty dostawy';
 $lang['Create_account'] = 'Utwórz użytkownika';
 $lang['Tracking_info'] = 'Numer przesyłki';
+$lang['Manufacturer_filter'] = 'Wybierz producenta';
 ?>

@@ -243,9 +243,10 @@ class Products
 	return $products;
   } // end function generateCache
 
-  function listProductsQuery($iContent,$aProducts,&$sUrlExt) {
+  function listProductsQuery($iContent,$aProducts,&$sUrlExt,& $manufacturers) {
     $oPage  =& Pages::getInstance( );
     $query = '';
+    $manufacturers = null;
     if( !isset( $aProducts ) ){
       if( isset( $GLOBALS['sPhrase'] ) && !empty( $GLOBALS['sPhrase'] ) ){
           $aExp   = explode( ' ', $GLOBALS['sPhrase'] );
@@ -291,15 +292,38 @@ class Products
               }
 	    }
     	    $query .= 'it.f_category LIKE \'%\\_\\_'.($iContent/4).'\\_\\_%\' OR it.f_category LIKE \'%/'.($iContent/4).'\\_\\_%\'';
+
 	} else {
     	    $query .= 'it.f_manufacturer='.(($iContent-1)/4);	
 	}
       }
-    } elseif(!empty($aProducts)) {
+
+      if((isset( $GLOBALS['sPhrase'] ) && !empty( $GLOBALS['sPhrase'] )) || (($iContent-1)%4!==0)) {//search or not manufacturer category
+	    $manuf = 'SELECT c.id, c.f_company_name
+			FROM premium_warehouse_items_data_1 it INNER JOIN (company_data_1 c,premium_ecommerce_products_data_1 pr) 
+			ON (c.id=it.f_manufacturer AND pr.f_item_name=it.id AND pr.active=1 AND pr.f_publish=1)
+			LEFT JOIN premium_ecommerce_descriptions_data_1 d ON (d.f_item_name=it.id AND d.f_language="'.LANGUAGE.'" AND d.active=1)
+			LEFT JOIN premium_ecommerce_descriptions_data_1 d_en ON (d_en.f_item_name=it.id AND d_en.f_language="en" AND d_en.active=1)
+			WHERE it.active=1 AND pr.active=1 AND ('.$query.') GROUP BY c.id ORDER BY c.f_company_name';
+
+	    $manufs = DB::GetAssoc($manuf);
+	    if($manufs && count($manufs)>1) {
+	      $manufs = array(''=>'---')+$manufs;
+              foreach($manufs as $k=>$v) {
+		$manufacturers .= '<option value="'.$k.'" '.($k==$_GET['iManufacturer']?'selected="1"':'').'>'.$v.'</option>';
+                if( $k==$_GET['iManufacturer'] && $k!=='' ) {
+		        $sUrlExt .= ((defined( 'FRIENDLY_LINKS' ) && FRIENDLY_LINKS == true)?null:'&amp;').'iManufacturer='.$_GET['iManufacturer'];
+		        $query .= ' AND it.f_manufacturer='.$k;
+	        }
+	      }
+	    }    
+	}
+     } elseif(!empty($aProducts)) {
 	$query = '0';
 	foreach($aProducts as $p)
 		$query .= ' OR it.id='.(int)$p;
     }
+
     return $query;
   }
 
@@ -317,9 +341,10 @@ class Products
     $oPage  =& Pages::getInstance( );
     $content= null;
     $sUrlExt= null;
+    $manufacturers = null;
 
-    $query = $this->listProductsQuery($iContent,$aProducts,$sUrlExt);
-
+    $query = $this->listProductsQuery($iContent,$aProducts,$sUrlExt,$manufacturers);
+    
     if( $query ){
       $sBasketPage = ( isset( $GLOBALS['config']['basket_page'] ) && isset( $oPage->aPages[$GLOBALS['config']['basket_page']] ) ) ? $oPage->aPages[$GLOBALS['config']['basket_page']]['sLinkName'].((defined( 'FRIENDLY_LINKS' ) && FRIENDLY_LINKS == true)?'?':'&amp;') : null;
 
@@ -389,6 +414,13 @@ class Products
       } // end for
 
       if( isset( $content ) ){
+        if($manufacturers) {
+          $oTpl->setVariables('manufacturers',$manufacturers);
+          $oTpl->setVariables('sLinkName',throwPageUrl( $oPage->aPages[$iContent]['sLinkName'], true ).$sUrlExt);
+    	  $aData['manufacturers'] = $oTpl->tbHtml( $sFile, 'PRODUCTS_MANUFACTURERS' );
+        }
+
+
         if( $iCount > $iList ){
           $aData['sPages'] = countPages( $iCount, $iList, $iPageNumber, throwPageUrl( $oPage->aPages[$iContent]['sLinkName'], true ), $sUrlExt, FRIENDLY_LINKS );
           $aData['sHidePages'] = null;
@@ -504,6 +536,12 @@ class Products
       } // end while
 
       if( isset( $content ) ){
+        if($manufacturers) {
+          $oTpl->setVariables('manufacturers',$manufacturers);
+          $oTpl->setVariables('sLinkName',throwPageUrl( $oPage->aPages[$iContent]['sLinkName'], true ).$sUrlExt);
+    	  $aData['manufacturers'] = $oTpl->tbHtml( $sFile, 'PRODUCTS_MANUFACTURERS' );
+        }
+
         if( $iCount > $iList ){
           $aData['sPages'] = countPages( $iCount, $iList, $iPageNumber, throwPageUrl( $oPage->aPages[$iContent]['sLinkName'], true ), $sUrlExt, FRIENDLY_LINKS );
           $aData['sHidePages'] = null;

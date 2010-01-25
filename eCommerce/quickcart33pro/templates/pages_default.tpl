@@ -228,6 +228,7 @@
 
 <!-- BEGIN PRODUCTS_RECOMMENDED --><div class="recommended"><img src="$config[dir_templates]img/recommended.png" alt="$lang[Recommended]" title="$lang[Recommended]" /></div><!-- END PRODUCTS_RECOMMENDED -->
 <!-- BEGIN PRODUCTS_HEAD -->
+$aData['manufacturers']
 <ul id="products">
 <li class="pages$aData[sHidePages]" id="pagesBefore"><a href="$_SERVER[REQUEST_URI]$config[search_amp]bViewAll=true">$lang['View_all']</a> | $lang[Pages]: $aData[sPages]</li>
 <!-- END PRODUCTS_HEAD -->
@@ -242,5 +243,17 @@
 <!-- END PRODUCTS_GALLERY_LIST -->
 <!-- BEGIN PRODUCTS_GALLERY_BREAK --></tr><tr><!-- END PRODUCTS_GALLERY_BREAK -->
 <!-- BEGIN PRODUCTS_GALLERY_BLANK --><td>&nbsp;</td><!-- END PRODUCTS_GALLERY_BLANK -->
-<!-- BEGIN PRODUCTS_GALLERY_HEAD --><table id="subpagesGallery" cellspacing="0"><tr><!-- END PRODUCTS_GALLERY_HEAD -->
+<!-- BEGIN PRODUCTS_GALLERY_HEAD -->
+$aData['manufacturers']
+<table id="subpagesGallery" cellspacing="0"><tr>
+<!-- END PRODUCTS_GALLERY_HEAD -->
 <!-- BEGIN PRODUCTS_GALLERY_FOOT --></tr></table><!-- END PRODUCTS_GALLERY_FOOT -->
+
+<!-- BEGIN PRODUCTS_MANUFACTURERS -->
+  <form action="$sLinkName" method="post">
+	$lang[Manufacturer_filter]:
+            <select name="iManufacturer" class="input" onChange="submit()" />
+	    $manufacturers
+	    </select>
+  </form>
+<!-- END PRODUCTS_MANUFACTURERS -->

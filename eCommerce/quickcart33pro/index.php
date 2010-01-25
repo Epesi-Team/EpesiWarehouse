@@ -14,6 +14,11 @@ if( isset( $_POST['sPhrase'] ) ){
   exit;
 }
 
+if( isset( $_POST['iManufacturer'] ) ){
+  header( 'Location: '.$_SERVER['REQUEST_URI'].((defined( 'FRIENDLY_LINKS' ) && FRIENDLY_LINKS == true)?'?':'&').'iManufacturer='.urlencode( $_POST['iManufacturer'] ) );
+  exit;
+}
+
 require_once DIR_LANG.LANGUAGE.'.php';
 header( 'Content-Type: text/html; charset='.$config['charset'] );
 require_once DIR_LIBRARIES.'TplParser.php';
