@@ -92,6 +92,11 @@ class Premium_Warehouse_Items_Orders extends Module {
 			$crits['employee'] = array('',$my_rec['id']);
 		}
 
+		if($conf['warehouse']) {
+			$crits['(warehouse'] = array($conf['warehouse'],'');
+			$crits['|target_warehouse'] = $conf['warehouse'];
+		}
+
 		
 		$sorting = array();
 		$cols = array(

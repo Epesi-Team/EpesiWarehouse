@@ -46,8 +46,9 @@ class Premium_Warehouse_InvoicePLCommon extends ModuleCommon {
 
 	public static function generate_invoice_number($order) {
 		if (!$order['warehouse']) return '';
-		$order['invoice_number'] = DB::GetOne('SELECT MAX(f_invoice_number) FROM premium_warehouse_items_orders_data_1 WHERE f_warehouse=%d AND f_transaction_type=%d AND f_receipt=%d', array($order['warehouse'], $order['transaction_type'], $order['receipt']?1:0));
-		$order['invoice_number']++;
+		$invoice_number = DB::GetOne('SELECT MAX(f_invoice_number) FROM premium_warehouse_items_orders_data_1 WHERE f_warehouse=%d AND f_transaction_type=%d AND f_receipt=%d', array($order['warehouse'], $order['transaction_type'], $order['receipt']?1:0));
+		if (!is_numeric($invoice_number)) return 'Non-numeric value encountered: '.$invoice_number.', cannot assign number automatically';
+		$order['invoice_number'] = $invoice_number+1;
 		Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $order['id'], array('invoice_number'=>$order['invoice_number']));
 		return $order['invoice_number'];
 	}
