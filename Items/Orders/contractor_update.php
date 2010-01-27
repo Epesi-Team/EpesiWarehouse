@@ -30,7 +30,7 @@ if (!Acl::is_user() || !Utils_RecordBrowserCommon::get_access($tab, 'view', $rec
 if (!$rec || empty($rec)) return;
 $js = '';
 foreach ($rec as $k=>$v)
-	if (is_string($v)) $rec[$k] = htmlspecialchars_decode($v);
+	if (is_string($v)) $rec[$k] = Epesi::escapeJS(htmlspecialchars_decode($v));
 if ($tab=='contact') {
 	$js .= '$("first_name").value="'.$rec['first_name'].'";';
 	$js .= '$("last_name").value="'.$rec['last_name'].'";';
