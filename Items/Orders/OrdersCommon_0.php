@@ -405,6 +405,10 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	}
 	
 	public static function QFfield_company_name(&$form, $field, $label, $mode, $default, $desc, $rb_obj){
+		if ($mode!='view' && (Utils_RecordBrowser::$last_record['transaction_type']==0 || Utils_RecordBrowser::$last_record['transaction_type']==1)) {
+			load_js('modules/Premium/Warehouse/Items/Orders/contractor_update.js');
+			eval_js('new ContractorUpdate()');
+		}
 		if ($mode!='view') {
 			if ($mode=='add') $form->addFormRule(array('Premium_Warehouse_Items_OrdersCommon','check_if_no_duplicate_company_contact'));
 			$form->addFormRule(array('Premium_Warehouse_Items_OrdersCommon','check_no_empty_invoice'));
@@ -430,10 +434,6 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	}
 
 	public static function QFfield_status(&$form, $field, $label, $mode, $default, $desc, $rb_obj){
-		if ($mode!='view' && (Utils_RecordBrowser::$last_record['transaction_type']==0 || Utils_RecordBrowser::$last_record['transaction_type']==1)) {
-			load_js('modules/Premium/Warehouse/Items/Orders/contractor_update.js');
-			eval_js('new ContractorUpdate()');
-		}
 		$opts = self::get_status_array($rb_obj->record);
 		if ($mode=='edit') {
 			$form->addElement('select', $field, $label, $opts, array('id'=>'status'));
