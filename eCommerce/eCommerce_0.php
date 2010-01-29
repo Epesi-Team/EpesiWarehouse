@@ -378,11 +378,11 @@ class Premium_Warehouse_eCommerce extends Module {
 	}
 	
 	public function order_received_email_page() {
-		return $this->edit_variable_with_lang('Order e-mail header','ecommerce_order_received_email');
+		return $this->edit_variable_with_lang('Order e-mail header','ecommerce_order_rec_email');
 	}
 	
 	public function order_shipped_email_page() {
-		return $this->edit_variable_with_lang('Order e-mail header','ecommerce_order_shipped_email');
+		return $this->edit_variable_with_lang('Order e-mail header','ecommerce_order_shi_email');
 	}
 	
 	public function rules_page() {

@@ -478,8 +478,8 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Variable::set('ecommerce_rules','You can edit this page in Administration - eCommerce settings.');
 		Variable::set('ecommerce_contactus','You can edit this page in Administration - eCommerce settings.');
 		Variable::set('ecommerce_order_email','');
-		Variable::set('ecommerce_order_recieved_email','');
-		Variable::set('ecommerce_order_shipped_email','');
+		Variable::set('ecommerce_order_rec_email','');
+		Variable::set('ecommerce_order_shi_email','');
 
 		Variable::set('ecommerce_autoprice',false);
 		Variable::set('ecommerce_minimal_profit','');
@@ -511,12 +511,12 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 			Variable::delete('ecommerce_rules_'.$k,false);
 			Variable::delete('ecommerce_contactus_'.$k,false);
 			Variable::delete('ecommerce_order_email_'.$k,false);
-			Variable::delete('ecommerce_order_recieved_email_'.$k,false);
-			Variable::delete('ecommerce_order_shipped_email_'.$k,false);
+			Variable::delete('ecommerce_order_rec_email_'.$k,false);
+			Variable::delete('ecommerce_order_shi_email_'.$k,false);
 		}
 		Variable::delete('ecommerce_order_email');
-		Variable::delete('ecommerce_order_recieved_email','');
-		Variable::delete('ecommerce_order_shipped_email','');
+		Variable::delete('ecommerce_order_rec_email','');
+		Variable::delete('ecommerce_order_shi_email','');
 		Variable::delete('ecommerce_rules');
 		Variable::delete('ecommerce_contactus');
 		Variable::delete('ecommerce_autoprice');

@@ -888,9 +888,9 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 					$erec = Utils_RecordBrowserCommon::get_records('premium_ecommerce_orders',array('transaction_id'=>$values['id']));
 					if($erec && is_array($erec) && count($erec)==1) {
 						$erec = array_shift($erec);
-						$txt = Variable::get('ecommerce_order_received_email_'.$erec['language'],false);
+						$txt = Variable::get('ecommerce_order_rec_email_'.$erec['language'],false);
 						if(!$txt)
-							$txt = Variable::get('ecommerce_order_received_email');
+							$txt = Variable::get('ecommerce_order_rec_email');
 						$title = Base_LangCommon::ts('Premium_Warehouse_eCommerce','Order received - id '.$values['id']);
 					}
 					break;
@@ -898,9 +898,9 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 					$erec = Utils_RecordBrowserCommon::get_records('premium_ecommerce_orders',array('transaction_id'=>$values['id']));
 					if($erec && is_array($erec) && count($erec)==1) {
 						$erec = array_shift($erec);
-						$txt = Variable::get('ecommerce_order_shipped_email_'.$erec['language'],false);
+						$txt = Variable::get('ecommerce_order_shi_email_'.$erec['language'],false);
 						if(!$txt)
-							$txt = Variable::get('ecommerce_order_shipped_email');
+							$txt = Variable::get('ecommerce_order_shi_email');
 						$title = Base_LangCommon::ts('Premium_Warehouse_eCommerce','Order shipped - id '.$values['id']);
 					}
 					break;
