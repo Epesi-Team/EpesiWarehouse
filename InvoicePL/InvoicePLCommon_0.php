@@ -43,6 +43,14 @@ class Premium_Warehouse_InvoicePLCommon extends ModuleCommon {
 		return Premium_Warehouse_Items_OrdersCommon::submit_order($values, $mode);
 	}
 
+	public static function submit_warehouse_order($values, $mode) {
+		if (($mode=='edit' || $mode=='add') && $values['status']==4 && $values['transaction_type']==1 && (!isset($values['invoice_number']) || !$values['invoice_number'])) {
+			$values['invoice_number'] = self::generate_invoice_number($values);
+			return $values;
+		}
+		return false;
+	}
+
 	public static function generate_invoice_number($order) {
 		if (!$order['warehouse']) return '';
 		$invoice_number = DB::GetOne('SELECT MAX(f_invoice_number) FROM premium_warehouse_items_orders_data_1 WHERE f_warehouse=%d AND f_transaction_type=%d AND f_receipt=%d', array($order['warehouse'], $order['transaction_type'], $order['receipt']?1:0));
