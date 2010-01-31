@@ -147,6 +147,14 @@ class Premium_Warehouse_SalesReport extends Module {
 	}
 
 	public function admin() {
+		$tb = $this->init_module('Utils_TabbedBrowser');
+		$tb->set_tab('Currency', array($this, 'currency_admin'));
+		$tb->set_tab('QoH', array($this, 'qoh_admin'));
+		$tb->tag();
+		$this->display_module($tb);
+	}
+
+	public function currency_admin() {
 		$form = $this->init_module('Libs/QuickForm');
 		$current = Variable::get('premium_warehouse_ex_currency');
 		$currencies = Utils_CurrencyFieldCommon::get_currencies();
@@ -159,6 +167,63 @@ class Premium_Warehouse_SalesReport extends Module {
 			return false;
 		}
 		$form->display();
+	}
+
+	public function qoh_admin() {
+		if (isset($_REQUEST['balance_all'])) $balance_all = true;
+		else $balance_all = false;
+		Base_ActionBarCommon::add('folder', 'Fix amounts', Module::create_href(array('balance_all'=>1)));
+
+		$gb = $this->init_module('Utils_GenericBrowser',null,'qoh_sync');
+		$gb->set_table_columns(array('Item','Warehouse','Current','Calculated'));
+
+		$warehouses = Utils_RecordBrowserCommon::get_records('premium_warehouse');
+		$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items');
+		$count = 0;
+		foreach ($items as $ik=>$i) {
+			$qts = DB::GetAssoc('SELECT f_warehouse AS warehouse, f_quantity AS quantity FROM premium_warehouse_location_data_1 WHERE f_item_sku=%d', array($i['id']));
+			$tdets = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('item_name'=>$i['id']));
+			$cal_qts = array();
+			foreach ($warehouses as $wk=>$w)
+				$cal_qts[$w['id']] = 0;
+			foreach ($tdets as $kd=>$d) {
+				$t = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $d['transaction_id']);
+				switch ($t['transaction_type']) {
+					case 0: if ($t['status']!=20) continue;
+							$cal_qts[$t['warehouse']] += $d['quantity'];
+							break;
+					case 1: if ($t['status']<6 || $t['status']==21) continue;
+							$cal_qts[$t['warehouse']] -= $d['quantity'];
+							break;
+					case 2: $cal_qts[$t['warehouse']] += $d['quantity'];
+							break;
+					case 4: if ($t['status']<5) continue;
+							$cal_qts[$t['warehouse']] -= $d['quantity'];
+							if ($t['status']!=20) continue;
+							$cal_qts[$t['target_warehouse']] += $d['quantity'];
+							break;
+				}
+			}
+			foreach ($warehouses as $wk=>$w) {
+				$wid = $w['id'];
+				if (!isset($qts[$wid])) $qts[$wid] = 0;
+				if ($qts[$wid] != $cal_qts[$wid]) {
+					if ($balance_all) {
+						Premium_Warehouse_Items_OrdersCommon::change_quantity($i['id'], $wid, $cal_qts[$wid]-$qts[$wid]);
+					} else {
+						$gb->add_row(
+							Utils_RecordBrowserCommon::record_link_open_tag('premium_warehouse_items',$i['id']).$i['sku'].': '.$i['item_name'].Utils_RecordBrowserCommon::record_link_close_tag(),
+							$w['warehouse'],
+							$qts[$wid],
+							$cal_qts[$wid]
+						);
+					}
+					$count++;
+				}
+			}
+		}
+
+		$this->display_module($gb);
 	}
 
 /************************************************************************************/
@@ -623,6 +688,7 @@ class Premium_Warehouse_SalesReport extends Module {
 	public function caption() {
 		return 'Sales Report';
 	}
+
 }
 
 ?>
