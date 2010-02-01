@@ -901,6 +901,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 						$txt = Variable::get('ecommerce_order_shi_email_'.$erec['language'],false);
 						if(!$txt)
 							$txt = Variable::get('ecommerce_order_shi_email');
+						$txt = str_replace('__TRACKING_INFO__',$values['tracking_info'],$txt);
 						$title = Base_LangCommon::ts('Premium_Warehouse_eCommerce','Order shipped - id '.$values['id']);
 					}
 					break;
