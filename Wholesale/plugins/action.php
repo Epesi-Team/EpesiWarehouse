@@ -201,6 +201,9 @@ class Premium_Warehouse_Wholesale__Plugin_action implements Premium_Warehouse_Wh
 			$manufacturer = null;
 			if($row['Producent']) {
 				$cc = CRM_ContactsCommon::get_companies(array('company_name'=>$row['Producent']),array('group'));
+				$producent = explode(' ',$row['Producent']);
+				if(!$cc && count($producent)>1) 
+					$cc = CRM_ContactsCommon::get_companies(array('company_name'=>$producent[0]),array('group'));
 				if($cc) {
 					$cc2 = array_shift($cc);
 					$manufacturer = $cc2['id'];
