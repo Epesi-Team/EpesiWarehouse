@@ -378,7 +378,7 @@ class Orders
 		if(!$contact || !$company) { // jezeli nie ma kontaktu, lub jest kontakt ale nie ma firmy, to dodaj firme
 	    		if($aForm['sCompanyName'] && !$company) {
 	    			$new_company = true;
-			    	DB::Execute('INSERT INTO company_data_1(created_on,f_company_name,f_tax_id,f_address_1,f_postal_code,f_city,f_country,f_phone,f_email,f_group) VALUES (%T,%s,%s,%s,%s,%s,%s,%s,%s,\'__customer__\')',
+			    	DB::Execute('INSERT INTO company_data_1(created_on,f_company_name,f_tax_id,f_address_1,f_postal_code,f_city,f_country,f_phone,f_email,f_group,f_permission) VALUES (%T,%s,%s,%s,%s,%s,%s,%s,%s,\'__customer__\',0)',
     					array($t,$aForm['sCompanyName'],$aForm['sNip'],$aForm['sStreet'],$aForm['sZipCode'],$aForm['sCity'],$aForm['sCountry'],$aForm['sPhone'],$aForm['sEmail']));
 				$company = DB::Insert_ID('company_data_1','id');
 			}
@@ -388,7 +388,7 @@ class Orders
 				$company2 = '__'.$company.'__';
 			else
 				$company2 = null;
-		    	DB::Execute('INSERT INTO contact_data_1(created_on,f_first_name,f_last_name,f_address_1,f_postal_code,f_city,f_country,f_work_phone,f_email,f_company_name,f_group) VALUES (%T,%s,%s,%s,%s,%s,%s,%s,%s,%s,\'__custm__\')',
+		    	DB::Execute('INSERT INTO contact_data_1(created_on,f_first_name,f_last_name,f_address_1,f_postal_code,f_city,f_country,f_work_phone,f_email,f_company_name,f_group,f_permission) VALUES (%T,%s,%s,%s,%s,%s,%s,%s,%s,%s,\'__custm__\',0)',
     				array($t,$aForm['sFirstName'],$aForm['sLastName'],$aForm['sStreet'],$aForm['sZipCode'],$aForm['sCity'],$aForm['sCountry'],$aForm['sPhone'],$aForm['sEmail'],$company2));
 			$contact = DB::Insert_ID('contact_data_1','id');
 		} elseif($new_company) { //a jezeli jest kontakt o tym mailu, ale nie bylo firmy i zostala stworzona to dodaj ta firme do kontaktu
