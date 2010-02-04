@@ -74,7 +74,7 @@ class Users
   
   function orders($tpl) {
   	global $oOrder, $oTpl;
-  	$ret = DB::Execute('SELECT id FROM premium_warehouse_items_orders_data_1 WHERE f_contact=%d ORDER BY created_on DESC LIMIT 10',array($_SESSION['contact']));
+  	$ret = DB::Execute('SELECT id FROM premium_warehouse_items_orders_data_1 WHERE f_contact=%d AND active=1 ORDER BY created_on DESC LIMIT 10',array($_SESSION['contact']));
   	$sOrder = '';
         $sOrder .= $oTpl->tbHtml( 'orders_panel.tpl', 'ORDER_HEADER' );
   	while($row = $ret->FetchRow()) {
