@@ -70,6 +70,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 			array('name'=>'Keywords', 	'type'=>'text', 'required'=>false, 'extra'=>false, 'param'=>128, 'visible'=>false)
 		);
 		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_descriptions', $fields);
+		DB::CreateIndex('ecommerce_desc_name_idx','premium_ecommerce_descriptions_data_1',array('f_display_name','f_language','active'));
 
 		Utils_RecordBrowserCommon::set_favorites('premium_ecommerce_descriptions', false);
 		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_descriptions', 'eCommerce - Descriptions');
