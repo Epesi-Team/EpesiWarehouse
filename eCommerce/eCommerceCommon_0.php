@@ -461,6 +461,19 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 								'label'=>substr(str_replace('\n','<br>',(string)$pf->Feature[0]->Name[0]['Value']),0,128));
 					$parameter_labels[$parameters[$key]] = Utils_RecordBrowserCommon::new_record('premium_ecommerce_parameter_labels',$parameter_label);
 				    }
+				    if((string)$pf->Feature[0]->Name[0]['Value']=='Weight') {
+				    	$weight = null;
+				    	switch((string)$pf->Feature[0]->Measure[0]->Signs[0]->Sign[0]) {
+				    		case 'g':
+				    			$weight = ((string)$pf['Value'])/1000;
+				    			break;
+				    		case 'kg':
+				    			$weight = ((string)$pf['Value']);
+				    			break;
+				    	}
+				    	if($weight!==null)
+				    		Utils_RecordBrowserCommon::update_record('premium_warehouse_items',$item_id,array('weight'=>$weight));
+				    }
 				    $item_params = array('item_name'=>$item_id,
 							'parameter'=>$parameters[$key],
 							'group'=>$parameter_groups['icecat_'.$pf['CategoryFeatureGroup_ID']],
