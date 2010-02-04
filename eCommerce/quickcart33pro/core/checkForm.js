@@ -151,7 +151,7 @@ function checkTxt( oObj, iMin, sInfo ) {
 function checkTxtValue( oObj, sVal, sInfo ) {
 	var check = oObj.value;
 	
-	if(sVal[0]=='#') {
+	if(sVal.substring(0,1)=='#') {
 		sVal = document.getElementById(sVal.substring(1)).value;
 	}
 
