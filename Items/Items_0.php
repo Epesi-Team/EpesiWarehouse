@@ -120,7 +120,7 @@ class Premium_Warehouse_Items extends Module {
 				if($cat2===$master) continue;
 				$items = DB::GetAssoc('SELECT id,f_category FROM premium_warehouse_items_data_1 WHERE f_category LIKE '.DB::Concat(DB::qstr('%'),DB::qstr($cat),DB::qstr('%')));
 				foreach($items as $id=>$it_cats) {
-					DB::Execute('UPDATE premium_warehouse_items_data_1 SET f_category=%s WHERE id=%d',array(str_replace($it_cats,$cat,$vals['master_cat']),$id));
+					DB::Execute('UPDATE premium_warehouse_items_data_1 SET f_category=%s WHERE id=%d',array(str_replace($cat,$vals['master_cat'],$it_cats),$id));
 				}
 				$cats[] = $cat2;
 				DB::Execute('UPDATE premium_warehouse_items_categories_data_1 SET f_parent_category=%d WHERE f_parent_category=%d',array($master,$cat2));
