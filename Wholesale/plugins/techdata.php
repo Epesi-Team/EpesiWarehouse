@@ -170,8 +170,8 @@ class Premium_Warehouse_Wholesale__Plugin_techdata implements Premium_Warehouse_
 
 			foreach ($row_parts as $k=>$v)
 				$row_parts[$k] = trim($v);
-			$row['NAZWA'] = mb_convert_encoding($row['NAZWA'],"ISO-8859-1","UTF-8");
-			if (strlen($row['NAZWA'])>127) $row['NAZWA'] = substr($row['NAZWA'],0,127);
+			$row_parts['NAZWA'] = mb_convert_encoding($row_parts['NAZWA'],"ISO-8859-1","UTF-8");
+			if (strlen($row_parts['NAZWA'])>127) $row_parts['NAZWA'] = substr($row_parts['NAZWA'],0,127);
 
 			$total++;
 			$row_parts['W_MAG'] = strtolower(str_replace(' ','_',$row_parts['W_MAG']));
@@ -188,12 +188,12 @@ class Premium_Warehouse_Wholesale__Plugin_techdata implements Premium_Warehouse_
 					case 'jutro': $quantity_info='Tomorrow';break;
 				}
 
-				if(!isset($categories[$row['GRUPA']])) {
-					$categories[$row['GRUPA']] = Utils_RecordBrowserCommon::new_record('premium_warehouse_distributor_categories',array('foreign_category_name'=>$row['GRUPA'],'distributor'=>$distributor['id']));
+				if(!isset($categories[$row_parts['GRUPA']])) {
+					$categories[$row_parts['GRUPA']] = Utils_RecordBrowserCommon::new_record('premium_warehouse_distributor_categories',array('foreign_category_name'=>$row_parts['GRUPA'],'distributor'=>$distributor['id']));
 					$new_categories++;
-				} elseif(isset($categories_to_del[$row['GRUPA']]))
-					unset($categories_to_del[$row['GRUPA']]);
-				$category = $categories[$row['GRUPA']];
+				} elseif(isset($categories_to_del[$row_parts['GRUPA']]))
+					unset($categories_to_del[$row_parts['GRUPA']]);
+				$category = $categories[$row_parts['GRUPA']];
 
 				/*** check for exact match ***/
 				$internal_key = DB::GetOne('SELECT internal_key FROM premium_warehouse_wholesale_items WHERE internal_key=%s AND distributor_id=%d', array($row_parts['KOD_TD'], $distributor['id']));
