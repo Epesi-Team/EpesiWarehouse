@@ -169,12 +169,30 @@ class Premium_Warehouse_Wholesale__Plugin_abdata implements Premium_Warehouse_Wh
 					$quantity = 30;
 				}
 
-				if(!isset($categories[$row['kategoria']])) {
-					$categories[$row['kategoria']] = Utils_RecordBrowserCommon::new_record('premium_warehouse_distributor_categories',array('foreign_category_name'=>$row['kategoria'],'distributor'=>$distributor['id']));
-					$new_categories++;
-				} elseif(isset($categories_to_del[$row['kategoria']]))
-					unset($categories_to_del[$row['kategoria']]);
-				$category = $categories[$row['kategoria']];
+				if($row['kategoria']) {
+					if(!isset($categories[$row['kategoria']])) {
+						$categories[$row['kategoria']] = Utils_RecordBrowserCommon::new_record('premium_warehouse_distributor_categories',array('foreign_category_name'=>$row['kategoria'],'distributor'=>$distributor['id']));
+						$new_categories++;
+					} elseif(isset($categories_to_del[$row['kategoria']]))
+						unset($categories_to_del[$row['kategoria']]);
+					$category = $categories[$row['kategoria']];
+				} else $category = null;
+
+				$manufacturer = null;
+				if($row['producent']) {
+					$cc = CRM_ContactsCommon::get_companies(array('company_name'=>$row['producent']),array('group'));
+					$producent = explode(' ',$row['producent']);
+					if(!$cc && count($producent)>1) 
+						$cc = CRM_ContactsCommon::get_companies(array('company_name'=>$producent[0]),array('group'));
+					if($cc) {
+						$cc2 = array_shift($cc);
+						$manufacturer = $cc2['id'];
+				    		if(!in_array('manufacturer', $cc2['group'])) {
+			    				$cc2['group']['manufacturer'] = 'manufacturer';
+				    			Utils_RecordBrowserCommon::update_record('company',$cc2['id'],array('group'=>$cc2['group']));
+				    		}
+					}
+				}
 
 				/*** check for exact match ***/
 				$internal_key = DB::GetOne('SELECT internal_key FROM premium_warehouse_wholesale_items WHERE internal_key=%s AND distributor_id=%d', array($row['indeks'], $distributor['id']));
@@ -207,14 +225,14 @@ class Premium_Warehouse_Wholesale__Plugin_abdata implements Premium_Warehouse_Wh
 						$item_exist++;
 					}
 					if ($w_item!==null) {
-						DB::Execute('INSERT INTO premium_warehouse_wholesale_items (item_id, internal_key, distributor_item_name, distributor_id, quantity, quantity_info, price, price_currency, distributor_category) VALUES (%d, %s, %s, %d, %d, %s, %f, %d,%d)', array($w_item, $row['indeks'], $row['nazwa'], $distributor['id'], $quantity, $quantity_info, $row['cena_netto'], $pln_id,$category));
+						DB::Execute('INSERT INTO premium_warehouse_wholesale_items (item_id, internal_key, distributor_item_name, distributor_id, quantity, quantity_info, price, price_currency, distributor_category,manufacturer) VALUES (%d, %s, %s, %d, %d, %s, %f, %d, %d, %d)', array($w_item, $row['indeks'], $row['nazwa'], $distributor['id'], $quantity, $quantity_info, $row['cena_netto'], $pln_id,$category, $manufacturer));
 					} else {
-						DB::Execute('INSERT INTO premium_warehouse_wholesale_items (internal_key, distributor_item_name, distributor_id, quantity, quantity_info, price, price_currency, distributor_category) VALUES (%s, %s, %d, %d, %s, %f, %d, %d)', array($row['indeks'], $row['nazwa'], $distributor['id'], $quantity, $quantity_info, $row['cena_netto'], $pln_id, $category));
+						DB::Execute('INSERT INTO premium_warehouse_wholesale_items (internal_key, distributor_item_name, distributor_id, quantity, quantity_info, price, price_currency, distributor_category,manufacturer) VALUES (%s, %s, %d, %d, %s, %f, %d, %d, %d)', array($row['indeks'], $row['nazwa'], $distributor['id'], $quantity, $quantity_info, $row['cena_netto'], $pln_id, $category, $manufacturer));
 					}
 				} else {
 					/*** there's an exact match in the system already ***/
 					$link_exist++;
-					DB::Execute('UPDATE premium_warehouse_wholesale_items SET quantity=%d, quantity_info=%s, price=%f, price_currency=%d, distributor_category=%d WHERE internal_key=%s AND distributor_id=%d', array($quantity, $quantity_info, $row['cena_netto'], $pln_id, $category, $row['indeks'], $distributor['id']));
+					DB::Execute('UPDATE premium_warehouse_wholesale_items SET quantity=%d, quantity_info=%s, price=%f, price_currency=%d, distributor_category=%d, manufacturer=%d WHERE internal_key=%s AND distributor_id=%d', array($quantity, $quantity_info, $row['cena_netto'], $pln_id, $category, $manufacturer, $row['indeks'], $distributor['id']));
 				}
 			} 
 		}

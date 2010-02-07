@@ -191,12 +191,14 @@ class Premium_Warehouse_Wholesale__Plugin_action implements Premium_Warehouse_Wh
 				$quantity = 30;
 			}
 				
-			if(!isset($categories[$row['Grupa towarowa'].' : '.$row['Podgrupa towarowa']])) {
+			if($categories[$row['Grupa towarowa'] || $row['Podgrupa towarowa']) {
+				if(!isset($categories[$row['Grupa towarowa'].' : '.$row['Podgrupa towarowa']])) {
 					$categories[$row['Grupa towarowa'].' : '.$row['Podgrupa towarowa']] = Utils_RecordBrowserCommon::new_record('premium_warehouse_distributor_categories',array('foreign_category_name'=>$row['Grupa towarowa'].' : '.$row['Podgrupa towarowa'],'distributor'=>$distributor['id']));
 					$new_categories++;
 				} elseif(isset($categories_to_del[$row['Grupa towarowa'].' : '.$row['Podgrupa towarowa']]))
 					unset($categories_to_del[$row['Grupa towarowa'].' : '.$row['Podgrupa towarowa']]);
 				$category = $categories[$row['Grupa towarowa'].' : '.$row['Podgrupa towarowa']];
+			} $category = null;
 
 			$manufacturer = null;
 			if($row['Producent']) {
