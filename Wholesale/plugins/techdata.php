@@ -244,14 +244,14 @@ class Premium_Warehouse_Wholesale__Plugin_techdata implements Premium_Warehouse_
 						$item_exist++;
 					}
 					if ($w_item!==null) {
-						DB::Execute('INSERT INTO premium_warehouse_wholesale_items (item_id, internal_key, distributor_item_name, distributor_id, quantity, quantity_info, price, price_currency, distributor_category,manufacturer) VALUES (%d, %s, %s, %d, %d, %s, %f, %d, %d,%d)', array($w_item, $row_parts['KOD_TD'], $row_parts['NAZWA'], $distributor['id'], $quantity, $quantity_info, $row_parts['CENA_C'], $pln_id,$category,$manufacturer));
+						DB::Execute('INSERT INTO premium_warehouse_wholesale_items (item_id, internal_key, distributor_item_name, distributor_id, quantity, quantity_info, price, price_currency, distributor_category,manufacturer,manufacturer_part_number) VALUES (%d, %s, %s, %d, %d, %s, %f, %d, %d,%d, %s)', array($w_item, $row_parts['KOD_TD'], $row_parts['NAZWA'], $distributor['id'], $quantity, $quantity_info, $row_parts['CENA_C'], $pln_id,$category,$manufacturer, $row_parts['SYMBOLPROD']));
 					} else {
-						DB::Execute('INSERT INTO premium_warehouse_wholesale_items (internal_key, distributor_item_name, distributor_id, quantity, quantity_info, price, price_currency, distributor_category,manufacturer) VALUES (%s, %s, %d, %d, %s, %f, %d, %d,%d)', array($row_parts['KOD_TD'], $row_parts['NAZWA'], $distributor['id'], $quantity, $quantity_info, $row_parts['CENA_C'], $pln_id,$category,$manufacturer));
+						DB::Execute('INSERT INTO premium_warehouse_wholesale_items (internal_key, distributor_item_name, distributor_id, quantity, quantity_info, price, price_currency, distributor_category,manufacturer,manufacturer_part_number) VALUES (%s, %s, %d, %d, %s, %f, %d, %d, %d, %s)', array($row_parts['KOD_TD'], $row_parts['NAZWA'], $distributor['id'], $quantity, $quantity_info, $row_parts['CENA_C'], $pln_id,$category,$manufacturer, $row_parts['SYMBOLPROD']));
 					}
 				} else {
 					/*** there's an exact match in the system already ***/
 					$link_exist++;
-					DB::Execute('UPDATE premium_warehouse_wholesale_items SET quantity=%d, quantity_info=%s, price=%f, price_currency=%d, distributor_category=%d, manufacturer=%d WHERE internal_key=%s AND distributor_id=%d', array($quantity, $quantity_info, $row_parts['CENA_C'], $pln_id, $category,$manufacturer, $row_parts['KOD_TD'], $distributor['id']));
+					DB::Execute('UPDATE premium_warehouse_wholesale_items SET quantity=%d, quantity_info=%s, price=%f, price_currency=%d, distributor_category=%d, manufacturer=%d, manufacturer_part_number=%s WHERE internal_key=%s AND distributor_id=%d', array($quantity, $quantity_info, $row_parts['CENA_C'], $pln_id, $category,$manufacturer, $row_parts['SYMBOLPROD'], $row_parts['KOD_TD'], $distributor['id']));
 				}
 			} 
 		}

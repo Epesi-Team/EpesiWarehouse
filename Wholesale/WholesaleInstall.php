@@ -82,7 +82,9 @@ class Premium_Warehouse_WholesaleInstall extends ModuleInstall {
 						'quantity I4,'.
 						'quantity_info C(64),'.
 						'distributor_category I4,'.
-						'manufacturer I4',
+						'manufacturer I4,'.
+						'manufacturer_part_number C(32),'.
+						'upc C(128)',
 						array('constraints'=>''));
 		DB::CreateIndex('premium_warehouse_wholesale_items__ik_di__idx', 'premium_warehouse_wholesale_items', array('internal_key','distributor_id'));
 		DB::CreateIndex('premium_warehouse_wholesale_items__item_id__idx', 'premium_warehouse_wholesale_items', 'item_id');

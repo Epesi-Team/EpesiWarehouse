@@ -50,10 +50,13 @@ class Premium_Warehouse_Wholesale extends Module {
 
 		$form = $this->init_module('Libs/QuickForm');
 		$form->addElement('select','link_status','Show',array('all'=>'all items','linked'=>'only linked items','unlinked'=>'only unlinked items'),array('onChange'=>$form->get_submit_form_js()));
+		$form->addElement('checkbox','available','Only available','',array('onChange'=>$form->get_submit_form_js()));
 		$link_status = & $this->get_module_variable('link_status','all');
-		$form->setDefaults(array('link_status'=>$link_status));
+		$available = & $this->get_module_variable('available',true);
+		$form->setDefaults(array('link_status'=>$link_status,'available'=>$available));
 		if($form->validate()) {
 			$link_status = $form->exportValue('link_status');
+			$available = $form->exportValue('available');
 		}
 		$form->display();
 		
@@ -65,6 +68,8 @@ class Premium_Warehouse_Wholesale extends Module {
 			else
 				$where .= ' AND item_id is null';
 		}
+		if($available)
+			$where .= ' AND quantity>0';
 //		$limit = $gb->get_limit(DB::GetOne('SELECT COUNT(*) FROM premium_warehouse_wholesale_items WHERE distributor_id=%d AND (quantity!=%d OR quantity_info!=%s) '.$where, array($arg['id'],0,'')));
 		$limit = $gb->get_limit(DB::GetOne('SELECT COUNT(*) FROM premium_warehouse_wholesale_items WHERE distributor_id=%d '.$where, array($arg['id'])));
 		$gb->set_default_order(array('Item Name'=>'ASC'));
@@ -78,6 +83,9 @@ class Premium_Warehouse_Wholesale extends Module {
 		$form2->addElement('text', 'weight', $this->t('Weight'));
 		$taxes = array(''=>'---',)+Data_TaxRatesCommon::get_tax_rates();
 		$form2->addElement('select', 'tax_rate', $this->t('Tax Rate'),$taxes);
+		$ecommerce_on = ModuleManager::is_installed('Premium_Warehouse_eCommerce')!=-1;
+		if($ecommerce_on)
+			$form2->addElement('checkbox', 'ecommerce', $this->t('eCommerce publish'));
 		$form2->setDefaults(array('item_type'=>1, 'tax_rate'=>$arg['tax_rate']));
 		$lp = $this->init_module('Utils_LeightboxPrompt');
 		$lp->add_option('add', 'Add', '', $form2);
@@ -99,10 +107,13 @@ class Premium_Warehouse_Wholesale extends Module {
 			}
 			
 			if ($validate) { 
-				list($dist_cat,$manufacturer) = DB::GetRow('SELECT distributor_category,manufacturer FROM premium_warehouse_wholesale_items WHERE id=%d',array($vals['params']['internal_id']));
+				list($dist_cat,$manufacturer,$mpn,$upc) = DB::GetRow('SELECT distributor_category,manufacturer,manufacturer_part_number,upc FROM premium_warehouse_wholesale_items WHERE id=%d',array($vals['params']['internal_id']));
 				$categories = Utils_RecordBrowserCommon::get_record('premium_warehouse_distributor_categories',$dist_cat);
-				$iid = Utils_RecordBrowserCommon::new_record('premium_warehouse_items', array_merge($vals['form'],array('category'=>$categories['epesi_category'],'manufacturer'=>$manufacturer,'vendor'=>$arg['company'])));
+				$iid = Utils_RecordBrowserCommon::new_record('premium_warehouse_items', array_merge($vals['form'],array('category'=>$categories['epesi_category'],'manufacturer'=>$manufacturer,'vendor'=>$arg['company'],'manufacturer_part_number'=>$mpn,'upc'=>$upc)));
 				DB::Execute('UPDATE premium_warehouse_wholesale_items SET item_id=%d WHERE id=%d', array($iid, $vals['params']['internal_id']));
+				if(isset($vals['ecommerce']) && $vals['ecommerce']) {
+					Premium_Warehouse_eCommerce::publish_warehouse_item($iid);
+				}
 			}
 		}
 		
