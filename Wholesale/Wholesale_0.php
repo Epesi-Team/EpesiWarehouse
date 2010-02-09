@@ -109,7 +109,10 @@ class Premium_Warehouse_Wholesale extends Module {
 			if ($validate) { 
 				list($dist_cat,$manufacturer,$mpn,$upc) = DB::GetRow('SELECT distributor_category,manufacturer,manufacturer_part_number,upc FROM premium_warehouse_wholesale_items WHERE id=%d',array($vals['params']['internal_id']));
 				$categories = Utils_RecordBrowserCommon::get_record('premium_warehouse_distributor_categories',$dist_cat);
-				$iid = Utils_RecordBrowserCommon::new_record('premium_warehouse_items', array_merge($vals['form'],array('category'=>$categories['epesi_category'],'manufacturer'=>$manufacturer,'vendor'=>$arg['company'],'manufacturer_part_number'=>$mpn,'upc'=>$upc)));
+				$new_vals = array('category'=>$categories['epesi_category'],'manufacturer'=>$manufacturer,'vendor'=>$arg['company']);
+				if($mpn) $new_vals['manufacturer_part_number']=$mpn;
+				if($upc) $new_vals['upc']=$upc;
+				$iid = Utils_RecordBrowserCommon::new_record('premium_warehouse_items', array_merge($vals['form'],$new_vals));
 				DB::Execute('UPDATE premium_warehouse_wholesale_items SET item_id=%d WHERE id=%d', array($iid, $vals['params']['internal_id']));
 				if(isset($vals['ecommerce']) && $vals['ecommerce']) {
 					Premium_Warehouse_eCommerce::publish_warehouse_item($iid);
