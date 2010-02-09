@@ -812,6 +812,8 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 								$ret['handling_cost'] = false;
 							}
 							if ($tt==4) {
+								$ret['invoice_number'] = false;
+								$ret['invoice_print_date'] = false;
 								$ret['tax_value'] = false;
 							}
 							if (isset($param['shipment_type']) && $param['shipment_type']===0) {
