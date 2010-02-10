@@ -363,20 +363,22 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	
 	public static function check_if_no_duplicate_company_contact($data) {
 		if (!isset($data['company']) && !isset($data['contact'])) return true;
-		if (((!isset($data['company']) || $data['company']<0) && $data['company_name']) ||
+/*		if (((!isset($data['company']) || $data['company']<0) && $data['company_name']) ||
 			((!isset($data['contact']) || $data['contact']<=0) && ($data['first_name'] || $data['last_name']))) {
 			$ret = CRM_ContactsCommon::check_for_duplicates($data);
 			if ($ret==false) return true;
 			return array('company'=>'Found duplicate company/contact entry');
-		}
+		}*/
 		return true;
 	}
 	
 	public static function check_no_empty_invoice($data) {
 		if (isset($data['receipt']) && $data['receipt']) return true;
 		$ret = array();
-		if (!isset($data['last_name']) || !$data['last_name']) $ret['last_name'] = 'Field required for non-receipt transactions'; 
-		if (!isset($data['first_name']) || !$data['first_name']) $ret['first_name'] = 'Field required for non-receipt transactions'; 
+		if (!isset($data['company_name']) || !$data['company_name']) {
+			if (!isset($data['last_name']) || !$data['last_name']) $ret['last_name'] = 'Field required for non-receipt transactions'; 
+			if (!isset($data['first_name']) || !$data['first_name']) $ret['first_name'] = 'Field required for non-receipt transactions'; 
+		}
 		if (!isset($data['address_1']) || !$data['address_1']) $ret['address_1'] = 'Field required for non-receipt transactions'; 
 		if (!isset($data['city']) || !$data['city']) $ret['city'] = 'Field required for non-receipt transactions'; 
 		if (!isset($data['country']) || !$data['country']) $ret['country'] = 'Field required for non-receipt transactions'; 
