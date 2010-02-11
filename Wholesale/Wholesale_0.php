@@ -45,7 +45,7 @@ class Premium_Warehouse_Wholesale extends Module {
 			array('name'=>$this->t('Quantity'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'quantity'),
 			array('name'=>$this->t('Quantity Details'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'quantity_info'),
 			array('name'=>$this->t('Distributor Category'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'distributor_category', 'search'=>'cat.f_foreign_category_name'),
-			array('name'=>$this->t('Manufacturer'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'manufacturer', 'search'=>'c.f_company_name')
+			array('name'=>$this->t('Manufacturer'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'manufacturer', 'search'=>'manufacturer_name')
 		));
 
 		$form = $this->init_module('Libs/QuickForm');
@@ -71,7 +71,7 @@ class Premium_Warehouse_Wholesale extends Module {
 		if($available)
 			$where .= ' AND quantity>0';
 //		$limit = $gb->get_limit(DB::GetOne('SELECT COUNT(*) FROM premium_warehouse_wholesale_items WHERE distributor_id=%d AND (quantity!=%d OR quantity_info!=%s) '.$where, array($arg['id'],0,'')));
-		$limit = $gb->get_limit(DB::GetOne('SELECT COUNT(*) FROM premium_warehouse_wholesale_items LEFT JOIN company_data_1 c ON c.id=manufacturer LEFT JOIN premium_warehouse_distributor_categories_data_1 cat ON (cat.f_distributor=distributor_id AND cat.id=distributor_category) WHERE distributor_id=%d '.$where, array($arg['id'])));
+		$limit = $gb->get_limit(DB::GetOne('SELECT COUNT(*),c.f_company_name as manufacturer_name FROM premium_warehouse_wholesale_items LEFT JOIN company_data_1 c ON c.id=manufacturer LEFT JOIN premium_warehouse_distributor_categories_data_1 cat ON (cat.f_distributor=distributor_id AND cat.id=distributor_category) WHERE distributor_id=%d '.$where, array($arg['id'])));
 		$gb->set_default_order(array('Item Name'=>'ASC'));
 		$order = $gb->get_query_order();
 
