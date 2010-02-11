@@ -71,7 +71,7 @@ class Premium_Warehouse_Wholesale extends Module {
 		if($available)
 			$where .= ' AND quantity>0';
 //		$limit = $gb->get_limit(DB::GetOne('SELECT COUNT(*) FROM premium_warehouse_wholesale_items WHERE distributor_id=%d AND (quantity!=%d OR quantity_info!=%s) '.$where, array($arg['id'],0,'')));
-		$limit = $gb->get_limit(DB::GetOne('SELECT COUNT(*) FROM premium_warehouse_wholesale_items LEFT JOIN company_data_1 c ON c.id=whl.manufacturer WHERE distributor_id=%d '.$where, array($arg['id'])));
+		$limit = $gb->get_limit(DB::GetOne('SELECT COUNT(*) FROM premium_warehouse_wholesale_items LEFT JOIN company_data_1 c ON c.id=manufacturer WHERE distributor_id=%d '.$where, array($arg['id'])));
 		$gb->set_default_order(array('Item Name'=>'ASC'));
 		$order = $gb->get_query_order();
 
