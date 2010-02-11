@@ -915,6 +915,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 						if(!$txt)
 							$txt = Variable::get('ecommerce_order_shi_email');
 						$txt = str_replace('__TRACKING_INFO__',$values['tracking_info'],$txt);
+						$txt = str_replace('__SHIPMENT_NO__',$values['shipment_no'],$txt);
 						$title = Base_LangCommon::ts('Premium_Warehouse_eCommerce','Order shipped - id '.$values['id']);
 					}
 					break;
