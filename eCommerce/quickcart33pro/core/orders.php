@@ -793,6 +793,8 @@ class Orders
     if($aData['sPaymentChannel']!='-')
 	    $aData['sPaymentChannelInfo'] = $oTpl->tbHtml( $sFile, 'ORDER_EMAIL_PAYMENT_CHANNEL' );
 
+    $oTpl->setVariables( 'aData', $aData );
+
     $aSend['sMailContent'] = $oTpl->tbHtml( $sFile, 'ORDER_EMAIL_BODY' );
     $aSend['sTopic'] = $oTpl->tbHtml( $sFile, 'ORDER_EMAIL_TITLE' );
     $aSend['sSender']= $GLOBALS['config']['email'];
