@@ -198,7 +198,7 @@ class Premium_Warehouse_Wholesale__Plugin_action implements Premium_Warehouse_Wh
 				} elseif(isset($categories_to_del[$row['Grupa towarowa'].' : '.$row['Podgrupa towarowa']]))
 					unset($categories_to_del[$row['Grupa towarowa'].' : '.$row['Podgrupa towarowa']]);
 				$category = $categories[$row['Grupa towarowa'].' : '.$row['Podgrupa towarowa']];
-			} $category = null;
+			} else $category = null;
 
 			$manufacturer = null;
 			if($row['Producent']) {
