@@ -746,7 +746,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 								$ret['returned'] = false;
 							return $ret;
 			case 'delete':	if (Acl::get_user()==$param['created_by']) return true;
-					if ($trans['status']<=0) return true;
+					if ($trans['status']<=0 || $trans['status']=='') return true;
 							return $i->acl_check('delete orders');
 		}
 		return false;
@@ -892,7 +892,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 							$ret['transaction_type'] = false;
 							return $ret;
 			case 'delete':	if (Acl::get_user()==$param['created_by']) return true;
-					if ($param['status']<=0) return true;
+					if ($param['status']<=0 || $param['status']=='') return true;
 							return $i->acl_check('delete orders');
 		}
 		return false;
