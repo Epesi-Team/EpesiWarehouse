@@ -466,6 +466,7 @@ class Premium_Warehouse_eCommerce extends Module {
 			$ret = $f->exportValues();
 			$content = str_replace("\n",'',$ret['content']);
 			Variable::set($v,$content);
+			Variable::set($v.'S',strip_tags($ret['subject']));
 			Base_StatusBarCommon::message($this->t('Page saved'));
 			return false;
 		}
