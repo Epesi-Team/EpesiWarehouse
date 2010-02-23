@@ -47,44 +47,34 @@ if( isset( $iContent ) && is_numeric( $iContent ) ){
       $sCommentsList = null;
     }
 
+    $sUserPanel = '';
     if( isset( $config['contact_page'] ) && is_numeric( $config['contact_page'] ) && $iContent == $config['contact_page'] ){
-      $sContactPanel = isset( $_POST['sSend'] ) ? sendEmail( $_POST ): $oTpl->tbHtml( $aData['sTemplate'], 'CONTACT_FORM' );
-    }
-    else{
-      $sContactPanel = null;
-    }
-
-    if( $iContent == 39 ){ //login form
-      $sLoginPanel = '';
+      $sUserPanel = isset( $_POST['sSend'] ) ? sendEmail( $_POST ): $oTpl->tbHtml( $aData['sTemplate'], 'CONTACT_FORM' );
+    } elseif( $iContent == 39 ){ //login form
+      $sPasswordReminderLinkName = $oPage->aPages[39]['sLinkName'];
       if(isset( $_POST['sSend'] )) {
       	if(!$oUser->login($_POST)) {
-            $sLoginPanel .= $oTpl->tbHtml( 'messages.tpl', 'PASSWORD_INVALID' );          
+            $sUserPanel .= $oTpl->tbHtml( 'messages.tpl', 'PASSWORD_INVALID' );          
         }
       }
-      $sLoginPanel .= $oTpl->tbHtml( $aData['sTemplate'], 'LOGIN_FORM' );
-    } else{
-      $sLoginPanel = null;
-    }
-
-    if( $iContent == 51 ){ //change password form
-      $sChangePasswordPanel = '';
+      $sUserPanel .= $oTpl->tbHtml( $aData['sTemplate'], 'LOGIN_FORM' );
+    } elseif( $iContent == 59 ){ //password reminder form
+      if(isset( $_POST['sSend'] )) {
+      	if(!$oUser->remind_password($_POST)) {
+            $sUserPanel .= $oTpl->tbHtml( 'messages.tpl', 'EMAIL_INVALID' );          
+        }
+      }
+      $sUserPanel .= $oTpl->tbHtml( $aData['sTemplate'], 'PASSWORD_REMINDER_FORM' );
+    } elseif( $iContent == 51 ){ //change password form
       if(isset( $_POST['sSend'] )) {
       	if(!$oUser->change_password($_POST)) {
-            $sChangePasswordPanel .= $oTpl->tbHtml( 'messages.tpl', 'PASSWORD_INVALID' );          
+            $sUserPanel .= $oTpl->tbHtml( 'messages.tpl', 'PASSWORD_INVALID' );          
       	}
       }
-      $sChangePasswordPanel .= $oTpl->tbHtml( $aData['sTemplate'], 'CHANGE_PASSWORD_FORM' );
-    } else{
-      $sChangePasswordPanel = null;
-    }
-    
-    if( $iContent == 55 ){ //orders
-      $sOrdersPanel = $oUser->orders('orders_panel.tpl');
-    } else{
-      $sOrdersPanel = null;
-    }
-    
-    if( $iContent == 47 ){ //logout
+      $sUserPanel .= $oTpl->tbHtml( $aData['sTemplate'], 'CHANGE_PASSWORD_FORM' );
+    } elseif( $iContent == 55 ){ //orders
+      $sUserPanel = $oUser->orders('orders_panel.tpl');
+    } elseif( $iContent == 47 ){ //logout
       if($oUser->logged()) {
       	$oUser->logout();
       }

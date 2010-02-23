@@ -356,4 +356,7 @@ $lang['Shipment_discount'] = 'Rabat udzielony na koszty dostawy';
 $lang['Create_account'] = 'Utwórz użytkownika';
 $lang['Tracking_info'] = 'Numer przesyłki';
 $lang['Manufacturer_filter'] = 'Wybierz producenta';
+$lang['Forgot_password'] = 'Nie pamiętam hasła';
+$lang['Email_invalid'] = 'Nie istnieje konto o podanym adresie e-mail.';
+$lang['Remind_password'] = 'Przypomnij hasło';
 ?>

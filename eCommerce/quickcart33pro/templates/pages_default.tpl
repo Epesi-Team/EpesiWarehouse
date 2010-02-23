@@ -6,10 +6,7 @@
   $aImages[2]
   $sRssIco
   <h3>$aData[sName]</h3>
-  $sContactPanel
-  $sLoginPanel
-  $sChangePasswordPanel
-  $sOrdersPanel
+  $sUserPanel
   <div class="content" id="pageDescription">$aData[sDescriptionFull]</div>
   $sPages
   $sSiteMap
@@ -185,7 +182,22 @@
     <h6><input type="submit" value="$lang[log_in]" class="submit" /></h6>
   </fieldset>
 </form>
+<a href="$sPasswordReminderLinkName">$lang[Forgot_password]</a>
 <!-- END LOGIN_FORM -->
+
+<!-- BEGIN PASSWORD_REMINDER_FORM -->
+<script type="text/javascript" src="$config[dir_core]checkForm.js"></script>
+<form action="$aData[sLinkName]" method="post" onsubmit="return checkForm( this );" id="loginPanel">
+  <fieldset>
+    <input type="hidden" name="sSend" value="" />
+    <dl>
+      <dt><label for="email">$lang[Your_email]:</label></dt>
+      <dd><input type="text" name="sEmail" class="input" alt="email" id="email" value="$_POST[sEmail]"/></dd>
+    </dl>
+    <h6><input type="submit" value="$lang[Remind_password]" class="submit" /></h6>
+  </fieldset>
+</form>
+<!-- END PASSWORD_REMINDER_FORM -->
 
 <!-- BEGIN CHANGE_PASSWORD_FORM -->
 <script type="text/javascript" src="$config[dir_core]checkForm.js"></script>

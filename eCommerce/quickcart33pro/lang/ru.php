@@ -361,4 +361,7 @@ $lang['Shipment_discount'] = 'Shipment discount';
 $lang['Create_account'] = 'Create account';
 $lang['Tracking_info'] = 'Tracking info';
 $lang['Manufacturer_filter'] = 'Choose manufacturer';
+$lang['Forgot_password'] = 'Forgot password';
+$lang['Email_invalid'] = 'E-mail invalid';
+$lang['Remind_password'] = 'Remind password';
 ?>

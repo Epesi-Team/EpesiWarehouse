@@ -92,3 +92,10 @@
   </h3>
 </div>
 <!-- END PASSWORD_INVALID -->
+<!-- BEGIN EMAIL_INVALID -->
+<div class="message" id="error">
+  <h3>
+    $lang['Email_invalid']
+  </h3>
+</div>
+<!-- END EMAIL_INVALID -->
