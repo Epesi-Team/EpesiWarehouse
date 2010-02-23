@@ -745,8 +745,9 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 							if ($trans['transaction_type']==3)
 								$ret['returned'] = false;
 							return $ret;
-			case 'delete':	if (Acl::get_user()==$param['created_by']) return true;
-					if ($trans['status']<=0 || $trans['status']=='') return true;
+			case 'delete':	$me = CRM_ContactsCommon::get_my_record();
+							if ($me['id']==$trans['employee'] && self::access_orders('edit', Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $param['transaction_id']))) return true;
+							if ($trans['status']<=0 || $trans['status']=='') return true;
 							return $i->acl_check('delete orders');
 		}
 		return false;
