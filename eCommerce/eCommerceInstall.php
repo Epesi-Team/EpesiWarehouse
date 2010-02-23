@@ -481,6 +481,8 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Variable::set('ecommerce_order_email','');
 		Variable::set('ecommerce_order_rec_email','');
 		Variable::set('ecommerce_order_shi_email','');
+		Variable::set('ecommerce_order_rec_emailS','Order received');
+		Variable::set('ecommerce_order_shi_emailS','Order shipped');
 
 		Variable::set('ecommerce_autoprice',false);
 		Variable::set('ecommerce_minimal_profit','');
@@ -514,10 +516,14 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 			Variable::delete('ecommerce_order_email_'.$k,false);
 			Variable::delete('ecommerce_order_rec_email_'.$k,false);
 			Variable::delete('ecommerce_order_shi_email_'.$k,false);
+			Variable::delete('ecommerce_order_rec_email_'.$k.'S',false);
+			Variable::delete('ecommerce_order_shi_email_'.$k.'S',false);
 		}
 		Variable::delete('ecommerce_order_email');
-		Variable::delete('ecommerce_order_rec_email','');
-		Variable::delete('ecommerce_order_shi_email','');
+		Variable::delete('ecommerce_order_rec_email');
+		Variable::delete('ecommerce_order_shi_email');
+		Variable::delete('ecommerce_order_rec_emailS');
+		Variable::delete('ecommerce_order_shi_emailS');
 		Variable::delete('ecommerce_rules');
 		Variable::delete('ecommerce_contactus');
 		Variable::delete('ecommerce_autoprice');

@@ -378,11 +378,11 @@ class Premium_Warehouse_eCommerce extends Module {
 	}
 	
 	public function order_received_email_page() {
-		return $this->edit_variable_with_lang('Order e-mail header','ecommerce_order_rec_email');
+		return $this->edit_mail_with_lang('Order e-mail header','ecommerce_order_rec_email');
 	}
 	
 	public function order_shipped_email_page() {
-		return $this->edit_variable_with_lang('Order e-mail header','ecommerce_order_shi_email');
+		return $this->edit_mail_with_lang('Order e-mail header','ecommerce_order_shi_email');
 	}
 	
 	public function rules_page() {
@@ -416,6 +416,49 @@ class Premium_Warehouse_eCommerce extends Module {
 		$fck->setFCKProps('800','300',true);
 		
 		$f->setDefaults(array('content'=>Variable::get($v,false)));
+
+		Base_ActionBarCommon::add('save','Save',$f->get_submit_form_href());
+		
+		if($f->validate()) {
+			$ret = $f->exportValues();
+			$content = str_replace("\n",'',$ret['content']);
+			Variable::set($v,$content);
+			Base_StatusBarCommon::message($this->t('Page saved'));
+			return false;
+		}
+		$f->display();	
+		return true;
+	}
+
+	private function edit_mail_with_lang($header,$v) {
+		if($this->is_back()) return false;
+		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
+		
+		print('<h1>'.$header.'</h1>'.$this->t('Choose language to edit:').'<ul>');
+
+		$langs = Utils_CommonDataCommon::get_array('Premium/Warehouse/eCommerce/Languages');
+		print('<li><a '.$this->create_callback_href(array($this,'edit_variable_mail'),array($header,$v)).'>default (if translation is available)</a></li>');
+		foreach($langs as $k=>$name) {
+			print('<li><a '.$this->create_callback_href(array($this,'edit_variable_mail'),array($header,$v.'_'.$k)).'>'.$name.'</a></li>');
+		}
+		print('</ul>');
+		return true;
+	}
+
+	public function edit_variable_mail($header, $v) {
+		if($this->is_back()) return false;
+		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
+	
+		$f = $this->init_module('Libs/QuickForm');
+		
+		$f->addElement('header',null,$this->t($header));
+
+		$f->addElement('text', 'subject', $this->t('Subject'),array('maxlength'=>64));
+		
+		$fck = & $f->addElement('fckeditor', 'content', $this->t('Content'));
+		$fck->setFCKProps('800','300',true);
+		
+		$f->setDefaults(array('content'=>Variable::get($v,false),'subject'=>Variable::get($v.'S',false)));
 
 		Base_ActionBarCommon::add('save','Save',$f->get_submit_form_href());
 		

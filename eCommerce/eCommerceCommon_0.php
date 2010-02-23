@@ -904,7 +904,10 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 						$txt = Variable::get('ecommerce_order_rec_email_'.$erec['language'],false);
 						if(!$txt)
 							$txt = Variable::get('ecommerce_order_rec_email');
-						$title = Base_LangCommon::ts('Premium_Warehouse_eCommerce','Order received - id '.$values['id']);
+						$subject = Variable::get('ecommerce_order_rec_email_'.$erec['language'].'S',false);
+						if(!$subject)
+							$subject = Variable::get('ecommerce_order_rec_emailS');
+						$title = Base_LangCommon::ts('Premium_Warehouse_eCommerce',$subject);
 					}
 					break;
 				case 7:
@@ -914,9 +917,12 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 						$txt = Variable::get('ecommerce_order_shi_email_'.$erec['language'],false);
 						if(!$txt)
 							$txt = Variable::get('ecommerce_order_shi_email');
+						$subject = Variable::get('ecommerce_order_shi_email_'.$erec['language'].'S',false);
+						if(!$subject)
+							$subject = Variable::get('ecommerce_order_shi_emailS');
 						$txt = str_replace('__TRACKING_INFO__',$values['tracking_info'],$txt);
 						$txt = str_replace('__SHIPMENT_NO__',$values['shipment_no'],$txt);
-						$title = Base_LangCommon::ts('Premium_Warehouse_eCommerce','Order shipped - id '.$values['id']);
+						$title = Base_LangCommon::ts('Premium_Warehouse_eCommerce',$subject);
 					}
 					break;
 			}
