@@ -62,7 +62,7 @@ class Products
 		$availability_labels = DB::GetAssoc('SELECT f_availability, f_label FROM premium_ecommerce_availability_labels_data_1 WHERE f_language="'.LANGUAGE.'" AND active=1');
 	}
 
-	$ret = DB::Execute('SELECT 	it.id as iProduct, 
+	$ret = DB::GetAll('SELECT 	it.id as iProduct, 
 								it.f_item_name as sName2, 
 								pri.f_gross_price as fPrice, 
 								pri.f_tax_rate as tax,
@@ -88,10 +88,6 @@ class Products
 								SUM(loc.f_quantity) as f_quantity,
 								it.f_net_price fPrice2,
 								it.f_tax_rate tax2,
-								dist_item.quantity as distributorQuantity,
-								dist_item.price fPrice3,
-								dist_item.price_currency,
-								dist.f_items_availability as iAvailable2,
 								pr.f_exclude_compare_services,
 								pr.f_always_on_stock,
 								it.f_upc
@@ -101,14 +97,18 @@ class Products
 					LEFT JOIN premium_ecommerce_descriptions_data_1 d ON (d.f_item_name=it.id AND d.f_language="'.LANGUAGE.'" AND d.active=1)
 					LEFT JOIN premium_ecommerce_descriptions_data_1 d_en ON (d_en.f_item_name=it.id AND d_en.f_language="en" AND d_en.active=1)
 					LEFT JOIN premium_warehouse_location_data_1 loc ON (loc.f_item_sku=it.id AND loc.f_quantity>0 AND loc.active=1)
-					LEFT JOIN (premium_warehouse_wholesale_items dist_item,premium_warehouse_distributor_data_1 dist) ON (dist_item.item_id=it.id AND dist_item.quantity>0 AND dist_item.price=(SELECT MIN(tmp.price) FROM premium_warehouse_wholesale_items tmp WHERE tmp.item_id=it.id) AND dist.id=dist_item.distributor_id)
 					 WHERE pr.f_publish=1 AND pr.active=1 AND it.active=1 '.($where?' AND ('.$where.')':'').' GROUP BY it.id ORDER BY pr.f_position'.($limit!==null?' LIMIT '.(int)$limit.($offset!==null?' OFFSET '.(int)$offset:''):''));
+	$pids = array();
+	foreach($ret as $aExp)
+		$pids[] = $aExp['iProduct'];
+	if($pids)
+		$reserved = DB::GetAssoc('SELECT d.f_item_name, SUM(d.f_quantity) FROM premium_warehouse_items_orders_details_data_1 d INNER JOIN premium_warehouse_items_orders_data_1 o ON (o.id=d.f_transaction_id) WHERE ((o.f_transaction_type=1 AND o.f_status in (-1,2,3,4,5)) OR (o.f_transaction_type=4 AND o.f_status in (2,3))) AND d.active=1 AND o.active=1 AND d.f_item_name IN ('.implode(',',$pids).') GROUP BY d.f_item_name');
 
         $taxes = DB::GetAssoc('SELECT id, f_percentage FROM data_tax_rates_data_1 WHERE active=1');
 	$autoprice = getVariable('ecommerce_autoprice');
 	$minimal = getVariable('ecommerce_minimal_profit');
 	$percentage = getVariable('ecommerce_percentage_profit');
-	while($aExp = $ret->FetchRow()) {
+	foreach($ret as $aExp) {
 		if($aExp['sName']=='') 
 			$aExp['sName'] = $aExp['sName2'];
 		if(!$aExp['fPrice']) {
@@ -123,13 +123,64 @@ class Products
 			if($aExp['f_quantity']<10) $aExp['f_quantity'] = 10;
 		} else {
 			unset($aExp['f_always_on_stock']);
+			if($aExp['f_quantity']>=$reserved[$aExp['iProduct']]) {
+				$aExp['f_quantity'] -= $reserved[$aExp['iProduct']];
+				$reserved[$aExp['iProduct']] = 0;
+			} else {
+				$reserved[$aExp['iProduct']] -= $aExp['f_quantity'];
+				$aExp['f_quantity'] = 0;
+			}
 		}
-		$user_price=0;
-		if($aExp['f_quantity']==0 && $aExp['distributorQuantity']) {
-			$aExp['iAvailable'] = $aExp['iAvailable2'];
-			if($aExp['fPrice']) {
-				$user_price = $aExp['fPrice'];
-				$aExp['fPrice'] = null;
+		
+		if($aExp['f_quantity']==0) {
+			$distributors = DB::GetAll('SELECT dist_item.quantity,
+					dist_item.price,
+					dist.f_items_availability as iAvailable
+					FROM premium_warehouse_wholesale_items dist_item
+					INNER JOIN premium_warehouse_distributor_data_1 dist ON dist.id=dist_item.distributor_id
+					WHERE dist_item.item_id=%d AND dist_item.quantity>0 AND dist_item.price_currency=%d ORDER BY dist_item.price',array($aExp['iProduct'],$currency));
+			foreach($distributors as $kkk=>$dist) {
+				if($dist['quantity']>$reserved[$aExp['iProduct']]) {
+					$dist['quantity'] -= $reserved[$aExp['iProduct']];
+					$reserved[$aExp['iProduct']] = 0;
+
+					$aExp['distributorQuantity'] = $dist['quantity'];
+					$aExp['iAvailable'] = $dist['iAvailable'];
+
+					$user_price=0;
+					if($aExp['fPrice']) {
+						$user_price = $aExp['fPrice'];
+						$aExp['fPrice'] = null;
+					}
+					if($autoprice && !$aExp['fPrice']) {
+						$dist_price = round((float)$dist['price']*(100+$taxes[$aExp['tax2']])/100,2);
+						if($user_price>=$dist_price) {
+							$aExp['fPrice'] = $user_price;
+						} else {
+							$netto = $dist['price'];
+							$profit = $netto*$percentage/100;
+							if($profit<$minimal) $profit = $minimal;
+							$aExp['fPrice'] = round((float)($netto+$profit)*(100+$taxes[$aExp['tax2']])/100,2);
+							$aExp['tax'] = $aExp['tax2'];		
+						}
+					}
+					break;
+				} else {
+					$reserved[$aExp['iProduct']] -= $dist['quantity'];
+				}
+			}
+			unset($distributors);
+		} else {
+			if($autoprice && !$aExp['fPrice']) {
+				$dist = DB::GetAll('SELECT MIN(dist_item.price)
+					FROM premium_warehouse_wholesale_items dist_item
+					INNER JOIN premium_warehouse_distributor_data_1 dist ON dist.id=dist_item.distributor_id
+					WHERE dist_item.item_id=%d AND dist_item.quantity>0 AND dist_item.price_currency=%d ORDER BY dist_item.price',array($aExp['iProduct'],$currency));
+				$netto = $dist['price'];
+				$profit = $netto*$percentage/100;
+				if($profit<$minimal) $profit = $minimal;
+				$aExp['fPrice'] = round((float)($netto+$profit)*(100+$taxes[$aExp['tax2']])/100,2);
+				$aExp['tax'] = $aExp['tax2'];		
 			}
 		}
 		if(isset($availability_labels[$aExp['iAvailable']]))
@@ -138,18 +189,6 @@ class Products
 			$aExp['sAvailable'] = $availability_codes[$aExp['iAvailable']];
 		unset($aExp['iAvailable']);
 		unset($aExp['iAvailable2']);
-		if($autoprice && !$aExp['fPrice'] && $aExp['distributorQuantity'] && $aExp['fPrice3'] && $aExp['price_currency']==$currency) {
-			$dist_price = round((float)$aExp['fPrice3']*(100+$taxes[$aExp['tax2']])/100,2);
-			if($aExp['f_quantity']==0 && $user_price>$dist_price) {
-				$aExp['fPrice'] = $user_price;
-			} else {
-				$netto = $aExp['fPrice3'];
-				$profit = $netto*$percentage/100;
-				if($profit<$minimal) $profit = $minimal;
-				$aExp['fPrice'] = round((float)($netto+$profit)*(100+$taxes[$aExp['tax2']])/100,2);
-				$aExp['tax'] = $aExp['tax2'];		
-			}
-		}
 		if(!$aExp['tax']) $aExp['tax'] = 0;
 		$aExp['iQuantity'] = 0+$aExp['f_quantity']+$aExp['distributorQuantity'];
 		if($aExp['fPrice']) {
@@ -201,17 +240,6 @@ class Products
     		$products[$aExp['iProduct']] = $aExp;
 	        $products[$aExp['iProduct']]['sLinkName'] = '?'.$aExp['iProduct'].','.change2Url( $products[$aExp['iProduct']]['sName'] );
 		$products[$aExp['iProduct']]['aCategories'] = $pages;
-	}
-	
-	$pids = array_keys($products);
-	if($pids) {
-		$reserved = DB::GetAssoc('SELECT d.f_item_name, SUM(d.f_quantity) FROM premium_warehouse_items_orders_details_data_1 d INNER JOIN premium_warehouse_items_orders_data_1 o ON (o.id=d.f_transaction_id) WHERE o.f_transaction_type=1 AND o.f_status not in (7,20,21,22) AND d.active=1 AND o.active=1 AND d.f_item_name IN ('.implode(',',$pids).') GROUP BY d.f_item_name');
-		foreach($reserved as $id=>$qty) {
-			if(!isset($products[$id]['f_always_on_stock'])) {
-				$products[$id]['iQuantity'] -= $qty;
-				if($products[$id]['iQuantity']<0) $products[$id]['iQuantity'] = 0;
-			}
-		}
 	}
 	
 	if(count($products)==1 && $navigation && isset($_SESSION['last_products_query']) && count($_SESSION['last_products_query'])==3) {
