@@ -183,10 +183,12 @@ class Products
 				$aExp['tax'] = $aExp['tax2'];		
 			}
 		}
+		if(isset($availability_codes[$aExp['iAvailable']]))
+			$aExp['sAvailableCode'] = $availability_codes[$aExp['iAvailable']];
 		if(isset($availability_labels[$aExp['iAvailable']]))
 			$aExp['sAvailable'] = $availability_labels[$aExp['iAvailable']];
-		elseif(isset($availability_codes[$aExp['iAvailable']]))
-			$aExp['sAvailable'] = $availability_codes[$aExp['iAvailable']];
+		elseif(isset($aExp['sAvailableCode']))
+			$aExp['sAvailable'] = $aExp['sAvailableCode'];
 		unset($aExp['iAvailable']);
 		unset($aExp['iAvailable2']);
 		if(!$aExp['tax']) $aExp['tax'] = 0;

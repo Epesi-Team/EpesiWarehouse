@@ -46,6 +46,21 @@ function listProductsCompare( $sFile, $sBlock ){
     if( !$aProducts) break;
     foreach($aProducts as $aData){
       if(!$aData['fPrice']) continue;
+	if( $sBlock == 'CENEO' ){
+          if(isset($aData['sAvailableCode'])) {
+		if(preg_match('/([0-9]+)h/i', $aData['sAvailableCode'], $reqs)) {
+			$aData['iAvailableDays'] = $reqs[1]/24;
+		} elseif(preg_match('/([0-9]+)/', $aData['sAvailableCode'], $reqs)) {
+			$aData['iAvailableDays'] = $reqs[1];
+		}
+		if(isset($aData['iAvailableDays'])) {
+			if($aData['iAvailableDays']>7) $aData['iAvailableDays']=14;
+			elseif($aData['iAvailableDays']<7 && $aData['iAvailableDays']>3) $aData['iAvailableDays']=7;
+			elseif($aData['iAvailableDays']>1 && $aData['iAvailableDays']<3) $aData['iAvailableDays']=3;
+			elseif($aData['iAvailableDays']<1) $aData['iAvailableDays']=1;
+		}
+	}
+	}
       if((!isset($_REQUEST['outOfStock']) || !$_REQUEST['outOfStock']) && (!$aData['iQuantity'] || $aData['f_exclude_compare_services']))
       	continue;
       $aData['sPages'] = preg_replace( '/&nbsp;&raquo;&nbsp;/', '/', strip_tags( $GLOBALS['oProduct']->throwProductsPagesTree( $aData['aCategories'] ) ) );

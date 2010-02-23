@@ -35,6 +35,7 @@
 			<producer><![CDATA[$aData[sProducer]]]></producer>
 		</attribute>
 	</attributes>
+	<availability>$aData[iAvailableDays]</availability>
       </offer>
 <!-- END CENEO_LIST -->
 <!-- BEGIN CENEO_FEATURES --><!-- END CENEO_FEATURES -->
