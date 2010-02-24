@@ -51,7 +51,6 @@ if( isset( $iContent ) && is_numeric( $iContent ) ){
     if( isset( $config['contact_page'] ) && is_numeric( $config['contact_page'] ) && $iContent == $config['contact_page'] ){
       $sUserPanel = isset( $_POST['sSend'] ) ? sendEmail( $_POST ): $oTpl->tbHtml( $aData['sTemplate'], 'CONTACT_FORM' );
     } elseif( $iContent == 39 ){ //login form
-      $sPasswordReminderLinkName = $oPage->aPages[39]['sLinkName'];
       if(isset( $_POST['sSend'] )) {
       	if(!$oUser->login($_POST)) {
             $sUserPanel .= $oTpl->tbHtml( 'messages.tpl', 'PASSWORD_INVALID' );          

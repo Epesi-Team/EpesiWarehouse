@@ -182,7 +182,6 @@
     <h6><input type="submit" value="$lang[log_in]" class="submit" /></h6>
   </fieldset>
 </form>
-<a href="$sPasswordReminderLinkName">$lang[Forgot_password]</a>
 <!-- END LOGIN_FORM -->
 
 <!-- BEGIN PASSWORD_REMINDER_FORM -->
