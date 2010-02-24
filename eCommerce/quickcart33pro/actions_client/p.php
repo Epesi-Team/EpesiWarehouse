@@ -58,15 +58,17 @@ if( isset( $iContent ) && is_numeric( $iContent ) ){
       }
       $sUserPanel .= $oTpl->tbHtml( $aData['sTemplate'], 'LOGIN_FORM' );
     } elseif( $iContent == 59 ){ //password reminder form
+      $display_form = true;
       if(isset( $_POST['sSend'] )) {
       	if(!$oUser->remind_password($_POST)) {
             $sUserPanel .= $oTpl->tbHtml( 'messages.tpl', 'EMAIL_INVALID' );          
         } else {
-        	$sUserPanel .= $oTpl->tbHtml( 'messages.tpl', 'NEW_PASSWORD_SENT' );          
+            $display_form = false;
+            $sUserPanel .= $oTpl->tbHtml( 'messages.tpl', 'NEW_PASSWORD_SENT' );          
         }
-      } else {
-	      $sUserPanel .= $oTpl->tbHtml( $aData['sTemplate'], 'PASSWORD_REMINDER_FORM' );
       }
+      if($display_form)
+        $sUserPanel .= $oTpl->tbHtml( $aData['sTemplate'], 'PASSWORD_REMINDER_FORM' );
     } elseif( $iContent == 51 ){ //change password form
       if(isset( $_POST['sSend'] )) {
       	if(!$oUser->change_password($_POST)) {

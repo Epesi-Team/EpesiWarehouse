@@ -59,6 +59,7 @@ class Users
 	$aSend['sSender']= $GLOBALS['config']['email'];
 
 	sendEmail( $aSend, null, $v['sEmail'], true ); //send e-mail to client
+	return true;
   } 
 
   function change_password($v) {
