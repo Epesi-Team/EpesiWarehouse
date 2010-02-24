@@ -361,4 +361,5 @@ $lang['Email_invalid'] = 'Nie istnieje konto o podanym adresie e-mail.';
 $lang['Remind_password'] = 'Przypomnij hasło';
 $lang['Password_reminder_mail_subject'] = 'Przypomnienie hasła';
 $lang['Password_reminder_mail_body'] = 'Twoje hasło zostało zresetowane.<br>Nowe hasło: %s';
+$lang['New_password_sent'] = 'Nowe hasło zostało wysłane na podany e-mail';
 ?>

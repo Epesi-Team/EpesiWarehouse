@@ -99,3 +99,10 @@
   </h3>
 </div>
 <!-- END EMAIL_INVALID -->
+<!-- BEGIN NEW_PASSWORD_SENT -->
+<div class="message" id="error">
+  <h3>
+    $lang['New_password_sent']
+  </h3>
+</div>
+<!-- END NEW_PASSWORD_SENT -->
