@@ -46,6 +46,7 @@ class Users
 
   function remind_password( $v ){
 	global $config;
+	global $lang;
 
 	$uid = DB::GetRow('SELECT e.id FROM premium_ecommerce_users_data_1 e INNER JOIN contact_data_1 c ON c.id=e.f_contact WHERE c.f_email=%s AND e.active=1 AND c.active=1',array($v['sEmail']));
 	if(!$uid) return false;
@@ -53,8 +54,8 @@ class Users
 	$pass = substr(md5(microtime(true)),0,8);
 	DB::Execute('UPDATE premium_ecommerce_users_data_1 SET f_password=%s WHERE id=%d',array(md5($pass),$uid));
 	
-	$aSend['sMailContent'] = 'New password: '.$pass;
-	$aSend['sTopic'] = 'Password changed';
+	$aSend['sMailContent'] = sprintf($lang['Password_reminder_mail_body'],$pass);
+	$aSend['sTopic'] = $lang['Password_reminder_mail_subject'];
 	$aSend['sSender']= $GLOBALS['config']['email'];
 
 	sendEmail( $aSend, null, $v['sEmail'], true ); //send e-mail to client

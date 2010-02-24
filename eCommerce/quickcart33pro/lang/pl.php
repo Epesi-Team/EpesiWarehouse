@@ -359,4 +359,6 @@ $lang['Manufacturer_filter'] = 'Wybierz producenta';
 $lang['Forgot_password'] = 'Nie pamiętam hasła';
 $lang['Email_invalid'] = 'Nie istnieje konto o podanym adresie e-mail.';
 $lang['Remind_password'] = 'Przypomnij hasło';
+$lang['Password_reminder_mail_subject'] = 'Przypomnienie hasła';
+$lang['Password_reminder_mail_body'] = 'Twoje hasło zostało zresetowane.<br>Nowe hasło: %s';
 ?>

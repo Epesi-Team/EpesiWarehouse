@@ -361,4 +361,6 @@ $lang['Manufacturer_filter'] = 'Choose manufacturer';
 $lang['Forgot_password'] = 'Forgot password';
 $lang['Email_invalid'] = 'E-mail invalid';
 $lang['Remind_password'] = 'Remind password';
+$lang['Password_reminder_mail_subject'] = 'Password reminder';
+$lang['Password_reminder_mail_body'] = 'New password: %s';
 ?>
