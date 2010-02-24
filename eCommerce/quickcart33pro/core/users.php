@@ -48,7 +48,7 @@ class Users
 	global $config;
 	global $lang;
 
-	$uid = DB::GetRow('SELECT e.id FROM premium_ecommerce_users_data_1 e INNER JOIN contact_data_1 c ON c.id=e.f_contact WHERE c.f_email=%s AND e.active=1 AND c.active=1',array($v['sEmail']));
+	$uid = DB::GetOne('SELECT e.id FROM premium_ecommerce_users_data_1 e INNER JOIN contact_data_1 c ON c.id=e.f_contact WHERE c.f_email=%s AND e.active=1 AND c.active=1',array($v['sEmail']));
 	if(!$uid) return false;
 
 	$pass = substr(md5(microtime(true)),0,8);
