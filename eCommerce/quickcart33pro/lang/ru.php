@@ -356,6 +356,7 @@ $lang['Change_password'] = 'Change password';
 $lang['Password_mismatch'] = 'Password mismatch';
 $lang['Password_invalid'] = 'Password invalid';
 $lang['Password_too_short'] = 'Password too short';
+$lang['Password_changed'] = 'Password changed';
 $lang['Click_on_order_to_see_details'] = 'Click on order to see details.';
 $lang['Shipment_discount'] = 'Shipment discount';
 $lang['Create_account'] = 'Create account';

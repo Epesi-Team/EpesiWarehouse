@@ -904,10 +904,12 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 						$txt = Variable::get('ecommerce_order_rec_email_'.$erec['language'],false);
 						if(!$txt)
 							$txt = Variable::get('ecommerce_order_rec_email');
-						$subject = Variable::get('ecommerce_order_rec_email_'.$erec['language'].'S',false);
-						if(!$subject)
-							$subject = Variable::get('ecommerce_order_rec_emailS');
-						$title = Base_LangCommon::ts('Premium_Warehouse_eCommerce',$subject);
+						$title = Variable::get('ecommerce_order_rec_email_'.$erec['language'].'S',false);
+						if(!$title)
+							$title = Variable::get('ecommerce_order_rec_emailS');
+					} else {
+						$txt = Variable::get('ecommerce_order_rec_email');
+						$title = Variable::get('ecommerce_order_rec_emailS');
 					}
 					break;
 				case 7:
@@ -917,28 +919,47 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 						$txt = Variable::get('ecommerce_order_shi_email_'.$erec['language'],false);
 						if(!$txt)
 							$txt = Variable::get('ecommerce_order_shi_email');
-						$subject = Variable::get('ecommerce_order_shi_email_'.$erec['language'].'S',false);
-						if(!$subject)
-							$subject = Variable::get('ecommerce_order_shi_emailS');
-						$txt = str_replace('__TRACKING_INFO__',$values['tracking_info'],$txt);
-						$txt = str_replace('__SHIPMENT_NO__',$values['shipment_no'],$txt);
-						$title = Base_LangCommon::ts('Premium_Warehouse_eCommerce',$subject);
+						$title = Variable::get('ecommerce_order_shi_email_'.$erec['language'].'S',false);
+						if(!$title)
+							$title = Variable::get('ecommerce_order_shi_emailS');
+					} else {
+						$txt = Variable::get('ecommerce_order_shi_email');
+						$title = Variable::get('ecommerce_order_shi_emailS');
 					}
+					$txt = str_replace('__TRACKING_INFO__',$values['tracking_info'],$txt);
+					$txt = str_replace('__SHIPMENT_NO__',$values['shipment_no'],$txt);
 					break;
 			}
 			if($txt) {
 				$sm = Base_ThemeCommon::init_smarty();
 				$sm->assign('txt',$txt);
 				$sm->assign('contact_us_title',Base_LangCommon::ts('Premium_Warehouse_eCommerce','Contact us'));
-				$contactus = Variable::get('ecommerce_contactus_'.$erec['language'],false);
-				if(!$contactus)
+				if($erec) {
+					$contactus = Variable::get('ecommerce_contactus_'.$erec['language'],false);
+					if(!$contactus)
+						$contactus = Variable::get('ecommerce_contactus');
+					$email = $erec['email'];
+				} else {
 					$contactus = Variable::get('ecommerce_contactus');
+					if(is_numeric($values['contact'])) {
+						$contact = CRM_ContactsCommon::get_contact($values['contact']);
+						if(isset($contact['email']) && $contact['email'])
+							$email = $contact['email'];
+						elseif(is_numeric($values['company'])) {
+							$company = CRM_ContactsCommon::get_company($values['company']);
+							if(isset($company['email']) && $company['email'])
+								$email = $company['email'];
+							else
+								return null;
+						}
+					}
+				}
 				$sm->assign('contact_us',$contactus);
 				ob_start();
 				Base_ThemeCommon::display_smarty($sm, 'Premium_Warehouse_eCommerce','mail');
 				$mail = ob_get_clean();
 				
-				Base_MailCommon::send($erec['email'],$title,$mail,null,null,true);
+				Base_MailCommon::send($email,$title,$mail,null,null,true);
 			}
 		}
 		return null;//don't modify values

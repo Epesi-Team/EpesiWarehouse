@@ -59,6 +59,7 @@ class Users
 	$aSend['sSender']= $GLOBALS['config']['email'];
 
 	sendEmail( $aSend, null, $v['sEmail'], true ); //send e-mail to client
+	$_SESSION['mail'] = $v['sEmail'];
 	return true;
   } 
 
@@ -73,9 +74,11 @@ class Users
 	
 	DB::Execute('UPDATE premium_ecommerce_users_data_1 SET f_password=%s WHERE id=%d',array(md5($v['sPassword']),$_SESSION['user']));
 
-	$oPage =& Pages::getInstance( );	
+	print('<script type="text/javascript">alert(\''.addcslashes($GLOBALS['lang']['Password_changed'],'\\\'').'\');window.location=\''.addcslashes(REDIRECT.$oPage->aPages[43]['sLinkName'], '\\\'').'\';</script>');
+	return true;
+/*	$oPage =& Pages::getInstance( );	
 	header( 'Location: '.REDIRECT.$oPage->aPages[43]['sLinkName'] );
-        exit;
+        exit;*/
   }
 
   function logout( ){
