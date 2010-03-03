@@ -32,7 +32,7 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 	}
 	
 	public static function employee_crits() {
-		return array('group'=>'office');
+		return array();
 	}
 
     public static function display_item_name($v, $nolink=false) {
