@@ -131,7 +131,8 @@ class Products
 				$aExp['f_quantity'] = 0;
 			}
 		}
-		
+
+	
 		if($aExp['f_quantity']==0) {
 			$distributors = DB::GetAll('SELECT dist_item.quantity,
 					dist_item.price,
@@ -172,15 +173,16 @@ class Products
 			unset($distributors);
 		} else {
 			if($autoprice && !$aExp['fPrice']) {
-				$dist = DB::GetAll('SELECT MIN(dist_item.price)
+				$netto = DB::GetOne('SELECT MIN(dist_item.price)
 					FROM premium_warehouse_wholesale_items dist_item
 					INNER JOIN premium_warehouse_distributor_data_1 dist ON dist.id=dist_item.distributor_id
 					WHERE dist_item.item_id=%d AND dist_item.quantity>0 AND dist_item.price_currency=%d ORDER BY dist_item.price',array($aExp['iProduct'],$currency));
-				$netto = $dist['price'];
-				$profit = $netto*$percentage/100;
-				if($profit<$minimal) $profit = $minimal;
-				$aExp['fPrice'] = round((float)($netto+$profit)*(100+$taxes[$aExp['tax2']])/100,2);
-				$aExp['tax'] = $aExp['tax2'];		
+				if($netto) {
+					$profit = $netto*$percentage/100;
+					if($profit<$minimal) $profit = $minimal;
+					$aExp['fPrice'] = round((float)($netto+$profit)*(100+$taxes[$aExp['tax2']])/100,2);
+					$aExp['tax'] = $aExp['tax2'];		
+				}
 			}
 		}
 		if(isset($availability_codes[$aExp['iAvailable']]))
