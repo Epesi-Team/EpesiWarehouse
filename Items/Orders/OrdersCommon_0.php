@@ -905,7 +905,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			case 'browse_crits':	return $i->acl_check('browse items');
 			case 'browse':	return true;
 			case 'view':	if (!$i->acl_check('view items')) return false;
-							if ($param['item_type']==2 || $param['item_type']==3) return array('reorder_point'=>false,'quantity_on_hand'=>false,'upc'=>false,'manufacturer_part_number'=>false, 'quantity_en_route'=>false);
+							if (isset($param['item_type']) && ($param['item_type']==2 || $param['item_type']==3)) return array('reorder_point'=>false,'quantity_on_hand'=>false,'upc'=>false,'manufacturer_part_number'=>false, 'quantity_en_route'=>false);
 							return array('quantity_sold'=>false);
 			case 'clone':
 			case 'add':
