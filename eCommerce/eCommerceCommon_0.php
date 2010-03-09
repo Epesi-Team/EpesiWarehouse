@@ -58,12 +58,12 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 	
 	public function display_parameter_group_label($r, $nolink, $desc) {
 		$lang_code = Base_User_SettingsCommon::get('Base_Lang_Administrator','language');
-		$id = Utils_RecordBrowserCommon::get_id('premium_ecommerce_parameter_group_labels', array('group', 'language'), array($r['id'], $lang_code));
+		$id = Utils_RecordBrowserCommon::get_id('premium_ecommerce_param_group_labels', array('group', 'language'), array($r['id'], $lang_code));
 		if (!is_numeric($id)) {
 			$lan = Utils_CommonDataCommon::get_value('Premium/Warehouse/eCommerce/Languages/'.$lang_code);
 			return Base_LangCommon::ts('Premium_eCommerce','Description in <b>%s</b> missing', array($lan?$lan:$lang_code));
 		}
-		return Utils_RecordBrowserCommon::get_value('premium_ecommerce_parameter_group_labels',$id,'label');
+		return Utils_RecordBrowserCommon::get_value('premium_ecommerce_param_group_labels',$id,'label');
 	}
 	
 	public function display_description($r, $nolink, $desc) {
@@ -427,7 +427,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 			unset($item_parameters_tmp);
 			
 			//parameter groups
-			$parameter_group_labels_tmp = Utils_RecordBrowserCommon::get_records('premium_ecommerce_parameter_group_labels',array('language'=>$code),array('id','group'));
+			$parameter_group_labels_tmp = Utils_RecordBrowserCommon::get_records('premium_ecommerce_param_group_labels',array('language'=>$code),array('id','group'));
 			$parameter_group_labels = array();
 			foreach($parameter_group_labels_tmp as $rr)
 			    $parameter_group_labels[$rr['group']] = $rr['id'];
@@ -440,7 +440,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 				$parameter_group_label = array('group'=>$parameter_groups[$key],
 							'language'=>$code,
 							'label'=>substr(str_replace('\n','<br>',(string)$cg->FeatureGroup[0]->Name[0]['Value']),0,128));
-				Utils_RecordBrowserCommon::new_record('premium_ecommerce_parameter_group_labels',$parameter_group_label);
+				Utils_RecordBrowserCommon::new_record('premium_ecommerce_param_group_labels',$parameter_group_label);
 			}
 			
 			

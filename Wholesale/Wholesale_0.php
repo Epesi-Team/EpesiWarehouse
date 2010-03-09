@@ -71,7 +71,7 @@ class Premium_Warehouse_Wholesale extends Module {
 		if($available)
 			$where .= ' AND quantity>0';
 //		$limit = $gb->get_limit(DB::GetOne('SELECT COUNT(*) FROM premium_warehouse_wholesale_items WHERE distributor_id=%d AND (quantity!=%d OR quantity_info!=%s) '.$where, array($arg['id'],0,'')));
-		$limit = $gb->get_limit(DB::GetOne('SELECT COUNT(*) FROM premium_warehouse_wholesale_items LEFT JOIN company_data_1 c ON c.id=manufacturer LEFT JOIN premium_warehouse_distributor_categories_data_1 cat ON (cat.f_distributor=distributor_id AND cat.id=distributor_category) WHERE distributor_id=%d '.$where, array($arg['id'])));
+		$limit = $gb->get_limit(DB::GetOne('SELECT COUNT(*) FROM premium_warehouse_wholesale_items LEFT JOIN company_data_1 c ON c.id=manufacturer LEFT JOIN premium_warehouse_distr_categories_data_1 cat ON (cat.f_distributor=distributor_id AND cat.id=distributor_category) WHERE distributor_id=%d '.$where, array($arg['id'])));
 		$gb->set_default_order(array('Item Name'=>'ASC'));
 		$order = $gb->get_query_order();
 
@@ -108,7 +108,7 @@ class Premium_Warehouse_Wholesale extends Module {
 			
 			if ($validate) { 
 				list($dist_cat,$manufacturer,$mpn,$upc) = DB::GetRow('SELECT distributor_category,manufacturer,manufacturer_part_number,upc FROM premium_warehouse_wholesale_items WHERE id=%d',array($vals['params']['internal_id']));
-				$categories = Utils_RecordBrowserCommon::get_record('premium_warehouse_distributor_categories',$dist_cat);
+				$categories = Utils_RecordBrowserCommon::get_record('premium_warehouse_distr_categories',$dist_cat);
 				$new_vals = array('category'=>$categories['epesi_category'],'manufacturer'=>$manufacturer,'vendor'=>$arg['company']);
 				if($mpn && (!isset($vals['form']['manufacturer_part_number']) || $vals['form']['manufacturer_part_number'])) $new_vals['manufacturer_part_number']=$mpn;
 				if($upc) $new_vals['upc']=$upc;
@@ -120,9 +120,9 @@ class Premium_Warehouse_Wholesale extends Module {
 			}
 		}
 		
-		// $ret = DB::SelectLimit('SELECT *, whl.id AS id,cat.f_foreign_category_name as category FROM premium_warehouse_wholesale_items AS whl LEFT JOIN premium_warehouse_items_data_1 AS itm ON itm.id=whl.item_id LEFT JOIN premium_warehouse_distributor_categories_data_1 cat ON (cat.f_distributor=distributor_id AND cat.id=distributor_category) WHERE distributor_id=%d AND (quantity!=%d OR quantity_info!=%s) '.$where.' '.$order, $limit['numrows'], $limit['offset'], array($arg['id'],0,''));
+		// $ret = DB::SelectLimit('SELECT *, whl.id AS id,cat.f_foreign_category_name as category FROM premium_warehouse_wholesale_items AS whl LEFT JOIN premium_warehouse_items_data_1 AS itm ON itm.id=whl.item_id LEFT JOIN premium_warehouse_distr_categories_data_1 cat ON (cat.f_distributor=distributor_id AND cat.id=distributor_category) WHERE distributor_id=%d AND (quantity!=%d OR quantity_info!=%s) '.$where.' '.$order, $limit['numrows'], $limit['offset'], array($arg['id'],0,''));
 
-		$ret = DB::SelectLimit('SELECT *, c.f_company_name as manufacturer_name, whl.id AS id,cat.f_foreign_category_name as category FROM premium_warehouse_wholesale_items AS whl LEFT JOIN company_data_1 c ON c.id=whl.manufacturer LEFT JOIN premium_warehouse_items_data_1 AS itm ON itm.id=whl.item_id LEFT JOIN premium_warehouse_distributor_categories_data_1 cat ON (cat.f_distributor=distributor_id AND cat.id=distributor_category) WHERE distributor_id=%d '.$where.' '.$order, $limit['numrows'], $limit['offset'], array($arg['id']));
+		$ret = DB::SelectLimit('SELECT *, c.f_company_name as manufacturer_name, whl.id AS id,cat.f_foreign_category_name as category FROM premium_warehouse_wholesale_items AS whl LEFT JOIN company_data_1 c ON c.id=whl.manufacturer LEFT JOIN premium_warehouse_items_data_1 AS itm ON itm.id=whl.item_id LEFT JOIN premium_warehouse_distr_categories_data_1 cat ON (cat.f_distributor=distributor_id AND cat.id=distributor_category) WHERE distributor_id=%d '.$where.' '.$order, $limit['numrows'], $limit['offset'], array($arg['id']));
 
 		while ($row=$ret->FetchRow()) {
 			if ($row['item_id']) {
@@ -204,7 +204,7 @@ class Premium_Warehouse_Wholesale extends Module {
 	}
 	
 	public function categories_addon($arg) {
-		$rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_distributor_categories');
+		$rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_distr_categories');
 		$order = array(array('distributor'=>$arg['id']), array('distributor'=>false), array('foreign_category_name'=>'ASC'));
 		$rb->set_defaults(array('distributor'=>$arg['id']));
 		$this->display_module($rb,$order,'show_data');

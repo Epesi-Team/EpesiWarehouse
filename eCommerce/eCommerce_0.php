@@ -265,7 +265,7 @@ class Premium_Warehouse_eCommerce extends Module {
 	}
 
 	public function parameter_group_labels_addon($arg) {
-		$rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_parameter_group_labels');
+		$rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_param_group_labels');
 		$order = array(array('group'=>$arg['id']), array('group'=>false,'language'=>true,'label'=>true), array('language'=>'ASC'));
 		$rb->set_defaults(array('group'=>$arg['id'],'language'=>Base_LangCommon::get_lang_code()));
 		$rb->set_header_properties(array(

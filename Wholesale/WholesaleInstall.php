@@ -97,11 +97,11 @@ class Premium_Warehouse_WholesaleInstall extends ModuleInstall {
 			array('name'=>'Epesi Category',		'type'=>'multiselect', 'required'=>false, 'visible'=>true, 'extra'=>false,  'param'=>'premium_warehouse_items_categories::Category Name', 'QFfield_callback'=>array('Premium_Warehouse_ItemsCommon', 'QFfield_item_category'), 'display_callback'=>array('Premium_Warehouse_WholesaleCommon','display_epesi_cat_name'))
 		);
 
-		Utils_RecordBrowserCommon::install_new_recordset('premium_warehouse_distributor_categories', $fields);
-		Utils_RecordBrowserCommon::set_favorites('premium_warehouse_distributors_categories', false);
+		Utils_RecordBrowserCommon::install_new_recordset('premium_warehouse_distr_categories', $fields);
+		Utils_RecordBrowserCommon::set_favorites('premium_warehouse_distr_categories', false);
 		Utils_RecordBrowserCommon::new_addon('premium_warehouse_distributor', 'Premium/Warehouse/Wholesale', 'categories_addon', 'Categories');
-		Utils_RecordBrowserCommon::set_caption('premium_warehouse_distributor_categories', 'Distributor Categories');
-		Utils_RecordBrowserCommon::set_access_callback('premium_warehouse_distributor_categories', array('Premium_Warehouse_WholesaleCommon', 'access_distributor_categories'));
+		Utils_RecordBrowserCommon::set_caption('premium_warehouse_distr_categories', 'Distributor Categories');
+		Utils_RecordBrowserCommon::set_access_callback('premium_warehouse_distr_categories', array('Premium_Warehouse_WholesaleCommon', 'access_distributor_categories'));
 
 		return true;
 	}
@@ -118,7 +118,7 @@ class Premium_Warehouse_WholesaleInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::delete_addon('premium_warehouse_distributor', 'Premium/Warehouse/Wholesale', 'attachment_addon');
 		Utils_RecordBrowserCommon::delete_addon('premium_warehouse_distributor', 'Premium/Warehouse/Wholesale', 'categories_addon');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_warehouse_distributor');
-		Utils_RecordBrowserCommon::uninstall_recordset('premium_warehouse_distributor_categories');
+		Utils_RecordBrowserCommon::uninstall_recordset('premium_warehouse_distr_categories');
 		return true;
 	}
 	

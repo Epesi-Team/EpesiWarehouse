@@ -301,7 +301,7 @@ class Products
 						FROM premium_ecommerce_products_parameters_data_1 pp
 						INNER JOIN (premium_ecommerce_parameters_data_1 p,premium_ecommerce_parameter_groups_data_1 g) ON (p.id=pp.f_parameter AND g.id=pp.f_group)
 						LEFT JOIN premium_ecommerce_parameter_labels_data_1 pl ON (pl.f_parameter=p.id AND pl.f_language="'.LANGUAGE.'" AND pl.active=1)
-						LEFT JOIN premium_ecommerce_parameter_group_labels_data_1 gl ON (gl.f_group=g.id AND gl.f_language="'.LANGUAGE.'" AND gl.active=1)
+						LEFT JOIN premium_ecommerce_param_group_labels_data_1 gl ON (gl.f_group=g.id AND gl.f_language="'.LANGUAGE.'" AND gl.active=1)
 						WHERE pp.active=1 AND pp.f_language="'.LANGUAGE.'" AND ('.$query_features.')');
 	if($ret_features) {
 		$query .= ' OR it.id IN ('.implode(',',$ret_features).')';

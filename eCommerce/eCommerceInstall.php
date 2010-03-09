@@ -154,12 +154,12 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 			array('name'=>'Language', 	'type'=>'commondata', 'required'=>true, 'extra'=>false, 'param'=>array('Premium/Warehouse/eCommerce/Languages')),
 			array('name'=>'Label', 		'type'=>'text', 'param'=>'128', 'required'=>true, 'extra'=>false)
 		);
-		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_parameter_group_labels', $fields);
+		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_param_group_labels', $fields);
 
-		Utils_RecordBrowserCommon::set_favorites('premium_ecommerce_parameter_group_labels', false);
-		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_parameter_group_labels', 'eCommerce - Parameters');
-		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_parameter_group_labels', array('Premium_Warehouse_eCommerceCommon', 'access_parameters'));
-		//Utils_RecordBrowserCommon::set_processing_callback('premium_ecommerce_parameter_group_labels', array('Premium_Warehouse_eCommerceCommon', 'submit_parameter_labels'));
+		Utils_RecordBrowserCommon::set_favorites('premium_ecommerce_param_group_labels', false);
+		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_param_group_labels', 'eCommerce - Parameters');
+		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_param_group_labels', array('Premium_Warehouse_eCommerceCommon', 'access_parameters'));
+		//Utils_RecordBrowserCommon::set_processing_callback('premium_ecommerce_param_group_labels', array('Premium_Warehouse_eCommerceCommon', 'submit_parameter_labels'));
 		
 		//product-group-parameter-value
 		$fields = array(
@@ -569,7 +569,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_parameters');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_parameter_labels');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_parameter_groups');
-		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_parameter_group_labels');
+		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_param_group_labels');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_products_parameters');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_availability');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_availability_labels');
