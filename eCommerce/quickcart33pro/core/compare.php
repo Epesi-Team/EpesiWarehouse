@@ -14,7 +14,7 @@ function listProductsCompare( $sFile, $sBlock ){
   $sBlock = strtoupper( $sBlock );
   
   set_time_limit(0);
-  ini_set('memory_limit', '256M');
+  ini_set('memory_limit', '512M');
 
 
   $sFeaturesBlock = $oTpl->tbHtml( $sFile, $sBlock.'_FEATURES' );
