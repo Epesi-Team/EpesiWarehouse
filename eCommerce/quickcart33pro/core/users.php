@@ -44,7 +44,7 @@ class Users
         exit;
   } 
 
-  function remind_password( $v ){
+  function remind_password( $v , $sFile){
 	global $config;
 	global $lang;
 
@@ -54,7 +54,19 @@ class Users
 	$pass = substr(md5(microtime(true)),0,8);
 	DB::Execute('UPDATE premium_ecommerce_users_data_1 SET f_password=%s WHERE id=%d',array(md5($pass),$uid));
 	
-	$aSend['sMailContent'] = sprintf($lang['Password_reminder_mail_body'],$pass);
+	////
+	$oTpl     =& TplParser::getInstance( );
+	$aData = array();
+	$aData['contactus'] = getVariable('ecommerce_contactus_'.LANGUAGE);
+
+	if(!$aData['contactus'])
+		$aData['contactus'] = getVariable('ecommerce_contactus');
+
+	$aData['content'] = sprintf($lang['Password_reminder_mail_body'],$pass);
+	$oTpl->setVariables( 'aData', $aData );
+	////
+
+	$aSend['sMailContent'] = $oTpl->tbHtml( $sFile, 'PASSWORD_REMINDER_EMAIL_BODY' );
 	$aSend['sTopic'] = $lang['Password_reminder_mail_subject'];
 	$aSend['sSender']= $GLOBALS['config']['email'];
 

@@ -64,7 +64,7 @@ if( isset( $iContent ) && is_numeric( $iContent ) ){
     } elseif( $iContent == 59 ){ //password reminder form
       $display_form = true;
       if(isset( $_POST['sSend'] )) {
-      	if(!$oUser->remind_password($_POST)) {
+      	if(!$oUser->remind_password($_POST,$aData['sTemplate'])) {
             $sUserPanel .= $oTpl->tbHtml( 'messages.tpl', 'EMAIL_INVALID' );          
         } else {
             $display_form = false;
