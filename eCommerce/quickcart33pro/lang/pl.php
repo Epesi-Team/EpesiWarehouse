@@ -361,6 +361,6 @@ $lang['Forgot_password'] = 'Nie pamiętam hasła';
 $lang['Email_invalid'] = 'Nie istnieje konto o podanym adresie e-mail.';
 $lang['Remind_password'] = 'Przypomnij hasło';
 $lang['Password_reminder_mail_subject'] = 'Przypomnienie hasła do sklepu '.$_SERVER['HTTP_HOST'];
-$lang['Password_reminder_mail_body'] = 'Twoje hasło do sklepu internetowego '.$_SERVER['HTTP_HOST'].' zostało zresetowane.<br>Nowe hasło: %s<br><br>Życzymy miłych zakupów';
+$lang['Password_reminder_mail_body'] = 'Twoje hasło do sklepu internetowego '.$_SERVER['HTTP_HOST'].' zostało zresetowane.<br>Nowe hasło: %s<br><br>Życzymy udanych zakupów';
 $lang['New_password_sent'] = 'Nowe hasło zostało wysłane na podany adres e-mail';
 ?>
