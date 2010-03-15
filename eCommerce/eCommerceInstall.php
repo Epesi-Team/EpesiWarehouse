@@ -603,7 +603,8 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 			array('name'=>'Utils/Image','version'=>0),
 			array('name'=>'Libs/OpenFlashChart','version'=>0),
 			array('name'=>'Libs/Leightbox','version'=>0),
-			array('name'=>'Utils/RecordBrowser', 'version'=>0));
+			array('name'=>'Utils/RecordBrowser', 'version'=>0),
+            array('name'=>'Premium/Warehouse/Wholesale', 'version'=>0));
 	}
 	
 	public static function info() {
