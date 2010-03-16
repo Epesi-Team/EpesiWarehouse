@@ -65,7 +65,8 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 			array('name'=>'Zone',			'type'=>'commondata', 'required'=>false, 'param'=>array('Countries','Country'), 'extra'=>true, 'visible'=>false, 'QFfield_callback'=>array('Data_CountriesCommon', 'QFfield_zone')),
 			array('name'=>'Postal Code',	'type'=>'text', 'param'=>'64', 'required'=>false, 'extra'=>true, 'visible'=>false),
 			array('name'=>'Phone',	 		'type'=>'text', 'param'=>'64', 'required'=>false, 'extra'=>true, 'visible'=>false),
-			array('name'=>'Tax ID',	 		'type'=>'text', 'param'=>'64', 'required'=>false, 'extra'=>true, 'visible'=>false)
+			array('name'=>'Tax ID',	 		'type'=>'text', 'param'=>'64', 'required'=>false, 'extra'=>true, 'visible'=>false),
+			array('name'=>'Notes',			'type'=>'calculated',	'visible'=>true,'extra'=>false,	'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon','display_notes'))
 		);
 
 		Utils_RecordBrowserCommon::install_new_recordset('premium_warehouse_items_orders', $fields);

@@ -1284,5 +1284,9 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	    }
 	    return array('show'=>true, 'label'=>'Warehouse Orders');
 	}
+
+    	public static function display_notes($r) {
+    		return Utils_AttachmentCommon::count('Premium/Warehouse/Items/Orders/'.$r['id']);
+    	}
 }
 ?>
