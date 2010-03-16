@@ -896,6 +896,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 					$ship_received->addElement('datepicker', 'shipment_date', 'Shipment - send date');
 					$ship_received->addElement('select', 'shipment_employee', 'Shipment - sent by', $emps);
 					$ship_received->addElement('datepicker', 'shipment_eta', 'Shipment - ETA');
+					$ship_received->addElement('text', 'shipment_no', 'Shipment No.');
 					$ship_received->addElement('text', 'tracking_info', 'Shipment - Tracking Info');
 					$ship_received->setDefaults(array('shipment_date'=>date('Y-m-d'), 'shipment_employee'=>$my_id));
 

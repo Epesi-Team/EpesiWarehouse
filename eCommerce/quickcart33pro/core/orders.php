@@ -479,6 +479,7 @@ class Orders
 				    o.f_invoice as iInvoice,
 				    o.f_promotion_shipment_discount as iShipmentDiscount,
 				    w.f_status as iStatus,
+				    w.f_shipment_no as sShipmentNo,
 				    w.f_tracking_info as sTrackingInfo
 				    FROM premium_warehouse_items_orders_data_1 w LEFT JOIN premium_ecommerce_orders_data_1 o ON o.f_transaction_id=w.id WHERE w.id=%d',array($iOrder));
 
@@ -526,6 +527,8 @@ class Orders
 
       if(!$aData['sTrackingInfo'])
 	      $aData['sTrackingInfo'] = '-';
+      if(!$aData['sShipmentNo'])
+	      $aData['sShipmentNo'] = '-';
       if(!$aData['sCompanyName'])
 	      $aData['sCompanyName'] = '-';
       if(!$aData['sNip'])
