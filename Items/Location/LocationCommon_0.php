@@ -95,7 +95,7 @@ class Premium_Warehouse_Items_LocationCommon extends ModuleCommon {
 	}
 	
 	public static function display_item_quantity_in_warehouse_and_total($r, $warehouse, $nolink=false, $enroute=null, $custom_label=null) {
-		if ($r['item_type']>=2) return '---';
+		if ($r['item_type']>=2 || !isset($r['id'])) return '---';
 		if ($custom_label===null) $custom_label = array(
 			'main'=>'Quantity on hand',
 			'in_one'=>'%s',
