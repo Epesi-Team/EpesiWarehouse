@@ -316,7 +316,7 @@ class Pages
 		}
 	}
 	$categories = array_filter($categories,'is_numeric');
-	$query = 'SELECT c.id, c.f_category_name, c.f_parent_category, c.f_show_as,
+	$query = 'SELECT c.id, c.f_category_name, c.f_parent_category,
 					d.f_page_title, d.f_meta_description, d.f_keywords, 
 					d.f_display_name, d.f_short_description, d.f_long_description,
 					c.f_position
