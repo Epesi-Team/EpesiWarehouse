@@ -310,7 +310,7 @@
 <!-- BEGIN PRODUCTS_LIST -->
 <li class="l$aData[sStyle]"><h3><a href="$aData[sLinkName]">$aData[sName]</a></h3>$aData[sRecommended]<h4>$aData[sPages]</h4>$aData[sImage]$aData[sDescriptionShort]$aData[sBasket]$aData[sPrice]</li>
 <!-- END PRODUCTS_LIST -->
-<!-- BEGIN PRODUCTS_PRICE --><div class="price"><em>$lang[Price]:</em><strong>$aData[sPrice]</strong><span>$config[currency_symbol]</span>$lang['Product_available']: $aData[sAvailable]</div><!-- END PRODUCTS_PRICE -->
+<!-- BEGIN PRODUCTS_PRICE --><div class="price"><em>$lang[Price]:</em><strong>$aData[sPrice]</strong><span>$config[currency_symbol]</span></div><!-- END PRODUCTS_PRICE -->
 <!-- BEGIN PRODUCTS_NO_PRICE --><div class="noPrice"><strong>$aData[sPrice]</strong></div><!-- END PRODUCTS_NO_PRICE -->
 <!-- BEGIN PRODUCTS_DESCRIPTION -->
 <h5>$aData[sDescriptionShort]<small><br><br><i>SKU:</i> $aData[sSku]</small></h5>
