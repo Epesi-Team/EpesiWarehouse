@@ -320,7 +320,7 @@
 <!-- END PRODUCTS_IMAGE -->
 <!-- BEGIN PRODUCTS_NO_IMAGE --><!-- END PRODUCTS_NO_IMAGE -->
 <!-- BEGIN PRODUCTS_BASKET -->
-<div class="basket">$lang['Product_available']: $aData[sAvailable]&nbsp;&nbsp;<a href="$aData[sBasketPage]iProductAdd=$aData[iProduct]&amp;iQuantity=1" rel="nofollow">$lang[Basket_add]</a></div>
+<div class="basket">$lang['Product_available']: $aData[sAvailable]<br /><a href="$aData[sBasketPage]iProductAdd=$aData[iProduct]&amp;iQuantity=1" rel="nofollow">$lang[Basket_add]</a></div>
 <!-- END PRODUCTS_BASKET -->
 
 <!-- BEGIN PRODUCTS_RECOMMENDED --><div class="recommended"><img src="$config[dir_templates]img/recommended.png" alt="$lang[Recommended]" title="$lang[Recommended]" /></div><!-- END PRODUCTS_RECOMMENDED -->
