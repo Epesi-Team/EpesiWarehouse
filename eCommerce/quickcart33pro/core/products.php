@@ -135,6 +135,7 @@ class Products
 	
 		if($aExp['f_quantity']==0) {
 			$distributors = DB::GetAll('SELECT dist_item.quantity,
+					dist_item.quantity_info,
 					dist_item.price,
 					dist.f_items_availability as iAvailable
 					FROM premium_warehouse_wholesale_items dist_item
@@ -147,6 +148,7 @@ class Products
 
 					$aExp['distributorQuantity'] = $dist['quantity'];
 					$aExp['iAvailable'] = $dist['iAvailable'];
+					$aExp['sAvailableInfo'] = $dist['quantity_info'];
 
 					$user_price=0;
 					if($aExp['fPrice']) {
@@ -191,6 +193,8 @@ class Products
 			$aExp['sAvailable'] = $availability_labels[$aExp['iAvailable']];
 		elseif(isset($aExp['sAvailableCode']))
 			$aExp['sAvailable'] = $aExp['sAvailableCode'];
+		if($aExp['sAvailableInfo'])
+			$aExp['sAvailable'] .= '<br>'.$aExp['sAvailableInfo'];
 		unset($aExp['iAvailable']);
 		unset($aExp['iAvailable2']);
 		if(!$aExp['tax']) $aExp['tax'] = 0;
