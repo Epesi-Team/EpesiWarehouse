@@ -20,6 +20,15 @@ ItemDetailsUpdate.prototype = {
 		}
 	},
 	request:function() {
+		$('item_name').disabled=true;
+		$('description').disabled=true;
+		$('sww').disabled=true;
+		$('quantity').disabled=true;
+		$('gross_price').disabled=true;
+		$('__gross_price__currency').disabled=true;
+		$('net_price').disabled=true;
+		$('__net_price__currency').disabled=true;
+		$('tax_rate').disabled=true;
 		new Ajax.Request('modules/Premium/Warehouse/Items/Orders/item_details_update.php', {
 			method: 'post',
 			parameters:{
@@ -29,6 +38,15 @@ ItemDetailsUpdate.prototype = {
 			},
 			onSuccess:function(t) {
 				eval(t.responseText);
+				$('item_name').disabled=false;
+				$('description').disabled=false;
+				$('sww').disabled=false;
+				$('quantity').disabled=false;
+				$('gross_price').disabled=false;
+				$('__gross_price__currency').disabled=false;
+				$('net_price').disabled=false;
+				$('__net_price__currency').disabled=false;
+				$('tax_rate').disabled=false;
 			}
 		});
 	}
