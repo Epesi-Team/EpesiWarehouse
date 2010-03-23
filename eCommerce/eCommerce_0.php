@@ -238,19 +238,29 @@ class Premium_Warehouse_eCommerce extends Module {
 	public function actions_for_position($r, $gb_row) {
 		$tab = 'premium_ecommerce_'.$this->recordset;
 		if(isset($_REQUEST['pos_action']) && $r['id']==$_REQUEST['pos_action'] && is_numeric($_REQUEST['old']) && is_numeric($_REQUEST['new'])) {
-		    $recs = Utils_RecordBrowserCommon::get_records($tab,array('position'=>$_REQUEST['new']), array('id'));
-		    foreach($recs as $rr)
-			Utils_RecordBrowserCommon::update_record($tab,$rr['id'],array('position'=>$_REQUEST['old']));
-    		    Utils_RecordBrowserCommon::update_record($tab,$r['id'],array('position'=>$_REQUEST['new']));
-		    location(array());
+		    $crits = $this->rb->get_module_variable('crits_stuff',array());
+		    if($_REQUEST['new']>0) {
+			    $pos = Utils_RecordBrowserCommon::get_records($tab,array_merge($crits,array('>position'=>$_REQUEST['old'])), array('position'),array('position'),1);
+		    } else {
+			    $pos = Utils_RecordBrowserCommon::get_records($tab,array_merge($crits,array('<position'=>$_REQUEST['old'])), array('position'),array('position'),1);		    
+		    }
+		    if($pos) {
+		    	$pos = array_shift($pos);
+		    	$pos = $pos['position'];
+		    	$recs = Utils_RecordBrowserCommon::get_records($tab,array('position'=>$pos), array('id'));
+		    	foreach($recs as $rr)
+				Utils_RecordBrowserCommon::update_record($tab,$rr['id'],array('position'=>$_REQUEST['old']));
+    		    	Utils_RecordBrowserCommon::update_record($tab,$r['id'],array('position'=>$_REQUEST['new']));
+		    	location(array());
+		    }
 		}
 		if($r['position']>0)
-		    $gb_row->add_action(Module::create_href(array('pos_action'=>$r['id'],'old'=>$r['position'],'new'=>$r['position']-1)),'move-up');
+		    $gb_row->add_action(Module::create_href(array('pos_action'=>$r['id'],'old'=>$r['position'],'new'=>0)),'move-up');
 		static $max;
 		if(!isset($max))
 		    $max = Utils_RecordBrowserCommon::get_records_count($tab);
 		if($r['position']<$max-1)
-    		    $gb_row->add_action(Module::create_href(array('pos_action'=>$r['id'],'old'=>$r['position'],'new'=>$r['position']+1)),'move-down');
+    		    $gb_row->add_action(Module::create_href(array('pos_action'=>$r['id'],'old'=>$r['position'],'new'=>1)),'move-down');
 	}
 
 	public function parameter_labels_addon($arg) {
