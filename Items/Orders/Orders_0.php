@@ -42,6 +42,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 			$opts[$v['id']] = $v['warehouse'];
 		$this->rb->set_custom_filter('warehouse',array('type'=>'select','label'=>$this->t('Warehouse'),'args'=>$opts,'trans_callback'=>array($this, 'warehouse_filter')));
 		$this->rb->set_filters_defaults(array('warehouse'=>$my_warehouse));
+		$this->rb->set_additional_actions_method(array($this,'orders_actions'));
 
 		$this->rb->set_header_properties(array(
 			'terms'=>array('width'=>1, 'wrapmode'=>'nowrap'),
@@ -53,6 +54,18 @@ class Premium_Warehouse_Items_Orders extends Module {
 		));
 		
 		$this->display_module($this->rb);
+	}
+	
+	public function orders_actions($r, $gb_row) {
+		
+		switch ($r['transaction_type']) {
+			case 0: $bg_color = '#D5FFD5'; break;
+			case 1: $bg_color = '#FFFFD5'; break;
+			case 2: $bg_color = '#FFD5D5'; break;
+			case 4: $bg_color = '#D5D5FF'; break;
+			default: $bg_color = '#D5D5D5';
+		}
+		$gb_row->set_attrs('style="background:'.$bg_color.';"');
 	}
 
 	public function warehouse_filter($choice) {
