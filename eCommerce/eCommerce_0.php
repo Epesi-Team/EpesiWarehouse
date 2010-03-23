@@ -240,9 +240,9 @@ class Premium_Warehouse_eCommerce extends Module {
 		if(isset($_REQUEST['pos_action']) && $r['id']==$_REQUEST['pos_action'] && is_numeric($_REQUEST['old']) && is_numeric($_REQUEST['new'])) {
 		    $crits = $this->rb->get_module_variable('crits_stuff',array());
 		    if($_REQUEST['new']>0) {
-			    $pos = Utils_RecordBrowserCommon::get_records($tab,array_merge($crits,array('>position'=>$_REQUEST['old'])), array('position'),array('position'),1);
+			    $pos = Utils_RecordBrowserCommon::get_records($tab,array_merge($crits,array('>position'=>$_REQUEST['old'])), array('position'=>'ASC'),array('position'),1);
 		    } else {
-			    $pos = Utils_RecordBrowserCommon::get_records($tab,array_merge($crits,array('<position'=>$_REQUEST['old'])), array('position'),array('position'),1);		    
+			    $pos = Utils_RecordBrowserCommon::get_records($tab,array_merge($crits,array('<position'=>$_REQUEST['old'])), array('position'=>'ASC'),array('position'),1);		    
 		    }
 		    if($pos) {
 		    	$pos = array_shift($pos);
