@@ -250,8 +250,10 @@ class Premium_Warehouse_eCommerce extends Module {
 		    	$recs = Utils_RecordBrowserCommon::get_records($tab,array('position'=>$pos), array('id'));
 		    	foreach($recs as $rr)
 				Utils_RecordBrowserCommon::update_record($tab,$rr['id'],array('position'=>$_REQUEST['old']));
-    		    	Utils_RecordBrowserCommon::update_record($tab,$r['id'],array('position'=>$_REQUEST['new']));
+    		    	Utils_RecordBrowserCommon::update_record($tab,$r['id'],array('position'=>$pos));
 		    	location(array());
+		    } else {
+		    	Epesi::alert($this->ht('This item is already on top/bottom'));
 		    }
 		}
 		if($r['position']>0)
