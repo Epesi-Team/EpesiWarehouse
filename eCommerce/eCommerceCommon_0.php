@@ -954,12 +954,14 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 						}
 					}
 				}
-				$sm->assign('contact_us',$contactus);
-				ob_start();
-				Base_ThemeCommon::display_smarty($sm, 'Premium_Warehouse_eCommerce','mail');
-				$mail = ob_get_clean();
+				if($email) {
+					$sm->assign('contact_us',$contactus);
+					ob_start();
+					Base_ThemeCommon::display_smarty($sm, 'Premium_Warehouse_eCommerce','mail');
+					$mail = ob_get_clean();
 				
-				Base_MailCommon::send($email,$title,$mail,null,null,true);
+					Base_MailCommon::send($email,$title,$mail,null,null,true);
+				}
 			}
 		}
 		return null;//don't modify values
