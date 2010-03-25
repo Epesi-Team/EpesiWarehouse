@@ -12,15 +12,24 @@ warehouse_itemAutocompleter = Class.create(Ajax.Autocompleter, {
     this.stopIndicator();
     if(Element.getStyle(this.update, 'display')!='none') this.options.onHide(this.element, this.update);
     if(this.iefix) Element.hide(this.iefix);
-	$('item_name').disabled=true;
-	$('description').disabled=true;
-	$('sww').disabled=true;
-	$('quantity').disabled=true;
-	$('gross_price').disabled=true;
-	$('__gross_price__currency').disabled=true;
-	$('net_price').disabled=true;
-	$('__net_price__currency').disabled=true;
-	$('tax_rate').disabled=true;
+	var e = $('item_name');
+	if(e) e.disabled=true;
+	e = $('description');
+	if(e) e.disabled=true;
+	e = $('sww');
+	if(e) e.disabled=true;
+	e = $('quantity');
+	if(e) e.disabled=true;
+	e = $('gross_price');
+	if(e) e.disabled=true;
+	e = $('__gross_price__currency');
+	if(e) e.disabled=true;
+	e = $('net_price');
+	if(e) e.disabled=true;
+	e = $('__net_price__currency');
+	if(e) e.disabled=true;
+	e = $('tax_rate');
+	if(e) e.disabled=true;
 	new Ajax.Request('modules/Premium/Warehouse/Items/Orders/item_details_update.php', {
 		method: 'post',
 		parameters:{
@@ -30,15 +39,24 @@ warehouse_itemAutocompleter = Class.create(Ajax.Autocompleter, {
 		},
 		onSuccess:function(t) {
 			eval(t.responseText);
-			$('item_name').disabled=false;
-			$('description').disabled=false;
-			$('sww').disabled=false;
-			$('quantity').disabled=false;
-			$('gross_price').disabled=false;
-			$('__gross_price__currency').disabled=false;
-			$('net_price').disabled=false;
-			$('__net_price__currency').disabled=false;
-			$('tax_rate').disabled=false;
+			var e = $('item_name');
+			if(e) e.disabled=false;
+			e = $('description');
+			if(e) e.disabled=false;
+			e = $('sww');
+			if(e) e.disabled=false;
+			e = $('quantity');
+			if(e) e.disabled=false;
+			e = $('gross_price');
+			if(e) e.disabled=false;
+			e = $('__gross_price__currency');
+			if(e) e.disabled=false;
+			e = $('net_price');
+			if(e) e.disabled=false;
+			e = $('__net_price__currency');
+			if(e) e.disabled=false;
+			e = $('tax_rate');
+			if(e) e.disabled=false;
 		}
 	});
    }
