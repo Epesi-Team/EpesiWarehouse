@@ -949,19 +949,17 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 							$company = CRM_ContactsCommon::get_company($values['company']);
 							if(isset($company['email']) && $company['email'])
 								$email = $company['email'];
-							else
-								return null;
 						}
 					}
 				}
-				if($email) {
-					$sm->assign('contact_us',$contactus);
-					ob_start();
-					Base_ThemeCommon::display_smarty($sm, 'Premium_Warehouse_eCommerce','mail');
-					$mail = ob_get_clean();
+				if(!isset($email)) return null;
 				
-					Base_MailCommon::send($email,$title,$mail,null,null,true);
-				}
+				$sm->assign('contact_us',$contactus);
+				ob_start();
+				Base_ThemeCommon::display_smarty($sm, 'Premium_Warehouse_eCommerce','mail');
+				$mail = ob_get_clean();
+				
+				Base_MailCommon::send($email,$title,$mail,null,null,true);
 			}
 		}
 		return null;//don't modify values
