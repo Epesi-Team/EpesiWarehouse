@@ -400,14 +400,21 @@ class Orders
 		    	}
 		}
 		//add ecommerce user
-	    	DB::Execute('INSERT INTO premium_ecommerce_users_data_1(created_on,f_contact,f_password) VALUES (%T,%d,%s)',
-    			array($t,$contact,md5($aForm['sPassword'])));
-	    	//mark logged in
-		$_SESSION['user'] = DB::Insert_ID('premium_ecomerce_users_data_1','id');
-	    	$_SESSION['contact'] = $contact;
-    		$_SESSION['company'] = $company;
-	      	if(!$_SESSION['company'])
-      			$_SESSION['company'] = null;
+		$mdpass = md5($aForm['sPassword']);
+		$oldpass = DB::GetOne('SELECT f_password FROM premium_ecommerce_users_data_1 WHERE f_contact=%d',array($contact));
+		if(!$oldpass) {
+		    	DB::Execute('INSERT INTO premium_ecommerce_users_data_1(created_on,f_contact,f_password) VALUES (%T,%d,%s)',
+    				array($t,$contact,$mdpass));
+    			$oldpass = $mdpass;
+    		}
+		if($oldpass==$mdpass) {
+		    	//mark logged in
+			$_SESSION['user'] = DB::Insert_ID('premium_ecomerce_users_data_1','id');
+	    		$_SESSION['contact'] = $contact;
+	    		$_SESSION['company'] = $company;
+		      	if(!$_SESSION['company'])
+      				$_SESSION['company'] = null;
+		} 
 	}
     }
     
