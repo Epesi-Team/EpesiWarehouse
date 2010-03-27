@@ -1093,6 +1093,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 						Base_ActionBarCommon::add('attach',Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Turn into Purchase'),Module::create_href(array('premium_warehouse_turn_into_purchase'=>$values['id'])));
 						if (isset($_REQUEST['premium_warehouse_turn_into_purchase']) && $_REQUEST['premium_warehouse_turn_into_purchase']===$values['id']) {
 							Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $values['id'], array('transaction_type'=>0, 'status'=>20, 'receipt'=>1));
+							unset($_REQUEST['premium_warehouse_turn_into_purchase']);
 							location(array());
 						}
 					}
@@ -1105,6 +1106,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 				}
 				if (isset($_REQUEST['premium_warehouse_change_active_order']) && $_REQUEST['premium_warehouse_change_active_order']===$values['id']) {
 					Base_User_SettingsCommon::save('Premium_Warehouse_Items_Orders','my_transaction',$active?'':$values['id']);
+					unset($_REQUEST['premium_warehouse_change_active_order']);
 					$active = !$active;
 				}
 				if ($active) {

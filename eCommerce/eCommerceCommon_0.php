@@ -551,6 +551,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
         	    Base_ActionBarCommon::add('add','Icecat',Module::create_href(array('icecat_sync'=>1),'Getting data from icecat - please wait.'));
 	    if(isset($_REQUEST['icecat_sync'])) {
 		self::icecat_sync($r['item_name']);
+		unset($_REQUEST['icecat_sync']);
 	    }
 	    return array('show'=>false);
 	}
@@ -629,6 +630,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 	public static function warehouse_item_actions($r, $gb_row) {
 		if(isset($_REQUEST['publish_warehouse_item']) && $r['id']==$_REQUEST['publish_warehouse_item']) {
 		    self::publish_warehouse_item($r['id']);
+		    unset($_REQUEST['publish_warehouse_item']);
 		} 
 
 		$tip = '<table>';
@@ -650,6 +652,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 		    if(isset($_REQUEST['toggle_publish']) && $rec['id']==$_REQUEST['toggle_publish'] && ($_REQUEST['publish_value']==0 || $_REQUEST['publish_value']==1)) {
 			$rec['publish'] = $_REQUEST['publish_value'];
 			self::toggle_publish($rec['id'],$rec['publish']);
+			unset($_REQUEST['toggle_publish']);
 		    }
 		    
 		    if(!$rec['publish']) {
@@ -742,6 +745,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 		    if($_REQUEST['payment_realized']) $val=1;
 			else $val=0;
 		    Utils_RecordBrowserCommon::update_record('premium_ecommerce_orders',$id,array('payment_realized'=>$val));
+		    unset($_REQUEST['payment_realized']);
 		    $default = $val;
 		}
 		$form->addElement('static', $field, $label, $default?'<a '.Module::create_confirm_href(Base_LangCommon::ts('Premium_Warehouse_eCommerce','Mark this record as not paid?'),array('payment_realized'=>0)).'><span class="checkbox_on" /></a>':'<a '.Module::create_href(array('payment_realized'=>1)).'><span '.Utils_TooltipCommon::open_tag_attrs('Click to mark as paid').' class="checkbox_off" /></a>');
