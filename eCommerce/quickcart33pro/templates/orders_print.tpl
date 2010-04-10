@@ -163,6 +163,11 @@
                                     <font color="#993333"><h3>$lang['Order_info_title'] $aData[iOrder]</h3></font>
                                     $aData[sCustomHello]
 
+                                    <h4>$lang['Payment_description']</h4>
+                                    $aData['sPaymentDescription']
+                                    <br>
+
+                                    <h4>$lang[Your_personal_information]</h4>
                                     $lang[First_and_last_name]: <i>$aData[sFirstName] $aData[sLastName]</i><br>
                                     $aData[sCompanyInfo]
 				    $lang[Invoice]: <i>$aData[sInvoice]</i><br>
@@ -173,8 +178,7 @@
                                     $lang[Telephone]: <i>$aData[sPhone]</i><br>
                                     $lang[Email]: <i>$aData[sEmail]</i><br>
                                     <br>
-                                    <h4>$lang[Your_personal_information]</h4>
-                                    $aData['sPersonalData']
+
                                     <h4>$lang[Order_summary]</h4>
                                     <ul>
                                     $aData[sProducts]
