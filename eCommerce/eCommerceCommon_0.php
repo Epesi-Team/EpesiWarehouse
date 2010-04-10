@@ -938,7 +938,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 				$it_tmp = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details',array('transaction_id'=>$values['id']),array('item_name'));
 				$items = '<ul>';
 				foreach($it_tmp as $it) {
-					$itt = Utils_RecordBrowserCommon::get_record('premium_warehouse_items',$it);
+					$itt = Utils_RecordBrowserCommon::get_record('premium_warehouse_items',$it['item_name']);
 					$items .= '<li>'.$itt['item_name'].'</li>';
 				}
 				$items .= '</ul>';
