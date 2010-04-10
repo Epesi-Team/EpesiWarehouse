@@ -935,6 +935,15 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 					break;
 			}
 			if($txt) {
+				$it_tmp = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details',array('transaction_id'=>$values['id']),array('item_name'));
+				$items = '<ul>';
+				foreach($it_tmp as $it) {
+					$itt = Utils_RecordBrowserCommon::get_record('premium_warehouse_items',$it);
+					$items .= '<li>'.$itt['item_name'].'</li>';
+				}
+				$items .= '</ul>';
+				$txt = str_replace('__ITEMS__',$items,$txt);
+			
 				$sm = Base_ThemeCommon::init_smarty();
 				$sm->assign('txt',$txt);
 				$sm->assign('contact_us_title',Base_LangCommon::ts('Premium_Warehouse_eCommerce','Contact us'));
@@ -962,6 +971,8 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 				ob_start();
 				Base_ThemeCommon::display_smarty($sm, 'Premium_Warehouse_eCommerce','mail');
 				$mail = ob_get_clean();
+				
+				$title .= ' - id '.$values['id'];
 				
 				Base_MailCommon::send($email,$title,$mail,null,null,true);
 			}
