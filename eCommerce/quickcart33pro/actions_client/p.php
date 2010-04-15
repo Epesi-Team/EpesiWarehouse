@@ -225,10 +225,10 @@ if( isset( $iContent ) && is_numeric( $iContent ) ){
             $sOrderError = $oTpl->tbHtml( 'messages.tpl', 'PASSWORD_MISMATCH' );          
           } elseif( $checkFieldsRet === 'basket_empty' ){
             $ppid = $config['basket_page'];
-            $sOrder = '<script type="text/javascript">alert(\''.addcslashes($GLOBALS['lang']['Stock_exceeded_basket_empty'],'\\\'').'\');window.location.replace(window.location.href+"?'.change2Url( $oPage->aPages[$ppid]['sName'] ).','.$ppid.'");</script>';
+            $sOrder = '<script type="text/javascript">alert(\''.addcslashes($GLOBALS['lang']['Stock_exceeded_basket_empty'],'\\\'').'\');var endOfRef = window.location.href.length;if (window.location.search.length > 0 && window.location.href.indexOf(window.location.search) > 0)endOfRef = window.location.href.indexOf(window.location.search);window.location.replace(window.location.href.substring(0,endOfRef)+"?'.change2Url( $oPage->aPages[$ppid]['sName'] ).','.$ppid.'");</script>';
           } elseif( $checkFieldsRet === 'stock_exceeded' ){
             $ppid = $config['basket_page'];
-            $sOrder = '<script type="text/javascript">alert(\''.addcslashes($GLOBALS['lang']['Stock_exceeded_some'],'\\\'').'\');window.location.replace(window.location.href+"?'.change2Url( $oPage->aPages[$ppid]['sName'] ).','.$ppid.'");</script>';
+            $sOrder = '<script type="text/javascript">alert(\''.addcslashes($GLOBALS['lang']['Stock_exceeded_some'],'\\\'').'\');var endOfRef = window.location.href.length;if (window.location.search.length > 0 && window.location.href.indexOf(window.location.search) > 0)endOfRef = window.location.href.indexOf(window.location.search);window.location.replace(window.location.href.substring(0,endOfRef)+"?'.change2Url( $oPage->aPages[$ppid]['sName'] ).','.$ppid.'");</script>';
           } else {
             $sOrderError = $oTpl->tbHtml( 'messages.tpl', 'REQUIRED_FIELDS' );
           }
