@@ -224,7 +224,8 @@ if( isset( $iContent ) && is_numeric( $iContent ) ){
           } elseif( $checkFieldsRet === 'password_mismatch' ){
             $sOrderError = $oTpl->tbHtml( 'messages.tpl', 'PASSWORD_MISMATCH' );          
           } elseif( $checkFieldsRet === 'basket_empty' ){
-            $sOrder = $oTpl->tbHtml( 'orders_basket.tpl', 'BASKET_EMPTY' ).'<script type="text/javascript">alert(\''.addcslashes($GLOBALS['lang']['Stock_exceeded_basket_empty'],'\\\'').'\')</script>';
+            $ppid = $config['basket_page'];
+            $sOrder = '<script type="text/javascript">alert(\''.addcslashes($GLOBALS['lang']['Stock_exceeded_basket_empty'],'\\\'').'\');window.location.replace(window.location.href+"?'.change2Url( $this->aPages[$ppid]['sName'] ).','.$ppid.'");</script>';
           } elseif( $checkFieldsRet === 'stock_exceeded' ){
             $ppid = $config['basket_page'];
             $sOrder = '<script type="text/javascript">alert(\''.addcslashes($GLOBALS['lang']['Stock_exceeded_some'],'\\\'').'\');window.location.replace(window.location.href+"?'.change2Url( $this->aPages[$ppid]['sName'] ).','.$ppid.'");</script>';
