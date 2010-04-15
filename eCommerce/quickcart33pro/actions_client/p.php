@@ -225,10 +225,10 @@ if( isset( $iContent ) && is_numeric( $iContent ) ){
             $sOrderError = $oTpl->tbHtml( 'messages.tpl', 'PASSWORD_MISMATCH' );          
           } elseif( $checkFieldsRet === 'basket_empty' ){
             $ppid = $config['basket_page'];
-            $sOrder = '<script type="text/javascript">alert(\''.addcslashes($GLOBALS['lang']['Stock_exceeded_basket_empty'],'\\\'').'\');window.location.replace(window.location.href+"?'.change2Url( $this->aPages[$ppid]['sName'] ).','.$ppid.'");</script>';
+            $sOrder = '<script type="text/javascript">alert(\''.addcslashes($GLOBALS['lang']['Stock_exceeded_basket_empty'],'\\\'').'\');window.location.replace(window.location.href+"?'.change2Url( $oPage->aPages[$ppid]['sName'] ).','.$ppid.'");</script>';
           } elseif( $checkFieldsRet === 'stock_exceeded' ){
             $ppid = $config['basket_page'];
-            $sOrder = '<script type="text/javascript">alert(\''.addcslashes($GLOBALS['lang']['Stock_exceeded_some'],'\\\'').'\');window.location.replace(window.location.href+"?'.change2Url( $this->aPages[$ppid]['sName'] ).','.$ppid.'");</script>';
+            $sOrder = '<script type="text/javascript">alert(\''.addcslashes($GLOBALS['lang']['Stock_exceeded_some'],'\\\'').'\');window.location.replace(window.location.href+"?'.change2Url( $oPage->aPages[$ppid]['sName'] ).','.$ppid.'");</script>';
           } else {
             $sOrderError = $oTpl->tbHtml( 'messages.tpl', 'REQUIRED_FIELDS' );
           }
