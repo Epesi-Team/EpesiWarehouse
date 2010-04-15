@@ -95,11 +95,11 @@ class Orders
 	
 		$ret = DB::Execute('SELECT * FROM premium_ecommerce_orders_temp WHERE customer=%s',array($_SESSION['iCustomer'.LANGUAGE]));
 		while($row = $ret->FetchRow()) {
-	        $this->aProducts[$row['product']] = Array( 'iCustomer' => $row['customer'], 'iProduct' => $row['product'], 'iQuantity' => $row['quantity'], 'fPrice' => $row['price'], 'sName' => $row['name'], 'tax'=>$row['tax'], 'weight'=>$row['weight'] );
-	        $this->aProducts[$row['product']]['sLinkName'] = '?'.$row['product'].','.change2Url( $this->aProducts[$row['product']]['sName'] );
-	        $this->aProducts[$row['product']]['fSummary'] = normalizePrice( $this->aProducts[$row['product']]['fPrice'] * $this->aProducts[$row['product']]['iQuantity']);
-	        $_SESSION['iOrderQuantity'.LANGUAGE] += $row['quantity'];
-    	    $_SESSION['fOrderSummary'.LANGUAGE]  += ( $row['quantity'] * $row['price'] );
+		        $this->aProducts[$row['product']] = Array( 'iCustomer' => $row['customer'], 'iProduct' => $row['product'], 'iQuantity' => $row['quantity'], 'fPrice' => $row['price'], 'sName' => $row['name'], 'tax'=>$row['tax'], 'weight'=>$row['weight'] );
+		        $this->aProducts[$row['product']]['sLinkName'] = '?'.$row['product'].','.change2Url( $this->aProducts[$row['product']]['sName'] );
+	        	$this->aProducts[$row['product']]['fSummary'] = normalizePrice( $this->aProducts[$row['product']]['fPrice'] * $this->aProducts[$row['product']]['iQuantity']);
+		        $_SESSION['iOrderQuantity'.LANGUAGE] += $row['quantity'];
+    			$_SESSION['fOrderSummary'.LANGUAGE]  += ( $row['quantity'] * $row['price'] );
 		}
 	    if( isset( $_SESSION['fOrderSummary'.LANGUAGE] ) )
     		$this->fProductsSummary = $_SESSION['fOrderSummary'.LANGUAGE] = normalizePrice( $_SESSION['fOrderSummary'.LANGUAGE] );
@@ -139,6 +139,17 @@ class Orders
   * @return bool
   */
   function checkEmptyBasket( ){
+	$qty = DB::GetAssoc('SELECT product,quantity FROM premium_ecommerce_orders_temp WHERE customer=%s',array($_SESSION['iCustomer'.LANGUAGE]));
+	$oProduct =& Products::getInstance( );
+	foreach($qty as $p=>$q) {
+		$iQuantity = $q;
+		$prod = $oProduct->getProduct($p);
+		if($iQuantity>$prod['iQuantity']) {
+			$iQuantity = $prod['iQuantity'];
+			$_SESSION['stock_exceeded'] = true;
+		}
+		DB::Execute('UPDATE premium_ecommerce_orders_temp SET quantity=%d WHERE customer=%s AND product=%d',array($iQuantity,$_SESSION['iCustomer'.LANGUAGE],$p));
+	}
     $this->generateBasket( );
     return ( isset( $this->aProducts ) ) ? false : true;
   } // end function checkEmptyBasket
@@ -152,10 +163,10 @@ class Orders
     global $lang;
     if( isset( $aForm['aProducts'] ) && is_array( $aForm['aProducts'] ) ){
 		$qty = DB::GetAssoc('SELECT product,quantity FROM premium_ecommerce_orders_temp WHERE customer=%s',array($_SESSION['iCustomer'.LANGUAGE]));
+		$oProduct =& Products::getInstance( );
 		foreach($qty as $p=>$q) {
 			if(isset( $aForm['aProducts'][$p] ) && is_numeric( $aForm['aProducts'][$p] ) && $aForm['aProducts'][$p] > 0 && $aForm['aProducts'][$p] < 10000 && $q!=$aForm['aProducts'][$p]) {
 				$iQuantity = $aForm['aProducts'][$p];
-				$oProduct =& Products::getInstance( );
 				$prod = $oProduct->getProduct($p);
 				if($iQuantity>$prod['iQuantity']) {
 					$iQuantity = $prod['iQuantity'];
