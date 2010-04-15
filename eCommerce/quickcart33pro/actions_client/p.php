@@ -226,9 +226,8 @@ if( isset( $iContent ) && is_numeric( $iContent ) ){
           } elseif( $checkFieldsRet === 'basket_empty' ){
             $sOrder = $oTpl->tbHtml( 'orders_basket.tpl', 'BASKET_EMPTY' ).'<script type="text/javascript">alert(\''.addcslashes($GLOBALS['lang']['Stock_exceeded_basket_empty'],'\\\'').'\')</script>';
           } elseif( $checkFieldsRet === 'stock_exceeded' ){
-	    $sBasketList = $oOrder->listProducts( 'orders_basket.tpl' );
-	    $iContent = $config['basket_page'];
-            $sOrder = '<script type="text/javascript">alert(\''.addcslashes($GLOBALS['lang']['Stock_exceeded_some'],'\\\'').'\')</script>';
+            $ppid = $config['basket_page'];
+            $sOrder = '<script type="text/javascript">alert(\''.addcslashes($GLOBALS['lang']['Stock_exceeded_some'],'\\\'').'\');window.location.replace(window.location.href+"?'.change2Url( $this->aPages[$ppid]['sName'] ).','.$ppid.'");</script>';
           } else {
             $sOrderError = $oTpl->tbHtml( 'messages.tpl', 'REQUIRED_FIELDS' );
           }
