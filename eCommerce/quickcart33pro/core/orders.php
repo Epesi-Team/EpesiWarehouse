@@ -139,17 +139,6 @@ class Orders
   * @return bool
   */
   function checkEmptyBasket( ){
-	$qty = DB::GetAssoc('SELECT product,quantity FROM premium_ecommerce_orders_temp WHERE customer=%s',array($_SESSION['iCustomer'.LANGUAGE]));
-	$oProduct =& Products::getInstance( );
-	foreach($qty as $p=>$q) {
-		$iQuantity = $q;
-		$prod = $oProduct->getProduct($p);
-		if($iQuantity>$prod['iQuantity']) {
-			$iQuantity = $prod['iQuantity'];
-			$_SESSION['stock_exceeded'] = true;
-		}
-		DB::Execute('UPDATE premium_ecommerce_orders_temp SET quantity=%d WHERE customer=%s AND product=%d',array($iQuantity,$_SESSION['iCustomer'.LANGUAGE],$p));
-	}
     $this->generateBasket( );
     return ( isset( $this->aProducts ) ) ? false : true;
   } // end function checkEmptyBasket
@@ -259,6 +248,23 @@ class Orders
     	if($aForm['sPassword']!=$aForm['sPassword2'])
 	    	return 'password_mismatch';
     }
+
+        $qty = DB::GetAssoc('SELECT product,quantity FROM premium_ecommerce_orders_temp WHERE customer=%s',array($_SESSION['iCustomer'.LANGUAGE]));
+	$oProduct =& Products::getInstance( );
+	foreach($qty as $p=>$q) {
+		$iQuantity = $q;
+		$prod = $oProduct->getProduct($p);
+		if($iQuantity>$prod['iQuantity']) {
+			$iQuantity = $prod['iQuantity'];
+			if($iQuantity<=0) {
+				DB::Execute('DELETE FROM premium_ecommerce_orders_temp WHERE customer=%s AND product=%d',array($_SESSION['iCustomer'.LANGUAGE],$p));
+				if(count($qty)==1)
+					return 'basket_empty';
+			} else
+				DB::Execute('UPDATE premium_ecommerce_orders_temp SET quantity=%d WHERE customer=%s AND product=%d',array($iQuantity,$_SESSION['iCustomer'.LANGUAGE],$p));
+			return 'stock_exceeded';
+		}
+	}
     
     if(throwStrLen( $aForm['sFirstName'] ) > 1
       && throwStrLen( $aForm['sLastName'] ) > 1
