@@ -40,9 +40,11 @@ class Premium_Warehouse_SalesReportCommon extends ModuleCommon {
 
 		DB::Execute('DELETE FROM premium_warehouse_sales_report_purchase_fifo_tmp');
 		DB::Execute('DELETE FROM premium_warehouse_sales_report_purchase_lifo_tmp');
+//		$purchases = DB::Execute('SELECT *, o.id AS order_id FROM premium_warehouse_items_orders_details_data_1 AS od LEFT JOIN premium_warehouse_items_orders_data_1 AS o ON o.id=od.f_transaction_id WHERE od.active=1 AND (o.f_transaction_type=0 OR o.f_transaction_type=4) AND o.f_status=20 ORDER BY (SELECT MAX(oeh.edited_on) FROM premium_warehouse_items_orders_edit_history_data AS oehd LEFT JOIN premium_warehouse_items_orders_edit_history AS oeh ON oehd.edit_id=oeh.id WHERE oeh.premium_warehouse_items_orders_id=o.id AND oehd.field="status" AND oehd.old_value!="") ASC, o.f_transaction_type ASC, o.created_on ASC');
 		$purchases = DB::Execute('SELECT *, o.id AS order_id FROM premium_warehouse_items_orders_details_data_1 AS od LEFT JOIN premium_warehouse_items_orders_data_1 AS o ON o.id=od.f_transaction_id WHERE od.active=1 AND (o.f_transaction_type=0 OR o.f_transaction_type=4) AND o.f_status=20 ORDER BY o.f_transaction_date ASC, o.f_transaction_type ASC, o.created_on ASC');
 		$id = 0;
 		DB::Execute('DELETE FROM premium_warehouse_sales_report_earning');
+//		$sales = DB::Execute('SELECT *, od.id AS od_id FROM premium_warehouse_items_orders_details_data_1 AS od LEFT JOIN premium_warehouse_items_orders_data_1 AS o ON o.id=od.f_transaction_id WHERE od.active=1 AND o.f_transaction_type=1 AND o.f_status=20 ORDER BY (SELECT MAX(oeh.edited_on) FROM premium_warehouse_items_orders_edit_history_data AS oehd LEFT JOIN premium_warehouse_items_orders_edit_history AS oeh ON oehd.edit_id=oeh.id WHERE oeh.premium_warehouse_items_orders_id=o.id AND oehd.field="status" AND oehd.old_value!="") ASC');
 		$sales = DB::Execute('SELECT *, od.id AS od_id FROM premium_warehouse_items_orders_details_data_1 AS od LEFT JOIN premium_warehouse_items_orders_data_1 AS o ON o.id=od.f_transaction_id WHERE od.active=1 AND o.f_transaction_type=1 AND o.f_status=20 ORDER BY o.f_transaction_date ASC');
 		$sale = $sales->FetchRow();
 		do {
