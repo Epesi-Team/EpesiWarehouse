@@ -1124,7 +1124,8 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			case 'edit':
 				if ($values['status']!=21) {
 					if ($values['company']<0 && $values['company_name']) {
-						$values['company'] = Utils_RecordBrowserCommon::new_record('company',
+						$values['company'] = Utils_RecordBrowserCommon::get_id('company', 'company_name', $values['company_name']);
+						if (!$values['company']) $values['company'] = Utils_RecordBrowserCommon::new_record('company',
 							array(
 								'company_name'=>$values['company_name'],
 								'permission'=>0,
@@ -1140,7 +1141,8 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 					}
 					if ($values['contact']==0 && trim($values['last_name']) && trim($values['first_name'])) {
 						if ($values['company']==-1) $values['company']='';
-						$values['contact'] = Utils_RecordBrowserCommon::new_record('contact',
+						$values['contact'] = Utils_RecordBrowserCommon::get_id('contact', array('first_name','last_name'), array($values['first_name'],$values['last_name']));
+						if (!$values['contact']) $values['contact'] = Utils_RecordBrowserCommon::new_record('contact',
 							array(
 								'first_name'=>$values['first_name'],
 								'last_name'=>$values['last_name'],

@@ -78,7 +78,7 @@ class Premium_Warehouse_InvoicePLCommon extends ModuleCommon {
 	}
 	
 	public static function check_number($data) {
-		if ($data['invoice_number'] == Utils_RecordBrowser::$last_record['invoice_number'] || !$data['invoice_number']) return true;
+		if (isset($data['invoice_number']) && ($data['invoice_number'] == Utils_RecordBrowser::$last_record['invoice_number'] || !$data['invoice_number'])) return true;
 		if (!isset($data['warehouse'])) $data['warehouse'] = Utils_RecordBrowser::$last_record['warehouse'];
 		$crits = array('warehouse'=>$data['warehouse'], 'invoice_number'=>$data['invoice_number']);
 		if (isset(Utils_RecordBrowser::$last_record['id'])) $crits['!id'] = Utils_RecordBrowser::$last_record['id'];
@@ -108,8 +108,8 @@ class Premium_Warehouse_InvoicePLCommon extends ModuleCommon {
 			eval_js('setTimeout(\'Event.observe("receipt", "change", update_invoice_fields_label)\', 1000);');
 //			eval_js('alert("!");');
 			self::$rb_obj = $rb_obj; 
-			$form->addFormRule(array('Premium_Warehouse_InvoicePLCommon', 'check_number'));
 			$form->addElement('text', $field, $label, array('id'=>$field));
+			$form->addFormRule(array('Premium_Warehouse_InvoicePLCommon', 'check_number'));
 			$form->setDefaults(array($field=>$default));
 		} else {
 			if (Utils_RecordBrowser::$last_record['receipt']) {
