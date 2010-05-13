@@ -1,4 +1,5 @@
 warehouse_itemAutocompleter = Class.create(Ajax.Autocompleter, {
+  last_update_value:null,
   initialize: function(element, update, url, options, trans) {
     this.baseInitialize(element, update, options);
     this.options.asynchronous  = true;
@@ -13,7 +14,10 @@ warehouse_itemAutocompleter = Class.create(Ajax.Autocompleter, {
     if(Element.getStyle(this.update, 'display')!='none') this.options.onHide(this.element, this.update);
     if(this.iefix) Element.hide(this.iefix);
 	var e = $('item_name');
-	if(e) e.disabled=true;
+	if(!e) return;
+	var value = e.value;
+	if(value==this.last_update_value) return;
+	this.last_update_value=value;
 	e = $('description');
 	if(e) e.disabled=true;
 	e = $('sww');
@@ -33,7 +37,7 @@ warehouse_itemAutocompleter = Class.create(Ajax.Autocompleter, {
 	new Ajax.Request('modules/Premium/Warehouse/Items/Orders/item_details_update.php', {
 		method: 'post',
 		parameters:{
-			rec_id:Object.toJSON($('item_name').value),
+			rec_id:Object.toJSON(value),
 			trans:Object.toJSON(this.trans),
 			cid: Epesi.client_id
 		},
