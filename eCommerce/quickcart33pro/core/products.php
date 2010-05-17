@@ -389,7 +389,7 @@ class Products
 					INNER JOIN (premium_warehouse_items_data_1 it) ON (pr.f_item_name=it.id)
 					LEFT JOIN premium_ecommerce_descriptions_data_1 d ON (d.f_item_name=it.id AND d.f_language="'.LANGUAGE.'" AND d.active=1)
 					LEFT JOIN premium_ecommerce_descriptions_data_1 d_en ON (d_en.f_item_name=it.id AND d_en.f_language="en" AND d_en.active=1)
-					 WHERE pr.f_publish=1 AND pr.active=1 AND ('.$query.')');
+					 WHERE pr.f_publish=1 AND pr.active=1 AND it.active=1 AND ('.$query.')');
 
       if( !isset( $iList ) ){
         $iList = $GLOBALS['config']['products_list'];
@@ -495,9 +495,9 @@ class Products
 
       $iCount = DB::GetOne('SELECT 	count(it.id) 
 					FROM premium_ecommerce_products_data_1 pr
-					INNER JOIN (premium_warehouse_items_data_1 it,premium_ecommerce_availability_data_1 av) ON (pr.f_item_name=it.id AND av.id=pr.f_available)
+					INNER JOIN (premium_warehouse_items_data_1 it) ON (pr.f_item_name=it.id)
 					LEFT JOIN premium_ecommerce_descriptions_data_1 d ON (d.f_item_name=it.id AND d.f_language="'.LANGUAGE.'" AND d.active=1)
-					 WHERE pr.f_publish=1 AND pr.active=1 AND ('.$query.') ORDER BY pr.f_position');
+					 WHERE pr.f_publish=1 AND pr.active=1 AND it.active=1 AND ('.$query.') ORDER BY pr.f_position');
 
       if( !isset( $iList ) ){
         $iList = $GLOBALS['config']['products_list'];
