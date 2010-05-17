@@ -98,8 +98,8 @@ class Products
 					LEFT JOIN premium_ecommerce_descriptions_data_1 d_en ON (d_en.f_item_name=it.id AND d_en.f_language="en" AND d_en.active=1)
 					LEFT JOIN premium_warehouse_location_data_1 loc ON (loc.f_item_sku=it.id AND loc.f_quantity>0 AND loc.active=1)
 					 WHERE pr.f_publish=1 AND pr.active=1 AND it.active=1 '.($where?' AND ('.$where.')':'').' GROUP BY it.id ORDER BY 
-					 SUM(loc.f_quantity)+IF(SUM(loc.f_quantity)>0,0,(SELECT dist_item.quantity FROM premium_warehouse_wholesale_items dist_item
-					WHERE dist_item.item_id=it.id AND dist_item.quantity>0 AND dist_item.price_currency='.$currency.' ORDER BY dist_item.price LIMIT 1))=0 DESC, pr.f_position'.($limit!==null?' LIMIT '.(int)$limit.($offset!==null?' OFFSET '.(int)$offset:''):''));
+                    IF(SUM(loc.f_quantity)>0,1,(SELECT 1 FROM premium_warehouse_wholesale_items dist_item
+					WHERE dist_item.item_id=it.id AND dist_item.quantity>0 AND dist_item.price_currency='.$currency.' ORDER BY dist_item.price LIMIT 1)) IS NOT NULL, pr.f_position'.($limit!==null?' LIMIT '.(int)$limit.($offset!==null?' OFFSET '.(int)$offset:''):''));
 	$pids = array();
 	foreach($ret as $aExp)
 		$pids[] = $aExp['iProduct'];
