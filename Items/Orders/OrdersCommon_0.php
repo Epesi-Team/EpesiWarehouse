@@ -1123,7 +1123,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 				$_SESSION['client']['order_add']=1;
 			case 'edit':
 				if ($values['status']!=21) {
-					if ($values['company']<0 && $values['company_name']) {
+					if ($values['company']==0 && $values['company_name']) {
 						$values['company'] = Utils_RecordBrowserCommon::get_id('company', 'company_name', $values['company_name']);
 						if (!$values['company']) $values['company'] = Utils_RecordBrowserCommon::new_record('company',
 							array(
