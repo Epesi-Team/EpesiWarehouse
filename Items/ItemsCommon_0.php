@@ -143,9 +143,9 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 		if ($mode=='edit' || $mode=='add') {
 			$form->addElement('currency', $field, $label, array('id'=>$field));
 			$r=Utils_RecordBrowser::$last_record;
+			Premium_Warehouse_ItemsCommon::init_net_gross_js_calculation($form, 'tax_rate', 'net_price', 'gross_price');
 			if (isset($r['net_price'])) {
 				$net_price=Utils_CurrencyFieldCommon::get_values($r['net_price']);
-				Premium_Warehouse_ItemsCommon::init_net_gross_js_calculation($form, 'tax_rate', 'net_price', 'gross_price');
 				$form->setDefaults(array($field=>Utils_CurrencyFieldCommon::format_default($net_price[0]*(100+Data_TaxRatesCommon::get_tax_rate($r['tax_rate']))/100, $net_price[1])));
 			}
 		} else {
