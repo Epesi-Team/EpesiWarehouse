@@ -91,6 +91,7 @@ function listProductsCompare( $sFile, $sBlock ){
           $oTpl->setVariables( 'aData', $aData );
           $aData['sFeatures'] .= $oTpl->tbHtml( $sFile, $sBlock.'_FEATURES' );
         } // end for
+        unset($aFeaturesProducts[$aData['iProduct']]);
       }
 
       if( isset( $aData['iProducer'] ) && isset( $aProducers[$aData['iProducer']] ) )
