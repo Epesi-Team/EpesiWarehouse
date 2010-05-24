@@ -87,7 +87,7 @@ function listProductsCompare( $sFile, $sBlock ){
       $aData['sFeatures'] = null;
       if( isset( $aFeaturesProducts[$aData['iProduct']] ) ){
         foreach( $aFeaturesProducts[$aData['iProduct']] as $aData['sFeatureName'] => $aData['sFeatureValue'] ){
-          foreach(array_keys($aData) as $s)
+          foreach(array('sFeatureName','sFeatureValue') as $s)
          	$aData[$s.'Escaped'] = htmlspecialchars($aData[$s]);
           $oTpl->setVariables( 'aData', $aData );
           $aData['sFeatures'] .= $oTpl->tbHtml( $sFile, $sBlock.'_FEATURES' );
