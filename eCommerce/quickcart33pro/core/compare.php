@@ -18,18 +18,6 @@ function listProductsCompare( $sFile, $sBlock ){
 
 
   $sFeaturesBlock = $oTpl->tbHtml( $sFile, $sBlock.'_FEATURES' );
-  if(!empty($sFeaturesBlock)) {
-    $ret2 = DB::Execute('SELECT pp.f_item_name as iProduct,
-				pp.f_value as sValue,
-				p.f_parameter_code as iFeature,
-				pl.f_label
-				FROM premium_ecommerce_products_parameters_data_1 pp
-				INNER JOIN premium_ecommerce_parameters_data_1 p ON (p.id=pp.f_parameter)
-				LEFT JOIN premium_ecommerce_parameter_labels_data_1 pl ON (pl.f_parameter=p.id AND pl.f_language="'.LANGUAGE.'" AND pl.active=1)
-				WHERE pp.active=1 AND pp.f_language="'.LANGUAGE.'"');
-    while($row = $ret2->FetchRow())
-	$aFeaturesProducts[$row['iProduct']][$row['f_label']] = $row['sValue'];
-  }
   
     $ret = DB::Execute('SELECT c.id, c.f_company_name
 			FROM premium_warehouse_items_data_1 i INNER JOIN (company_data_1 c,premium_ecommerce_products_data_1 d) 
@@ -44,6 +32,19 @@ function listProductsCompare( $sFile, $sBlock ){
   for($part=0;; $part++) {
     $aProducts = $GLOBALS['oProduct']->getProducts('',200,200*$part);
     if( !$aProducts) break;
+    if(!empty($sFeaturesBlock)) {
+        $aFeaturesProducts = array();
+        $ret2 = DB::Execute('SELECT pp.f_item_name as iProduct,
+				pp.f_value as sValue,
+				p.f_parameter_code as iFeature,
+				pl.f_label
+				FROM premium_ecommerce_products_parameters_data_1 pp
+				INNER JOIN premium_ecommerce_parameters_data_1 p ON (p.id=pp.f_parameter)
+				LEFT JOIN premium_ecommerce_parameter_labels_data_1 pl ON (pl.f_parameter=p.id AND pl.f_language="'.LANGUAGE.'" AND pl.active=1)
+				WHERE pp.active=1 AND pp.f_language="'.LANGUAGE.'" AND pp.f_item_name in ('.implode(',',array_keys($aProducts)).')');
+        while($row = $ret2->FetchRow())
+	        $aFeaturesProducts[$row['iProduct']][$row['f_label']] = $row['sValue'];
+    }
     foreach($aProducts as $aData){
       if(!$aData['fPrice']) continue;
 	if( $sBlock == 'CENEO' ){
