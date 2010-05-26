@@ -134,7 +134,7 @@ class Premium_Warehouse_Items_LocationCommon extends ModuleCommon {
 				}
 				$max_shown--;
 				$quantities[$v['warehouse']] = $v['quantity'];
-				$warehouse_label = $warehouses[$v['warehouse']];
+				$warehouse_label = isset($warehouses[$v['warehouse']])?$warehouses[$v['warehouse']]:'---';
 				if ($v['warehouse']==$warehouse) $warehouse_label = '<b>'.$warehouse_label.'</b>';
 				if ($quantities[$v['warehouse']])
 					$tooltip .= '<tr><td>'.
