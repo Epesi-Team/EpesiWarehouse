@@ -255,7 +255,7 @@ class Premium_Warehouse_Wholesale extends Module {
                             '</span>'.
                             '<span id="link_it_'.$row['id'].'_choice">'.
                                 '<a href="javascript:void(0);" onclick="$(\'link_it_'.$row['id'].'_form\').style.display=\'inline\';$(\'link_it_'.$row['id'].'_choice\').style.display=\'none\'"><img src="'.Base_ThemeCommon::get_template_file('Premium/Warehouse/Wholesale','link.png').'" border="0" /></a>'.
-                                '<a href="javascript:void(0)" onClick="'.$lp->get_href_js(array($row['id'])).'$(\'add_item_name\')).value=\''.escapeJS($row['distributor_item_name']).'\'"><img src="'.Base_ThemeCommon::get_template_file('Premium/Warehouse/Wholesale','add_item.png').'" border="0" /></a>'.
+                                '<a href="javascript:void(0)" onClick="'.$lp->get_href_js(array($row['id'])).'$(\'add_item_name\').value=\''.escapeJS($row['distributor_item_name']).'\'"><img src="'.Base_ThemeCommon::get_template_file('Premium/Warehouse/Wholesale','add_item.png').'" border="0" /></a>'.
                             '</span>';
                 }
             }
