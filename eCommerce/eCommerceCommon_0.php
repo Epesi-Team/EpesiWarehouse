@@ -293,7 +293,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
         }
     }
 
-    public static function icecat_get($arr) {
+    public static function icecat_get($arr,$name) {
         $user = Variable::get('icecat_user');
         $pass = Variable::get('icecat_pass');
         $url = 'http://data.icecat.biz/xml_s3/xml_server3.cgi?'.http_build_query($arr);
@@ -343,7 +343,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
         $ret = false;
         if($item['upc']) {
             $query_arr['ean_upc'] = $item['upc'];
-            $ret = self::icecat_get($query_arr+array('lang'=>'en','output'=>'productxml'));
+            $ret = self::icecat_get($query_arr+array('lang'=>'en','output'=>'productxml'),'default');
         }
         if(!$ret) {
             $query_arr = array();
@@ -364,10 +364,10 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
                 $manufacturer = CRM_ContactsCommon::get_company($item['manufacturer']);
                 $query_arr['prod_id'] = $prod_id;
                 $query_arr['vendor'] = $manufacturer['company_name'];
-                $ret = self::icecat_get($query_arr+array('lang'=>'en','output'=>'productxml'));
+                $ret = self::icecat_get($query_arr+array('lang'=>'en','output'=>'productxml'),'default');
                 if(!$ret && $item['product_code']) {
                     $query_arr['prod_id'] = $item['product_code'];
-                    $ret = self::icecat_get($query_arr+array('lang'=>'en','output'=>'productxml'));
+                    $ret = self::icecat_get($query_arr+array('lang'=>'en','output'=>'productxml'),'default');
                 }
             }
         }
@@ -400,7 +400,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 
         set_time_limit(0);
         foreach($langs as $code=>$name) {
-            $obj = self::icecat_get($query_arr+array('lang'=>$code,'output'=>'productxml'));
+            $obj = self::icecat_get($query_arr+array('lang'=>$code,'output'=>'productxml'),$name);
             if(!$obj) continue;
 
             if($obj) {
