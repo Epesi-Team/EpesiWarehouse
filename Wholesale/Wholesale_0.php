@@ -179,7 +179,7 @@ class Premium_Warehouse_Wholesale extends Module {
         $order = $gb->get_query_order();
 
         $form2 = $this->init_module('Libs/QuickForm');
-        $form2->addElement('text', 'item_name', $this->t('Item Name'));
+        $form2->addElement('text', 'item_name', $this->t('Item Name'),array('id'=>'add_item_name'));
         $form2->addElement('commondata', 'item_type', $this->t('Item Type'), 'Premium_Warehouse_Items_Type', array('empty_option'=>true, 'order_by_key'=>true));
         $form2->addElement('text', 'product_code', $this->t('Product Code'));
         $form2->addElement('text', 'manufacturer_part_number', $this->t('Manufacturer Part Number'));
@@ -255,7 +255,7 @@ class Premium_Warehouse_Wholesale extends Module {
                             '</span>'.
                             '<span id="link_it_'.$row['id'].'_choice">'.
                                 '<a href="javascript:void(0);" onclick="$(\'link_it_'.$row['id'].'_form\').style.display=\'inline\';$(\'link_it_'.$row['id'].'_choice\').style.display=\'none\'"><img src="'.Base_ThemeCommon::get_template_file('Premium/Warehouse/Wholesale','link.png').'" border="0" /></a>'.
-                                '<a '.$lp->get_href(array($row['id'],$row['distributor_item_name'])).'><img src="'.Base_ThemeCommon::get_template_file('Premium/Warehouse/Wholesale','add_item.png').'" border="0" /></a>'.
+                                '<a href="javascript:void(0)" onClick="'.$lp->get_href_js(array($row['id'])).'$(\'add_item_name\')).value=\''.escapeJS($row['distributor_item_name']).'\'"><img src="'.Base_ThemeCommon::get_template_file('Premium/Warehouse/Wholesale','add_item.png').'" border="0" /></a>'.
                             '</span>';
                 }
             }
