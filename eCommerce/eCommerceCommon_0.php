@@ -409,8 +409,8 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
             $product_desc = array('item_name'=>$item_id,
                         'language'=>$code,
                         'display_name'=>substr($display_name,0,128),
-                        'short_description'=>str_replace('\n','<br />',(string)(isset($obj->Product[0]->ProductDescription['ShortDesc'])?$obj->Product[0]->ProductDescription['ShortDesc']:(isset($obj->Product[0]->ProductDescription[0])?$obj->Product[0]->ProductDescription[0]:''))),
-                        'long_description'=>str_replace('\n','<br />',(string)(isset($obj->Product[0]->ProductDescription['LongDesc'])?$obj->Product[0]->ProductDescription['LongDesc']:'')));
+                        'short_description'=>str_replace('\n','<br />',(string)(isset($obj->Product[0]->ProductDescription['ShortDesc'])?$obj->Product[0]->ProductDescription['ShortDesc']:(isset($obj->Product[0]->ProductDescription[0])?$obj->Product[0]->ProductDescription[0]:(isset($obj->Product[0]->SummaryDescription->ShortSummaryDescription)?$obj->Product[0]->SummaryDescription->ShortSummaryDescription:'')))),
+                        'long_description'=>str_replace('\n','<br />',(string)(isset($obj->Product[0]->ProductDescription['LongDesc'])?$obj->Product[0]->ProductDescription['LongDesc']:(isset($obj->Product[0]->SummaryDescription->LongSummaryDescription)?$obj->Product[0]->SummaryDescription->LongSummaryDescription:''))));
             if(isset($descriptions[$code])) {
                 if($product_desc['display_name']=='') unset($product_desc['display_name']);
                 if($product_desc['short_description']=='') unset($product_desc['short_description']);
