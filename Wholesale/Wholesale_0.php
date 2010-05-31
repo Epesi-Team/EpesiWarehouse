@@ -105,8 +105,8 @@ class Premium_Warehouse_Wholesale extends Module {
             }
             $gb->add_row(
                 $sku,
-                $dists[$row['distributor_id']],
                 $row['distributor_item_name'],
+                $dists[$row['distributor_id']],
                 array('value'=>$row['internal_key'], 'style'=>'text-align:right;'),
                 array('value'=>Utils_CurrencyFieldCommon::format($row['price'],$row['price_currency']), 'style'=>'text-align:right;'),
                 array('value'=>$row['quantity'], 'style'=>'text-align:right;'),
