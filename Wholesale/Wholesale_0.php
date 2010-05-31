@@ -192,7 +192,7 @@ class Premium_Warehouse_Wholesale extends Module {
         $form2->setDefaults(array('item_type'=>1, 'tax_rate'=>$arg['tax_rate']));
         $lp = $this->init_module('Utils_LeightboxPrompt');
         $lp->add_option('add', 'Add', '', $form2);
-        $this->display_module($lp, array($this->t('Create new item'), array('internal_id')));
+        $this->display_module($lp, array($this->t('Create new item'), array('internal_id','item_name')));
         $vals = $lp->export_values();
         if ($vals) {
             $validate = true;
@@ -200,7 +200,7 @@ class Premium_Warehouse_Wholesale extends Module {
                 Epesi::alert($this->ht('Item name is required'));
                 $validate = false;
             }
-            if (!isset($vals['form']['item_type']) || !$vals['form']['item_type']) {
+            if (!isset($vals['form']['item_type']) || $vals['form']['item_type']==='') {
                 Epesi::alert($this->ht('Item type is required'));
                 $validate = false;
             }
@@ -255,7 +255,7 @@ class Premium_Warehouse_Wholesale extends Module {
                             '</span>'.
                             '<span id="link_it_'.$row['id'].'_choice">'.
                                 '<a href="javascript:void(0);" onclick="$(\'link_it_'.$row['id'].'_form\').style.display=\'inline\';$(\'link_it_'.$row['id'].'_choice\').style.display=\'none\'"><img src="'.Base_ThemeCommon::get_template_file('Premium/Warehouse/Wholesale','link.png').'" border="0" /></a>'.
-                                '<a '.$lp->get_href(array($row['id'])).'><img src="'.Base_ThemeCommon::get_template_file('Premium/Warehouse/Wholesale','add_item.png').'" border="0" /></a>'.
+                                '<a '.$lp->get_href(array($row['id'],$row['distributor_item_name'])).'><img src="'.Base_ThemeCommon::get_template_file('Premium/Warehouse/Wholesale','add_item.png').'" border="0" /></a>'.
                             '</span>';
                 }
             }
