@@ -294,6 +294,8 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
     }
 
     public static function icecat_get($arr) {
+        $user = Variable::get('icecat_user');
+        $pass = Variable::get('icecat_pass');
         $url = 'http://data.icecat.biz/xml_s3/xml_server3.cgi?'.http_build_query($arr);
         $c = curl_init();
         curl_setopt($c, CURLOPT_URL, $url);
