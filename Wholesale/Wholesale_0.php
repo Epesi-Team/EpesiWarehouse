@@ -19,8 +19,8 @@ class Premium_Warehouse_Wholesale extends Module {
         if(!DB::GetOne('SELECT 1 FROM premium_warehouse_distributor_data_1 WHERE active=1'))
             return $this->dists();
         $tb = & $this->init_module('Utils/TabbedBrowser');
-        $tb->set_tab('Items', array($this,'items'));
-        $tb->set_tab('Distributors', array($this,'dists'));
+        $tb->set_tab($this->t('Items'), array($this,'items'));
+        $tb->set_tab($this->t('Distributors'), array($this,'dists'));
         $this->display_module($tb);
     }
 
@@ -255,7 +255,7 @@ class Premium_Warehouse_Wholesale extends Module {
                             '</span>'.
                             '<span id="link_it_'.$row['id'].'_choice">'.
                                 '<a href="javascript:void(0);" onclick="$(\'link_it_'.$row['id'].'_form\').style.display=\'inline\';$(\'link_it_'.$row['id'].'_choice\').style.display=\'none\'"><img src="'.Base_ThemeCommon::get_template_file('Premium/Warehouse/Wholesale','link.png').'" border="0" /></a>'.
-                                '<a href="javascript:void(0)" onClick="'.$lp->get_href_js(array($row['id'])).'$(\'add_item_name\').value=\''.escapeJS($row['distributor_item_name']).'\'"><img src="'.Base_ThemeCommon::get_template_file('Premium/Warehouse/Wholesale','add_item.png').'" border="0" /></a>'.
+                                '<a '.$lp->get_href(array($row['id'])).' onClick="$(\'add_item_name\').value=\''.escapeJS($row['distributor_item_name']).'\'"><img src="'.Base_ThemeCommon::get_template_file('Premium/Warehouse/Wholesale','add_item.png').'" border="0" /></a>'.
                             '</span>';
                 }
             }
