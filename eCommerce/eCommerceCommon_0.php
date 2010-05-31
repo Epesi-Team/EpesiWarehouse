@@ -293,36 +293,86 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
         }
     }
 
+    public static function icecat_get($arr) {
+        $url = 'http://data.icecat.biz/xml_s3/xml_server3.cgi?'.http_build_query($arr);
+        $c = curl_init();
+        curl_setopt($c, CURLOPT_URL, $url);
+        curl_setopt($c, CURLOPT_USERAGENT, "Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)");
+        curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($c, CURLOPT_USERPWD,$user.':'.$pass);
+        $httpHeader = array(
+        "Content-Type: text/xml; charset=UTF-8",
+            "Content-Encoding: UTF-8"
+        );
+        curl_setopt($c, CURLOPT_HTTPHEADER, $httpHeader);
+        $output = curl_exec($c);
+        $response_code = curl_getinfo($c, CURLINFO_HTTP_CODE);
+        curl_close($c);
+        if($response_code==401) {
+            Epesi::alert("Invalid icecat user or password");
+            return false;
+        }
+        if(!$output) return false;
+        $got_data = true;
+
+        $obj = @simplexml_load_string($output);
+        if($obj===false) {
+            $obj = @simplexml_load_string(iconv('iso8859-1','utf-8',$output));
+            if($obj===false) {
+                Epesi::alert('Unable to get icecat data in '.$name.' language');
+                return false;
+            }
+        }
+        if(isset($obj->Product[0]['ErrorMessage'])) {
+            Epesi::alert('Unable to get icecat data in '.$name.' language:'."\n".$obj->Product[0]['ErrorMessage']);
+            return false;
+        }
+        return $obj;
+    }
+
     public static function icecat_sync($item_id,$verbose=true) {
-            $user = Variable::get('icecat_user');
-            $pass = Variable::get('icecat_pass');
+        $user = Variable::get('icecat_user');
+        $pass = Variable::get('icecat_pass');
         if(!$user || !$pass)
             return;
 
         $item = Utils_RecordBrowserCommon::get_record('premium_warehouse_items',$item_id);
         $query_arr = array();
+        $ret = false;
         if($item['upc']) {
             $query_arr['ean_upc'] = $item['upc'];
+            $ret = self::icecat_get($query_arr+array('lang'=>'en','output'=>'productxml'));
         }
+        if(!$ret) {
+            $query_arr = array();
             $prod_id = $item['manufacturer_part_number'];
-        if(!$prod_id)
-                $prod_id = $item['product_code'];
-        if(!$prod_id && !isset($query_arr['ean_upc'])) {
-            if($verbose)
-                    Epesi::alert("Missing product code or manufacturer part number.");
-            return false;
+            if(!$prod_id)
+                    $prod_id = $item['product_code'];
+            if(!$prod_id) {
+                if($verbose)
+                        Epesi::alert("Missing product code or manufacturer part number.");
+                return false;
+            }
+            if(!$item['manufacturer']) {
+                if($verbose)
+                    Epesi::alert("Missing product manufacturer.");
+                return false;
+            }
+            if($item['manufacturer'] && $prod_id) {
+                $manufacturer = CRM_ContactsCommon::get_company($item['manufacturer']);
+                $query_arr['prod_id'] = $prod_id;
+                $query_arr['vendor'] = $manufacturer['company_name'];
+                $ret = self::icecat_get($query_arr+array('lang'=>'en','output'=>'productxml'));
+                if(!$ret && $item['product_code']) {
+                    $query_arr['prod_id'] = $item['product_code'];
+                    $ret = self::icecat_get($query_arr+array('lang'=>'en','output'=>'productxml'));
+                }
+            }
         }
-        if(!$item['manufacturer'] && !isset($query_arr['ean_upc'])) {
-            if($verbose)
-                Epesi::alert("Missing product manufacturer.");
-            return false;
+        if(!$ret) {
+            Epesi::alert("There is no product data on icecat server.");
+            return;
         }
-        if($item['manufacturer'] && $prod_id) {
-            $manufacturer = CRM_ContactsCommon::get_company($item['manufacturer']);
-            $query_arr['prod_id'] = $prod_id;
-            $query_arr['vendor'] = $manufacturer['company_name'];
-        }
-
         $langs = Utils_CommonDataCommon::get_array('Premium/Warehouse/eCommerce/Languages');
 
         //descriptions in all langs
@@ -346,43 +396,12 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
             $parameter_groups[$rr['group_code']] = $rr['id'];
         unset($parameter_groups_tmp);
 
-        $got_data = false;
         set_time_limit(0);
         foreach($langs as $code=>$name) {
-            $url = 'http://data.icecat.biz/xml_s3/xml_server3.cgi?'.http_build_query($query_arr+array('lang'=>$code,'output'=>'productxml'));
-            $c = curl_init();
-            curl_setopt($c, CURLOPT_URL, $url);
-            curl_setopt($c, CURLOPT_USERAGENT, "Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)");
-            curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($c, CURLOPT_USERPWD,$user.':'.$pass);
-            $httpHeader = array(
-            "Content-Type: text/xml; charset=UTF-8",
-                "Content-Encoding: UTF-8"
-            );
-            curl_setopt($c, CURLOPT_HTTPHEADER, $httpHeader);
-            $output = curl_exec($c);
-            $response_code = curl_getinfo($c, CURLINFO_HTTP_CODE);
-            curl_close($c);
-                if($response_code==401) {
-            Epesi::alert("Invalid icecat user or password");
-            return false;
-            }
-            if($output) {
-            $got_data = true;
+            $obj = self::icecat_get($query_arr+array('lang'=>$code,'output'=>'productxml'));
+            if(!$obj) continue;
 
-            $obj = @simplexml_load_string($output);
-            if($obj===false) {
-                $obj = @simplexml_load_string(iconv('iso8859-1','utf-8',$output));
-                if($obj===false) {
-                    Epesi::alert('Unable to get icecat data in '.$name.' language');
-                    continue;
-                }
-            }
-            if(isset($obj->Product[0]['ErrorMessage'])) {
-                Epesi::alert('Unable to get icecat data in '.$name.' language:'."\n".$obj->Product[0]['ErrorMessage']);
-                continue;
-                }
-
+            if($obj) {
                 //supplier
                 if(!$item['manufacturer'] && isset($obj->Supplier['Name'])); {
                     $manufacturers = CRM_ContactsCommon::get_companies(array('company_name'=>$obj->Supplier['Name']), array('group','company_name'));
@@ -538,10 +557,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
             Utils_AttachmentCommon::persistent_mass_delete('Premium/Warehouse/eCommerce/ProductsDesc/'.$code.'/'.$item_id);
             }
         }
-        if($got_data)
-            Epesi::alert("Successfully downloaded product data from icecat server.");
-        else
-            Epesi::alert("There is no product data on icecat server.");
+        Epesi::alert("Successfully downloaded product data from icecat server.");
     }
 
     public static function icecat_addon_parameters($r) {
