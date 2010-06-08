@@ -435,6 +435,35 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items_orders',array('name'=>'Online order',	'type'=>'checkbox', 'required'=>false, 'filter'=>true, 'extra'=>false, 'visible'=>true, 'QFfield_callback'=>array('Premium_Warehouse_eCommerceCommon','QFfield_online_order')));
 
 		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_distributor',array('name'=>'Items Availability', 'type'=>'select', 'required'=>true, 'extra'=>false, 'visible'=>false, 'param'=>'premium_ecommerce_availability::Availability Code'));
+
+		$fields = array(
+			array('name'=>'Name', 			'type'=>'text', 'required'=>true, 'param'=>'128', 'extra'=>false, 'visible'=>true,'display_callback'=>array('Premium_Warehouse_eCommerceCommon', 'display_3rdp_name')),
+			array('name'=>'Plugin', 		'type'=>'select', 'required'=>true, 'extra'=>false, 'QFfield_callback'=>array('Premium_Warehouse_eCommerceCommon','QFfield_3rdp_plugin')),
+			array('name'=>'Company', 		'type'=>'crm_company', 'param'=>array('field_type'=>'select'), 'required'=>false, 'extra'=>false, 'visible'=>true),
+			array('name'=>'Position', 		'type'=>'integer', 'required'=>true, 'extra'=>false, 'visible'=>false),
+			array('name'=>'Param1', 		'type'=>'text', 'required'=>false, 'param'=>'128', 'extra'=>true, 'visible'=>false),
+			array('name'=>'Param2', 		'type'=>'text', 'required'=>false, 'param'=>'128', 'extra'=>true, 'visible'=>false),
+			array('name'=>'Param3', 		'type'=>'text', 'required'=>false, 'param'=>'128', 'extra'=>true, 'visible'=>false),
+			array('name'=>'Param4', 		'type'=>'text', 'required'=>false, 'param'=>'128', 'extra'=>true, 'visible'=>false),
+			array('name'=>'Param5', 		'type'=>'text', 'required'=>false, 'param'=>'128', 'extra'=>true, 'visible'=>false),
+			array('name'=>'Param6', 		'type'=>'text', 'required'=>false, 'param'=>'128', 'extra'=>true, 'visible'=>false),
+		);
+
+		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_3rdp_info', $fields);
+		
+		Utils_RecordBrowserCommon::set_quickjump('premium_ecommerce_3rdp_info', 'Name');
+		Utils_RecordBrowserCommon::set_favorites('premium_ecommerce_3rdp_info', true);
+		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_3rdp_info', '3rd party info');
+		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_3rdp_info', array('Premium_Warehouse_eCommerceCommon', 'access_3rdp_info'));
+		Utils_RecordBrowserCommon::set_icon('premium_ecommerce_3rdp_info', Base_ThemeCommon::get_template_filename('Premium/Warehouse/eCommerce', 'icon.png'));
+		Utils_RecordBrowserCommon::set_processing_callback('premium_ecommerce_3rdp_info', array('Premium_Warehouse_eCommerceCommon', 'submit_3rdp_info'));
+
+		DB::CreateTable('premium_ecommerce_3rdp_plugin',
+						'id I4 AUTO KEY,'.
+						'name C(64),'.
+						'filename C(64),'.
+						'active I1',
+						array('constraints'=>''));
 		
 
 // ************* addons ************ //
@@ -470,9 +499,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		$this->add_aco('edit public notes','Employee');
 
 		//icecat
-		Variable::set('icecat_user','');
-		Variable::set('icecat_pass','');
-		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_products', 'Premium_Warehouse_eCommerce', 'icecat_addon', 'Premium_Warehouse_eCommerceCommon::icecat_addon_parameters');
+		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_products', 'Premium_Warehouse_eCommerce', 'get_3rd_party_info_addon', 'Premium_Warehouse_eCommerceCommon::get_3rd_party_info_addon_parameters');
 		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items_categories',array('name'=>'Available languages',	'type'=>'calculated', 'required'=>false, 'filter'=>false, 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_eCommerceCommon','display_category_available_languages')));
 		Utils_RecordBrowserCommon::new_record_field('premium_warehouse',array('name'=>'Pickup Place',	'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>true));
 
@@ -499,6 +526,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::delete_record_field('premium_warehouse_items_categories','Available languages');
 		Utils_RecordBrowserCommon::delete_record_field('premium_warehouse_distributor','Items Availability');
 		DB::DropTable('premium_ecommerce_orders_temp');
+		DB::DropTable('premium_ecommerce_3rdp_plugin');
 		DB::DropTable('premium_ecommerce_quickcart');
 		DB::DropTable('premium_ecommerce_products_stats');
 		DB::DropTable('premium_ecommerce_pages_stats');
@@ -530,9 +558,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Variable::delete('ecommerce_minimal_profit');
 		Variable::delete('ecommerce_percentage_profit');
 
-		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_products', 'Premium_Warehouse_eCommerce', 'icecat_addon');
-		Variable::delete('icecat_user');
-		Variable::delete('icecat_pass');
+		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_products', 'Premium_Warehouse_eCommerce', 'get_3rd_party_info_addon');
 
 		Utils_RecordBrowserCommon::delete_addon('premium_warehouse_items', 'Premium_Warehouse_eCommerce', 'warehouse_item_addon');
 
@@ -563,6 +589,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::delete_addon('premium_warehouse_items_orders', 'Premium/Warehouse/eCommerce', 'orders_addon');
 		Utils_RecordBrowserCommon::delete_addon('contact', 'Premium/Warehouse/eCommerce', 'users_addon');
 
+		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_3rdp_info');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_products');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_cat_descriptions');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_descriptions');

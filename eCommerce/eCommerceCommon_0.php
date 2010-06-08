@@ -15,9 +15,25 @@
 defined("_VALID_ACCESS") || die('Direct access forbidden');
 
 class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
+	public static $plugin_path = 'modules/Premium/Warehouse/eCommerce/3rdp_plugins/';
     private static $curr_opts;
 
     public static function access_parameters($action, $param=null){
+        $i = self::Instance();
+        switch ($action) {
+            case 'browse_crits':    return $i->acl_check('browse ecommerce');
+            case 'browse':  return true;
+            case 'view':    if (!$i->acl_check('view ecommerce')) return false;
+                            return array('position'=>false);
+            case 'clone':
+            case 'add':
+            case 'edit':    return $i->acl_check('edit ecommerce');
+            case 'delete':  return $i->acl_check('delete ecommerce');
+        }
+        return false;
+    }
+
+    public static function access_3rdp_info($action, $param=null){
         $i = self::Instance();
         switch ($action) {
             case 'browse_crits':    return $i->acl_check('browse ecommerce');
@@ -239,20 +255,14 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
     }
 
     public static function menu() {
-        $user = Variable::get('icecat_user');
-        $pass = Variable::get('icecat_pass');
-        if($user && $pass)
-            $icecat = array('Express publish'=>array('__function__'=>'icecat_fill'));
-        else
-            $icecat = array();
         return array('Warehouse'=>array(
             '__submenu__'=>1,
-            'eCommerce'=>array_merge($icecat,array('__submenu__'=>1,
+            'eCommerce'=>array('__submenu__'=>1,
+                'Express publish'=>array('__function__'=>'fast_fill'),
                 'Comments queue'=>array('__function__'=>'comments'),
                 'Newsletter'=>array('__function__'=>'newsletter'),
                 'Products'=>array(),
-                'Stats'=>array('__function__'=>'stats')))
-        ));
+                'Stats'=>array('__function__'=>'stats'))));
     }
 
     public static function get_quickcarts() {
@@ -293,287 +303,175 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
         }
     }
 
-    public static function icecat_get($arr,$name) {
-        $user = Variable::get('icecat_user');
-        $pass = Variable::get('icecat_pass');
-        $url = 'http://data.icecat.biz/xml_s3/xml_server3.cgi?'.http_build_query($arr);
-        $c = curl_init();
-        curl_setopt($c, CURLOPT_URL, $url);
-        curl_setopt($c, CURLOPT_USERAGENT, "Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)");
-        curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($c, CURLOPT_USERPWD,$user.':'.$pass);
-        $httpHeader = array(
-        "Content-Type: text/xml; charset=UTF-8",
-            "Content-Encoding: UTF-8"
-        );
-        curl_setopt($c, CURLOPT_HTTPHEADER, $httpHeader);
-        $output = curl_exec($c);
-        $response_code = curl_getinfo($c, CURLINFO_HTTP_CODE);
-        curl_close($c);
-        if($response_code==401) {
-            Epesi::alert("Invalid icecat user or password");
-            return false;
-        }
-        if(!$output) return false;
-        $got_data = true;
+	public static function get_plugin($arg) {
+		static $plugins = array();
+		if (isset($plugins[$arg])) return $plugins[$arg];
 
-        $obj = @simplexml_load_string($output);
-        if($obj===false) {
-            $obj = @simplexml_load_string(iconv('iso8859-1','utf-8',$output));
-            if($obj===false) {
-                Epesi::alert('Unable to get icecat data in '.$name.' language');
-                return false;
-            }
-        }
-        if(isset($obj->Product[0]['ErrorMessage'])) {
-            Epesi::alert('Unable to get icecat data in '.$name.' language:'."\n".$obj->Product[0]['ErrorMessage']);
-            return false;
-        }
-        return $obj;
-    }
+		static $interface_included = false;
+		if (!$interface_included)
+			require_once('modules/Premium/Warehouse/eCommerce/interface.php');
 
-    public static function icecat_sync($item_id,$verbose=true) {
-        $user = Variable::get('icecat_user');
-        $pass = Variable::get('icecat_pass');
-        if(!$user || !$pass)
-            return;
+		if (is_numeric($arg)) {
+			$id = $arg;
+			$filename = DB::GetOne('SELECT filename FROM premium_ecommerce_3rdp_plugin WHERE id=%d', array($arg));
+		} else {
+			$filename = $arg;
+			$id = DB::GetOne('SELECT id FROM premium_ecommerce_3rdp_plugin WHERE filename=%s', array($arg));
+		}
+		if (is_file(self::$plugin_path.basename($filename).'.php')) {
+			require_once(self::$plugin_path.basename($filename).'.php');
+			$class = 'Premium_Warehouse_eCommerce_3rdp__Plugin_'.$filename;
+			if (!class_exists($class))
+				trigger_error('Warning: invalid plugin in file '.$filename.'.php<br>', E_USER_ERROR);
+			return $plugins[$id] = $plugins[$filename] = new $class();
+		}
+		return null;
+	}
 
+	public static function submit_3rdp_info($values, $mode) {
+		if (isset($values['plugin']) && is_numeric($values['plugin'])) {
+			$plugin = self::get_plugin($values['plugin']);
+			$params = $plugin->get_parameters();
+		} else $params = array();
+
+		switch ($mode) {
+			case 'edit':
+				$i = 1;
+				foreach ($params as $k=>$v) {
+					if ($values['param'.$i]=='[_password_dummy_]' && $v=='password') unset($values['param'.$i]);
+					$i++;
+				}
+				break;
+		}
+
+		$i = 1;
+		foreach ($params as $k=>$v) {
+			if ($v=='password' && isset($values['param'.$i]) && $values['param'.$i]) switch ($mode) {
+				case 'adding':
+					$values['param'.$i] = '[_password_dummy_]';
+				    break;
+				case 'editing':
+					$values['param'.$i] = '[_password_dummy_]';
+				    break;
+				case 'view':
+					$values['param'.$i] = str_pad('', strlen($values['param'.$i]), '*');
+				    break;
+			}
+			$i++;
+		}
+        return self::submit_position($values, $mode, 'premium_ecommerce_3rdp_info');
+	}
+	
+	public static function get_change_parameters_labels_js($id) {
+		$i = 1;
+		$js = '';
+		if (is_numeric($id)) {
+			$plugin = self::get_plugin($id);
+			$params = $plugin->get_parameters();
+			foreach ($params as $k=>$v) {
+				$js .= 	'if($("param'.$i.'"))$("param'.$i.'").type="'.$v.'";'.
+						'if($("_param'.$i.'__label")){'.
+							'$("_param'.$i.'__label").innerHTML="'.Base_LangCommon::ts('Premium_Warehouse_eCommerce',$k).'";'.
+							'$("_param'.$i.'__label").parentNode.parentNode.style.display="";'.
+						'}';
+				$i++;
+			}
+		}
+		while($i<=6) {
+			$js .= 'if($("_param'.$i.'__label"))$("_param'.$i.'__label").parentNode.parentNode.style.display="none";';
+			$i++;
+		}
+		return $js;
+	}
+
+	public static function change_parameters_labels($id) {
+		eval_js(self::get_change_parameters_labels_js($id));
+	}
+
+	public static function QFfield_3rdp_plugin(&$form, $field, $label, $mode, $default, $desc, $rb_obj) {
+		self::change_parameters_labels($default);
+		if ($mode!='view') {
+			if (is_numeric($default)) {
+				$vals = array($default);
+				$where=' OR id=%d';
+			} else {
+				$vals = array();
+				$where='';
+			}
+			$opts = array(''=>'---');
+			$opts = $opts+DB::GetAssoc('SELECT id, name FROM premium_ecommerce_3rdp_plugin WHERE active=1'.$where,$vals);
+			load_js('modules/Premium/Warehouse/eCommerce/adjust_parameters.js');
+			eval_js('Event.observe("plugin","change",adjust_parameters)');
+			$form->addElement('select', $field, $label, $opts, array('id'=>$field));
+			$form->setDefaults(array($field=>$default));
+		} else {
+			$form->addElement('static', $field, $label, DB::GetOne('SELECT name FROM premium_ecommerce_3rdp_plugin WHERE id=%d', array($default)));
+		}
+	}
+    public static function display_3rdp_name($v, $nolink=false) {
+		return Utils_RecordBrowserCommon::create_linked_label_r('premium_ecommerce_3rdp_info', 'Name', $v, $nolink);
+	}
+
+	public static function scan_for_3rdp_info_plugins() {
+		$dir = scandir(self::$plugin_path);
+		DB::Execute('UPDATE premium_ecommerce_3rdp_plugin SET active=2');
+		foreach ($dir as $file) {
+			if ($file=='..' || $file=='.' || !preg_match('/\.php$/i',$file)) continue;
+			$filename = basename($file, '.php');
+			$plugin = self::get_plugin($filename);
+			if ($plugin) {
+				$name = $plugin->get_name();
+				$id = DB::GetOne('SELECT id FROM premium_ecommerce_3rdp_plugin WHERE filename=%s', array($filename));
+				if ($id===false || $id==null) {
+					DB::Execute('INSERT INTO premium_ecommerce_3rdp_plugin (name, filename, active) VALUES (%s, %s, 1)', array($name, $filename));
+				} else {
+					DB::Execute('UPDATE premium_ecommerce_3rdp_plugin SET active=1, name=%s WHERE id=%d', array($name, $id));
+				}
+			}
+		}
+		DB::Execute('UPDATE premium_ecommerce_3rdp_plugin SET active=0 WHERE active=2');
+		return false;
+	}
+
+    public static function get_3rd_party_item_data($item_id,$verbose=true) {
         $item = Utils_RecordBrowserCommon::get_record('premium_warehouse_items',$item_id);
-        $query_arr = array();
-        $ret = false;
-        if($item['upc']) {
-            $query_arr['ean_upc'] = $item['upc'];
-            $ret = self::icecat_get($query_arr+array('lang'=>'en','output'=>'productxml'),'default');
-        }
-        if(!$ret) {
-            $query_arr = array();
-            $prod_id = $item['manufacturer_part_number'];
-            if(!$prod_id)
-                    $prod_id = $item['product_code'];
-            if(!$prod_id) {
-                if($verbose)
-                        Epesi::alert("Missing product code or manufacturer part number.");
-                return false;
-            }
-            if(!$item['manufacturer']) {
-                if($verbose)
-                    Epesi::alert("Missing product manufacturer.");
-                return false;
-            }
-            if($item['manufacturer'] && $prod_id) {
-                $manufacturer = CRM_ContactsCommon::get_company($item['manufacturer']);
-                $query_arr['prod_id'] = $prod_id;
-                $query_arr['vendor'] = $manufacturer['company_name'];
-                $ret = self::icecat_get($query_arr+array('lang'=>'en','output'=>'productxml'),'default');
-                if(!$ret && $item['product_code']) {
-                    $query_arr['prod_id'] = $item['product_code'];
-                    $ret = self::icecat_get($query_arr+array('lang'=>'en','output'=>'productxml'),'default');
-                }
+        $plugins = Utils_RecordBrowserCommon::get_records('premium_ecommerce_3rdp_info',array(),array(),array('position'=>'ASC'));
+        $langs = array_keys(Utils_CommonDataCommon::get_array('Premium/Warehouse/eCommerce/Languages'));
+        $langs_ok = array();
+        foreach($plugins as $plugin) {
+            if(!$langs) break;
+            $pl = self::get_plugin($plugin['plugin']);
+    		$params = $pl->get_parameters();
+	    	$i = 1;
+		    foreach ($params as $k=>$v) {
+			    $params[$k] = $plugin['param'.$i];
+    			$i++;
+	    	}
+            $ret = $pl->download($params,$item,$langs); //TODO wprowadzic pozycje pluginow (priorytet)
+            if(is_array($ret)) {
+                $langs_ok = array_merge($langs_ok,$ret);
+                $langs = array_diff($langs,$ret);
+            } elseif($ret) {
+                $langs_ok = array_merge($langs_ok,$langs);
+                break;
             }
         }
-        if(!$ret) {
-            Epesi::alert("There is no product data on icecat server.");
-            return;
-        }
-        $langs = Utils_CommonDataCommon::get_array('Premium/Warehouse/eCommerce/Languages');
-
-        //descriptions in all langs
-        $descriptions_tmp = Utils_RecordBrowserCommon::get_records('premium_ecommerce_descriptions',array('item_name'=>$item_id),array('id','language'));
-        $descriptions = array();
-        foreach($descriptions_tmp as $rr)
-            $descriptions[$rr['language']] = $rr['id'];
-        unset($descriptions_tmp);
-
-        //parameters codes
-        $parameters_tmp = Utils_RecordBrowserCommon::get_records('premium_ecommerce_parameters',array('~parameter_code'=>'icecat_%'),array('id','parameter_code'));
-        $parameters = array();
-        foreach($parameters_tmp as $rr)
-            $parameters[$rr['parameter_code']] = $rr['id'];
-        unset($parameters_tmp);
-
-        //parameter group codes
-        $parameter_groups_tmp = Utils_RecordBrowserCommon::get_records('premium_ecommerce_parameter_groups',array('~group_code'=>'icecat_%'),array('id','group_code'));
-        $parameter_groups = array();
-        foreach($parameter_groups_tmp as $rr)
-            $parameter_groups[$rr['group_code']] = $rr['id'];
-        unset($parameter_groups_tmp);
-
-        set_time_limit(0);
-        foreach($langs as $code=>$name) {
-            $obj = self::icecat_get($query_arr+array('lang'=>$code,'output'=>'productxml'),$name);
-            if(!$obj) continue;
-
-            if($obj) {
-                //supplier
-                if(!$item['manufacturer'] && isset($obj->Supplier['Name'])); {
-                    $manufacturers = CRM_ContactsCommon::get_companies(array('company_name'=>$obj->Supplier['Name']), array('group','company_name'));
-                    if($manufacturer = array_shift($manufacturers)) {
-                        Utils_RecordBrowserCommon::update_record('premium_warehouse_items',$item_id,array('manufacturer'=>$manufacturer['id']));
-                        $item['manufacturer'] = $manufacturer['id'];
-                        if(!in_array('manufacturer', $manufacturer['group'])) {
-                            $manufacturer['group']['manufacturer'] = 'manufacturer';
-                            Utils_RecordBrowserCommon::update_record('company',$manufacturer['id'],array('group'=>$manufacturer['group']));
-                        }
-                    }
-                }
-
-
-            //description
-            $display_name = (string)$obj->Product[0]['Name'];
-            if(strlen($display_name)<128 && $item['manufacturer']) {
-                if(!isset($manufacturer) || !$manufacturer)
-                    $manufacturer = CRM_ContactsCommon::get_company($item['manufacturer']);
-                if(!preg_match('/'.$manufacturer['company_name'].'/i',$display_name) && strlen($manufacturer['company_name'].' '.$display_name)<128)
-                    $display_name = $manufacturer['company_name'].' '.$display_name;
-
-            }
-            $product_desc = array('item_name'=>$item_id,
-                        'language'=>$code,
-                        'display_name'=>substr($display_name,0,128),
-                        'short_description'=>str_replace('\n','<br />',(string)(isset($obj->Product[0]->ProductDescription['ShortDesc']) && $obj->Product[0]->ProductDescription['ShortDesc']?$obj->Product[0]->ProductDescription['ShortDesc']:(isset($obj->Product[0]->ProductDescription[0]) && $obj->Product[0]->ProductDescription[0]?$obj->Product[0]->ProductDescription[0]:(isset($obj->Product[0]->SummaryDescription->ShortSummaryDescription) && $obj->Product[0]->SummaryDescription->ShortSummaryDescription?$obj->Product[0]->SummaryDescription->ShortSummaryDescription:'')))),
-                        'long_description'=>str_replace('\n','<br />',(string)(isset($obj->Product[0]->ProductDescription['LongDesc']) && $obj->Product[0]->ProductDescription['LongDesc']?$obj->Product[0]->ProductDescription['LongDesc']:(isset($obj->Product[0]->SummaryDescription->LongSummaryDescription) && $obj->Product[0]->SummaryDescription->LongSummaryDescription?$obj->Product[0]->SummaryDescription->LongSummaryDescription:''))));
-            if(isset($descriptions[$code])) {
-                if($product_desc['display_name']=='') unset($product_desc['display_name']);
-                if($product_desc['short_description']=='') unset($product_desc['short_description']);
-                if($product_desc['long_description']=='') unset($product_desc['long_description']);
-                Utils_RecordBrowserCommon::update_record('premium_ecommerce_descriptions',$descriptions[$code],$product_desc);
-            } else
-                $descriptions[$code] = Utils_RecordBrowserCommon::new_record('premium_ecommerce_descriptions',$product_desc);
-
-            //parameters
-            $item_parameters_tmp = Utils_RecordBrowserCommon::get_records('premium_ecommerce_products_parameters',array('item_name'=>$item_id,'language'=>$code),array('id','parameter'));
-            $item_parameters = array();
-            foreach($item_parameters_tmp as $rr)
-                $item_parameters[$rr['parameter']] = $rr['id'];
-            unset($item_parameters_tmp);
-
-            //parameter groups
-            $parameter_group_labels_tmp = Utils_RecordBrowserCommon::get_records('premium_ecommerce_param_group_labels',array('language'=>$code),array('id','group'));
-            $parameter_group_labels = array();
-            foreach($parameter_group_labels_tmp as $rr)
-                $parameter_group_labels[$rr['group']] = $rr['id'];
-            foreach($obj->Product[0]->CategoryFeatureGroup as $cg) {
-                $key = 'icecat_'.$cg['ID'];
-                if(!isset($parameter_groups[$key]))
-                    $parameter_groups[$key] = Utils_RecordBrowserCommon::new_record('premium_ecommerce_parameter_groups',array('group_code'=>$key));
-                elseif(isset($parameter_group_labels[$parameter_groups[$key]]))
-                    continue;
-                $parameter_group_label = array('group'=>$parameter_groups[$key],
-                            'language'=>$code,
-                            'label'=>substr(str_replace('\n','<br>',(string)$cg->FeatureGroup[0]->Name[0]['Value']),0,128));
-                Utils_RecordBrowserCommon::new_record('premium_ecommerce_param_group_labels',$parameter_group_label);
-            }
-
-
-            //parameters
-            $parameter_labels_tmp = Utils_RecordBrowserCommon::get_records('premium_ecommerce_parameter_labels',array('language'=>$code),array('id','parameter'));
-            $parameter_labels = array();
-            foreach($parameter_labels_tmp as $rr)
-                $parameter_labels[$rr['parameter']] = $rr['id'];
-
-            if(!empty($obj->Product[0]->ProductFeature)) {
-                foreach($obj->Product[0]->ProductFeature as $pf) {
-                    $key = 'icecat_'.$pf->Feature[0]['ID'];
-                    if(!isset($parameters[$key]))
-                        $parameters[$key] = Utils_RecordBrowserCommon::new_record('premium_ecommerce_parameters',array('parameter_code'=>$key));
-                    if(!isset($parameter_labels[$parameters[$key]])) {
-                    $parameter_label = array('parameter'=>$parameters[$key],
-                                'language'=>$code,
-                                'label'=>substr(str_replace('\n','<br>',(string)$pf->Feature[0]->Name[0]['Value']),0,128));
-                    $parameter_labels[$parameters[$key]] = Utils_RecordBrowserCommon::new_record('premium_ecommerce_parameter_labels',$parameter_label);
-                    }
-                    if((string)$pf->Feature[0]->Name[0]['Value']=='Weight') {
-                        $weight = null;
-                        switch((string)$pf->Feature[0]->Measure[0]->Signs[0]->Sign[0]) {
-                            case 'g':
-                                $weight = ((string)$pf['Value'])/1000;
-                                break;
-                            case 'kg':
-                                $weight = ((string)$pf['Value']);
-                                break;
-                        }
-                        if($weight!==null)
-                            Utils_RecordBrowserCommon::update_record('premium_warehouse_items',$item_id,array('weight'=>$weight));
-                    }
-                    $item_params = array('item_name'=>$item_id,
-                            'parameter'=>$parameters[$key],
-                            'group'=>$parameter_groups['icecat_'.$pf['CategoryFeatureGroup_ID']],
-                            'language'=>$code,
-                            'value'=>substr(str_replace('\n','<br />',(string)$pf['Presentation_Value']),0,256));
-                    if(isset($item_parameters[$parameters[$key]])) {
-                    Utils_RecordBrowserCommon::update_record('premium_ecommerce_products_parameters',$item_parameters[$parameters[$key]],$item_params);
-                    unset($item_parameters[$parameters[$key]]);
-                    } else
-                    Utils_RecordBrowserCommon::new_record('premium_ecommerce_products_parameters',$item_params);
-                }
-                foreach($item_parameters as $pf=>$pf_id)
-                    Utils_RecordBrowserCommon::delete_record('premium_ecommerce_products_parameters',$pf_id,true);
-            }
-
-            //picture
-            $pic = array();
-            if(isset($obj->Product[0]['HighPic']))
-                $pic[] = $obj->Product[0]['HighPic'];
-            elseif(isset($obj->Product[0]['LowPic']))
-                $pic[] = $obj->Product[0]['LowPic'];
-            if(isset($obj->Product[0]->ProductGallery->ProductPicture))
-                foreach($obj->Product[0]->ProductGallery->ProductPicture as $pp) {
-                    $pic[] = $pp['Pic'];
-                }
-            $old_pics = array();
-            $ooo = Utils_AttachmentCommon::get('Premium/Warehouse/eCommerce/Products/'.$item_id);
-            if(is_array($ooo))
-                foreach($ooo as $oo) {
-                    if(!$oo['text'])
-                        $old_pics[$oo['original']] = $oo['id'];
-                }
-            foreach($pic as $pp) {
-                $base_pp = basename($pp);
-                if(!isset($old_pics[$base_pp])) {
-                $ch = curl_init();
-                curl_setopt($ch, CURLOPT_URL,$pp);
-                $temp_file = self::Instance()->get_data_dir().md5(microtime(true));
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-//              $fp = fopen($temp_file, 'w');
-  //                curl_setopt($ch, CURLOPT_FILE, $fp);
-                $response = curl_exec ($ch);
-                    $response_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-                curl_close ($ch);
-//              fclose($fp);
-
-                if($response_code==200) {
-                    file_put_contents($temp_file,$response);
-                    $temp_file2 = Utils_ImageCommon::create_thumb($temp_file,800,600);
-                    $temp_file2 = $temp_file2['thumb'];
-                    Utils_AttachmentCommon::add('Premium/Warehouse/eCommerce/Products/'.$item_id,
-                                0,Acl::get_user(),'',$base_pp,$temp_file2,null,null,array('Premium_Warehouse_eCommerceCommon','copy_attachment'));
-                    @unlink($temp_file2);
-                    @unlink($temp_file);
-                }
-                } else {
-                    unset($old_pics[$base_pp]);
-                }
-            }
-            if(!empty($old_pics))
-                Utils_AttachmentCommon::persistent_mass_delete('Premium/Warehouse/eCommerce/Products/'.$item_id,false,array_values($old_pics));
-            Utils_AttachmentCommon::persistent_mass_delete('Premium/Warehouse/eCommerce/ProductsDesc/'.$code.'/'.$item_id);
-            }
-        }
-        Epesi::alert("Successfully downloaded product data from icecat server.");
+        if(!empty($langs_ok))
+            return Epesi::alert("Successfully downloaded product data for languages: ".implode(', ',$langs_ok).".");
+        Epesi::alert("There is no data about this item on 3rd party servers.");
     }
 
-    public static function icecat_addon_parameters($r) {
-        $user = Variable::get('icecat_user');
-        $pass = Variable::get('icecat_pass');
-        if($user && $pass)
-                Base_ActionBarCommon::add('add','Icecat',Module::create_href(array('icecat_sync'=>1),'Getting data from icecat - please wait.'));
-        if(isset($_REQUEST['icecat_sync'])) {
-        self::icecat_sync($r['item_name']);
-        unset($_REQUEST['icecat_sync']);
+    public static function get_3rd_party_info_addon_parameters($r) {
+        if(DB::GetOne('SELECT 1 FROM premium_ecommerce_3rdp_plugin WHERE active=1')) {
+            Base_ActionBarCommon::add('add','3rd party',Module::create_href(array('get_3rd_party_item_data'=>1),'Getting data from 3rd party servers - please wait.'));
+            if(isset($_REQUEST['get_3rd_party_item_data'])) {
+                self::get_3rd_party_item_data($r['item_name']);
+                unset($_REQUEST['get_3rd_party_item_data']);
+            }
         }
         return array('show'=>false);
     }
-
+    
     private static $orders_rec;
 
     public static function orders_get_record() {
@@ -641,7 +539,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
     public static function publish_warehouse_item($id,$icecat=true) {
         Utils_RecordBrowserCommon::new_record('premium_ecommerce_products',array('item_name'=>$id,'publish'=>1,'available'=>1));
         if($icecat)
-                Premium_Warehouse_eCommerceCommon::icecat_sync($id,false);
+                Premium_Warehouse_eCommerceCommon::get_3rd_party_item_data($id,false);
     }
 
 
@@ -1021,4 +919,5 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
         return DB::GetOne('SELECT wp.f_item_name FROM premium_ecommerce_products_data_1 ep INNER JOIN premium_warehouse_items_data_1 wp ON ep.f_item_name=wp.id WHERE ep.id=%d',array($id));
     }
 }
+
 ?>

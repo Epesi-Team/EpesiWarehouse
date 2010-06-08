@@ -1,0 +1,5 @@
+Zostawione:
+- kategorie nokaut jako dodatkowy field czy addon? // na razie pominac nokaut w compare.php
+- pages_ext: iComments
+- Tabela do zrobienia - pages_comments
+- Roznice w kolumnach pages: 'sTags' => 10 (nie uzywane), 'iTime' => 11, 'iRss' => 12 (wykorzystywane tylko na stronie "our offer"), 'iAdmin' => 13(nie uzywane), 'iAuthorized' => 14 (nie uzywane), 'iCategoryNokaut' => 15

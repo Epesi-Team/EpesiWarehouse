@@ -22,6 +22,8 @@ class Premium_Warehouse_eCommerce extends Module {
 	public function admin() {
 		$buttons = array();
 //		$icon = Base_ThemeCommon::get_template_file($name,'icon.png');
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'setup_3rd_party_plugins')).'>'.$this->ht('3rd party info plugins').'</a>',
+						'icon'=>null);
 		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'prices')).'>'.$this->ht('Automatic prices').'</a>',
 						'icon'=>null);
 		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'availability')).'>'.$this->ht('Availability').'</a>',
@@ -31,8 +33,6 @@ class Premium_Warehouse_eCommerce extends Module {
 		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'boxes')).'>'.$this->ht('Boxes').'</a>',
 						'icon'=>null);
 		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'contactus_page')).'>'.$this->ht('Contact us').'</a>',
-						'icon'=>null);
-		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'icecat')).'>'.$this->ht('Icecat').'</a>',
 						'icon'=>null);
 		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'compare_services')).'>'.$this->ht('Links for compare services').'</a>',
 						'icon'=>null);
@@ -723,7 +723,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
     		return true;
 	}
 	
-	public function icecat_fill() {
+	public function fast_fill() {
 		$qf = $this->init_module('Libs/QuickForm');
 		$qf->addElement('hidden','id',null,array('id'=>'icecat_prod_id'));
 		$qf->addElement('hidden','item_name',null,array('id'=>'icecat_prod_nameh'));
@@ -739,19 +739,19 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 		}
 		$qf->addElement('select','manufacturer',$this->t('Manufacturer'),$companies2,array('id'=>'icecat_prod_manuf'));
 
-		$qf->addElement('checkbox','skip',$this->t('Publish without getting icecat data'),'',array('id'=>'icecat_prod_skip'));
+		$qf->addElement('checkbox','skip',$this->t('Publish without getting information data'),'',array('id'=>'icecat_prod_skip'));
 		
 		$qf->addElement('submit',null,$this->t('Zapisz'));
-		$qf->addFormRule(array($this,'check_icecat_fill'));
+		$qf->addFormRule(array($this,'check_fast_fill'));
 		
 		if($qf->validate()) {
-			eval_js('leightbox_deactivate(\'icecat_fill_lb\');');
+			eval_js('leightbox_deactivate(\'fast_fill_lb\');');
 			$vals = $qf->exportValues();
 			Utils_RecordBrowserCommon::update_record('premium_warehouse_items',$vals['id'],array('upc'=>$vals['upc'],'product_code'=>$vals['product_code'],'manufacturer_part_number'=>$vals['manufacturer_part_number'],'manufacturer'=>$vals['manufacturer']));
 		   	Premium_Warehouse_eCommerceCommon::publish_warehouse_item($vals['id'],!(isset($vals['skip']) && $vals['skip']));
 		}
 
-		Libs_LeightboxCommon::display('icecat_fill_lb',$this->get_html_of_module($qf),'Icecat express fill');
+		Libs_LeightboxCommon::display('fast_fill_lb',$this->get_html_of_module($qf),'Icecat express fill');
 
 		$this->rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items');
 		$this->rb->set_default_order(array('item_name'=>'ASC'));
@@ -775,14 +775,14 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 						'sku'=>array('width'=>1, 'wrapmode'=>'nowrap')
 						));
 
-  		$this->rb->set_additional_actions_method(array($this,'icecat_fill_actions'));
+  		$this->rb->set_additional_actions_method(array($this,'fast_fill_actions'));
 		
 		$crits = array('!id'=>Utils_RecordBrowserCommon::get_possible_values('premium_ecommerce_products','item_name'));
 		$this->display_module($this->rb, array(array(),$crits,$cols));
 //		Utils_RecordBrowserCommon::merge_crits(array('upc'=>'','(manufacturer_part_number'=>'', '|manufacturer'=>''),array('(product_code'=>'', '|manufacturer'=>''))
 	}
 
-	public function check_icecat_fill($arg) {
+	public function check_fast_fill($arg) {
 		if(isset($arg['skip']) && $arg['skip']) return true;
 		if(!isset($arg['upc'])) $arg['upc'] = '';
 		if(!isset($arg['manufacturer'])) $arg['manufacturer'] = '';
@@ -802,13 +802,13 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 					'$(\'icecat_prod_part_num\').value=\''.addcslashes($arg['manufacturer_part_number'],'\'\\').'\';'.
 					'$(\'icecat_prod_manuf\').value=\''.addcslashes($arg['manufacturer'],'\'\\').'\';');
 
-			return array('upc'=>'<span id="icecat_prod_err">'.$this->t('Please fill manufacturer and product code, or manufacturer and part number, or UPC, or skip gettin icecat data.').'</span>');
+			return array('upc'=>'<span id="icecat_prod_err">'.$this->t('Please fill manufacturer and product code, or manufacturer and part number, or UPC, or skip gettin information data.').'</span>');
 		}
 		return true;
 	}
 	
-	public function icecat_fill_actions($r, $gb_row) {
-		$gb_row->add_action(Libs_LeightboxCommon::get_open_href('icecat_fill_lb').' id="icecat_button_'.$r['id'].'"','edit',$this->t('Click here to fill required data'));
+	public function fast_fill_actions($r, $gb_row) {
+		$gb_row->add_action(Libs_LeightboxCommon::get_open_href('fast_fill_lb').' id="icecat_button_'.$r['id'].'"','edit',$this->t('Click here to fill required data'));
 		$gb_row->add_js('Event.observe(\'icecat_button_'.$r['id'].'\',\'click\',function() {'.
 					'$(\'icecat_prod_id\').value=\''.$r['id'].'\';'.
 					'$(\'icecat_prod_name\').innerHTML=\''.addcslashes($r['item_name'],'\'\\').'\';'.
@@ -885,70 +885,6 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 	    @recursive_rmdir($path.'/files/200/epesi/');
 	}
 	
-	public function icecat() {
-		if($this->is_back()) return false;
-		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
-	
-		$form = & $this->init_module('Libs/QuickForm');
-
-		$form->addElement('header', null, $this->t('Ice cat settings'));
-		
-		eval_js_once('icecat_enabled = function(v) {'.
-			    'if(v==1){$("icecat_user").enable();$("icecat_pass").enable();}'.
-			    'else{$("icecat_user").disable();$("icecat_pass").disable();}'.
-			    '};');
-		
-		$form->addElement('select', 'enabled', $this->t('Enabled'), array($this->ht('No'),$this->ht('Yes')), array('onChange'=>'icecat_enabled(this.value)'));
-		// require a username and password
-		$form->addElement('text', 'user', $this->t('Username'), array('id'=>'icecat_user'));
-		$form->addElement('password', 'pass', $this->t('Password'), array('id'=>'icecat_pass'));
-
-		$user = Variable::get('icecat_user');
-		$pass = Variable::get('icecat_pass');
-		if($user && $pass)
-		    $enabled = 1;
-		else
-		    $enabled = 0;
-		$form->setDefaults(array('enabled'=>$enabled,'user'=>$user,'pass'=>$pass));
-
-		$enabled = $form->exportValue('enabled');
-		eval_js('icecat_enabled('.$enabled.')');
-		if($enabled) {
-		    $form->addRule('user',$this->t('Field required'),'required');
-		    $form->addRule('pass',$this->t('Field required'),'required');
-    		    $form->registerRule('check_icecat','callback','check_icecat_pass','Premium_Warehouse_eCommerce');
-		    $form->addRule(array('user','pass'), $this->t('Invalid username or password.'), 'check_icecat');
-		}
-
-		if($form->validate()) {
-		    $vals = $form->exportValues();
-		    if(!$vals['enabled']) {
-			$vals['user'] = '';
-			$vals['pass'] = '';
-		    }
-		    Variable::set('icecat_user',$vals['user']);
-		    Variable::set('icecat_pass',$vals['pass']);
-    		    Base_StatusBarCommon::message($this->t('Settings saved'));
-		    return false;
-		}
-		$form->display();
-
-		Base_ActionBarCommon::add('save', 'Save', $form->get_submit_form_href(true));
-		
-		return true;
-	}
-	
-	public function check_icecat_pass($user) {
-	    $url = 'http://data.icecat.biz/xml_s3/xml_server3.cgi?prod_id=RJ459AV;vendor=hp;lang=pl;output=productxml';
-	    $c = curl_init();
-	    curl_setopt($c, CURLOPT_URL, $url);
-	    curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
-	    curl_setopt($c, CURLOPT_USERPWD,$user[0].':'.$user[1]);
-	    $output = curl_exec($c);
-	    $response_code = curl_getinfo($c, CURLINFO_HTTP_CODE);
-	    return $response_code!=401;
-	}
-	
 	public function attachment_product_addon($arg){
 		$a = $this->init_module('Utils/Attachment',array('Premium/Warehouse/eCommerce/Products/'.$arg['item_name']));
 		$a->allow_protected($this->acl_check('view protected notes'),$this->acl_check('edit protected notes'));
@@ -989,7 +925,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 		$this->display_module($a);
 	}
 
-	public function icecat_addon($arg){
+	public function get_3rd_party_info_addon($arg){
 	}
 	
 	public function warehouse_item_addon($arg) {
@@ -1271,6 +1207,20 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 				);
 		$this->display_module($rb, $conds, 'mini_view');
 
+	}
+	
+	public function setup_3rd_party_plugins() {
+		if($this->is_back()) return false;
+		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
+	
+	    Base_ActionBarCommon::add('search','Scan plugins', $this->create_callback_href(array('Premium_Warehouse_eCommerceCommon','scan_for_3rdp_info_plugins')));
+        $this->recordset = '3rdp_info';
+        $this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_3rdp_info','premium_ecommerce_3rdp_info');
+		$this->rb->set_additional_actions_method(array($this, 'actions_for_position'));
+		$this->rb->force_order(array('position'=>'ASC'));
+        $this->display_module($this->rb);
+        
+        return true;
 	}
 }
 
