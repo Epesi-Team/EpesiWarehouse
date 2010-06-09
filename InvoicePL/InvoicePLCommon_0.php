@@ -78,6 +78,7 @@ class Premium_Warehouse_InvoicePLCommon extends ModuleCommon {
 	}
 	
 	public static function check_number($data) {
+		return true; // temporary solution - the whole duplicate mechanism is not used by UMT
 		if (isset($data['invoice_number']) && ($data['invoice_number'] == Utils_RecordBrowser::$last_record['invoice_number'] || !$data['invoice_number'])) return true;
 		if (!isset($data['warehouse'])) $data['warehouse'] = Utils_RecordBrowser::$last_record['warehouse'];
 		$crits = array('warehouse'=>$data['warehouse'], 'invoice_number'=>$data['invoice_number']);
