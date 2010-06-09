@@ -97,7 +97,7 @@ class Premium_Warehouse_eCommerce_3rdp__Plugin_icecat implements Premium_Warehou
 
             if($obj) {
                 //supplier
-                if(!$item['manufacturer'] && isset($obj->Supplier['Name'])); {
+                if(!$item['manufacturer'] && isset($obj->Supplier['Name'])) {
                     $manufacturers = CRM_ContactsCommon::get_companies(array('company_name'=>$obj->Supplier['Name']), array('group','company_name'));
                     if($manufacturer = array_shift($manufacturers)) {
                         Utils_RecordBrowserCommon::update_record('premium_warehouse_items',$item['id'],array('manufacturer'=>$manufacturer['id']));
@@ -248,7 +248,6 @@ class Premium_Warehouse_eCommerce_3rdp__Plugin_icecat implements Premium_Warehou
             }
             if(!empty($old_pics))
                 Utils_AttachmentCommon::persistent_mass_delete('Premium/Warehouse/eCommerce/Products/'.$item['id'],false,array_values($old_pics));
-            Utils_AttachmentCommon::persistent_mass_delete('Premium/Warehouse/eCommerce/ProductsDesc/'.$code.'/'.$item['id']);
             }
         }
         return $langs_ok;
