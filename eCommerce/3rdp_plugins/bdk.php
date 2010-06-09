@@ -131,7 +131,7 @@ class Premium_Warehouse_eCommerce_3rdp__Plugin_bdk implements Premium_Warehouse_
                             'value'=>substr(str_replace('\n','<br />',(string)implode('<br />',$a['values'])),0,256));
             if(isset($item_parameters[$parameters[$key]])) {
                 Utils_RecordBrowserCommon::update_record('premium_ecommerce_products_parameters',$item_parameters[$parameters[$key]],$item_params);
-                unset($item_parameters[$parameters[$key]]);
+                unset($item_parameters[$param]);
             } else
                 Utils_RecordBrowserCommon::new_record('premium_ecommerce_products_parameters',$item_params);
 
