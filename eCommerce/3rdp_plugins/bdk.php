@@ -23,7 +23,8 @@ class Premium_Warehouse_eCommerce_3rdp__Plugin_bdk implements Premium_Warehouse_
 
     public function download($parameters,$item,$langs) {
         if(!in_array('pl',$langs)) return;
-        
+
+        $GLOBALS['xmlrpc_internalencoding']='UTF-8';
     	include("xmlrpc.inc");
 
 	    $c = new xmlrpc_client("/export/test/", "www.kupic.pl", 80);
@@ -129,8 +130,8 @@ class Premium_Warehouse_eCommerce_3rdp__Plugin_bdk implements Premium_Warehouse_
                             'group'=>$group,
                             'language'=>'pl',
                             'value'=>substr(str_replace('\n','<br />',(string)implode('<br />',$a['values'])),0,256));
-            if(isset($item_parameters[$parameters[$key]])) {
-                Utils_RecordBrowserCommon::update_record('premium_ecommerce_products_parameters',$item_parameters[$parameters[$key]],$item_params);
+            if(isset($item_parameters[$param])) {
+                Utils_RecordBrowserCommon::update_record('premium_ecommerce_products_parameters',$item_parameters[$param],$item_params);
                 unset($item_parameters[$param]);
             } else
                 Utils_RecordBrowserCommon::new_record('premium_ecommerce_products_parameters',$item_params);
