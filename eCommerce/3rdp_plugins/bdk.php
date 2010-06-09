@@ -117,7 +117,7 @@ class Premium_Warehouse_eCommerce_3rdp__Plugin_bdk implements Premium_Warehouse_
                 $param = array_shift($param);
                 $param = $param['id'];
             } else {
-                $param = Utils_RecordBrowserCommon::new_record('premium_ecommerce_parameter',array('parameter_code'=>$a['name']));
+                $param = Utils_RecordBrowserCommon::new_record('premium_ecommerce_parameters',array('parameter_code'=>$a['name']));
                 $parameter_label = array('parameter'=>$param,
                                 'language'=>'pl',
                                 'label'=>$a['name']);
