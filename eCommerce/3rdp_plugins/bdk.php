@@ -150,7 +150,7 @@ class Premium_Warehouse_eCommerce_3rdp__Plugin_bdk implements Premium_Warehouse_
                             $old_pics[$oo['original']] = $oo['id'];
                     }
                 foreach($pictures as $pp) {
-                    $base_pp = basename($pp['photo']);
+                    $base_pp = md5(basename($pp['photo'])).'.jpg';
                     if(!isset($old_pics[$base_pp])) {
                         $ch = curl_init();
                         curl_setopt($ch, CURLOPT_URL,$pp['photo']);
