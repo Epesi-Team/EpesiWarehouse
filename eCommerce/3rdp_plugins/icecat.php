@@ -216,11 +216,11 @@ class Premium_Warehouse_eCommerce_3rdp__Plugin_icecat implements Premium_Warehou
             $ooo = Utils_AttachmentCommon::get('Premium/Warehouse/eCommerce/Products/'.$item['id']);
             if(is_array($ooo))
                 foreach($ooo as $oo) {
-                    if(!$oo['text'])
+                    if(!$oo['text'] && preg_match('/^ice_/',$oo['original']))
                         $old_pics[$oo['original']] = $oo['id'];
                 }
             foreach($pic as $pp) {
-                $base_pp = basename($pp);
+                $base_pp = 'ice_'.basename($pp);
                 if(!isset($old_pics[$base_pp])) {
                 $ch = curl_init();
                 curl_setopt($ch, CURLOPT_URL,$pp);

@@ -24,8 +24,8 @@ class Premium_Warehouse_eCommerce_3rdp__Plugin_bdk implements Premium_Warehouse_
     public function download($parameters,$item,$langs) {
         if(!in_array('pl',$langs)) return;
 
-        $GLOBALS['xmlrpc_internalencoding']='UTF-8';
     	include("xmlrpc.inc");
+        $GLOBALS['xmlrpc_internalencoding']='UTF-8';
 
 	    $c = new xmlrpc_client("/export/test/", "www.kupic.pl", 80);
     	$c->return_type = 'phpvals'; // let client give us back php values instead of xmlrpcvals
@@ -146,11 +146,11 @@ class Premium_Warehouse_eCommerce_3rdp__Plugin_bdk implements Premium_Warehouse_
                 $ooo = Utils_AttachmentCommon::get('Premium/Warehouse/eCommerce/Products/'.$item['id']);
                 if(is_array($ooo))
                     foreach($ooo as $oo) {
-                        if(!$oo['text'])
+                        if(!$oo['text'] && preg_match('/^bdk_/',$oo['original']))
                             $old_pics[$oo['original']] = $oo['id'];
                     }
                 foreach($pictures as $pp) {
-                    $base_pp = md5(basename($pp['photo'])).'.jpg';
+                    $base_pp = 'bdk_'.md5(basename($pp['photo'])).'.jpg';
                     if(!isset($old_pics[$base_pp])) {
                         $ch = curl_init();
                         curl_setopt($ch, CURLOPT_URL,$pp['photo']);
