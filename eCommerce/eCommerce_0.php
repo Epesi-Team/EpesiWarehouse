@@ -723,6 +723,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
     		return true;
 	}
 	
+	private $manufacturers;
 	public function fast_fill() {
 		$qf = $this->init_module('Libs/QuickForm');
 		$qf->addElement('hidden','id',null,array('id'=>'icecat_prod_id'));
@@ -733,13 +734,14 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 		$qf->addElement('text','manufacturer_part_number',$this->t('Part number'),array('id'=>'icecat_prod_part_num'));
 
 		$companies = CRM_ContactsCommon::get_companies(array('group'=>array('manufacturer')),array('company_name'),array('company_name'=>'ASC'));
-		$companies2 = array(''=>'---');
+		$this->manufacturers = array(''=>'---');
 		foreach($companies as $c) {
-			$companies2[$c['id']] = $c['company_name'];
+			$this->manufacturers[$c['id']] = $c['company_name'];
 		}
-		$qf->addElement('select','manufacturer',$this->t('Manufacturer'),$companies2,array('id'=>'icecat_prod_manuf'));
+		$qf->addElement('select','manufacturer',$this->t('Manufacturer'),$this->manufacturers,array('id'=>'icecat_prod_manuf'));
 
 		$qf->addElement('checkbox','skip',$this->t('Publish without getting information data'),'',array('id'=>'icecat_prod_skip'));
+        $qf->addElement('static', '3rd party', $this->t('Available data'),'<iframe id="3rdp_info_frame" style="width:300px; height:100px;border:0px"></iframe>');
 		
 		$qf->addElement('submit',null,$this->t('Zapisz'));
 		$qf->addFormRule(array($this,'check_fast_fill'));
@@ -751,7 +753,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 		   	Premium_Warehouse_eCommerceCommon::publish_warehouse_item($vals['id'],!(isset($vals['skip']) && $vals['skip']));
 		}
 
-		Libs_LeightboxCommon::display('fast_fill_lb',$this->get_html_of_module($qf),'Icecat express fill');
+		Libs_LeightboxCommon::display('fast_fill_lb',$this->get_html_of_module($qf),'Express fill');
 
 		$this->rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items');
 		$this->rb->set_default_order(array('item_name'=>'ASC'));
@@ -818,6 +820,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 					'$(\'icecat_prod_part_num\').value=\''.addcslashes($r['manufacturer_part_number'],'\'\\').'\';'.
 					'$(\'icecat_prod_manuf\').value=\''.addcslashes($r['manufacturer'],'\'\\').'\';'.
 					'$(\'icecat_prod_skip\').checked=false;'.
+					'$(\'3rdp_info_frame\').src=\'modules/Premium/Warehouse/eCommerce/3rdp.php?'.http_build_query(array('upc'=>$r['upc'],'mpn'=>$r['manufacturer_part_number'],'man'=>isset($this->manufacturers[$r['manufacturer']])?$this->manufacturers[$r['manufacturer']]:'')).'\';'.
 					'var err=$(\'icecat_prod_err\');if(err!=null)err.parentNode.parentNode.removeChild(err.parentNode);'.
 					'})');
 	}

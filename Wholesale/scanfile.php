@@ -22,12 +22,18 @@ if ($res===true) {
 	$time = time();
 	Utils_RecordBrowserCommon::update_record('premium_warehouse_distributor', $_GET['id'], array('last_update'=>$time));
 	print('<script>parent.$("_last_update__data").innerHTML="'.Base_RegionalSettingsCommon::time2reg($time,'without_seconds').'";</script>');
+	flush();
 }
 
 $matches = array();
 preg_match('/scan\_([0-9]+)\.tmp/', $_GET['file'], $matches);
 $dir = ModuleManager::get_data_dir('Premium_Warehouse_Wholesale');
 unlink($dir.'current_scan_'.$matches[1].'.tmp');
+
+$its = DB::Execute('SELECT w.id as wid ,it.id as item_id FROM premium_warehouse_wholesale_items w INNER JOIN premium_warehouse_items_data_1 it ON it.f_upc=w.upc WHERE w.item_id is null AND w.upc is not null AND w.distributor_id=%d',array($dist['id']));
+while($it = $its->FetchRow()) {
+    DB::Execute('UPDATE premium_warehouse_wholesale_items SET item_id=%d WHERE id=%d', array($it['item_id'], $it['wid']));
+}
 
 print('<script>parent.$("premium_wholesale_scan_iframe").parentNode.removeChild(parent.$("premium_wholesale_scan_iframe"));</script>');
 
