@@ -438,13 +438,6 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
         $plugins = Utils_RecordBrowserCommon::get_records('premium_ecommerce_3rdp_info',array(),array(),array('position'=>'ASC'));
         $langs = array_keys(Utils_CommonDataCommon::get_array('Premium/Warehouse/eCommerce/Languages'));
         $langs_ok = array();
-        $ooo = Utils_AttachmentCommon::get('Premium/Warehouse/eCommerce/Products/'.$item['id']);
-        $old_pics = array();
-        if(is_array($ooo))
-              foreach($ooo as $oo) {
-                   if(!$oo['text'])
-                        $old_pics[$oo['original']] = $oo['id'];
-              }
         foreach($plugins as $plugin) {
             if(!$langs) break;
             $pl = self::get_plugin($plugin['plugin']);
@@ -464,8 +457,6 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
             }
         }
         if(!empty($langs_ok)) {
-            if(!empty($old_pics))
-                   Utils_AttachmentCommon::persistent_mass_delete('Premium/Warehouse/eCommerce/Products/'.$item['id'],false,array_values($old_pics));
             return Epesi::alert("Successfully downloaded product data for languages: ".implode(', ',$langs_ok).".");
         }
         Epesi::alert("There is no data about this item on 3rd party servers.");

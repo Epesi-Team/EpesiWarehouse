@@ -213,14 +213,23 @@ class Premium_Warehouse_eCommerce_3rdp__Plugin_icecat implements Premium_Warehou
                     $pic[] = $pp['Pic'];
                 }
             $old_pics = array();
+            $old_ver_pics = array();
             $ooo = Utils_AttachmentCommon::get('Premium/Warehouse/eCommerce/Products/'.$item['id']);
             if(is_array($ooo))
                 foreach($ooo as $oo) {
-                    if(!$oo['text'] && preg_match('/^ice_/',$oo['original']))
-                        $old_pics[$oo['original']] = $oo['id'];
+                    if(!$oo['text']) {
+                        if(preg_match('/^ice_/',$oo['original']))
+                            $old_pics[$oo['original']] = $oo['id'];
+                        else
+                            $old_ver_pics[$oo['original']] = $oo['id']; //collect all images
+                    }
                 }
             foreach($pic as $pp) {
                 $base_pp = 'ice_'.basename($pp);
+                if(isset($old_ver_pics[basename($pp)])) { //delete icecat image without 'ice_' prefix
+                    Utils_AttachmentCommon::persistent_mass_delete('Premium/Warehouse/eCommerce/Products/'.$item['id'],false,array($old_ver_pics[basename($pp)]));
+                    unset($old_ver_pics[basename($pp)]);
+                }
                 if(!isset($old_pics[$base_pp])) {
                 $ch = curl_init();
                 curl_setopt($ch, CURLOPT_URL,$pp);
