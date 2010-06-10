@@ -454,7 +454,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 			    $params[$k] = $plugin['param'.$i];
     			$i++;
 	    	}
-            $ret = $pl->download($params,$item,$langs); //TODO wprowadzic pozycje pluginow (priorytet)
+            $ret = $pl->download($params,$item,$langs,$verbose); //TODO wprowadzic pozycje pluginow (priorytet)
             if(is_array($ret)) {
                 $langs_ok = array_merge($langs_ok,$ret);
                 $langs = array_diff($langs,$ret);

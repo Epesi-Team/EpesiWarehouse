@@ -21,15 +21,20 @@ class Premium_Warehouse_eCommerce_3rdp__Plugin_bdk implements Premium_Warehouse_
 		return array();
 	}
 
-    public function download($parameters,$item,$langs) {
+    public function download($parameters,$item,$langs,$verbose) {
         if(!in_array('pl',$langs)) return;
+        if(!$item['upc']) {
+            if($verbose)
+                 Epesi::alert("BDK: Missing UPC/EAN.");
+            return;
+        }
 
     	include("xmlrpc.inc");
         $GLOBALS['xmlrpc_internalencoding']='UTF-8';
 
 	    $c = new xmlrpc_client("/export/test/", "www.kupic.pl", 80);
     	$c->return_type = 'phpvals'; // let client give us back php values instead of xmlrpcvals
-    	$f = new xmlrpcmsg('test.getProductByEAN', array(php_xmlrpc_encode('08808987823825')));
+    	$f = new xmlrpcmsg('test.getProductByEAN', array(php_xmlrpc_encode($item['upc'])));
     	$r =& $c->send($f);
     	if($r->faultCode()) {
     	    if(preg_match('/denied/si',$r->faultString()))

@@ -26,7 +26,7 @@ class Premium_Warehouse_eCommerce_3rdp__Plugin_icecat implements Premium_Warehou
 
     private $user;
     private $pass;
-    public function download($parameters,$item,$langs) {
+    public function download($parameters,$item,$langs,$verbose) {
         $this->user = $parameters['Login'];
         $this->pass = $parameters['Password'];
 
@@ -43,12 +43,12 @@ class Premium_Warehouse_eCommerce_3rdp__Plugin_icecat implements Premium_Warehou
                     $prod_id = $item['product_code'];
             if(!$prod_id) {
                 if($verbose)
-                        Epesi::alert("Missing product code or manufacturer part number.");
+                        Epesi::alert("Icecat: missing product code or manufacturer part number.");
                 return false;
             }
             if(!$item['manufacturer']) {
                 if($verbose)
-                    Epesi::alert("Missing product manufacturer.");
+                    Epesi::alert("Icecat: missing product manufacturer.");
                 return false;
             }
             if($item['manufacturer'] && $prod_id) {
