@@ -195,7 +195,7 @@ class Premium_Warehouse_Wholesale extends Module {
         $ecommerce_on = ModuleManager::is_installed('Premium_Warehouse_eCommerce')!=-1;
         if($ecommerce_on) {
             $form2->addElement('checkbox', 'ecommerce', $this->t('eCommerce publish'));
-            $form2->addElement('static', '3rd party', $this->t('Available data'),'<iframe id="3rdp_info_frame" style="width:200px; height:100px;border:0px"></iframe>');
+            $form2->addElement('static', '3rd party', $this->t('Available data'),'<iframe id="3rdp_info_frame" style="width:300px; height:100px;border:0px"></iframe>');
         }
         $form2->setDefaults(array('item_type'=>1, 'tax_rate'=>$arg['tax_rate']));
         $lp = $this->init_module('Utils_LeightboxPrompt');
