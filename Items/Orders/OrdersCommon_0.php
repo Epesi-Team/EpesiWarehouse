@@ -872,7 +872,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 								if ($param['status']!=1) $ret['expiration_date'] = false;
 							}
 							return $ret;
-			case 'clone':	return false;
+			case 'clone':	
 			case 'add':		if (!$i->acl_check('edit orders')) return false;
 							$ret['status'] = false;
 							$ret['transaction_type'] = false;
