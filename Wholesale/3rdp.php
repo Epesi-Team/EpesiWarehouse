@@ -1,8 +1,8 @@
 <?php
 header("Cache-Control: no-cache, must-revalidate");
 header("Expires: Mon, 26 Jul 1997 05:00:00 GMT"); // date in the past
-if(!isset($_GET['upc']) || !isset($_GET['mpn']) || !is_numeric($_GET['man']))
-	die('Invalid request');
+if(!isset($_GET['upc']) && (!isset($_GET['mpn']) || !is_numeric($_GET['man'])))
+	die('');
 
 define('CID',false);
 define('READ_ONLY_SESSION',true);
