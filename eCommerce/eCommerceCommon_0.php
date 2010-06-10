@@ -476,7 +476,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
     			$i++;
 	    	}
             $ret_check = $pl->check($params,$upc,$man,$mpn,$langs); //TODO wprowadzic pozycje pluginow (priorytet)
-            if(is_array($ret)) {
+            if(is_array($ret_check)) {
                 $ret[$plugin['name']] = $ret_check;
                 $langs = array_diff($langs,$ret_check);
             } elseif($ret) {
