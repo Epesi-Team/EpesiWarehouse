@@ -43,7 +43,7 @@ $ret = DB::SelectLimit('SELECT * FROM premium_warehouse_items_data_1 AS pwi WHER
 $my_warehouse = $trans['warehouse'];
 if (!$my_warehouse) $my_warehouse = Base_User_SettingsCommon::get('Premium_Warehouse','my_warehouse');
 
-print('<ul>');
+print('<ul style="width: 600px;">');
 
 $header = '<li><table style="width: 600px;">'.
 		'<tr>'.
@@ -79,7 +79,6 @@ $header .= 	'</tr>'.
 $empty = true;
 while ($row = $ret->FetchRow()) {
 	if ($empty) print($header);
-	$empty = false;
 	$l = '<li><table style="width: 600px;">'.
 			'<tr>'.
 				'<td width="300px;">'.
@@ -105,6 +104,7 @@ while ($row = $ret->FetchRow()) {
 					'</td>';
 	$l .= 	'</tr>'.
 		'</table></li>';
+	$empty = false;
 	print($l);
 }
 if ($empty) print('<li><center><span class="informal"><b>'.Base_LangCommon::ts('Premium_Warehouse_Items_Orders','No records found').'</b></span></center></li>');
