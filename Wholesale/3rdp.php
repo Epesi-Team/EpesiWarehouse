@@ -12,7 +12,7 @@ ModuleManager::load_modules();
 
 if(!Acl::is_user()) die('forbidden');
 
-$ret = Premium_Warehouse_eCommerceCommon::check_3rd_party_item_data($_GET['upc'],$_GET['man'],$_GET['mpn']);
+$ret = Premium_Warehouse_eCommerceCommon::check_3rd_party_item_data(isset($_GET['upc'])?$_GET['upc']:null,isset($_GET['man'])?$_GET['man']:null,isset($_GET['mpn'])?$_GET['mpn']:null);
 foreach($ret as $name=>$langs) {
     print('<b>'.$name.'</b> - <i>'.implode(', ',$langs).'</i><br/>');
 }
