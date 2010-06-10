@@ -170,7 +170,7 @@ class Premium_Warehouse_Wholesale extends Module {
         $form->display();
 
         $where = $gb->get_search_query(false,true);
-        if ($where) $where = ' AND '.$where;
+        if ($where) $where = ' AND ('.$where.')';
         if($link_status!='all') {
             if($link_status=='linked')
                 $where .= ' AND item_id is not null';
