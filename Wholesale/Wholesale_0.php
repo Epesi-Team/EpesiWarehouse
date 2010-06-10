@@ -35,7 +35,9 @@ class Premium_Warehouse_Wholesale extends Module {
             array('name'=>$this->t('Quantity'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'quantity'),
             array('name'=>$this->t('Quantity Details'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'quantity_info'),
             array('name'=>$this->t('Distributor Category'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'distributor_category', 'search'=>'f_foreign_category_name'),
-            array('name'=>$this->t('Manufacturer'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'manufacturer', 'search'=>'f_company_name')
+            array('name'=>$this->t('Manufacturer'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'manufacturer', 'search'=>'f_company_name'),
+            array('name'=>$this->t('MPN'), 'width'=>3, 'wrapmode'=>'nowrap', 'order'=>'manufacturer_part_number', 'search'=>'manufacturer_part_number'),
+            array('name'=>$this->t('UPC'), 'width'=>3, 'wrapmode'=>'nowrap', 'order'=>'upc', 'search'=>'upc')
         ));
 
         $form = $this->init_module('Libs/QuickForm');
@@ -112,7 +114,9 @@ class Premium_Warehouse_Wholesale extends Module {
                 array('value'=>$row['quantity'], 'style'=>'text-align:right;'),
                 $row['quantity_info'],
                 $row['category'],
-                $row['manufacturer_name']
+                $row['manufacturer_name'],
+                $row['manufacturer_part_number'],
+                $row['upc']
             );
         }
         $this->display_module($gb);
@@ -148,7 +152,9 @@ class Premium_Warehouse_Wholesale extends Module {
             array('name'=>$this->t('Quantity'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'quantity'),
             array('name'=>$this->t('Quantity Details'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'quantity_info'),
             array('name'=>$this->t('Distributor Category'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'distributor_category', 'search'=>'f_foreign_category_name'),
-            array('name'=>$this->t('Manufacturer'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'manufacturer', 'search'=>'f_company_name')
+            array('name'=>$this->t('Manufacturer'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'manufacturer', 'search'=>'f_company_name'),
+            array('name'=>$this->t('MPN'), 'width'=>3, 'wrapmode'=>'nowrap', 'order'=>'manufacturer_part_number', 'search'=>'manufacturer_part_number'),
+            array('name'=>$this->t('UPC'), 'width'=>3, 'wrapmode'=>'nowrap', 'order'=>'upc', 'search'=>'upc')
         ));
 
         $form = $this->init_module('Libs/QuickForm');
@@ -269,7 +275,9 @@ class Premium_Warehouse_Wholesale extends Module {
                 array('value'=>$row['quantity'], 'style'=>'text-align:right;'),
                 $row['quantity_info'],
                 $row['category'],
-                $row['manufacturer_name']
+                $row['manufacturer_name'],
+                $row['manufacturer_part_number'],
+                $row['upc']
             );
         }
         $this->display_module($gb);
