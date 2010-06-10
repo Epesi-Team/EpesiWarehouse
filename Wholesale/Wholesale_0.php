@@ -193,8 +193,10 @@ class Premium_Warehouse_Wholesale extends Module {
         $taxes = array(''=>'---',)+Data_TaxRatesCommon::get_tax_rates();
         $form2->addElement('select', 'tax_rate', $this->t('Tax Rate'),$taxes);
         $ecommerce_on = ModuleManager::is_installed('Premium_Warehouse_eCommerce')!=-1;
-        if($ecommerce_on)
+        if($ecommerce_on) {
             $form2->addElement('checkbox', 'ecommerce', $this->t('eCommerce publish'));
+            $form2->addElement('static', '3rd party', $this->t('Available data'),'<iframe id="3rdp_info_frame" style="width:200px; height:100px;border:0px"></iframe>');
+        }
         $form2->setDefaults(array('item_type'=>1, 'tax_rate'=>$arg['tax_rate']));
         $lp = $this->init_module('Utils_LeightboxPrompt');
         $lp->add_option('add', 'Add', '', $form2);
@@ -219,7 +221,7 @@ class Premium_Warehouse_Wholesale extends Module {
                 list($dist_cat,$manufacturer,$mpn,$upc) = DB::GetRow('SELECT distributor_category,manufacturer,manufacturer_part_number,upc FROM premium_warehouse_wholesale_items WHERE id=%d',array($vals['params']['internal_id']));
                 $categories = Utils_RecordBrowserCommon::get_record('premium_warehouse_distr_categories',$dist_cat);
                 $new_vals = array('category'=>$categories['epesi_category'],'manufacturer'=>$manufacturer,'vendor'=>$arg['company']);
-                if($mpn && (!isset($vals['form']['manufacturer_part_number']) || $vals['form']['manufacturer_part_number'])) $new_vals['manufacturer_part_number']=$mpn;
+                if($mpn && (!isset($vals['form']['manufacturer_part_number']) || !$vals['form']['manufacturer_part_number'])) $new_vals['manufacturer_part_number']=$mpn;
                 if($upc) $new_vals['upc']=$upc;
                 $iid = Utils_RecordBrowserCommon::new_record('premium_warehouse_items', array_merge($vals['form'],$new_vals));
                 DB::Execute('UPDATE premium_warehouse_wholesale_items SET item_id=%d WHERE id=%d', array($iid, $vals['params']['internal_id']));
@@ -262,7 +264,7 @@ class Premium_Warehouse_Wholesale extends Module {
                             '</span>'.
                             '<span id="link_it_'.$row['id'].'_choice">'.
                                 '<a href="javascript:void(0);" onclick="$(\'link_it_'.$row['id'].'_form\').style.display=\'inline\';$(\'link_it_'.$row['id'].'_choice\').style.display=\'none\'"><img src="'.Base_ThemeCommon::get_template_file('Premium/Warehouse/Wholesale','link.png').'" border="0" /></a>'.
-                                '<a '.$lp->get_href(array($row['id'])).' onMouseUp="$(\'add_item_name\').value=\''.escapeJS($row['distributor_item_name']).'\'"><img src="'.Base_ThemeCommon::get_template_file('Premium/Warehouse/Wholesale','add_item.png').'" border="0" /></a>'.
+                                '<a '.$lp->get_href(array($row['id'])).' onMouseUp="$(\'add_item_name\').value=\''.escapeJS($row['distributor_item_name']).'\';var rd=$(\'3rdp_info_frame\');if(rd)rd.src=\'modules/Premium/Warehouse/Wholesale/3rdp.php?'.http_build_query(array('upc'=>$row['upc'],'mpn'=>$row['manufacturer_part_number'],'man'=>$row['manufacturer_name'])).'\';"><img src="'.Base_ThemeCommon::get_template_file('Premium/Warehouse/Wholesale','add_item.png').'" border="0" /></a>'.
                             '</span>';
                 }
             }

@@ -185,5 +185,23 @@ class Premium_Warehouse_eCommerce_3rdp__Plugin_bdk implements Premium_Warehouse_
         
         return array('pl');
     }	
+
+	public function check($parameters,$upc,$man,$mpn,$langs) {
+        if(!in_array('pl',$langs)) return;
+        if(!$upc)
+            return;
+
+    	include("xmlrpc.inc");
+        $GLOBALS['xmlrpc_internalencoding']='UTF-8';
+
+	    $c = new xmlrpc_client("/export/test/", "www.kupic.pl", 80);
+    	$c->return_type = 'phpvals'; // let client give us back php values instead of xmlrpcvals
+    	$f = new xmlrpcmsg('test.getProductByEAN', array(php_xmlrpc_encode($upc)));
+    	$r =& $c->send($f);
+    	if($r->faultCode()) {
+	        return;
+	    }
+	    return array('pl');
+	}
 }
 ?>

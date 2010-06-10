@@ -298,5 +298,38 @@ class Premium_Warehouse_eCommerce_3rdp__Plugin_icecat implements Premium_Warehou
         return $obj;
     }
 
+
+	public function check($parameters,$upc,$man,$mpn,$langs) {
+        $this->user = $parameters['Login'];
+        $this->pass = $parameters['Password'];
+
+        $query_arr = array();
+        $ret = false;
+        if($upc) {
+            $query_arr['ean_upc'] = $upc;
+            $ret = $this->icecat_get($query_arr+array('lang'=>'en','output'=>'productxml'),'default');
+        }
+        if(!$ret) {
+            $query_arr = array();
+            if(!$mpn)
+                return;
+            if(!$man)
+                return;
+            $query_arr['prod_id'] = $mpn;
+            $query_arr['vendor'] = $man;
+            $ret = $this->icecat_get($query_arr+array('lang'=>'en','output'=>'productxml'),'default');
+        }
+        if(!$ret)
+            return;
+            
+        $langs_ok = array();
+        foreach($langs as $code) {
+            $obj = $this->icecat_get($query_arr+array('lang'=>$code,'output'=>'productxml'));
+            if(!$obj) continue;
+            $langs_ok[] = $code;
+        }
+        return $langs_ok;
+	}
+
 }
 ?>

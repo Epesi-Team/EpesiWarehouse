@@ -462,6 +462,31 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
         Epesi::alert("There is no data about this item on 3rd party servers.");
     }
 
+    public static function check_3rd_party_item_data($upc,$man,$mpn) {
+        $plugins = Utils_RecordBrowserCommon::get_records('premium_ecommerce_3rdp_info',array(),array(),array('position'=>'ASC'));
+        $langs = array_keys(Utils_CommonDataCommon::get_array('Premium/Warehouse/eCommerce/Languages'));
+        $ret = array();
+        foreach($plugins as $plugin) {
+            if(!$langs) break;
+            $pl = self::get_plugin($plugin['plugin']);
+    		$params = $pl->get_parameters();
+	    	$i = 1;
+		    foreach ($params as $k=>$v) {
+			    $params[$k] = $plugin['param'.$i];
+    			$i++;
+	    	}
+            $ret_check = $pl->check($params,$upc,$man,$mpn,$langs); //TODO wprowadzic pozycje pluginow (priorytet)
+            if(is_array($ret)) {
+                $ret[$plugin['name']] = $ret_check;
+                $langs = array_diff($langs,$ret_check);
+            } elseif($ret) {
+                $ret[$plugin['name']] = $langs;
+                break;
+            }
+        }
+        return $ret;
+    }
+
     public static function get_3rd_party_info_addon_parameters($r) {
         if(DB::GetOne('SELECT 1 FROM premium_ecommerce_3rdp_plugin WHERE active=1')) {
             Base_ActionBarCommon::add('add','3rd party',Module::create_href(array('get_3rd_party_item_data'=>1),'Getting data from 3rd party servers - please wait.'));

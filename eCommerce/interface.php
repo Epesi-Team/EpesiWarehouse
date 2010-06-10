@@ -29,6 +29,7 @@ interface Premium_Warehouse_eCommerce_3rdp__Plugin {
 	public function get_parameters();
 
 	public function download($parameters,$item,$langs,$verbose);
+	public function check($parameters,$upc,$man,$mpn,$langs);
 }
 
 ?>
