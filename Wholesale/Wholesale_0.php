@@ -188,7 +188,9 @@ class Premium_Warehouse_Wholesale extends Module {
         $form2->addElement('text', 'item_name', $this->t('Item Name'),array('id'=>'add_item_name'));
         $form2->addElement('commondata', 'item_type', $this->t('Item Type'), 'Premium_Warehouse_Items_Type', array('empty_option'=>true, 'order_by_key'=>true));
         $form2->addElement('text', 'product_code', $this->t('Product Code'));
-        $form2->addElement('text', 'manufacturer_part_number', $this->t('Manufacturer Part Number'));
+        $form2->addElement('static', 'manufacturer', $this->t('Manufacturer'),'<span id="add_item_man"></span>');
+        $form2->addElement('text', 'manufacturer_part_number', $this->t('Manufacturer Part Number'),array('id'=>'add_item_mpn'));
+        $form2->addElement('text', 'upc', $this->t('Manufacturer Part Number'),array('id'=>'add_item_upc'));
         $form2->addElement('text', 'weight', $this->t('Weight'));
         $taxes = array(''=>'---',)+Data_TaxRatesCommon::get_tax_rates();
         $form2->addElement('select', 'tax_rate', $this->t('Tax Rate'),$taxes);
@@ -222,7 +224,7 @@ class Premium_Warehouse_Wholesale extends Module {
                 $categories = Utils_RecordBrowserCommon::get_record('premium_warehouse_distr_categories',$dist_cat);
                 $new_vals = array('category'=>$categories['epesi_category'],'manufacturer'=>$manufacturer,'vendor'=>$arg['company']);
                 if($mpn && (!isset($vals['form']['manufacturer_part_number']) || !$vals['form']['manufacturer_part_number'])) $new_vals['manufacturer_part_number']=$mpn;
-                if($upc) $new_vals['upc']=$upc;
+                if($upc && (!isset($vals['form']['upc']) || !$vals['form']['upc'])) $new_vals['upc']=$upc;
                 $iid = Utils_RecordBrowserCommon::new_record('premium_warehouse_items', array_merge($vals['form'],$new_vals));
                 DB::Execute('UPDATE premium_warehouse_wholesale_items SET item_id=%d WHERE id=%d', array($iid, $vals['params']['internal_id']));
                 if($ecommerce_on && isset($vals['form']['ecommerce']) && $vals['form']['ecommerce']) {
@@ -264,7 +266,7 @@ class Premium_Warehouse_Wholesale extends Module {
                             '</span>'.
                             '<span id="link_it_'.$row['id'].'_choice">'.
                                 '<a href="javascript:void(0);" onclick="$(\'link_it_'.$row['id'].'_form\').style.display=\'inline\';$(\'link_it_'.$row['id'].'_choice\').style.display=\'none\'"><img src="'.Base_ThemeCommon::get_template_file('Premium/Warehouse/Wholesale','link.png').'" border="0" /></a>'.
-                                '<a '.$lp->get_href(array($row['id'])).' onMouseUp="$(\'add_item_name\').value=\''.escapeJS($row['distributor_item_name']).'\';var rd=$(\'3rdp_info_frame\');if(rd)rd.innerHTML=\''.($row['3rdp']?$row['3rdp']:'queued to fetch').'\';"><img src="'.Base_ThemeCommon::get_template_file('Premium/Warehouse/Wholesale','add_item.png').'" border="0" /></a>'.
+                                '<a '.$lp->get_href(array($row['id'])).' onMouseUp="$(\'add_item_name\').value=\''.escapeJS($row['distributor_item_name']).'\';var rd=$(\'3rdp_info_frame\');if(rd)rd.innerHTML=\''.($row['3rdp']?$row['3rdp']:'queued to fetch').'\';$(\'add_item_man\').value=\''.$row['manufacturer_name'].'\';$(\'add_item_mpn\').value=\''.$row['manufacturer_part_number'].'\';$(\'add_item_upc\').value=\''.$row['upc'].'\';"><img src="'.Base_ThemeCommon::get_template_file('Premium/Warehouse/Wholesale','add_item.png').'" border="0" /></a>'.
                             '</span>';
                 }
             }
