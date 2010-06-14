@@ -436,6 +436,17 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 				Utils_RecordBrowserCommon::update_record('premium_warehouse_distributor', $dist['id'], array('last_update'=>$time));
 			}
 		}
+    	$r2 = DB::Execute('SELECT id,upc,manufacturer,manufacturer_part_number FROM premium_warehouse_wholesale_items WHERE 3rdp is null OR 3rdp=\'\'');
+    	while($row = $r2->FetchRow()) {
+    	    $r3 = Premium_Warehouse_eCommerceCommon::check_3rd_party_item_data(isset($row['upc'])?$row['upc']:null,isset($row['manufacturer'])?$row['manufacturer']:null,isset($row['manufacturer_part_number'])?$row['manufacturer_part_number']:null);
+    	    $val = array();
+            if(!$r3)
+                $val[] = '<i>no data available</i>';
+            foreach($r3 as $name=>$langs) {
+                $val[] = '<b>'.$name.'</b> - <i>'.implode(', ',$langs).'</i>';
+            }
+            DB::Execute('UPDATE premium_warehouse_wholesale_items SET 3rdp=%s WHERE id=%d',array(implode('<br/>',$val),$row['id']));
+    	}
 		return $ret;
 	}
 }

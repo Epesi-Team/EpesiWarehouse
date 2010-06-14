@@ -195,7 +195,7 @@ class Premium_Warehouse_Wholesale extends Module {
         $ecommerce_on = ModuleManager::is_installed('Premium_Warehouse_eCommerce')!=-1;
         if($ecommerce_on) {
             $form2->addElement('checkbox', 'ecommerce', $this->t('eCommerce publish'));
-            $form2->addElement('static', '3rd party', $this->t('Available data'),'<iframe id="3rdp_info_frame" style="width:300px; height:100px;border:0px"></iframe>');
+            $form2->addElement('static', '3rd party', $this->t('Available data'),'<span id="3rdp_info_frame"></span>');
         }
         $form2->setDefaults(array('item_type'=>1, 'tax_rate'=>$arg['tax_rate']));
         $lp = $this->init_module('Utils_LeightboxPrompt');
@@ -264,7 +264,7 @@ class Premium_Warehouse_Wholesale extends Module {
                             '</span>'.
                             '<span id="link_it_'.$row['id'].'_choice">'.
                                 '<a href="javascript:void(0);" onclick="$(\'link_it_'.$row['id'].'_form\').style.display=\'inline\';$(\'link_it_'.$row['id'].'_choice\').style.display=\'none\'"><img src="'.Base_ThemeCommon::get_template_file('Premium/Warehouse/Wholesale','link.png').'" border="0" /></a>'.
-                                '<a '.$lp->get_href(array($row['id'])).' onMouseUp="$(\'add_item_name\').value=\''.escapeJS($row['distributor_item_name']).'\';var rd=$(\'3rdp_info_frame\');if(rd)rd.src=\'modules/Premium/Warehouse/eCommerce/3rdp.php?'.http_build_query(array('upc'=>$row['upc'],'mpn'=>$row['manufacturer_part_number'],'man'=>$row['manufacturer_name'])).'\';"><img src="'.Base_ThemeCommon::get_template_file('Premium/Warehouse/Wholesale','add_item.png').'" border="0" /></a>'.
+                                '<a '.$lp->get_href(array($row['id'])).' onMouseUp="$(\'add_item_name\').value=\''.escapeJS($row['distributor_item_name']).'\';var rd=$(\'3rdp_info_frame\');if(rd)rd.innerHTML=\''.($row['3rdp']?$row['3rdp']:'queued to fetch').'\';"><img src="'.Base_ThemeCommon::get_template_file('Premium/Warehouse/Wholesale','add_item.png').'" border="0" /></a>'.
                             '</span>';
                 }
             }
