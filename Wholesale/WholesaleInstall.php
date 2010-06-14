@@ -40,7 +40,7 @@ class Premium_Warehouse_WholesaleInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::set_caption('premium_warehouse_distributor', 'Distributors');
 		Utils_RecordBrowserCommon::set_icon('premium_warehouse_distributor', Base_ThemeCommon::get_template_filename('Premium/Warehouse/Wholesale', 'icon.png'));
 		Utils_RecordBrowserCommon::set_access_callback('premium_warehouse_distributor', array('Premium_Warehouse_WholesaleCommon', 'access_distributor'));
-		Utils_RecordBrowserCommon::set_processing_callback('premium_warehouse_distributor', array('Premium_Warehouse_WholesaleCommon', 'submit_distributor'));
+		Utils_RecordBrowserCommon::register_processing_callback('premium_warehouse_distributor', array('Premium_Warehouse_WholesaleCommon', 'submit_distributor'));
 		Utils_RecordBrowserCommon::enable_watchdog('premium_warehouse_distributor', array('Premium_Warehouse_WholesaleCommon','watchdog_label'));
 		
 // ************ addons ************** //
@@ -107,6 +107,7 @@ class Premium_Warehouse_WholesaleInstall extends ModuleInstall {
 	}
 	
 	public function uninstall() {
+		Utils_RecordBrowserCommon::unregister_processing_callback('premium_warehouse_distributor', array('Premium_Warehouse_WholesaleCommon', 'submit_distributor'));
 		Utils_RecordBrowserCommon::set_display_callback('premium_warehouse_items', 'Quantity on Hand', array('Premium_Warehouse_Items_LocationCommon', 'display_item_quantity'));
 		Utils_RecordBrowserCommon::set_display_callback('premium_warehouse_items', 'Available Qty', array('Premium_Warehouse_Items_OrdersCommon', 'display_available_qty'));
 		Base_ThemeCommon::uninstall_default_theme($this->get_type());
