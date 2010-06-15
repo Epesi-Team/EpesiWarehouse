@@ -264,26 +264,40 @@ class Premium_Warehouse_eCommerce_3rdp__Plugin_icecat implements Premium_Warehou
 
 
     private function icecat_get($arr) {
-        $url = 'http://data.icecat.biz/xml_s3/xml_server3.cgi?'.http_build_query($arr);
-        $c = curl_init();
-        curl_setopt($c, CURLOPT_URL, $url);
-        curl_setopt($c, CURLOPT_USERAGENT, "Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)");
-        curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($c, CURLOPT_USERPWD,$this->user.':'.$this->pass);
-        $httpHeader = array(
-        "Content-Type: text/xml; charset=UTF-8",
-            "Content-Encoding: UTF-8"
-        );
-        curl_setopt($c, CURLOPT_HTTPHEADER, $httpHeader);
-        $output = curl_exec($c);
-        $response_code = curl_getinfo($c, CURLINFO_HTTP_CODE);
-        curl_close($c);
-        if($response_code==401) {
-            Epesi::alert("Invalid icecat user or password");
-            return false;
+        static $cache_ok = false;
+        $cache_dir = DATA_DIR.'/Premium_Warehouse_eCommerce/icecat_cache/';
+        if(!$cache_ok) {
+            if(!file_exists($cache_dir))
+                mkdir($cache_dir);
+            if(is_writable($cache_dir))
+                $cache_ok = true;
         }
-        if(!$output) return false;
-        $got_data = true;
+        $url = 'http://data.icecat.biz/xml_s3/xml_server3.cgi?'.http_build_query($arr);
+        $cache_id = md5($url);
+        if($cache_ok && file_exists($cache_dir.$cache_id))
+            $output = file_get_contents($cache_dir.$cache_id);
+        else {
+            $c = curl_init();
+            curl_setopt($c, CURLOPT_URL, $url);
+            curl_setopt($c, CURLOPT_USERAGENT, "Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)");
+            curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($c, CURLOPT_USERPWD,$this->user.':'.$this->pass);
+            $httpHeader = array(
+            "Content-Type: text/xml; charset=UTF-8",
+                "Content-Encoding: UTF-8"
+            );
+            curl_setopt($c, CURLOPT_HTTPHEADER, $httpHeader);
+            $output = curl_exec($c);
+            $response_code = curl_getinfo($c, CURLINFO_HTTP_CODE);
+            curl_close($c);
+            if($response_code==401) {
+                Epesi::alert("Invalid icecat user or password");
+                return false;
+            }
+            if(!$output) return false;
+            if($cache_ok)
+                file_put_contents($cache_dir.$cache_id,$output);
+        }
 
         $obj = @simplexml_load_string($output);
         if($obj===false) {
