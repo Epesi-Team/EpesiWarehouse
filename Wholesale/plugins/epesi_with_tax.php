@@ -64,7 +64,7 @@ class Premium_Warehouse_Wholesale__Plugin_epesi_with_tax implements Premium_Ware
 	    curl_setopt($c, CURLOPT_URL, $url);
 		curl_setopt($c, CURLOPT_SSL_VERIFYPEER, false);
 		curl_setopt($c, CURLOPT_HEADER, false);
-		curl_setopt($c, CURLOPT_POST, true);
+//		curl_setopt($c, CURLOPT_POST, true);
 		curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($c, CURLOPT_USERAGENT, "Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)");
 		curl_setopt($c, CURLOPT_FOLLOWLOCATION, true);

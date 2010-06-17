@@ -202,7 +202,7 @@ class Premium_Warehouse_Wholesale extends Module {
         $form2->setDefaults(array('item_type'=>1, 'tax_rate'=>$arg['tax_rate']));
         $lp = $this->init_module('Utils_LeightboxPrompt');
         $lp->add_option('add', 'Add', '', $form2);
-        $this->display_module($lp, array($this->t('Create new item'), array('internal_id','item_name')));
+        $this->display_module($lp, array($this->t('Create new item'), array('internal_id')));
         $vals = $lp->export_values();
         if ($vals) {
             $validate = true;
@@ -228,7 +228,8 @@ class Premium_Warehouse_Wholesale extends Module {
                 $iid = Utils_RecordBrowserCommon::new_record('premium_warehouse_items', array_merge($vals['form'],$new_vals));
                 DB::Execute('UPDATE premium_warehouse_wholesale_items SET item_id=%d WHERE id=%d', array($iid, $vals['params']['internal_id']));
                 if($ecommerce_on && isset($vals['form']['ecommerce']) && $vals['form']['ecommerce']) {
-                    Premium_Warehouse_eCommerceCommon::publish_warehouse_item($iid);
+                    load_js($this->get_module_dir().'/add_item.js');
+                    eval_js('wholesale_add_item('.$iid.')');
                 }
             }
         }
@@ -262,7 +263,8 @@ class Premium_Warehouse_Wholesale extends Module {
                     location(array());
                 } else {
                     $item_name = trim($row['distributor_item_name']);
-                    $item_name = $row['manufacturer_name'].' '.str_ireplace(array($row['manufacturer_name'].' ',' '.$row['manufacturer_name']),'',$item_name);
+                    if($row['manufacturer_name'])
+                        $item_name = $row['manufacturer_name'].' '.str_ireplace(array($row['manufacturer_name'].' ',' '.$row['manufacturer_name']),'',$item_name);
                     $sku =  '<span id="link_it_'.$row['id'].'_form" style="display:none;">'.
                                 ob_get_clean().
                             '</span>'.
