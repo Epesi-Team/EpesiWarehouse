@@ -262,7 +262,7 @@ class Premium_Warehouse_Wholesale extends Module {
                     location(array());
                 } else {
                     $item_name = trim($row['distributor_item_name']);
-                    if(strpos($item_name,$row['manufacturer_name'])===false)
+                    if(stripos($item_name,$row['manufacturer_name'])===false)
                         $item_name = $row['manufacturer_name'].' '.$item_name;
                     $sku =  '<span id="link_it_'.$row['id'].'_form" style="display:none;">'.
                                 ob_get_clean().
