@@ -297,24 +297,23 @@ class Products
 	  } // end for
     	  saveSearchedWords( $aWords );
 	$query = '1';
-//	$query_features = '1';
 	foreach($aWords as $w) {
-//		$query .= ' AND (it.f_sku LIKE \'%%'.DB::addq($w).'%%\' OR it.f_product_code LIKE \'%%'.DB::addq($w).'%%\' OR it.f_upc LIKE \'%%'.DB::addq($w).'%%\' OR it.f_item_name LIKE \'%%'.DB::addq($w).'%%\' OR d.f_display_name LIKE \'%%'.DB::addq($w).'%%\' OR d.f_long_description LIKE \'%%'.DB::addq($w).'%%\' OR d.f_short_description LIKE \'%%'.DB::addq($w).'%%\')';
-		$query .= ' AND (it.f_sku LIKE \'%%'.DB::addq($w).'%%\' OR it.f_product_code LIKE \'%%'.DB::addq($w).'%%\' OR it.f_upc LIKE \'%%'.DB::addq($w).'%%\' OR it.f_item_name LIKE \'%%'.DB::addq($w).'%%\' OR d.f_display_name LIKE \'%%'.DB::addq($w).'%%\' OR d_en.f_display_name LIKE \'%%'.DB::addq($w).'%%\' OR d.f_short_description LIKE \'%%'.DB::addq($w).'%%\' OR d_en.f_short_description LIKE \'%%'.DB::addq($w).'%%\')';
-//		$query_features .= ' AND pp.f_value LIKE \'%%'.DB::addq($w).'%%\'';
+		$query .= ' AND (it.f_sku LIKE \'%%'.DB::addq($w).'%%\' OR it.f_product_code LIKE \'%%'.DB::addq($w).'%%\' OR it.f_upc LIKE \'%%'.DB::addq($w).'%%\' OR it.f_item_name LIKE \'%%'.DB::addq($w).'%%\' OR d.f_display_name LIKE \'%%'.DB::addq($w).'%%\' OR d_en.f_display_name LIKE \'%%'.DB::addq($w).'%%\')';
 	}
-/*	$ret_features = DB::GetCol('SELECT pp.f_item_name
-						FROM premium_ecommerce_products_parameters_data_1 pp
-						INNER JOIN (premium_ecommerce_parameters_data_1 p,premium_ecommerce_parameter_groups_data_1 g) ON (p.id=pp.f_parameter AND g.id=pp.f_group)
-						LEFT JOIN premium_ecommerce_parameter_labels_data_1 pl ON (pl.f_parameter=p.id AND pl.f_language="'.LANGUAGE.'" AND pl.active=1)
-						LEFT JOIN premium_ecommerce_param_group_labels_data_1 gl ON (gl.f_group=g.id AND gl.f_language="'.LANGUAGE.'" AND gl.active=1)
-						WHERE pp.active=1 AND pp.f_language="'.LANGUAGE.'" AND ('.$query_features.')');
-	if($ret_features) {
-		$query .= ' OR it.id IN ('.implode(',',$ret_features).')';
-	}*/
-        $sUrlExt .= ((defined( 'FRIENDLY_LINKS' ) && FRIENDLY_LINKS == true)?null:'&amp;').'sPhrase='.$GLOBALS['sPhrase'];
-      }
-      else{
+	$in_title = DB::GetOne('SELECT 1 
+					FROM premium_ecommerce_products_data_1 pr
+					INNER JOIN (premium_warehouse_items_data_1 it) ON (pr.f_item_name=it.id)
+					LEFT JOIN premium_ecommerce_descriptions_data_1 d ON (d.f_item_name=it.id AND d.f_language="'.LANGUAGE.'" AND d.active=1)
+					LEFT JOIN premium_ecommerce_descriptions_data_1 d_en ON (d_en.f_item_name=it.id AND d_en.f_language="en" AND d_en.active=1)
+					 WHERE pr.f_publish=1 AND pr.active=1 AND it.active=1 AND '.$query.' GROUP BY it.id');
+	if(!$in_title) {
+    	$query = '1';
+    	foreach($aWords as $w) {
+	    	$query .= ' AND (it.f_sku LIKE \'%%'.DB::addq($w).'%%\' OR it.f_product_code LIKE \'%%'.DB::addq($w).'%%\' OR it.f_upc LIKE \'%%'.DB::addq($w).'%%\' OR it.f_item_name LIKE \'%%'.DB::addq($w).'%%\' OR d.f_display_name LIKE \'%%'.DB::addq($w).'%%\' OR d_en.f_display_name LIKE \'%%'.DB::addq($w).'%%\' OR d.f_short_description LIKE \'%%'.DB::addq($w).'%%\' OR d_en.f_short_description LIKE \'%%'.DB::addq($w).'%%\')';
+    	}
+    }
+    $sUrlExt .= ((defined( 'FRIENDLY_LINKS' ) && FRIENDLY_LINKS == true)?null:'&amp;').'sPhrase='.$GLOBALS['sPhrase'];
+  }else{
 	if($iContent==23) {
     	    $query .= 'it.f_category is null OR it.f_category=\'\'';
 	} elseif($iContent==11) {
