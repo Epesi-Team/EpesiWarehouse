@@ -298,18 +298,17 @@ class Products
     	  saveSearchedWords( $aWords );
 	$query = '1';
 	foreach($aWords as $w) {
-		$query .= ' AND (it.f_sku LIKE \'%%'.DB::addq($w).'%%\' OR it.f_product_code LIKE \'%%'.DB::addq($w).'%%\' OR it.f_upc LIKE \'%%'.DB::addq($w).'%%\' OR it.f_item_name LIKE \'%%'.DB::addq($w).'%%\' OR d.f_display_name LIKE \'%%'.DB::addq($w).'%%\' OR d_en.f_display_name LIKE \'%%'.DB::addq($w).'%%\')';
+		$query .= ' AND (it.f_item_name LIKE \'%%'.DB::addq($w).'%%\' OR d.f_display_name LIKE \'%%'.DB::addq($w).'%%\')';
 	}
 	$in_title = DB::GetOne('SELECT 1 
 					FROM premium_ecommerce_products_data_1 pr
 					INNER JOIN (premium_warehouse_items_data_1 it) ON (pr.f_item_name=it.id)
 					LEFT JOIN premium_ecommerce_descriptions_data_1 d ON (d.f_item_name=it.id AND d.f_language="'.LANGUAGE.'" AND d.active=1)
-					LEFT JOIN premium_ecommerce_descriptions_data_1 d_en ON (d_en.f_item_name=it.id AND d_en.f_language="en" AND d_en.active=1)
 					 WHERE pr.f_publish=1 AND pr.active=1 AND it.active=1 AND '.$query.' GROUP BY it.id');
 	if(!$in_title) {
     	$query = '1';
     	foreach($aWords as $w) {
-	    	$query .= ' AND (it.f_sku LIKE \'%%'.DB::addq($w).'%%\' OR it.f_product_code LIKE \'%%'.DB::addq($w).'%%\' OR it.f_upc LIKE \'%%'.DB::addq($w).'%%\' OR it.f_item_name LIKE \'%%'.DB::addq($w).'%%\' OR d.f_display_name LIKE \'%%'.DB::addq($w).'%%\' OR d_en.f_display_name LIKE \'%%'.DB::addq($w).'%%\' OR d.f_short_description LIKE \'%%'.DB::addq($w).'%%\' OR d_en.f_short_description LIKE \'%%'.DB::addq($w).'%%\')';
+	    	$query .= ' AND (it.f_sku LIKE \'%%'.DB::addq($w).'\' OR it.f_product_code LIKE \''.DB::addq($w).'\' OR it.f_upc LIKE \''.DB::addq($w).'\' OR it.f_item_name LIKE \'%%'.DB::addq($w).'%%\' OR d.f_display_name LIKE \'%%'.DB::addq($w).'%%\' OR d_en.f_display_name LIKE \'%%'.DB::addq($w).'%%\' OR d.f_short_description LIKE \'%%'.DB::addq($w).'%%\' OR d_en.f_short_description LIKE \'%%'.DB::addq($w).'%%\')';
     	}
     }
     $sUrlExt .= ((defined( 'FRIENDLY_LINKS' ) && FRIENDLY_LINKS == true)?null:'&amp;').'sPhrase='.$GLOBALS['sPhrase'];
