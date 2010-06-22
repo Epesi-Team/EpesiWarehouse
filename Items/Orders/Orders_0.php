@@ -652,7 +652,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 					if ($vals!==null) {
 						switch ($vals['option']) {
 							case 'accepted': $vals['form']['status'] = 3; break; 
-							case 'on_hold': $vals['form']['status'] = 5; break; 
+							case 'onhold': $vals['form']['status'] = 5; break; 
 							case 'quick_delivery': if($items_unavailable===null)$vals['form']['status']=20; break; 
 						}
 						Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $trans['id'], $vals['form']);
