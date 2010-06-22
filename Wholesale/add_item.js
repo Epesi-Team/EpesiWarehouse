@@ -11,6 +11,7 @@ function wholesale_add_item(iid) {
         ccc.style.zIndex = "10000";
         ccc.style.border = "2px solid black";
         ccc.style.background = "white";
+        ccc.id = 'wholesale_add_item_queue';
     }
     var frame = document.createElement('iframe');
     frame.src = 'modules/Premium/Warehouse/Wholesale/add_item.php?iid='+iid;
