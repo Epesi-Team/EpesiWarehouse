@@ -274,7 +274,7 @@ class Premium_Warehouse_eCommerce_3rdp__Plugin_icecat implements Premium_Warehou
         }
         $url = 'http://data.icecat.biz/xml_s3/xml_server3.cgi?'.http_build_query($arr);
         $cache_id = md5($url);
-        if($cache_ok && file_exists($cache_dir.$cache_id))
+        if($cache_ok && file_exists($cache_dir.$cache_id) && filemtime($cache_dir.$cache_id)>strtotime('-1 month')) //renew cache older then one month
             $output = file_get_contents($cache_dir.$cache_id);
         else {
             $c = curl_init();
