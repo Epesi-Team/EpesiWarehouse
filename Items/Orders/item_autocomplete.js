@@ -1,6 +1,7 @@
 warehouse_itemAutocompleter = Class.create(Ajax.Autocompleter, {
   last_update_value:null,
   initialize: function(element, update, url, options, trans) {
+	options.frequency = 0.8;
     this.baseInitialize(element, update, options);
     this.options.asynchronous  = true;
     this.options.onComplete    = this.onComplete.bind(this);
