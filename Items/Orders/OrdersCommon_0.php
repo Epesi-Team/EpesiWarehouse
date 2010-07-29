@@ -1230,7 +1230,6 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 						Utils_CurrencyFieldCommon::format($new_gross[0], $new_gross[1]),
 						));
 				}
-				$item_type=Utils_RecordBrowserCommon::get_value('premium_warehouse_items', $values['item_name'], 'item_type');
 				if ($trans['transaction_type']==2) {
 					if ($values['debit']) $values['quantity']=-$values['debit'];
 					else $values['quantity']=$values['credit'];
@@ -1239,6 +1238,15 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 				}
 				if ($trans['transaction_type']<2) {
 					Utils_RecordBrowserCommon::update_record('premium_warehouse_items', $values['item_name'], array($trans['transaction_type']==0?'last_purchase_price':'last_sale_price'=>$values['net_price']));
+    				$item=Utils_RecordBrowserCommon::get_record('premium_warehouse_items', $values['item_name']);
+    				$item_net = Utils_CurrencyFieldCommon::get_values($item['net_price']);
+    				if ($trans['transaction_type']==0 && $item_net[0] && $item_net[0]<$net[0] && $item_net[1]==$net[1]) {//if buy price is greater than suggested sell price
+    				    Epesi::alert(Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Warning! Purchase price is greater than sell price.'));
+		    		}
+    				$item_last_purchase = Utils_CurrencyFieldCommon::get_values($item['last_purchase_price']);
+    				if ($trans['transaction_type']==1 && $item_last_purchase[0] && $item_last_purchase[0]>$net[0] && $item_net[1]==$net[1]) {//if buy price is greater than suggested sell price
+    				    Epesi::alert(Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Warning! Transaction sell price is lower than last purchase price.'));
+		    		}
 				}
 				self::add_transaction($trans, $values);
 				return $values;
