@@ -889,7 +889,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 	}
 	
 	public function attachment_product_addon($arg){
-		$a = $this->init_module('Utils/Attachment',array('Premium/Warehouse/eCommerce/Products/'.$arg['item_name']));
+		$a = $this->init_module('Utils/Attachment',array('premium_ecommerce_products/'.$arg['item_name']));
 		$a->allow_protected($this->acl_check('view protected notes'),$this->acl_check('edit protected notes'));
 		$a->allow_public($this->acl_check('view public notes'),$this->acl_check('edit public notes'));
 		$a->set_add_func(array('Premium_Warehouse_eCommerceCommon','copy_attachment'));
@@ -899,7 +899,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 	}
 
 	public function attachment_product_desc_addon($arg){
-		$a = $this->init_module('Utils/Attachment',array('Premium/Warehouse/eCommerce/ProductsDesc/'.$arg['language'].'/'.$arg['item_name']));
+		$a = $this->init_module('Utils/Attachment',array('premium_ecommerce_descriptions/'.$arg['language'].'/'.$arg['item_name']));
 		$a->allow_protected($this->acl_check('view protected notes'),$this->acl_check('edit protected notes'));
 		$a->allow_public($this->acl_check('view public notes'),$this->acl_check('edit public notes'));
 		$a->set_add_func(array('Premium_Warehouse_eCommerceCommon','copy_attachment'));
@@ -909,7 +909,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 	}
 
 	public function attachment_page_addon($arg){
-		$a = $this->init_module('Utils/Attachment',array('Premium/Warehouse/eCommerce/Pages/'.$arg['id']));
+		$a = $this->init_module('Utils/Attachment',array('premium_ecommerce_pages/'.$arg['id']));
 		$a->allow_protected($this->acl_check('view protected notes'),$this->acl_check('edit protected notes'));
 		$a->allow_public($this->acl_check('view public notes'),$this->acl_check('edit public notes'));
 		$a->set_add_func(array('Premium_Warehouse_eCommerceCommon','copy_attachment'));
@@ -919,7 +919,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 	}
 	
 	public function attachment_page_desc_addon($arg){
-		$a = $this->init_module('Utils/Attachment',array('Premium/Warehouse/eCommerce/PagesDesc/'.$arg['language'].'/'.$arg['page']));
+		$a = $this->init_module('Utils/Attachment',array('premium_ecommerce_pages_data/'.$arg['language'].'/'.$arg['page']));
 		$a->allow_protected($this->acl_check('view protected notes'),$this->acl_check('edit protected notes'));
 		$a->allow_public($this->acl_check('view public notes'),$this->acl_check('edit public notes'));
 		$a->set_add_func(array('Premium_Warehouse_eCommerceCommon','copy_attachment'));

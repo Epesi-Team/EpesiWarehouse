@@ -226,7 +226,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 	}
 
 	public function attachment_addon($arg){
-		$a = $this->init_module('Utils/Attachment',array('Premium/Warehouse/Items/Orders/'.$arg['id']));
+		$a = $this->init_module('Utils/Attachment',array('premium_warehouse_items_orders/'.$arg['id']));
 		$a->set_view_func(array('Premium_Warehouse_Items_OrdersCommon','search_format'),array($arg['id']));
 		$a->additional_header('Transaction ID: '.$arg['transaction_id']);
 		$a->allow_protected($this->acl_check('view protected notes'),$this->acl_check('edit protected notes'));
