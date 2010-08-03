@@ -290,7 +290,7 @@ class Products
 					LEFT JOIN premium_ecommerce_descriptions_data_1 d ON (d.f_item_name=it.id AND d.f_language="'.LANGUAGE.'" AND d.active=1)
 					 WHERE pr.f_publish=1 AND pr.active=1 AND it.active=1 AND '.$query.' GROUP BY it.id');
 	    $products_up=array();
-	    foreach($in_title_ids $i) {
+	    foreach($in_title_ids as $i) {
 	        if($products[$i]['iQuantity']>0) {
 	            $products_up[$i] = $products[$i];
 	            unset($products[$i]);
