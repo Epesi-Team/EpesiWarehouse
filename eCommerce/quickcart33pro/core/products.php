@@ -317,7 +317,7 @@ class Products
     	  $this->searchedWords = $aWords;
 	$query = '1';
 	foreach($aWords as $w) {
-		$query .= ' AND (it.f_item_name LIKE \'%%'.DB::addq($w).'%%\' OR d.f_display_name LIKE \'%%'.DB::addq($w).'%%\')';
+		$query .= ' AND (((d.f_display_name is null OR d.f_display_name=="") AND it.f_item_name LIKE \'%%'.DB::addq($w).'%%\') OR d.f_display_name LIKE \'%%'.DB::addq($w).'%%\')';
 	}
 	$in_title = DB::GetOne('SELECT 1 
 					FROM premium_ecommerce_products_data_1 pr
