@@ -5,6 +5,7 @@ class Products
   //var $aProducts = null;
   //var $aProductsPages = null;
   var $mData = null;
+  var $searchedWords = null;
 
   function &getInstance( ){
     static $oInstance = null;
@@ -278,6 +279,23 @@ class Products
 		}
 	}
 	
+	if(count($products)>1 && $this->searchedWords) {
+	    $products_back=array();
+	    foreach($products as $k=>$p) {
+	        $in_title = true;
+	        foreach($this->searchedWords as $w)
+	            if(strpos($p['sName'],$w)===false) {
+	                $in_title=false;
+	                break;
+	            }
+	        if(!$in_title) {
+	            $products_back[$k] = $p;
+	            unset($products[$k]);
+	        }
+	    }
+	    $products += $products_back;
+	}
+	
 	return $products;
   } // end function generateCache
 
@@ -296,6 +314,7 @@ class Products
         	  $aWords[] = $aExp[$i];
 	  } // end for
     	  saveSearchedWords( $aWords );
+    	  $this->searchedWords = $aWords;
 	$query = '1';
 	foreach($aWords as $w) {
 		$query .= ' AND (it.f_item_name LIKE \'%%'.DB::addq($w).'%%\' OR d.f_display_name LIKE \'%%'.DB::addq($w).'%%\')';
