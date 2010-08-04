@@ -148,7 +148,7 @@ class Premium_Warehouse_eCommerce_3rdp__Plugin_bdk implements Premium_Warehouse_
             $pictures = $pret->value();
             foreach($pictures as $p) {
                 $old_pics = array();
-                $ooo = Utils_AttachmentCommon::get('Premium/Warehouse/eCommerce/Products/'.$item['id']);
+                $ooo = Utils_AttachmentCommon::get('premium_ecommerce_products/'.$item['id']);
                 if(is_array($ooo))
                     foreach($ooo as $oo) {
                         if(!$oo['text'] && preg_match('/^bdk_/',$oo['original']))
@@ -169,7 +169,7 @@ class Premium_Warehouse_eCommerce_3rdp__Plugin_bdk implements Premium_Warehouse_
                             file_put_contents($temp_file,$response);
                             $temp_file2 = Utils_ImageCommon::create_thumb($temp_file,800,600);
                             $temp_file2 = $temp_file2['thumb'];
-                            Utils_AttachmentCommon::add('Premium/Warehouse/eCommerce/Products/'.$item['id'],
+                            Utils_AttachmentCommon::add('premium_ecommerce_products/'.$item['id'],
                                         0,Acl::get_user(),'',$base_pp,$temp_file2,null,null,array('Premium_Warehouse_eCommerceCommon','copy_attachment'));
                             @unlink($temp_file2);
                             @unlink($temp_file);
@@ -179,7 +179,7 @@ class Premium_Warehouse_eCommerce_3rdp__Plugin_bdk implements Premium_Warehouse_
                     }
                 }
                 if(!empty($old_pics))
-                    Utils_AttachmentCommon::persistent_mass_delete('Premium/Warehouse/eCommerce/Products/'.$item['id'],false,array_values($old_pics));
+                    Utils_AttachmentCommon::persistent_mass_delete('premium_ecommerce_products/'.$item['id'],false,array_values($old_pics));
             }
         }
         

@@ -214,7 +214,7 @@ class Premium_Warehouse_eCommerce_3rdp__Plugin_icecat implements Premium_Warehou
                 }
             $old_pics = array();
             $old_ver_pics = array();
-            $ooo = Utils_AttachmentCommon::get('Premium/Warehouse/eCommerce/Products/'.$item['id']);
+            $ooo = Utils_AttachmentCommon::get('premium_ecommerce_products/'.$item['id']);
             if(is_array($ooo))
                 foreach($ooo as $oo) {
                     if(!$oo['text']) {
@@ -227,7 +227,7 @@ class Premium_Warehouse_eCommerce_3rdp__Plugin_icecat implements Premium_Warehou
             foreach($pic as $pp) {
                 $base_pp = 'ice_'.basename($pp);
                 if(isset($old_ver_pics[basename($pp)])) { //delete icecat image without 'ice_' prefix
-                    Utils_AttachmentCommon::persistent_mass_delete('Premium/Warehouse/eCommerce/Products/'.$item['id'],false,array($old_ver_pics[basename($pp)]));
+                    Utils_AttachmentCommon::persistent_mass_delete('premium_ecommerce_products/'.$item['id'],false,array($old_ver_pics[basename($pp)]));
                     unset($old_ver_pics[basename($pp)]);
                 }
                 if(!isset($old_pics[$base_pp])) {
@@ -246,7 +246,7 @@ class Premium_Warehouse_eCommerce_3rdp__Plugin_icecat implements Premium_Warehou
                     file_put_contents($temp_file,$response);
                     $temp_file2 = Utils_ImageCommon::create_thumb($temp_file,800,600);
                     $temp_file2 = $temp_file2['thumb'];
-                    Utils_AttachmentCommon::add('Premium/Warehouse/eCommerce/Products/'.$item['id'],
+                    Utils_AttachmentCommon::add('premium_ecommerce_products/'.$item['id'],
                                 0,Acl::get_user(),'',$base_pp,$temp_file2,null,null,array('Premium_Warehouse_eCommerceCommon','copy_attachment'));
                     @unlink($temp_file2);
                     @unlink($temp_file);
@@ -256,7 +256,7 @@ class Premium_Warehouse_eCommerce_3rdp__Plugin_icecat implements Premium_Warehou
                 }
             }
             if(!empty($old_pics))
-                Utils_AttachmentCommon::persistent_mass_delete('Premium/Warehouse/eCommerce/Products/'.$item['id'],false,array_values($old_pics));
+                Utils_AttachmentCommon::persistent_mass_delete('premium_ecommerce_products/'.$item['id'],false,array_values($old_pics));
             }
         }
         return $langs_ok;
