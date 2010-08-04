@@ -37,6 +37,8 @@ class Premium_Warehouse_Items_LocationInstall extends ModuleInstall {
 //		Utils_RecordBrowserCommon::set_icon('premium_warehouse_items_orders', Base_ThemeCommon::get_template_filename('Premium/Warehouse/Items/Orders', 'icon.png'));
 //		Utils_RecordBrowserCommon::set_access_callback('premium_warehouse_items_orders', array('Premium_Warehouse_Items_OrdersCommon', 'access_orders'));
 //		Utils_RecordBrowserCommon::register_processing_callback('premium_warehouse_location', array('Premium_Warehouse_Items_OrdersCommon', 'submit_order'));
+
+		DB::CreateIndex('premium_warehouse_location__qsw__idx', 'premium_warehouse_location_data_1', 'f_quantity,f_item_sku,f_warehouse');
 			
 // ************ addons ************** //
 //		Utils_RecordBrowserCommon::new_addon('premium_warehouse_location', 'Premium/Warehouse/Location', 'attachment_addon', 'Notes');
