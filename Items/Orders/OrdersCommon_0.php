@@ -633,6 +633,8 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			}
 		} elseif (isset($data['quantity']))
 			$ord_qty = $data['quantity'];
+	    else 
+	        return array('item_name'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders', 'Field required'));
 		if (!isset($data['item_name'])) {
 			$data['item_name'] = Utils_RecordBrowser::$last_record['item_name'];
 		} else { 
