@@ -130,6 +130,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	}
 	
 	public static function display_total_value($r, $nolink=false) {
+	    Epesi::alert(print_r($r,true));
 		if ($r['transaction_type']==4 || $r['transaction_type']==2 || ($r['transaction_type']==3 && !$r['payment']))
 			return '---';
 		$ret = array();
@@ -766,18 +767,23 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			case 'view':	if (!$i->acl_check('view orders')) return false;
                     		if(ModuleManager::is_installed('Premium_Warehouse_eCommerce')>=0 && $tt!=1)
 								$ret['online_order'] = false;
-							$ret['company'] = false;
-							$ret['contact'] = false;
-							if ($tt==3 && isset($param['payment']) && !$param['payment']) {
-								$ret['payment_type'] = false;
-								$ret['payment_no'] = false;
-								$ret['shipment_type'] = false;
-								$ret['shipment_no'] = false;
-								$ret['terms'] = false;
-								$ret['total_value'] = false;
-								$ret['tax_value'] = false;
-							}
-							$ret['target_warehouse'] = false;
+						    if ($mode=='add') $ret['status'] = false;
+						    if ($mode=='view') {
+    							$ret['company'] = false;
+	    						$ret['contact'] = false;
+		    					if ($tt==3 && isset($param['payment']) && !$param['payment']) {
+			    					$ret['payment_type'] = false;
+				    				$ret['payment_no'] = false;
+					    			$ret['shipment_type'] = false;
+						    		$ret['shipment_no'] = false;
+							    	$ret['terms'] = false;
+								    $ret['total_value'] = false;
+    								$ret['tax_value'] = false;
+	    						}
+	    					}
+	    					if($tt!=4 || $mode=='view') {
+    							$ret['target_warehouse'] = false;
+    						}
 							if ($tt!=3) {
 								$ret['payment'] = false;
 								$ret['return_date'] = false;
