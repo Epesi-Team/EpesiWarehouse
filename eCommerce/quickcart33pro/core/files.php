@@ -140,10 +140,10 @@ class Files
     
     if($iKey==1) {
     	$id = ($product-2)/4;
-    	$where = 'ual.local=CONCAT(\'Premium/Warehouse/eCommerce/Pages/\',%d) OR ual.local=CONCAT(\'Premium/Warehouse/eCommerce/PagesDesc/\',%s,\'/\',%d)';
+    	$where = 'ual.local=CONCAT(\'premium_ecommerce_pages/\',%d) OR ual.local=CONCAT(\'premium_ecommerce_pages_data/\',%s,\'/\',%d)';
     } else {
     	$id = $product;
-    	$where = 'ual.local=CONCAT(\'Premium/Warehouse/eCommerce/Products/\',%d) OR ual.local=CONCAT(\'Premium/Warehouse/eCommerce/ProductsDesc/\',%s,\'/\',%d)';
+    	$where = 'ual.local=CONCAT(\'premium_ecommerce_products/\',%d) OR ual.local=CONCAT(\'premium_ecommerce_descriptions/\',%s,\'/\',%d)';
     }
     
     $ret = DB::Execute('SELECT ual.id,ual.local, f.original, ual.sticky, f.revision, d.text
