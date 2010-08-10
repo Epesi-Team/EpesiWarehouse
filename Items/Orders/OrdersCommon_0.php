@@ -130,7 +130,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	}
 	
 	public static function display_total_value($r, $nolink=false) {
-	    if ($r['transaction_type']==4 || $r['transaction_type']==2 || ($r['transaction_type']==3 && !$r['payment']))
+		if ($r['transaction_type']==4 || $r['transaction_type']==2 || ($r['transaction_type']==3 && !$r['payment']))
 			return '---';
 		$ret = array();
 		$vals = self::calculate_tax_and_total_value($r, 'total');
