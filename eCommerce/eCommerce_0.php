@@ -378,7 +378,17 @@ class Premium_Warehouse_eCommerce extends Module {
 	public function orders_addon($arg) {
 		$rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_orders');
 		//$order = array(array('transaction_id'=>$arg['id']), array('transaction_id'=>false));
-		$this->display_module($rb,array('view',Premium_Warehouse_eCommerceCommon::orders_get_record(),null,false),'view_entry');
+		$ord_id = Premium_Warehouse_eCommerceCommon::orders_get_record();
+		$this->display_module($rb,array('view',$ord_id,null,false),'view_entry');
+		if(Base_AclCommon::i_am_admin())
+    		Base_ActionBarCommon::add('edit', 'Edit ecommerce', $this->create_callback_href(array($this,'edit_ecommerce_order'),$ord_id));		
+	}
+	
+	public function edit_ecommerce_order($id) {
+	    Epesi::alert($id);
+        $x = ModuleManager::get_instance('/Base_Box|0');
+        if (!$x) trigger_error('There is no base box module instance',E_USER_ERROR);
+	    $x->push_main('Utils/RecordBrowser','view_entry',array('edit', $id, array(), true),array('premium_ecommerce_orders'));
 	}
 	
 	public function contactus_page() {
