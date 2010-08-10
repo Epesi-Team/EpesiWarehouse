@@ -129,7 +129,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 									$conf,
 									& $opts
 				);
-		$opts['actions'][] = Utils_RecordBrowserCommon::applet_new_record_button('premium_warehouse_items_orders',array('transaction_type'=>$conf['type']));
+		$opts['actions'][] = Utils_RecordBrowserCommon::applet_new_record_button('premium_warehouse_items_orders',array('transaction_type'=>$conf['type'],'payment_type'=>0, 'shipment_type'=>0,'terms'=>0));
 		$this->display_module($rb, $conds, 'mini_view');
 	}
 	
