@@ -385,7 +385,6 @@ class Premium_Warehouse_eCommerce extends Module {
 	}
 	
 	public function edit_ecommerce_order($id) {
-	    Epesi::alert($id);
         $x = ModuleManager::get_instance('/Base_Box|0');
         if (!$x) trigger_error('There is no base box module instance',E_USER_ERROR);
 	    $x->push_main('Utils/RecordBrowser','view_entry',array('edit', $id, array(), true),array('premium_ecommerce_orders'));
