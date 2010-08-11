@@ -870,8 +870,8 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 										$ret['shipment_type'] = false;
 									}
 									$ret['terms'] = false;
-									$ret['total_value'] = false;
-									$ret['tax_value'] = false;
+//									$ret['total_value'] = false;
+//									$ret['tax_value'] = false;
 								}
 								if ($param['status']!=1) $ret['expiration_date'] = false;
 							}
