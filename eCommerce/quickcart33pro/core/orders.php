@@ -358,7 +358,7 @@ class Orders
     	$colst = array('contact'=>array('email'=>'sEmail', 'last_name'=>'sLastName', 'first_name'=>'sFirstName', 'address_1'=>'sStreet', 'postal_code'=>'sZipCode', 'city'=>'sCity', 'country'=>'sCountry', 'work_phone'=>'sPhone'));
     	if($company!==null)
     		$colst['company']=array('email'=>'sEmail', 'company_name'=>'sCompanyName', 'tax_id'=>'sNip', 'address_1'=>'sStreet', 'postal_code'=>'sZipCode', 'city'=>'sCity', 'country'=>'sCountry', 'phone'=>'sPhone');
-	foreach($colst as $tab=>$cols) {    			
+	    foreach($colst as $tab=>$cols) {    			
 	    	$modified = false;
     		foreach($cols as $epesi=>$local)
     			if($aUser[$local]!=$aForm[$local]) {
@@ -377,7 +377,7 @@ class Orders
     	}
     } else {
     	$company = DB::GetOne('SELECT id FROM company_data_1 WHERE f_email=%s AND active=1',array($aForm['sEmail']));
-	if(!$company) $company = null;
+    	if(!$company) $company = null;
     	$contact = DB::GetOne('SELECT id FROM contact_data_1 WHERE f_email=%s AND active=1',array($aForm['sEmail']));
     	if(!$contact) {
     		$contact = null;
@@ -390,8 +390,7 @@ class Orders
 	    	}
     	}
         //add user
-        if($aForm['sPassword']) {
-        	$new_company = false;
+       	$new_company = false;
 		if(!$contact || !$company) { // jezeli nie ma kontaktu, lub jest kontakt ale nie ma firmy, to dodaj firme
 	    		if($aForm['sCompanyName'] && !$company) {
 	    			$new_company = true;
@@ -417,22 +416,31 @@ class Orders
 		    	}
 		}
 		//add ecommerce user
-		$mdpass = md5($aForm['sPassword']);
-		$oldpass = DB::GetOne('SELECT f_password FROM premium_ecommerce_users_data_1 WHERE f_contact=%d',array($contact));
-		if(!$oldpass) {
+		if($aForm['sPassword']) {
+    		$mdpass = md5($aForm['sPassword']);
+	    	$oldpass = DB::GetOne('SELECT f_password FROM premium_ecommerce_users_data_1 WHERE f_contact=%d',array($contact));
+		    if(!$oldpass) {
 		    	DB::Execute('INSERT INTO premium_ecommerce_users_data_1(created_on,f_contact,f_password) VALUES (%T,%d,%s)',
     				array($t,$contact,$mdpass));
     			$oldpass = $mdpass;
     		}
-		if($oldpass==$mdpass) {
-		    	//mark logged in
-			$_SESSION['user'] = DB::Insert_ID('premium_ecomerce_users_data_1','id');
+    		if($oldpass==$mdpass) {
+	   	    	//mark logged in
+	    		$_SESSION['user'] = DB::Insert_ID('premium_ecomerce_users_data_1','id');
 	    		$_SESSION['contact'] = $contact;
 	    		$_SESSION['company'] = $company;
 		      	if(!$_SESSION['company'])
       				$_SESSION['company'] = null;
-		} 
-	}
+		    } 
+    	} else {
+	    	$uid = DB::GetOne('SELECT id FROM premium_ecommerce_users_data_1 WHERE f_contact=%d',array($contact));
+	    	if(!$uid) {
+        	    $mdpass = md5(time());
+	        	DB::Execute('INSERT INTO premium_ecommerce_users_data_1(created_on,f_contact,f_password) VALUES (%T,%d,%s)',
+    				array($t,$contact,$mdpass));
+    			$uid = DB::Insert_ID('premium_ecomerce_users_data_1','id');
+    	    }
+    	}
     }
     
     //$memo = "Language: ".LANGUAGE."\ne-mail: ".$aForm['sEmail']."\nIp: ".$_SERVER['REMOTE_ADDR']."\nComment:\n".$aForm['sComment'];
