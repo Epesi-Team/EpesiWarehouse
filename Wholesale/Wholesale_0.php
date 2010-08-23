@@ -247,12 +247,12 @@ class Premium_Warehouse_Wholesale extends Module {
             } else {
                 $form = $this->init_module('Libs/QuickForm');
                 $field = 'link_it_'.$row['id'];
-                $form->addElement('autocomplete', $field, '', array($this->get_type().'Common', 'item_match_autocomplete'), array($row['distributor_id']));
+                $form->addElement('autocomplete', $field, '', array($this->get_type().'Common', 'item_match_autocomplete'), array($row['distributor_id']),array('id'=>'item_id_autocomplete'));
                 $form->addElement('submit', 'submit', '');
                 $theme = $this->init_module('Base/Theme');
                 $form->assign_theme('form', $theme);
                 $theme->assign('field_name', $field);
-                $theme->assign('submit_button', '<a '.$form->get_submit_form_href().'><img src="'.Base_ThemeCommon::get_template_file('Premium/Warehouse/Wholesale','link.png').'" border="0" /></a>');
+                $theme->assign('submit_button', '<a '.$form->get_submit_form_href().' onMouseUp="focus_by_id(\'item_id_autocomplete\');"><img src="'.Base_ThemeCommon::get_template_file('Premium/Warehouse/Wholesale','link.png').'" border="0" /></a>');
                 $theme->assign('cancel_button', '<a href="javascript:void(0);" onclick="$(\'link_it_'.$row['id'].'_form\').style.display=\'none\';$(\'link_it_'.$row['id'].'_choice\').style.display=\'inline\'"><img src="'.Base_ThemeCommon::get_template_file('Premium/Warehouse/Wholesale','cancel.png').'" border="0" /></a>');
                 ob_start();
                 $theme->display('match_form');
@@ -270,7 +270,7 @@ class Premium_Warehouse_Wholesale extends Module {
                             '</span>'.
                             '<span id="link_it_'.$row['id'].'_choice">'.
                                 '<a href="javascript:void(0);" onclick="$(\'link_it_'.$row['id'].'_form\').style.display=\'inline\';$(\'link_it_'.$row['id'].'_choice\').style.display=\'none\'"><img src="'.Base_ThemeCommon::get_template_file('Premium/Warehouse/Wholesale','link.png').'" border="0" /></a>'.
-                                '<a '.$lp->get_href(array($row['id'])).' onMouseUp="$(\'add_item_name\').value=\''.escapeJS($item_name).'\';var rd=$(\'3rdp_info_frame\');if(rd)rd.innerHTML=\''.escapeJS($row['3rdp']?$row['3rdp']:'queued to fetch').'\';$(\'add_item_man\').innerHTML=\''.escapeJS($row['manufacturer_name']).'\';$(\'add_item_mpn\').value=\''.escapeJS($row['manufacturer_part_number']).'\';$(\'add_item_upc\').value=\''.escapeJS($row['upc']).'\';"><img src="'.Base_ThemeCommon::get_template_file('Premium/Warehouse/Wholesale','add_item.png').'" border="0" /></a>'.
+                                '<a '.$lp->get_href(array($row['id'])).' onMouseUp="$(\'add_item_name\').value=\''.escapeJS($item_name).'\';var rd=$(\'3rdp_info_frame\');if(rd)rd.innerHTML=\''.escapeJS($row['3rdp']?$row['3rdp']:'queued to fetch').'\';$(\'add_item_man\').innerHTML=\''.escapeJS($row['manufacturer_name']).'\';$(\'add_item_mpn\').value=\''.escapeJS($row['manufacturer_part_number']).'\';$(\'add_item_upc\').value=\''.escapeJS($row['upc']).'\';focus_by_id(\'add_item_name\');"><img src="'.Base_ThemeCommon::get_template_file('Premium/Warehouse/Wholesale','add_item.png').'" border="0" /></a>'.
                             '</span>';
                 }
             }
