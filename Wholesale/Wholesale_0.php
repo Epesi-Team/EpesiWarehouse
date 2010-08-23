@@ -269,7 +269,7 @@ class Premium_Warehouse_Wholesale extends Module {
                                 ob_get_clean().
                             '</span>'.
                             '<span id="link_it_'.$row['id'].'_choice">'.
-                                '<a href="javascript:void(0);" onclick="$(\'link_it_'.$row['id'].'_form\').style.display=\'inline\';$(\'link_it_'.$row['id'].'_choice\').style.display=\'none\';focus_by_id(\'item_id_autocomplete_'.$row['id'].'\');><img src="'.Base_ThemeCommon::get_template_file('Premium/Warehouse/Wholesale','link.png').'" border="0" /></a>'.
+                                '<a href="javascript:void(0);" onclick="$(\'link_it_'.$row['id'].'_form\').style.display=\'inline\';$(\'link_it_'.$row['id'].'_choice\').style.display=\'none\';focus_by_id(\'item_id_autocomplete_'.$row['id'].'\');"><img src="'.Base_ThemeCommon::get_template_file('Premium/Warehouse/Wholesale','link.png').'" border="0" /></a>'.
                                 '<a '.$lp->get_href(array($row['id'])).' onMouseUp="$(\'add_item_name\').value=\''.escapeJS($item_name).'\';var rd=$(\'3rdp_info_frame\');if(rd)rd.innerHTML=\''.escapeJS($row['3rdp']?$row['3rdp']:'queued to fetch').'\';$(\'add_item_man\').innerHTML=\''.escapeJS($row['manufacturer_name']).'\';$(\'add_item_mpn\').value=\''.escapeJS($row['manufacturer_part_number']).'\';$(\'add_item_upc\').value=\''.escapeJS($row['upc']).'\';focus_by_id(\'add_item_name\');"><img src="'.Base_ThemeCommon::get_template_file('Premium/Warehouse/Wholesale','add_item.png').'" border="0" /></a>'.
                             '</span>';
                 }
