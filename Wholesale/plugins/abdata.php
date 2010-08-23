@@ -162,7 +162,7 @@ class Premium_Warehouse_Wholesale__Plugin_abdata implements Premium_Warehouse_Wh
 			$row['nazwa'] = $row['nazwa'];
 			if (strlen($row['nazwa'])>127) $row['nazwa'] = substr($row['nazwa'],0,127);
 			
-			if ($row['magazyn_stan']=='jest') {
+			if ($row['magazyn stan']=='jest') {
 				$available++;
 				/*** determine quantity and quantity info ***/
 				if (is_numeric($row['magazyn_ilosc'])) {
@@ -200,23 +200,23 @@ class Premium_Warehouse_Wholesale__Plugin_abdata implements Premium_Warehouse_Wh
 
 				/*** check for exact match ***/
 				$internal_key = DB::GetOne('SELECT internal_key FROM premium_warehouse_wholesale_items WHERE internal_key=%s AND distributor_id=%d', array($row['indeks'], $distributor['id']));
-				if (($internal_key===false || $internal_key===null) && $row['indeks_p']) {
+				if (($internal_key===false || $internal_key===null) && $row['indeks p.']) {
 					$w_item = null;
 					/*** exact match not found, looking for candidates ***/
 					$matches = Utils_RecordBrowserCommon::get_records('premium_warehouse_items', array(
 						'(~"item_name'=>DB::Concat(DB::qstr('%'),DB::qstr($row['nazwa']),DB::qstr('%')),
-						'|manufacturer_part_number'=>$row['indeks_p']
+						'|manufacturer_part_number'=>$row['indeks p.']
 					));
 					if (!empty($matches))
 						if (count($matches)==1) {
 							/*** one candidate found, if product code is empty or matches, it's ok ***/
 							$v = array_pop($matches);
-							if ($v['manufacturer_part_number']==$row['indeks_p'] || $v['manufacturer_part_number']=='')
+							if ($v['manufacturer_part_number']==$row['indeks p.'] || $v['manufacturer_part_number']=='')
 								$w_item = $v['id'];
 						} else {
 							/*** found more candidates, only product code is important now ***/
 							foreach ($matches as $v)
-								if ($v['manufacturer_part_number']==$row['indeks_p']) {
+								if ($v['manufacturer_part_number']==$row['indeks p.']) {
 									$w_item = $v['id'];
 									break;
 								}
