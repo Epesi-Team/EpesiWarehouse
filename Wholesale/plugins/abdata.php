@@ -229,9 +229,9 @@ class Premium_Warehouse_Wholesale__Plugin_abdata implements Premium_Warehouse_Wh
 						$item_exist++;
 					}
 					if ($w_item!==null) {
-						DB::Execute('INSERT INTO premium_warehouse_wholesale_items (item_id, internal_key, distributor_item_name, distributor_id, quantity, quantity_info, price, price_currency, distributor_category,manufacturer,upc) VALUES (%d, %s, %s, %d, %d, %s, %f, %d, %d, %d, %s)', array($w_item, $row['indeks'], $row['nazwa'], $distributor['id'], $quantity, $quantity_info, $row['cena_netto'], $pln_id,$category, $manufacturer,substr($row['EAN'],0,128)));
+						DB::Execute('INSERT INTO premium_warehouse_wholesale_items (item_id, internal_key, distributor_item_name, distributor_id, quantity, quantity_info, price, price_currency, distributor_category,manufacturer,upc) VALUES (%d, %s, %s, %d, %d, %s, %f, %d, %d, %d, %s)', array($w_item, $row['indeks'], $row['nazwa'], $distributor['id'], $quantity, $quantity_info, $row['cena netto'], $pln_id,$category, $manufacturer,substr($row['EAN'],0,128)));
 					} else {
-						DB::Execute('INSERT INTO premium_warehouse_wholesale_items (internal_key, distributor_item_name, distributor_id, quantity, quantity_info, price, price_currency, distributor_category,manufacturer,upc) VALUES (%s, %s, %d, %d, %s, %f, %d, %d, %d, %s)', array($row['indeks'], $row['nazwa'], $distributor['id'], $quantity, $quantity_info, $row['cena_netto'], $pln_id, $category, $manufacturer,substr($row['EAN'],0,128)));
+						DB::Execute('INSERT INTO premium_warehouse_wholesale_items (internal_key, distributor_item_name, distributor_id, quantity, quantity_info, price, price_currency, distributor_category,manufacturer,upc) VALUES (%s, %s, %d, %d, %s, %f, %d, %d, %d, %s)', array($row['indeks'], $row['nazwa'], $distributor['id'], $quantity, $quantity_info, $row['cena netto'], $pln_id, $category, $manufacturer,substr($row['EAN'],0,128)));
 					}
 				} else {
 					/*** there's an exact match in the system already ***/
