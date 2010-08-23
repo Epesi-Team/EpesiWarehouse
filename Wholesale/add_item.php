@@ -1,14 +1,18 @@
+<?php
+ob_start();
+header("Cache-Control: no-cache, must-revalidate");
+header("Expires: Mon, 26 Jul 1997 05:00:00 GMT"); // date in the past
+?>
 <html>
 <body>
 <div style="font-size:9px">
 <?php
-header("Cache-Control: no-cache, must-revalidate");
-header("Expires: Mon, 26 Jul 1997 05:00:00 GMT"); // date in the past
 if(!isset($_GET['iid']) || !is_numeric($_GET['iid'])) die();
 
 define('CID',false);
 define('READ_ONLY_SESSION',true);
 require_once('../../../../include.php');
+ob_end_flush();
 ModuleManager::load_modules();
 @set_time_limit(0);
 

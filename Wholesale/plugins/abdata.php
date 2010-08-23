@@ -236,7 +236,7 @@ class Premium_Warehouse_Wholesale__Plugin_abdata implements Premium_Warehouse_Wh
 				} else {
 					/*** there's an exact match in the system already ***/
 					$link_exist++;
-					DB::Execute('UPDATE premium_warehouse_wholesale_items SET quantity=%d, quantity_info=%s, price=%f, price_currency=%d, distributor_category=%d, manufacturer=%d, upc=%s WHERE internal_key=%s AND distributor_id=%d', array($quantity, $quantity_info, $row['cena_netto'], $pln_id, $category, $manufacturer, substr($row['EAN'],0,128), $row['indeks'], $distributor['id']));
+					DB::Execute('UPDATE premium_warehouse_wholesale_items SET quantity=%d, quantity_info=%s, price=%f, price_currency=%d, distributor_category=%d, manufacturer=%d, upc=%s WHERE internal_key=%s AND distributor_id=%d', array($quantity, $quantity_info, $row['cena netto'], $pln_id, $category, $manufacturer, substr($row['EAN'],0,128), $row['indeks'], $distributor['id']));
 				}
 			} 
 		}
