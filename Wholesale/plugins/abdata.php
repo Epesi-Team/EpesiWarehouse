@@ -113,6 +113,9 @@ class Premium_Warehouse_Wholesale__Plugin_abdata implements Premium_Warehouse_Wh
 		$row = fgets($f);
 		$delimiter = $row{0};
 		$row = fgetcsv($f,0,$delimiter);
+		if(count($row)<2) {
+        		$row = fgetcsv($f,0,$delimiter);
+    		}
 
 		$total = null;
 		$scanned = 0;
@@ -124,16 +127,17 @@ class Premium_Warehouse_Wholesale__Plugin_abdata implements Premium_Warehouse_Wh
 		
 		$keys = array(
 			'indeks',
-			'indeks_p',
+			'indeks p.',
 			'nazwa',
 			'producent',
-			'magazyn_stan',
-			'cena_netto',
-			'cena_brutto',
-			'cena_brutto_z_marza',
+			'magazyn stan',
+			'cena netto',
+			'cena brutto',
+			'cena brutto + marza',
 			'kategoria',
 			'magazyn_ilosc',
-			'EAN'
+			'EAN',
+			'ID produktu'
 		);
 
 		$pln_id = Utils_CurrencyFieldCommon::get_id_by_code('PLN');
