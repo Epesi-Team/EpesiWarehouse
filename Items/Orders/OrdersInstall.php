@@ -119,6 +119,8 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 //		Utils_RecordBrowserCommon::enable_watchdog('premium_warehouse_items_orders_details', array('Premium_Warehouse_Items_OrdersCommon','watchdog_label'));
 		Utils_RecordBrowserCommon::register_processing_callback('premium_warehouse_items_orders_details', array('Premium_Warehouse_Items_OrdersCommon', 'submit_order_details'));
 
+		DB::CreateIndex('premium_warehouse_items_ord_det__it_name__idx','premium_warehouse_items_orders_details_data_1',array('f_item_name'));
+
 // ************ addons ************** //
 		Utils_RecordBrowserCommon::new_addon('premium_warehouse_items_orders', 'Premium/Warehouse/Items/Orders', 'order_details_addon', 'Items');
 		Utils_RecordBrowserCommon::new_addon('premium_warehouse_items_orders', 'Premium/Warehouse/Items/Orders', 'attachment_addon', 'Notes');
