@@ -499,6 +499,7 @@ class Orders
 				    w.f_shipment_type,
 				    w.f_payment_type as iPayment,
 				    w.f_shipment_cost as sPaymentPrice,
+				    w.f_handling_cost as sHandlingPrice,
 				    w.f_first_name as sFirstName,
 				    w.f_last_name as sLastName,
 				    w.f_company_name as sCompanyName,
@@ -536,6 +537,9 @@ class Orders
       $aData['sCarrierName'] = $aShipments[$aData['f_shipment_type']];
       $aData['sPaymentName'] = $aPayments[$aData['iPayment']];
       list($aData['sPaymentPrice']) = explode('_',$aData['sPaymentPrice']);
+      list($aData['sHandlingPrice']) = explode('_',$aData['sHandlingPrice']);
+      if(is_numeric($aData['sHandlingPrice']) && $aData['sHandlingPrice'])
+          $aData['sPaymentPrice'] += $aData['sHandlingPrice'];
       $aData['iTime'] = strtotime($aData['iTime']);
       $aData['sInvoice'] = throwYesNoTxt( $aData['iInvoice'] );
       $aData['fPaymentCarrierPrice'] = generatePrice( $aData['sPaymentPrice'], $aData['iShipmentDiscount'] );
