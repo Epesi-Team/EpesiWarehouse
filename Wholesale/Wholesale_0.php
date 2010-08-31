@@ -69,7 +69,7 @@ class Premium_Warehouse_Wholesale extends Module {
         if($available)
             $where .= ' AND quantity>0';
         $limit = $gb->get_limit(DB::GetOne('SELECT COUNT(*) FROM premium_warehouse_wholesale_items LEFT JOIN company_data_1 c ON c.id=manufacturer LEFT JOIN premium_warehouse_distr_categories_data_1 cat ON (cat.f_distributor=distributor_id AND cat.id=distributor_category) WHERE distributor_id IN ('.implode(',',array_keys($dists)).') '.$where));
-        $gb->set_default_order(array('Item Name'=>'ASC'));
+        $gb->set_default_order(array($this->t('Item Name')=>'ASC'));
         $order = $gb->get_query_order();
 
         $ret = DB::SelectLimit('SELECT *, c.f_company_name as manufacturer_name, whl.id AS id,cat.f_foreign_category_name as category FROM premium_warehouse_wholesale_items AS whl LEFT JOIN company_data_1 c ON c.id=whl.manufacturer LEFT JOIN premium_warehouse_items_data_1 AS itm ON itm.id=whl.item_id LEFT JOIN premium_warehouse_distr_categories_data_1 cat ON (cat.f_distributor=distributor_id AND cat.id=distributor_category) WHERE distributor_id IN ('.implode(',',array_keys($dists)).') '.$where.' '.$order, $limit['numrows'], $limit['offset']);
@@ -181,7 +181,7 @@ class Premium_Warehouse_Wholesale extends Module {
             $where .= ' AND quantity>0';
 //      $limit = $gb->get_limit(DB::GetOne('SELECT COUNT(*) FROM premium_warehouse_wholesale_items WHERE distributor_id=%d AND (quantity!=%d OR quantity_info!=%s) '.$where, array($arg['id'],0,'')));
         $limit = $gb->get_limit(DB::GetOne('SELECT COUNT(*) FROM premium_warehouse_wholesale_items LEFT JOIN company_data_1 c ON c.id=manufacturer LEFT JOIN premium_warehouse_distr_categories_data_1 cat ON (cat.f_distributor=distributor_id AND cat.id=distributor_category) WHERE distributor_id=%d '.$where, array($arg['id'])));
-        $gb->set_default_order(array('Item Name'=>'ASC'));
+        $gb->set_default_order(array($this->t('Item Name')=>'ASC'));
         $order = $gb->get_query_order();
 
         $form2 = $this->init_module('Libs/QuickForm');
