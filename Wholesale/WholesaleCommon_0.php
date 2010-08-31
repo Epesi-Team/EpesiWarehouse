@@ -426,14 +426,19 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 			}
 			ob_start();
 			$filename = @$plugin->download_file($params, $dist);
-			if(!$filename) continue;
+			if(!$filename) {
+				$ret .= 'failed file download: '.$dist['name'].'<br>';
+				continue;
+			}
 			$res = @$plugin->update_from_file($filename, $dist);
 			@unlink($filename);
 			ob_end_clean();
 			if ($res===true) { 
-				$ret .= 'updated '.$dist['name'].'<br>';
+				$ret .= 'updated: '.$dist['name'].'<br>';
 				$time = time();
 				Utils_RecordBrowserCommon::update_record('premium_warehouse_distributor', $dist['id'], array('last_update'=>$time));
+			} else {
+				$ret .= 'failed update: '.$dist['name'].'<br>';
 			}
         	
         	//check fetched items
