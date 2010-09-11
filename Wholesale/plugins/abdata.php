@@ -108,14 +108,10 @@ class Premium_Warehouse_Wholesale__Plugin_abdata implements Premium_Warehouse_Wh
 	 * @return bool true if the update was successful, false otherwise
 	 */
 	public function update_from_file($filename, $distributor) {
+		die('ok');
 
 		$f = fopen($filename,'r');
-		$row = fgets($f);
-		$delimiter = $row{0};
-		$row = fgetcsv($f,0,$delimiter);
-		if(count($row)<2) {
-        		$row = fgetcsv($f,0,$delimiter);
-    		}
+		$row = fgetcsv($f);
 
 		$total = null;
 		$scanned = 0;
@@ -153,7 +149,7 @@ class Premium_Warehouse_Wholesale__Plugin_abdata implements Premium_Warehouse_Wh
 
 		Premium_Warehouse_WholesaleCommon::file_scan_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Scanning...'));
 		while (!feof($f)) {
-			$row = fgetcsv($f,0,$delimiter);
+			$row = fgetcsv($f);
 			if ($row===false) break;
 			Premium_Warehouse_WholesaleCommon::update_scan_status($total, $scanned, $available, $item_exist, $link_exist, $new_items, $new_categories);
 			$scanned++;

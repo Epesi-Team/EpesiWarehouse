@@ -414,7 +414,7 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 	}
 	
 	public static function cron() {
-		$dists = Utils_RecordBrowserCommon::get_records('premium_warehouse_distributor',array('<last_update'=>date('Y-m-d 8:00:00',time()-3600*23)));
+		$dists = Utils_RecordBrowserCommon::get_records('premium_warehouse_distributor'),array('<last_update'=>date('Y-m-d 8:00:00',time()-3600*23)));
 		$ret = '';
 		foreach($dists as $dist) {
 			$plugin = self::get_plugin($dist['plugin']);
@@ -433,6 +433,7 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 			$res = @$plugin->update_from_file($filename, $dist);
 			@unlink($filename);
 			ob_end_clean();
+			print_r($dist);
 			if ($res===true) { 
 				$ret .= 'updated: '.$dist['name'].'<br>';
 				$time = time();
