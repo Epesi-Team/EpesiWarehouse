@@ -206,7 +206,8 @@ class Premium_Warehouse_Items_Orders extends Module {
 			$rb->set_additional_actions_method(array($this, 'actions_for_order_details'));
 		}
 		$order = array(array('transaction_id'=>$arg['id']), $cols, array());
-		$rb->set_button(false);
+		$rb_item = $this->init_module('Utils/RecordBrowser','premium_warehouse_items_orders_details');
+		$rb->set_button(false);//,'<a href="">New item</a>');
 		$rb->set_defaults(array('transaction_id'=>$arg['id']));
 		$rb->enable_quick_new_records();
 		$rb->set_cut_lengths(array('description'=>50));
