@@ -433,7 +433,6 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 			$res = @$plugin->update_from_file($filename, $dist);
 			@unlink($filename);
 			ob_end_clean();
-			print_r($dist);
 			if ($res===true) { 
 				$ret .= 'updated: '.$dist['name'].'<br>';
 				$time = time();
@@ -443,7 +442,7 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 			}
         	
         	//check fetched items
-        	$r2 = DB::Execute('SELECT i.id,i.upc,c.f_company_name as manufacturer,i.manufacturer_part_number FROM premium_warehouse_wholesale_items i INNER JOIN company_data_1 c ON i.manufacturer=c.id WHERE 3rdp is null OR 3rdp=\'\'');
+        	$r2 = DB::Execute('SELECT i.id,i.upc,c.f_company_name as manufacturer,i.manufacturer_part_number FROM premium_warehouse_wholesale_items i INNER JOIN company_data_1 c ON i.manufacturer=c.id WHERE 3rdp is null OR 3rdp=\'\' LIMIT 200');
         	while($row = $r2->FetchRow()) {
     	        $r3 = Premium_Warehouse_eCommerceCommon::check_3rd_party_item_data(isset($row['upc'])?$row['upc']:null,isset($row['manufacturer'])?$row['manufacturer']:null,isset($row['manufacturer_part_number'])?$row['manufacturer_part_number']:null);
     	        $val = array();
