@@ -242,7 +242,7 @@ class Premium_Warehouse_eCommerce extends Module {
 		    if($_REQUEST['new']>0) {
 			    $pos = Utils_RecordBrowserCommon::get_records($tab,array_merge($crits,array('>position'=>$_REQUEST['old'])),array('position'), array('position'=>'ASC'),1);
 		    } else {
-			    $pos = Utils_RecordBrowserCommon::get_records($tab,array_merge($crits,array('<position'=>$_REQUEST['old'])),array('position'), array('position'=>'ASC'),1);		    
+			    $pos = Utils_RecordBrowserCommon::get_records($tab,array_merge($crits,array('<position'=>$_REQUEST['old'])),array('position'), array('position'=>'DESC'),1);		    
 		    }
 		    if($pos) {
 		    	$pos = array_shift($pos);
