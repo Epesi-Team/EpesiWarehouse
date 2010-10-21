@@ -108,7 +108,6 @@ class Premium_Warehouse_Wholesale__Plugin_abdata implements Premium_Warehouse_Wh
 	 * @return bool true if the update was successful, false otherwise
 	 */
 	public function update_from_file($filename, $distributor) {
-		die('ok');
 
 		$f = fopen($filename,'r');
 		$row = fgetcsv($f);
