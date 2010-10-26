@@ -47,6 +47,7 @@ class Premium_Warehouse_Wholesale__Plugin_techdata implements Premium_Warehouse_
 	
 	public function download_file($parameters, $distributor) {
 		$dir = ModuleManager::get_data_dir('Premium_Warehouse_Wholesale');
+		@unlink($dir.'cookiefile.cf');
 
 	    $c = curl_init();
 	    $url = 'https://intouch.techdata.com/services/centrAuthentication.asp';
@@ -91,6 +92,7 @@ class Premium_Warehouse_Wholesale__Plugin_techdata implements Premium_Warehouse_
 		$url=htmlspecialchars_decode('http://www.techdata.pl'.$match[1]);
 		curl_setopt($c, CURLOPT_URL, $url);
 	    $output = curl_exec($c);
+	    curl_close($c);
 	    $time = time();	    
 
 		$zip_filename = $dir.'zip_techdata_'.$time.'.tmp';
@@ -114,11 +116,14 @@ class Premium_Warehouse_Wholesale__Plugin_techdata implements Premium_Warehouse_
 			if ($file != basename($file, '.DBF')) {
 				$filename = $file;
 			}
+		if(!$filename){
+			recursive_rmdir($zip_extract_path);
+			return false;
+		}
 		copy($zip_extract_path.$filename, $dir.$filename);
 		recursive_rmdir($zip_extract_path);
 		
 			
-	    curl_close($c);
 
 		Premium_Warehouse_WholesaleCommon::file_download_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','File downloaded.'), 1, true);
 	    
