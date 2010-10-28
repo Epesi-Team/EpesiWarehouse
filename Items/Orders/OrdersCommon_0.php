@@ -181,6 +181,14 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		return $val.' '.Variable::get('premium_warehouse_volume_units');
 	}	
 
+	public static function display_transaction_type_order($r, $nolink=false) {
+		if (!$r['payment']) {
+			if ($r['transaction_type']==0) return 'Check-in';
+			if ($r['transaction_type']==1) return 'Check-out';
+		}
+		return Utils_CommonDataCommon::get_value('Premium_Items_Orders_Trans_Types/'.$r['transaction_type'],true);	
+	}
+
 	public static function display_transaction_id($r, $nolink) {
 		$ret = Utils_RecordBrowserCommon::create_linked_label_r('premium_warehouse_items_orders', 'transaction_id', $r, $nolink);
 		if (!$nolink)	
