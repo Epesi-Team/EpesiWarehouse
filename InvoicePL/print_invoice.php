@@ -32,14 +32,12 @@ if ($order['transaction_type']==1) {
 	if (!$order['invoice_number']) {
 		$order['invoice_number'] = Premium_Warehouse_InvoicePLCommon::generate_invoice_number($order);
 	}
-	$format = Base_User_SettingsCommon::get('Premium_Warehouse_InvoicePL','number_format');
-	$nr = str_pad($order['invoice_number'], 4, '0', STR_PAD_LEFT);
-	$order['invoice_id'] = str_replace(array('%Y', '%n'), array(date('Y',strtotime($order['transaction_date'])), $nr), $format);
+	$order['invoice_id'] = Premium_Warehouse_InvoicePLCommon::format_invoice_number($order['invoice_number'], $order);
 //	$header = 'Faktura VAT nr. '.$order['invoice_id'];
 }
 
 if ($order['transaction_type']==0) {
-	$order['po_id'] = str_pad($order['id'], 4, '0', STR_PAD_LEFT).'/'.date('Y',strtotime($order['transaction_date']));
+	$order['po_id'] = Premium_Warehouse_InvoicePLCommon::format_invoice_number($order['invoice_number'], $order);
 	$order['invoice_id'] = $order['invoice_number'];
 //	$header = 'Zamówienie '.$order['po_id'];
 }
