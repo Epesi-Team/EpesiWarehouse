@@ -56,7 +56,8 @@ class Premium_Warehouse_InvoicePLCommon extends ModuleCommon {
 
 	public static function get_warehouse_code($order) {
 		$w = Premium_WarehouseCommon::get_warehouse($order['warehouse']);
-		return mb_strtoupper(mb_substr($w['warehouse'], 0, 2, 'UTF-8'), 'UTF-8');
+		if (isset($w['invoice_number_code']) && $w['invoice_number_code']) return $w['invoice_number_code'];
+		return mb_strtoupper($w['warehouse'], 'UTF-8');
 	}
 
 	public static function display_invoice_number($r, $nolink) {

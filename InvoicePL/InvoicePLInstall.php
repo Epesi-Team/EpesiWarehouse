@@ -26,6 +26,7 @@ class Premium_Warehouse_InvoicePLInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::set_QFfield_callback('premium_warehouse_items_orders','Invoice Number',array('Premium_Warehouse_InvoicePLCommon', 'QFfield_invoice_number'));
 
 		Utils_RecordBrowserCommon::new_record_field('premium_warehouse','Invoice Display Name','text', false, false, '64', '', false, false);
+		Utils_RecordBrowserCommon::new_record_field('premium_warehouse','Invoice Number Code','text', false, false, '16', '', false, false);
 
 		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items_orders_details','SWW','text', true, false, '32', 'integer', false, false, 12);
 
@@ -37,6 +38,7 @@ class Premium_Warehouse_InvoicePLInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::delete_record_field('premium_warehouse_items_orders','Invoice Number');
 		Utils_RecordBrowserCommon::delete_record_field('premium_warehouse_items_orders','Invoice Print Date');
 
+		Utils_RecordBrowserCommon::delete_record_field('premium_warehouse','Invoice Number Code');
 		Utils_RecordBrowserCommon::delete_record_field('premium_warehouse','Invoice Display Name');
 
 		Utils_RecordBrowserCommon::delete_record_field('premium_warehouse_items_orders_details','SWW');

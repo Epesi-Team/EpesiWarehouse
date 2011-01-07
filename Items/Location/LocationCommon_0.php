@@ -85,6 +85,10 @@ class Premium_Warehouse_Items_LocationCommon extends ModuleCommon {
 		return $my_quantity;
 	}
 
+	public static function display_quantity($r, $nolink=false) {
+		return '';
+	}
+	
 	public static function display_item_quantity($r, $nolink=false) {
 		$my_warehouse = Base_User_SettingsCommon::get('Premium_Warehouse','my_warehouse');
 		return self::display_item_quantity_in_warehouse_and_total($r, $my_warehouse, $nolink);
