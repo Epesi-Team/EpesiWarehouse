@@ -104,6 +104,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 			array('name'=>'Tax Rate', 	'type'=>'select', 'required'=>true, 'extra'=>false, 'visible'=>true, 'param'=>'data_tax_rates::Name', 'style'=>'integer')
 		);
 		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_prices', $fields);
+		DB::CreateIndex('ecommerce_prices_name_currency__idx','premium_ecommerce_prices_data_1',array('f_item_name','f_currency','active'));
 
 		Utils_RecordBrowserCommon::set_favorites('premium_ecommerce_prices', false);
 		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_prices', 'eCommerce - prices');
