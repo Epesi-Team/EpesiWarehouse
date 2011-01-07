@@ -18,7 +18,7 @@
 </table>
 <div width="100%" align="center">
 	{if $order.status==1 || $order.status==""}
-		<font size=12><b>Proforma</b></font><br>
+		<font size=12><b>Proforma nr. {$order.proforma_id}</b></font><br>
 	{else}
 		{if $order.receipt}
 			<font size=12><b>Paragon nr. {$order.invoice_id}</b></font><br>

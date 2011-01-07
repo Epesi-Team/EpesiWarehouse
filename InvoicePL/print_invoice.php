@@ -32,6 +32,7 @@ if ($order['transaction_type']==1) {
 	if (!$order['invoice_number']) {
 		$order['invoice_number'] = Premium_Warehouse_InvoicePLCommon::generate_invoice_number($order);
 	}
+	$order['proforma_id'] = str_pad($order['id'], 4, '0', STR_PAD_LEFT);
 	$order['invoice_id'] = Premium_Warehouse_InvoicePLCommon::format_invoice_number($order['invoice_number'], $order);
 //	$header = 'Faktura VAT nr. '.$order['invoice_id'];
 }
