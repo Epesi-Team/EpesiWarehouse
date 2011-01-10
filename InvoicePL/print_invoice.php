@@ -128,7 +128,7 @@ foreach (array('shipment'=>'Koszt wysyłki', 'handling'=>'Opłata manipulacyjna'
 		$theme = Base_ThemeCommon::init_smarty();
 
 		$gross_val = $additional_cost[$k][0]; 
-		$net_val = round($additional_cost[$k][0]/1.22,2);
+		$net_val = round($additional_cost[$k][0]/1.23,2);
 		$tax_val = $gross_val-$net_val;
 		$tax = Utils_CurrencyFieldCommon::format($tax_val, $additional_cost[$k][1]);
 		$gross = Utils_CurrencyFieldCommon::format($gross_val, $additional_cost[$k][1]);
@@ -146,7 +146,7 @@ foreach (array('shipment'=>'Koszt wysyłki', 'handling'=>'Opłata manipulacyjna'
 				'item_details'=>array('item_name'=>$v),
 				'quantity'=>1,
 				'net_price'=>$net,
-				'tax_name'=>'22%',
+				'tax_name'=>'23%',
 				'gross_total'=>$gross,
 				'net_total'=>$net,
 				'tax_total'=>$tax
