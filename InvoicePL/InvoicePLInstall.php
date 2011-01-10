@@ -30,10 +30,14 @@ class Premium_Warehouse_InvoicePLInstall extends ModuleInstall {
 
 		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items_orders_details','SWW','text', true, false, '32', 'integer', false, false, 12);
 
+		Utils_RecordBrowserCommon::new_browse_mode_details_callback('premium_warehouse_items_orders', 'Premium/Warehouse/InvoicePL', 'browse_mode_details');
+
 		return true;
 	}
 	
 	public function uninstall() {
+		Utils_RecordBrowserCommon::delete_browse_mode_details_callback('premium_warehouse_items_orders', 'Premium/Warehouse/InvoicePL', 'browse_mode_details');
+
 		Utils_RecordBrowserCommon::delete_addon('premium_warehouse_items_orders', 'Premium_Warehouse_InvoicePL', 'invoicepl');
 		Utils_RecordBrowserCommon::delete_record_field('premium_warehouse_items_orders','Invoice Number');
 		Utils_RecordBrowserCommon::delete_record_field('premium_warehouse_items_orders','Invoice Print Date');
