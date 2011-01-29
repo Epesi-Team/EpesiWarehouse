@@ -50,6 +50,14 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	public static function company_crits(){
 		return array('_no_company_option'=>true);
 	}
+	
+	public static function display_related_transaction() {
+		return '';
+	}
+
+	public static function related_transactions_crits() {
+		return array();
+	}
 
     public static function display_company_name($v, $nolink=false, $desc=null) {
 		if ($v['company']<=0) return $v[$desc['id']];
@@ -774,6 +782,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			case 'view':	if (!$i->acl_check('view orders')) return false;
                     		if(ModuleManager::is_installed('Premium_Warehouse_eCommerce')>=0 && $tt!=1)
 								$ret['online_order'] = false;
+							$ret['related'] = false;
 						    if ($mode=='add') $ret['status'] = false;
 						    if ($mode=='view') {
     							$ret['company'] = false;
