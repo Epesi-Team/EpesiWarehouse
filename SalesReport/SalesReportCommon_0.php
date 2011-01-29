@@ -49,7 +49,7 @@ class Premium_Warehouse_SalesReportCommon extends ModuleCommon {
 		$sale = $sales->FetchRow();
 		do {
 			$trans = $purchases->FetchRow();
-			while ($sale && (!$trans || $trans['f_transaction_date']>$sale['f_transaction_date'])) {
+			while ($sale && !$trans) {
 				$sale['f_price'] = Utils_CurrencyFieldCommon::get_values($sale['f_net_price']);
 				$net_price = $sale['f_price'][0];
 				if ($sale['f_price'][1]!=$currency)
