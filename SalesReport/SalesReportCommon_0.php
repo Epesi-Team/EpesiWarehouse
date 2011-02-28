@@ -59,6 +59,13 @@ class Premium_Warehouse_SalesReportCommon extends ModuleCommon {
 				$gross_price *= $multip;
 	
 				$earnings = array('g_lifo'=>0, 'g_fifo'=>0, 'n_lifo'=>0, 'n_fifo'=>0);
+				$item = Utils_RecordBrowserCommon::get_record('premium_warehouse_items', $sale['f_item_name']);
+				if ($item['item_type']>1) {
+					$qty = $sale['f_quantity'];
+					DB::Execute('INSERT INTO premium_warehouse_sales_report_earning VALUES(%d,%d,%d,%d,%d,%d,%d)', array($sale['od_id'], $qty, $qty, $gross_price, $gross_price, $net_price, $net_price));
+					$sale = $sales->FetchRow();
+					continue;
+				}
 				
 				$sold_qty = $sale['f_quantity'];
 				$items = DB::Execute('SELECT * FROM premium_warehouse_sales_report_purchase_fifo_tmp WHERE item_id=%d AND warehouse=%d ORDER BY id ASC', array($sale['f_item_name'], $sale['f_warehouse']));
