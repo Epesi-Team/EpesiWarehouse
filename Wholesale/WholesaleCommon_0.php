@@ -310,19 +310,6 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 		}
 	}
 
-	public function item_match_autocomplete($str) {
-		$ret = '<ul>';
-		$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items', array('(~"item_name'=>DB::Concat(DB::qstr('%'),DB::qstr($str),DB::qstr('%')), '|~"sku'=>DB::Concat(DB::qstr('%'),DB::qstr($str),DB::qstr('%'))), array(), array('item_name'=>'ASC'), 10);
-		foreach ($items as $k=>$v) {
-			$ret .= '<li>';
-			$ret .= '<span style="display:none;">'.$v['sku'].'</span>';
-			$ret .= '<span class="informal">'.$v['sku'].': '.$v['item_name'].'</span>';
-			$ret .= '</li>';
-		}
-		$ret .= '</ul>';
-		return $ret;
-	}
-	
 	public static function add_dest_qty_info($r, $str) {
 		static $calculated = array();
 		if (isset($calculated[$r['id']])) return $str;
@@ -411,6 +398,44 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 			$ret[] = implode(' / ',$ret2);
 		}
 		return implode(', ',$ret);
+	}
+	
+	public static function get_item_basic_info($v) {
+		$def = array();
+		foreach ($v['category'] as $d) {
+			$next = Premium_Warehouse_ItemsCommon::automulti_format($d);
+			if($next)
+				$def[] = $next;
+		}
+		$cat = implode('<br/>',$def);
+		$ret = array(
+			'e_item_name'=>$v['item_name'],
+			'e_category'=>$cat.'&nbsp;',
+			'e_price'=>Utils_CurrencyFieldCommon::format($v['last_sale_price']),
+			'e_manufacturer'=>CRM_ContactsCommon::company_format_default($v['manufacturer'],true).'&nbsp;',
+			'e_mpn'=>$v['manufacturer_part_number'].'&nbsp;',
+			'e_upc'=>$v['upc'].'&nbsp;'
+		);
+		return $ret;
+	}
+	
+	public static function item_suggestbox($str) {
+		$str = DB::Concat(DB::qstr('%'), DB::qstr($str), DB::qstr('%'));
+		$rec = Utils_RecordBrowserCommon::get_records('premium_warehouse_items', array('(~"item_name'=>$str, '|~"sku'=>$str));
+		$result = '<ul>';
+    	if (empty($rec)) {
+			$result .= '<li><span style="text-align:center;font-weight:bold;" class="informal">'.Base_LangCommon::ts('Libs/QuickForm','No records founds').'</span></li>';
+    	} else {
+			foreach ($rec as $k=>$v) {
+				$data = array(
+					$v['id']
+				)+self::get_item_basic_info($v);
+				$label = $v['sku'].': '.$v['item_name'];
+				$result .= '<li><span style="display:none;">'.implode('__',$data).'</span><span class="informal">'.str_replace(' ','&nbsp;',$label).'</span></li>';
+			}
+		}
+		$result .= '</ul>';
+		return $result;
 	}
 	
 	public static function cron() {
