@@ -401,6 +401,9 @@ class Premium_Warehouse_Wholesale extends Module {
             array('name'=>$this->t('Price'), 'width'=>7, 'wrapmode'=>'nowrap'),
             array('name'=>$this->t('Quantity'), 'width'=>7, 'wrapmode'=>'nowrap'),
             array('name'=>$this->t('Quantity Details'), 'width'=>7, 'wrapmode'=>'nowrap'),
+            array('name'=>$this->t('Category'), 'width'=>7, 'wrapmode'=>'nowrap'),
+            array('name'=>$this->t('Manufacturer'), 'width'=>7, 'wrapmode'=>'nowrap'),
+            array('name'=>$this->t('MPN'), 'width'=>7, 'wrapmode'=>'nowrap'),
             array('name'=>$this->t('Last Update'), 'width'=>7, 'wrapmode'=>'nowrap')
         ));
 
@@ -419,6 +422,9 @@ class Premium_Warehouse_Wholesale extends Module {
                 array('value'=>Utils_CurrencyFieldCommon::format($row['price'],$row['price_currency']), 'style'=>'text-align:right;'),
                 array('value'=>$row['quantity'], 'style'=>'text-align:right;'),
                 $row['quantity_info'],
+				Utils_RecordBrowserCommon::create_linked_label('premium_warehouse_distr_categories', 'foreign_category_name', $row['distributor_category']),
+				$row['manufacturer'],
+				$row['manufacturer_part_number'],
                 Base_RegionalSettingsCommon::time2reg($dist['last_update'],'without_seconds')
             );
         }
