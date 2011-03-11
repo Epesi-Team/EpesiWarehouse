@@ -37,7 +37,7 @@ class Premium_WarehouseCommon extends ModuleCommon {
 		foreach ($rec as $v)
 			$warehouses[$v['id']] = $v['warehouse'];
 		return array('Warehouse'=>array(
-			array('name'=>'my_warehouse','label'=>'My main Warehouse','type'=>'select','values'=>$warehouses,'default'=>'')
+			array('name'=>'my_warehouse','label'=>'My main Warehouse','type'=>'select','values'=>$warehouses,'default'=>'','translate'=>false)
 			));
 	}
 	
