@@ -11,7 +11,7 @@
  */
 define('_VALID_ACCESS',1);
 require_once(EPESI_DATA_DIR.'/config.php');
-@include_once(EPESI_DATA_DIR.'/Base_Lang/'.LANGUAGE.'.php');
+@include_once(EPESI_DATA_DIR.'/Base_Lang/base/'.LANGUAGE.'.php');
 global $translations;
 if(!is_array($translations))
 	$translations=array();
