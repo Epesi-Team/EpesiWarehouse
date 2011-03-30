@@ -648,7 +648,7 @@ class Premium_Warehouse_SalesReport extends Module {
 		if ($this->range_type['other']['prices']=='net') $prices = 'net_price';
 		else $prices = 'gross_price';
 		
-		$result[0][$this->cats[1]][$currency] = DB::GetOne('SELECT SUM('.$prices.') FROM premium_warehouse_sales_report_purchase_'.$method.'_tmp WHERE warehouse=%s', array($ref_rec['id']))/$multip;
+		$result[0][$this->cats[1]][$currency] = DB::GetOne('SELECT SUM('.$prices.'*quantity) FROM premium_warehouse_sales_report_purchase_'.$method.'_tmp WHERE warehouse=%s', array($ref_rec['id']))/$multip;
 		
 
 		return $result;
