@@ -66,7 +66,7 @@ class Premium_Warehouse_Wholesale__Plugin_action implements Premium_Warehouse_Wh
 		curl_setopt($c, CURLOPT_HEADER, false);
 		curl_setopt($c, CURLOPT_POST, true);
 		curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($c, CURLOPT_USERAGENT, "Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)");
+		curl_setopt($c, CURLOPT_USERAGENT, "Mozilla/4.0 (compatible; MSIE 6.01; Windows NT 5.0)");
 		curl_setopt($c, CURLOPT_FOLLOWLOCATION, false);
 		curl_setopt($c, CURLOPT_COOKIEFILE, $dir.'cookiefile.cf');
 		curl_setopt($c, CURLOPT_COOKIEJAR, $dir.'cookiefile.cf');
