@@ -266,6 +266,7 @@ class Premium_Warehouse_Wholesale extends Module {
 					'n_upc' => 'upc',
 					'n_category' => 'category',
 					'n_mpn' => 'manufacturer_part_number',
+					'n_tax_rate' => 'tax_rate',
 					'n_manufacturer' => 'manufacturer'
 				) as $k=>$v) $item[$v] = $vals[$k];
 				$item['vendor'] = DB::GetOne('SELECT distributor_id FROM premium_warehouse_wholesale_items WHERE id=%d', array($dist_item_id));
