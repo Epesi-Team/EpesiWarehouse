@@ -60,10 +60,9 @@ if ($trans['transaction_type']<2) {
 				'switch_currencies(cur_key,"net_price","gross_price");'.
 			'}';
 
-	{
-		$js .= 'if($("quantity"))$("quantity").style.display="inline";';
-		$js .= 'if(!$("quantity").value)$("quantity").value=1;';
-	}
+	$js .= 'if($("quantity"))$("quantity").style.display="inline";';
+	$js .= 'if(!$("quantity").value){$("quantity").value=1;';
+	$js .= 'if(typeof(set_serials_based_on_quantity)!="undefined")set_serials_based_on_quantity(-1);}';
 }
 if ($trans['transaction_type']==2) {
 	if ($location_id!==null) $js .= 'if(!$("credit").value)$("debit").style.display="inline";';
@@ -80,6 +79,9 @@ if ($trans['transaction_type']==3) {
 		$js .= '"'.$v['id'].'":"'.Premium_Warehouse_Items_LocationCommon::mark_used($v['used']).$v['serial'].'"';
 	}
 	$js .= '};';
+}
+if ($trans['transaction_type']==0 && !$trans['payment']) {
+	$js .= 'if($("serials_section"))item_type_changed('.$rec['item_type'].');';
 }
 
 print($js);

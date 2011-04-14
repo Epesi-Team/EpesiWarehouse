@@ -22,41 +22,41 @@ class Premium_Warehouse_eCommerce extends Module {
 	public function admin() {
 		$buttons = array();
 //		$icon = Base_ThemeCommon::get_template_file($name,'icon.png');
-		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'setup_3rd_party_plugins')).'>'.$this->ht('3rd party info plugins').'</a>',
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'setup_3rd_party_plugins')).'>'.$this->t('3rd party info plugins').'</a>',
 						'icon'=>null);
-		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'prices')).'>'.$this->ht('Automatic prices').'</a>',
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'prices')).'>'.$this->t('Automatic prices').'</a>',
 						'icon'=>null);
-		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'availability')).'>'.$this->ht('Availability').'</a>',
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'availability')).'>'.$this->t('Availability').'</a>',
 						'icon'=>null);
-		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'banners')).'>'.$this->ht('Banners').'</a>',
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'banners')).'>'.$this->t('Banners').'</a>',
 						'icon'=>null);
-		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'boxes')).'>'.$this->ht('Boxes').'</a>',
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'boxes')).'>'.$this->t('Boxes').'</a>',
 						'icon'=>null);
-		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'contactus_page')).'>'.$this->ht('Contact us').'</a>',
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'contactus_page')).'>'.$this->t('Contact us').'</a>',
 						'icon'=>null);
-		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'compare_services')).'>'.$this->ht('Links for compare services').'</a>',
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'compare_services')).'>'.$this->t('Links for compare services').'</a>',
 						'icon'=>null);
-		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'order_email_page')).'>'.$this->ht('New order e-mail header').'</a>',
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'order_email_page')).'>'.$this->t('New order e-mail header').'</a>',
 						'icon'=>null);
-		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'order_received_email_page')).'>'.$this->ht('Order received e-mail').'</a>',
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'order_received_email_page')).'>'.$this->t('Order received e-mail').'</a>',
 						'icon'=>null);
-		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'order_shipped_email_page')).'>'.$this->ht('Order shipped e-mail').'</a>',
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'order_shipped_email_page')).'>'.$this->t('Order shipped e-mail').'</a>',
 						'icon'=>null);
-		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'pages')).'>'.$this->ht('Pages').'</a>',
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'pages')).'>'.$this->t('Pages').'</a>',
 						'icon'=>null);
-		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'parameters')).'>'.$this->ht('Parameters').'</a>',
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'parameters')).'>'.$this->t('Parameters').'</a>',
 						'icon'=>null);
-		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'parameter_groups')).'>'.$this->ht('Parameter Groups').'</a>',
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'parameter_groups')).'>'.$this->t('Parameter Groups').'</a>',
 						'icon'=>null);
-		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'payments_carriers')).'>'.$this->ht('Payments & Carriers').'</a>',
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'payments_carriers')).'>'.$this->t('Payments & Carriers').'</a>',
 						'icon'=>null);
-		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'polls')).'>'.$this->ht('Polls').'</a>',
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'polls')).'>'.$this->t('Polls').'</a>',
 						'icon'=>null);
-		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'promotion_codes')).'>'.$this->ht('Promotion Codes').'</a>',
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'promotion_codes')).'>'.$this->t('Promotion Codes').'</a>',
 						'icon'=>null);
-		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'QC_dirs')).'>'.$this->ht('Quickcart settings').'</a>',
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'QC_dirs')).'>'.$this->t('Quickcart settings').'</a>',
 						'icon'=>null);
-		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'rules_page')).'>'.$this->ht('Rules & Policies').'</a>',
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'rules_page')).'>'.$this->t('Rules & Policies').'</a>',
 						'icon'=>null);
 		$theme =  & $this->pack_module('Base/Theme');
 		$theme->assign('header', $this->t('eCommerce settings'));
@@ -253,7 +253,7 @@ class Premium_Warehouse_eCommerce extends Module {
     		    	Utils_RecordBrowserCommon::update_record($tab,$r['id'],array('position'=>$pos));
 		    	location(array());
 		    } else {
-		    	Epesi::alert($this->ht('This item is already on top/bottom'));
+		    	Epesi::alert($this->t('This item is already on top/bottom'));
 		    }
 		}
 		if($r['position']>0)
@@ -433,7 +433,7 @@ class Premium_Warehouse_eCommerce extends Module {
 		
 		$f->addElement('header',null,$this->t($header));
 		
-		$fck = & $f->addElement('fckeditor', 'content', $this->t('Content'));
+		$fck = & $f->addElement('ckeditor', 'content', $this->t('Content'));
 		$fck->setFCKProps('800','300',true);
 		
 		$f->setDefaults(array('content'=>Variable::get($v,false)));
@@ -476,7 +476,7 @@ class Premium_Warehouse_eCommerce extends Module {
 
 		$f->addElement('text', 'subject', $this->t('Subject'),array('maxlength'=>64));
 		
-		$fck = & $f->addElement('fckeditor', 'content', $this->t('Content'));
+		$fck = & $f->addElement('ckeditor', 'content', $this->t('Content'));
 		$fck->setFCKProps('800','300',true);
 		
 		$f->setDefaults(array('content'=>Variable::get($v,false),'subject'=>Variable::get($v.'S',false)));
@@ -513,7 +513,7 @@ class Premium_Warehouse_eCommerce extends Module {
 			while(($row=$ret->FetchRow())) {
 			    $r = $gb->get_new_row();
 			    $r->add_data($row['path']);
-			    $r->add_action($this->create_confirm_callback_href($this->ht('Are you sure you want to delete this record?'),array($this,'delete_quickcart'),$row['path']),'delete');
+			    $r->add_action($this->create_confirm_callback_href($this->t('Are you sure you want to delete this record?'),array($this,'delete_quickcart'),$row['path']),'delete');
 			    $r->add_action($this->create_callback_href(array($this,'quickcart_settings'),$row['path']),'edit','Settings');
 			}
 
@@ -582,7 +582,7 @@ class Premium_Warehouse_eCommerce extends Module {
 		$form->addRule('time_diff', $this->t('This field should be numeric'), 'numeric');
 		$form->addRule('time_diff', $this->t('Field required'), 'required');
 
-		$form->addElement('select','default_image_size',$this->t('Thumbnails size'),array(0=>$this->ht('100 x 100'),1=>$this->ht('200 x 200')));
+		$form->addElement('select','default_image_size',$this->t('Thumbnails size'),array(0=>$this->t('100 x 100'),1=>$this->t('200 x 200')));
 
 		$form->addElement('checkbox', 'text_size', $this->t('Text resize buttons'));
 		$form->addElement('checkbox', 'site_map_products', $this->t('Display products on sitemap page'));
@@ -1029,7 +1029,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 
 		$form->addElement('datepicker', 'start', $this->t('From'));
 		$form->addElement('datepicker', 'end', $this->t('To'));
-		$form->addElement('submit', 'submit_button', $this->ht('Show'));
+		$form->addElement('submit', 'submit_button', $this->t('Show'));
 		$form->addRule('start', 'Field required', 'required');
 		$form->addRule('end', 'Field required', 'required');
 		$form->setDefaults(array('start'=>$start,'end'=>$end));
@@ -1077,7 +1077,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 		}
 
 		$f = $this->init_module('Libs/OpenFlashChart');
-		$title = new OFC_Elements_Title( $this->ht($tab) );
+		$title = new OFC_Elements_Title( $this->t($tab) );
 		$f->set_title( $title );
 
 		$av_colors = array('#339933','#999933', '#993333', '#336699', '#808080','#339999','#993399');
@@ -1193,7 +1193,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 		//available applet options: toggle,href,title,go,go_function,go_arguments,go_contruct_arguments
 		$opts['go'] = false; // enable/disable full screen
 		$xxx = array(-1=>'New Online Order', 2=>'Order Received', 3=>'Payment Confirmed', 4=>'Order Confirmed', 5=>'On Hold', 6=>'Order Ready to Ship', 7=>'Shipped', 20=>'Delivered', 21=>'Canceled', 22=>'Missing','active'=>'Active');
-		$opts['title'] = 'eCommerce - '.$xxx[$conf['status']];
+		$opts['title'] = $this->t('eCommerce - %s',array(Base_LangCommon::ts('Base_Dashboard',$xxx[$conf['status']])));
 		
 		$crits = array('online_order'=>1);
 		if($conf['status']=='active')

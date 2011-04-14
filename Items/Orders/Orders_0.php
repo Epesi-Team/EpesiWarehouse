@@ -27,14 +27,41 @@ class Premium_Warehouse_Items_Orders extends Module {
 							'employee'=>$me['id'],
 							'warehouse'=>Base_User_SettingsCommon::get('Premium_Warehouse','my_warehouse')
 							);
-		$this->rb->set_defaults(array(
-			$this->t('Purchase')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'purchase.png'), 'defaults'=>array_merge($defaults,array('transaction_type'=>0,'terms'=>0, 'payment'=>1))),
-			$this->t('Sales Quote')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'sale.png'), 'defaults'=>array_merge($defaults,array('transaction_type'=>1,'terms'=>0, 'payment'=>1))),
-			$this->t('Sale')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'quick_sale.png'), 'defaults'=>array_merge($defaults,array('transaction_type'=>1, 'status'=>2, 'payment'=>1, 'payment_type'=>0, 'shipment_type'=>0,'terms'=>0))),
-			$this->t('Inv. Adjustment')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'inv_adj.png'), 'defaults'=>array_merge($defaults,array('transaction_type'=>2))),
-//			$this->t('Rental')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'rental.png'), 'defaults'=>array_merge($defaults,array('transaction_type'=>3))),
-			$this->t('Warehouse Transfer')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'warehouse_transfer.png'), 'defaults'=>array_merge($defaults,array('transaction_type'=>4)))
-			), true);
+		if($this->acl_check('edit orders')) {
+			$disabled = Variable::get('premium_warehouse_trans_types', false);
+			if (!$disabled) $disabled = array();
+			else $disabled = array_flip($disabled);
+			$defaults = array();
+    		if (!isset($disabled['disable_purchase'])) $defaults[$this->t('Purchase')] = array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'purchase.png'), 'defaults'=>array_merge($defaults,array('transaction_type'=>0,'terms'=>0,'payment'=>1,'transaction_date'=>date('Y-m-d'))));
+		    if (!isset($disabled['disable_sales_quote'])) $defaults[$this->t('Sales Quote')] = array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'sale.png'), 'defaults'=>array_merge($defaults,array('transaction_type'=>1,'terms'=>0,'payment'=>1,'transaction_date'=>date('Y-m-d'))));
+			if (!isset($disabled['disable_sale'])) $defaults[$this->t('Sale')] = array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'quick_sale.png'), 'defaults'=>array_merge($defaults,array('transaction_type'=>1, 'status'=>2,'payment'=>1, 'payment_type'=>0, 'shipment_type'=>0,'terms'=>0,'transaction_date'=>date('Y-m-d'))));
+    		if (!isset($disabled['disable_inv_adj'])) $defaults[$this->t('Inv. Adjustment')] = array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'inv_adj.png'), 'defaults'=>array_merge($defaults,array('transaction_type'=>2,'transaction_date'=>date('Y-m-d'))));
+//	    	if (!isset($disabled['disable_rental'])) $defaults[$this->t('Rental')] = array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'rental.png'), 'defaults'=>array_merge($defaults,array('transaction_type'=>3,'transaction_date'=>date('Y-m-d'))));
+		    if (!isset($disabled['disable_transfer'])) $defaults[$this->t('Warehouse Transfer')] = array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'warehouse_transfer.png'), 'defaults'=>array_merge($defaults,array('transaction_type'=>4,'transaction_date'=>date('Y-m-d'))));
+    		if (!isset($disabled['disable_checkin'])) $defaults[$this->t('Check-in')] = array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'purchase.png'), 'defaults'=>array_merge($defaults,array('transaction_type'=>0,'terms'=>0,'payment'=>0,'transaction_date'=>date('Y-m-d'))));
+	    	if (!isset($disabled['disable_checkout'])) $defaults[$this->t('Check-out')] = array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'sale.png'), 'defaults'=>array_merge($defaults,array('transaction_type'=>1,'terms'=>0,'payment'=>0,'transaction_date'=>date('Y-m-d'))));
+			$this->rb->set_defaults($defaults, true);
+		} else {
+		    $defaults['transaction_type'] = 1;
+		    $defaults['terms'] = 0;
+		    $defaults['payment'] = 0;
+		    $defaults['contact'] = $me['id'];
+		    $defaults['company'] = $me['company_name'];
+		    $defaults['last_name'] = $me['last_name'];
+		    $defaults['first_name'] = $me['first_name'];
+		    $company = CRM_ContactsCommon::get_company($me['company_name']);
+		    $defaults['company_name'] = $company['company_name'];
+		    $defaults['address_1'] = $company['address_1'];
+		    $defaults['address_2'] = $company['address_2'];
+		    $defaults['city'] = $company['city'];
+		    $defaults['country'] = $company['country'];
+		    $defaults['state'] = $company['zone'];
+		    $defaults['postal_code'] = $company['postal_code'];
+		    $defaults['phone'] = $company['phone'];
+		    $defaults['tax_id'] = $company['tax_id'];
+		    unset($defaults['employee']);
+		    $this->rb->set_defaults($defaults);
+		}
 		$my_warehouse = Base_User_SettingsCommon::get('Premium_Warehouse','my_warehouse');
 		$warehouses = Utils_RecordBrowserCommon::get_records('premium_warehouse');
 		$opts = array('__NULL__'=>'---');
@@ -98,7 +125,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 		}
 		$crits = array('transaction_type'=>$conf['type'], 'status'=>$status);
 		if($conf['older']!='all')
-			$crits[':Created_on'] = array('<',date('Y-m-d H:i:s',time()-$conf['older']));
+			$crits['<=:Created_on'] = date('Y-m-d H:i:s',time()-$conf['older']);
 
 		if($conf['my']) {
 			$my_rec = CRM_ContactsCommon::get_my_record();
@@ -113,8 +140,8 @@ class Premium_Warehouse_Items_Orders extends Module {
 		
 		$sorting = array();
 		$cols = array(
-							array('field'=>'transaction_id', 'width'=>1, 'label'=>'Trans. ID'),
-							array('field'=>'transaction_type', 'width'=>10, 'label'=>'Trans. Type'),
+							array('field'=>'transaction_id', 'width'=>1, 'label'=>$this->t('Trans. ID')),
+							array('field'=>'transaction_type', 'width'=>10, 'label'=>$this->t('Trans. Type')),
 							array('field'=>'status', 'width'=>10),
 //							array('field'=>'operation', 'width'=>10),
 //							array('field'=>'quantity', 'width'=>10)
@@ -131,6 +158,36 @@ class Premium_Warehouse_Items_Orders extends Module {
 				);
 		$opts['actions'][] = Utils_RecordBrowserCommon::applet_new_record_button('premium_warehouse_items_orders',array('transaction_type'=>$conf['type'],'payment_type'=>0, 'shipment_type'=>0,'terms'=>0));
 		$this->display_module($rb, $conds, 'mini_view');
+	}
+	
+	public function order_serial_addon($arg) {
+		$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$arg['id']),array('id','item_name'));
+		$gb = $this->init_module('Utils/GenericBrowser','premium_warehouse_order_serials','premium_warehouse_order_serials');
+		$gb->set_table_columns(array(
+			array('name'=>'Item'),
+			array('name'=>'Serial'),
+			array('name'=>'Owner'),
+			array('name'=>'Notes'),
+			array('name'=>'Shelf')
+								));
+		foreach ($items as $i) {
+			$ret = DB::Execute('SELECT ls.serial, notes, owner, shelf FROM premium_warehouse_location_orders_serial os LEFT JOIN premium_warehouse_location_serial ls ON os.serial_id=ls.id WHERE os.order_details_id=%d ORDER BY ls.serial', array($i['id']));
+			while ($row = $ret->FetchRow()) {
+				if (!$row['serial']) {
+					$row['serial'] = 'n/a';
+					$row['notes'] = '';
+					$row['owner'] = '';
+				}
+				$gb->add_row(
+					Premium_Warehouse_Items_OrdersCommon::display_item_name($i),
+					$row['serial'],
+					CRM_ContactsCommon::autoselect_company_contact_format($row['owner']),
+					$row['notes'],
+					$row['shelf']
+				);
+			}
+		}
+		$this->display_module($gb);
 	}
 	
 	public function transaction_history_addon($arg){
@@ -177,16 +234,16 @@ class Premium_Warehouse_Items_Orders extends Module {
 //				$cols['serial'] = false;
 //			}
 		}
-		if ($arg['transaction_type']==2 || $arg['transaction_type']==4) {
+		if ($arg['payment']!=1) {
 			$cols['tax_rate'] = false;
 			$cols['net_total'] = false;
 			$cols['net_price'] = false;			
 			$cols['gross_price'] = false;			
 			$cols['tax_value'] = false;			
 			$cols['gross_total'] = false;
-			$cols['quantity'] =  $arg['transaction_type']==4;			
-			$cols['debit'] = $arg['transaction_type']!=4;			
-			$cols['credit'] = $arg['transaction_type']!=4;			
+			$cols['quantity'] =  $arg['transaction_type']!=2;
+			$cols['debit'] = $arg['transaction_type']==2;			
+			$cols['credit'] = $arg['transaction_type']==2;			
 			$header_prop['debit'] = array('width'=>20, 'wrapmode'=>'nowrap', 'name'=>'Debit (-)');
 			$header_prop['credit'] = array('width'=>20, 'wrapmode'=>'nowrap', 'name'=>'Credit (+)');
 		}
@@ -207,12 +264,160 @@ class Premium_Warehouse_Items_Orders extends Module {
 		}
 		$order = array(array('transaction_id'=>$arg['id']), $cols, array());
 		$rb_item = $this->init_module('Utils/RecordBrowser','premium_warehouse_items_orders_details');
-		$rb->set_button(false);//,'<a href="">New item</a>');
+		
+        $defaults = array();
+        $new_item_types = array(
+			$this->t('Inv. Item')=>array('icon'=>Base_ThemeCommon::get_template_file('Premium_Warehouse_Items','inv_item.png'), 'defaults'=>array_merge($defaults,array('item_type'=>0))),
+			$this->t('Serialized Item')=>array('icon'=>Base_ThemeCommon::get_template_file('Premium_Warehouse_Items','serialized.png'), 'defaults'=>array_merge($defaults,array('item_type'=>1))),
+			$this->t('Non-Inv. Items')=>array('icon'=>Base_ThemeCommon::get_template_file('Premium_Warehouse_Items','non-inv.png'), 'defaults'=>array_merge($defaults,array('item_type'=>2))),
+			$this->t('Service')=>array('icon'=>Base_ThemeCommon::get_template_file('Premium_Warehouse_Items','service.png'), 'defaults'=>array_merge($defaults,array('item_type'=>3)))
+			);
+		
+		if(!isset($_SESSION['client']['warehouse_transaction_id']) || $_SESSION['client']['warehouse_transaction_id'] != $arg['id']) {
+    		$_SESSION['client']['warehouse_transaction_id'] = $arg['id'];
+	    	unset($_SESSION['client']['warehouse_transaction_new_item_id']);
+	    }
+	    if(isset($_SESSION['client']['warehouse_transaction_new_item_id'])) {
+    		$rec = Utils_RecordBrowserCommon::get_record('premium_warehouse_items',$_SESSION['client']['warehouse_transaction_new_item_id']);
+            $defaults = array('item_name'=>$rec['item_name'],'description'=>$rec['description']);
+            if ($arg['transaction_type']<2) {
+            	$defaults["last_item_price"] = $rec['last_purchase_price'];
+            	$defaults["tax_rate"] = $rec['tax_rate'];
+            	$price = ($arg['transaction_type']==0?(isset($rec['last_purchase_price'])&&$rec['last_purchase_price']?$rec['last_purchase_price']:$rec['cost']):(isset($rec['last_sale_price'])&&$rec['last_sale_price']?$rec['last_sale_price']:$rec['net_price']));
+            	$price2 = Utils_CurrencyFieldCommon::get_values($price);
+            	$gross_price = Utils_CurrencyFieldCommon::format_default($price2[0]*(100+Data_TaxRatesCommon::get_tax_rate($rec['tax_rate']))/100, $price2[1]);
+				$defaults["net_price"] = $price;
+				$defaults["gross_price"] = $gross_price;
+				$defaults['quantity'] = 1;
+            }
+    		$rb->set_defaults($defaults);
+    		eval_js('$(\'add_in_table_row\').style.display=\'\';warehouse_itemAutocompleter.hide();focus_by_id(\'quantity\')');
+        }
+        if($this->acl_check('edit orders') && $arg['transaction_type']==0 && !$arg['payment'])
+    		$rb->set_button($this->create_callback_href(array($this, 'jump_to_check_in_new_item'), array($arg)));
+		else
+			$rb->enable_quick_new_records();
 		$rb->set_defaults(array('transaction_id'=>$arg['id']));
-		$rb->enable_quick_new_records();
 		$rb->set_cut_lengths(array('description'=>50));
 		$rb->set_header_properties($header_prop);
 		$this->display_module($rb,$order,'show_data');
+	}
+	
+	public function jump_to_check_in_new_item($trans) {
+		$box = ModuleManager::get_instance('/Base_Box|0');
+        $box->push_main('Premium_Warehouse_Items_Orders','check_in_new_item',array($trans));
+		return false;
+	}
+	
+	public function check_in_new_item($trans) {
+		$box = ModuleManager::get_instance('/Base_Box|0');
+		if ($this->is_back()) {
+			$box->pop_main();
+			return false;
+		}
+		Base_ThemeCommon::install_default_theme('Premium_Warehouse_Items_Orders');
+		
+		load_js('modules/Premium/Warehouse/Items/Orders/js/check_in_item.js');
+		
+		$form = $this->init_module('Libs_QuickForm');
+		$theme = $this->init_module('Base_Theme');
+		
+		$manufacturers = array(''=>'---');
+		$rec = CRM_ContactsCommon::get_companies(array('group'=>'manufacturer'));
+		foreach ($rec as $r) $manufacturers[$r['id']] = $r['company_name'];
+		
+		$item_types = Utils_CommonDataCommon::get_array('Premium_Warehouse_Items_Type', true);
+		
+		/** new item source checkbox **/
+		$form->addElement('checkbox', 'brand_new', $this->t('Create new item'), '', array('onchange'=>'item_source_changed(this.checked);', 'id'=>'brand_new'));
+		eval_js('item_source_changed($("brand_new").checked);');
+		
+		$form->setDefaults(array('brand_new'=>true));
+		
+		/** item **/
+		$theme->assign('item_icon', Base_ThemeCommon::get_template_filename('Premium_Warehouse_Items','icon.png'));
+		$theme->assign('item_caption', $this->t('Item'));
+		
+		/** new item **/
+		$form->addElement('select', 'item_type', $this->t('Item Type'), $item_types, array('onchange'=>'item_type_changed(this.value);', 'id'=>'item_type'));
+		eval_js('item_type_changed($("item_type").value);');
+		$form->addElement('text', 'new_item_name', $this->t('New Item name'));
+		$form->addElement('text', 'product_code', $this->t('Product Code'));
+		$form->addElement('text', 'upc', $this->t('UPC'));
+		$form->addElement('text', 'weight', $this->t('Weight'));
+		Premium_Warehouse_ItemsCommon::QFfield_item_category($form, 'category', $this->t('Category'), 'edit', '');
+		$form->addElement('text', 'volume', $this->t('Volume'));
+		$form->addElement('text', 'manufacturer_part_number', $this->t('Manufacturer Part Number'));
+		$form->addElement('select', 'manufacturer', $this->t('Manufacturer'), $manufacturers);
+		$form->addElement('textarea', 'item_description', $this->t('Item Description'));
+		
+		$theme->assign('brand_new_section_id', 'brand_new_section');
+		$theme->assign('brand_new_long_section_id', 'brand_new_long_section');
+		
+		/** existing item **/
+		Premium_Warehouse_Items_OrdersCommon::QFfield_item_name($form, 'item_name', $this->t('Item name'), 'edit', '', array(), array('id'=>-1, 'transaction_id'=>$trans['id']));
+		
+		$theme->assign('existing_item_section_id', 'existing_item_section');
+		
+		/** order details fields **/
+		$theme->assign('order_detail_icon', Base_ThemeCommon::get_template_filename('Premium_Warehouse_Items_Orders','icon.png'));
+		$theme->assign('order_detail_caption', $this->t('Order Details'));
+		
+		$form->addElement('text', 'quantity', $this->t('Quantity'), array('id'=>'quantity'));
+		$form->addElement('text', 'description', $this->t('Description'), array('id'=>'description'));
+		
+		/** serials **/
+		$theme->assign('serials_icon', Base_ThemeCommon::get_template_filename('Premium_Warehouse_Items_Location','icon.png'));
+		$theme->assign('serials_caption', $this->t('Serials'));
+		
+		Premium_Warehouse_Items_OrdersCommon::display_serials($form, '', '', 'edit', '', array(), array('id'=>-1, 'transaction_id'=>$trans['id']));
+
+		$theme->assign('serials_section_id', 'serials_section');
+		
+		if ($form->validate()) {
+			$vals = $form->exportValues();
+			if (isset($vals['brand_new']) && $vals['brand_new']) {
+				$item = array();
+				foreach (array(
+					'new_item_name' => 'item_name',
+					'item_type' => 'item_type',
+					'product_code' => 'product_code',
+					'upc' => 'upc',
+					'weight' => 'weight',
+					'category' => 'category',
+					'volume' => 'volume',
+					'manufacturer_part_number' => 'manufacturer_part_number',
+					'manufacturer' => 'manufacturer',
+					'item_description' => 'description'
+				) as $k=>$v) $item[$v] = $vals[$k];
+				$item_id = Utils_RecordBrowserCommon::new_record('premium_warehouse_items', $item);
+			} else {
+				$item_id = $vals['item_name'];
+				$item = Utils_RecordBrowserCommon::get_record('premium_warehouse_items', $item_id);
+			}
+			$files = Premium_Warehouse_Items_WebcamCommon::get_photos('Premium_Warehouse_check_in');
+			foreach ($files as $f)
+				Utils_AttachmentCommon::add('premium_warehouse_items/'.$item_id,0,Acl::get_user(),'Webcam photo','image.jpg',$f,array('Premium_Warehouse_ItemsCommon','search_format'),array($item_id));
+
+			$order_details = array(
+				'transaction_id'=>$trans['id'],
+				'item_name'=>$item_id,
+				'description'=>$vals['description'],
+				'quantity'=>$vals['quantity']
+			);
+			Utils_RecordBrowserCommon::new_record('premium_warehouse_items_orders_details', $order_details);
+			$box->pop_main();
+			return false;
+		}
+
+		Base_ActionBarCommon::add('delete', 'Cancel', $this->create_back_href());
+		Base_ActionBarCommon::add('save', 'Save', $form->get_submit_form_href());
+		if (ModuleManager::is_installed('Premium_Warehouse_Items_Webcam')>=0)
+			Premium_Warehouse_Items_WebcamCommon::attach_webcam_button('Premium_Warehouse_check_in', 'view');
+		
+		$form->assign_theme('form', $theme);
+		$theme->display('check_in_item');
+		return true;
 	}
 	
 	public function mark_as_returned($r) {
@@ -273,19 +478,20 @@ class Premium_Warehouse_Items_Orders extends Module {
 	
 	public function split_items_process($items, $trans, $vals) {
 		$id = null;
-		foreach ($items as $v)
+		foreach ($items as $v) {
+			$old = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders_details', $v['id']);
+			if (intval($vals['item__'.$v['id']]['original_qty'])!=0) Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders_details', $v['id'], array('quantity'=>intval($vals['item__'.$v['id']]['original_qty'])));
+			else Utils_RecordBrowserCommon::delete_record('premium_warehouse_items_orders_details', $v['id']);
 			if (intval($vals['item__'.$v['id']]['new_qty'])>0) {
 				if ($id===null) {
 					$id = Utils_RecordBrowserCommon::new_record('premium_warehouse_items_orders', $trans);
 					$this->set_module_variable('split_transaction_id', $id);
 				}
-				$old = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders_details', $v['id']);
-				if (intval($vals['item__'.$v['id']]['original_qty'])!=0) Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders_details', $v['id'], array('quantity'=>intval($vals['item__'.$v['id']]['original_qty'])));
-				else Utils_RecordBrowserCommon::delete_record('premium_warehouse_items_orders_details', $v['id']);
 				$old['transaction_id'] = $id;
 				$old['quantity'] = intval($vals['item__'.$v['id']]['new_qty']);
 				Utils_RecordBrowserCommon::new_record('premium_warehouse_items_orders_details', $old);
 			}
+		}
 	}
 	
 	public function check_if_items_available($trans, $items) {
@@ -307,6 +513,37 @@ class Premium_Warehouse_Items_Orders extends Module {
 		if (!$items_available) return $items_check;
 		else return null;
 	}
+
+	public function get_select_serials_form($trans, $items, & $any_item) {
+		$serials = $this->init_module('Libs/QuickForm');
+		$serials->addElement('static', 'item_header', '');
+		$serials->setDefaults(array('item_header'=>$this->t('Please select serial numbers for Serialized Items')));
+		load_js('modules/Premium/Warehouse/Items/Orders/js/serials.js');
+		foreach ($items as $v) {
+			if (Utils_RecordBrowserCommon::get_value('premium_warehouse_items', $v['item_name'], 'item_type')==1) {
+				$any_item = true; 
+				$loc_id = Utils_RecordBrowserCommon::get_id('premium_warehouse_location', array('item_sku', 'warehouse'), array($v['item_name'], $trans['warehouse']));
+				if (!$loc_id) continue; // failsafe
+				$item_serials_raw = DB::GetAssoc('SELECT id, serial FROM premium_warehouse_location_serial WHERE location_id=%d ORDER BY serial', array($loc_id));
+				$item_serials = array();
+				$empty = 0;
+				$count_serials = 0;
+				foreach ($item_serials_raw as $k=>$v2) {
+					$count_serials++;
+					if (!$v2) {
+						if (!$empty) $item_serials['NULL'] = $this->t('n/a');
+						$empty++;
+					} else $item_serials[$k] = $v2;
+				}
+				if ($count_serials==0) $item_serials['NULL'] = $this->t('n/a');
+				eval_js('allowed_empty_serials['.$v['id'].'] = '.(string)$empty.';');
+				for ($i=0;$i<$v['quantity'];$i++)
+					$serials->addElement('select', 'serial__'.$v['id'].'__'.$i, Premium_Warehouse_Items_OrdersCommon::display_item_name($v, true), $item_serials, array('onchange'=>'check_serial_duplicates('.$v['id'].');', 'id'=>'serial__'.$v['id'].'__'.$i));
+				eval_js('check_serial_duplicates('.$v['id'].');');
+			}
+		}
+		return $serials;
+	}
 	
 	public function change_status_leightbox($trans, $status) {
 		if ($this->isset_module_variable('split_transaction_id')) {
@@ -314,8 +551,10 @@ class Premium_Warehouse_Items_Orders extends Module {
 			$this->unset_module_variable('split_transaction_id');
 			print($this->t('<b>The transaction was split succesfully.<br>The ID of newly created transaction is: %s', array(Utils_RecordBrowserCommon::create_linked_label('premium_warehouse_items_orders', 'transaction_id', $id))));
 		}
+		$p = $trans['payment'];
 		$lp = $this->init_module('Utils/LeightboxPrompt');
 		if ($trans['transaction_type']==0) {
+			if (!$p && $status<20) $status = 4;
 			switch ($status) {			
 				case '':
 					$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$trans['id']));
@@ -446,16 +685,30 @@ class Premium_Warehouse_Items_Orders extends Module {
 				case 4:
 					$serials = $this->init_module('Libs/QuickForm');
 					$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$trans['id']));
-//					$serials->addElement('static', 'item_header', '');
-//					$serials->setDefaults(array('item_header'=>$this->t('Please enter serial numbers for Serialized Items')));
+					$serials->addElement('static', 'item_header', '');
+					$serials->setDefaults(array('item_header'=>$this->t('Please enter serial numbers and notes for Serialized Items')));
 					$any_item = false;
-//					foreach ($items as $v) {
-//						if (Utils_RecordBrowserCommon::get_value('premium_warehouse_items', $v['item_name'], 'item_type')==1) {
-//							$any_item = true; 
-//							for ($i=0;$i<$v['quantity'];$i++)
-//								$serials->addElement('text', 'serial__'.$v['id'].'__'.$i, Premium_Warehouse_Items_OrdersCommon::display_item_name($v, true));
-//						}
-//					}
+					foreach ($items as $v) {
+						if (Utils_RecordBrowserCommon::get_value('premium_warehouse_items', $v['item_name'], 'item_type')==1) {
+							$any_item = true; 
+							$ret = DB::Execute('SELECT ls.serial, notes, shelf FROM premium_warehouse_location_orders_serial os LEFT JOIN premium_warehouse_location_serial ls ON os.serial_id=ls.id WHERE os.order_details_id=%d ORDER BY ls.serial', array($v['id']));
+							for ($i=0;$i<$v['quantity'];$i++) {
+								$elements = array();
+								$elements[] = $serials->createElement('text', 'serial', $this->t('Serial'), Utils_TooltipCommon::open_tag_attrs($this->t('Serial')));
+								$elements[] = $serials->createElement('text', 'note', $this->t('Note'), 'style="width:200px;"'.Utils_TooltipCommon::open_tag_attrs($this->t('Note')));
+								$elements[] = $serials->createElement('text', 'shelf', $this->t('Shelf'), 'style="width:200px;"'.Utils_TooltipCommon::open_tag_attrs($this->t('Shelf')));
+								$serials->addGroup($elements, 'serial__'.$v['id'].'__'.$i, Premium_Warehouse_Items_OrdersCommon::display_item_name($v, true));
+								$row = $ret->FetchRow();
+								if ($row) {
+									$serials->setDefaults(array(
+										'serial__'.$v['id'].'__'.$i.'[serial]' => $row['serial'],
+										'serial__'.$v['id'].'__'.$i.'[note]' => $row['notes'],
+										'serial__'.$v['id'].'__'.$i.'[shelf]' => $row['shelf']
+									));
+								}
+							}
+						}
+					}
 					$split = $this->split_items_form($items);
 
 					$lp->add_option('received', $this->t('All items delivered'), null, $any_item?$serials:null);
@@ -477,14 +730,14 @@ class Premium_Warehouse_Items_Orders extends Module {
 						}
 						if ($any_item && $vals['option']=='received') {
 							foreach ($items as $v) {
-								if (Utils_RecordBrowserCommon::get_value('premium_warehouse_items', $v['item_name'], 'item_type')==1) {
-									$location_id = Utils_RecordBrowserCommon::get_id('premium_warehouse_location', array('item_sku','warehouse'), array($v['item_name'], $trans['warehouse']));
-									for ($i=0;$i<$v['quantity'];$i++) {
-										DB::Execute('INSERT INTO premium_warehouse_location_serial (location_id, serial) VALUES (%d, %s)', array($location_id, $vals['form']['serial__'.$v['id'].'__'.$i]));
-										$id = DB::Insert_ID('premium_warehouse_location_serial','id');
-										DB::Execute('INSERT INTO premium_warehouse_location_orders_serial (serial_id, order_details_id) VALUES (%d, %d)', array($id, $v['id']));
-									}
+								$serials = array();
+								for ($i=0;$i<$v['quantity'];$i++) {
+									$serials[$i] = array();
+									$serials[$i]['serial'] = $vals['form']['serial__'.$v['id'].'__'.$i]['serial'];
+									$serials[$i]['note'] = $vals['form']['serial__'.$v['id'].'__'.$i]['note'];
+									$serials[$i]['shelf'] = $vals['form']['serial__'.$v['id'].'__'.$i]['shelf'];
 								}
+								Premium_Warehouse_Items_OrdersCommon::set_serials($v, $trans, $serials);
 							}
 						}
 						location(array());
@@ -515,6 +768,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 					break;
 			}
 		} elseif ($trans['transaction_type']==1) {
+			if (!$p && $status<2) $status = 2;
 			switch ($status) {			
 				case -1:
 					$new_form = $this->init_module('Libs_QuickForm');
@@ -643,18 +897,28 @@ class Premium_Warehouse_Items_Orders extends Module {
 					}
 					
 					$items_unavailable = $this->check_if_items_available($trans, $items);
-					if ($trans['payment_type']==0 && $trans['shipment_type']==0) $lp->add_option('quick_delivery', $this->t('Paid & Delivered'), null, $items_unavailable);
+					$serials = $this->get_select_serials_form($trans, $items, $any_item);
+
+					if ($trans['payment_type']==0 && $trans['shipment_type']==0) $lp->add_option('quick_delivery', $this->t($p?'Paid & Delivered':'Delivered'), null, ($items_unavailable===null)?($any_item?$serials:null):$items_unavailable);
 
 					$lp->add_option('accepted', $this->t('Accepted'), null, null);
 					$lp->add_option('onhold', $this->t('Put On Hold'), null, null);
-					$this->display_module($lp, array($this->t('Funds available?')));
+					$this->display_module($lp, array($this->t($p?'Funds available?':'Check out accepted?')));
 					$this->href = $lp->get_href();
 					$vals = $lp->export_values();
 					if ($vals!==null) {
 						switch ($vals['option']) {
-							case 'accepted': $vals['form']['status'] = 3; break; 
+							case 'accepted': $vals['form']['status'] = $p?3:4; break; 
 							case 'onhold': $vals['form']['status'] = 5; break; 
 							case 'quick_delivery': if($items_unavailable===null)$vals['form']['status']=20; break; 
+						}
+						if ($vals['form']['status']==20) {
+							foreach ($items as $v) {
+								$serials = array();
+								for ($i=0;$i<$v['quantity'];$i++)
+									if (isset($vals['form']['serial__'.$v['id'].'__'.$i])) $serials[] = $vals['form']['serial__'.$v['id'].'__'.$i];
+								Premium_Warehouse_Items_OrdersCommon::selected_serials($v, $trans, $serials);
+							}
 						}
 						Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $trans['id'], $vals['form']);
 						location(array());
@@ -681,20 +945,8 @@ class Premium_Warehouse_Items_Orders extends Module {
 					$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$trans['id']));
 					$items_unavailable = $this->check_if_items_available($trans, $items);
 
-					$serials = $this->init_module('Libs/QuickForm');
-//					$serials->addElement('static', 'item_header', '');
-//					$serials->setDefaults(array('item_header'=>$this->t('Please select serial numbers for Serialized Items')));
 					$any_item = false;
-//					foreach ($items as $v) {
-//						if (Utils_RecordBrowserCommon::get_value('premium_warehouse_items', $v['item_name'], 'item_type')==1) {
-//							$any_item = true; 
-//							$loc_id = Utils_RecordBrowserCommon::get_id('premium_warehouse_location', array('item_sku', 'warehouse'), array($v['item_name'], $trans['warehouse']));
-//							if (!$loc_id) continue; // failsafe
-//							$item_serials = array(''=>'---')+DB::GetAssoc('SELECT id, serial FROM premium_warehouse_location_serial WHERE active=1 AND location_id=%d', array($loc_id));
-//							for ($i=0;$i<$v['quantity'];$i++)
-//								$serials->addElement('select', 'serial__'.$v['id'].'__'.$i, Premium_Warehouse_Items_OrdersCommon::display_item_name($v, true), $item_serials);
-//						}
-//					}
+					$serials = $this->get_select_serials_form($trans, $items, $any_item);
 
 					$lp->add_option('available', $this->t('Items Available'), null, ($items_unavailable===null)?($any_item?$serials:null):$items_unavailable);
 					// check items qty
@@ -708,11 +960,10 @@ class Premium_Warehouse_Items_Orders extends Module {
 						Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $trans['id'], $vals['form']);
 						if ($vals['form']['status']==6) {
 							foreach ($items as $v) {
+								$serials = array();
 								for ($i=0;$i<$v['quantity'];$i++)
-									if (isset($vals['form']['serial__'.$v['id'].'__'.$i]) && is_numeric($vals['form']['serial__'.$v['id'].'__'.$i])) {
-										DB::Execute('UPDATE premium_warehouse_location_serial SET active=0 WHERE id=%d', array($vals['form']['serial__'.$v['id'].'__'.$i]));
-										// TODO: sign this transaction for those serials
-									}
+									$serials[] = $vals['form']['serial__'.$v['id'].'__'.$i];
+								Premium_Warehouse_Items_OrdersCommon::selected_serials($v, $trans, $serials);
 							}
 						}
 						location(array());
@@ -764,7 +1015,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 					if ($vals!==null) {
 						$up_vals = array();
 						if ($vals['option']=='items_available') {
-							$up_vals['status'] = 2;
+							$up_vals['status'] = $p?2:'';
 						} elseif ($vals['option']=='partial_order') {
 							$this->split_items_process($items, $trans, $vals['form']);
 							break;		
@@ -795,8 +1046,6 @@ class Premium_Warehouse_Items_Orders extends Module {
 						$this->href = Utils_TooltipCommon::open_tag_attrs(Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Source warehouse not set, cannot proceed with processing.'),false);
 						break;
 					}
-//					$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$trans['id']));
-//					$so_form = $this->revise_items($items, $trans);
 					$lp->add_option('so', $this->t('Transfer pending'), null, null);
 
 					$quote_form = $this->init_module('Libs/QuickForm');
@@ -810,16 +1059,11 @@ class Premium_Warehouse_Items_Orders extends Module {
 					if ($vals!==null) {
 						if (!isset($vals['form']) || !is_array($vals['form'])) $vals['form'] = array();
 						$vals['form']['status'] = ($vals['option']=='quote')?1:2; 
-//						if ($vals['option']=='po')
-//							foreach ($items as $v)
-//								Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders_details', $v['id'], $vals['form']['item__'.$v['id']]);
 						Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $trans['id'], $vals['form']);
 						location(array());
 					}
 					break;
 				case 1:
-//					$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$trans['id']));
-//					$so_form = $this->revise_items($items, $trans);
 					$lp->add_option('so', $this->t('SO'), null, null);
 
 					$lp->add_option('cancel', $this->t('Cancel'), null, null);
@@ -830,9 +1074,6 @@ class Premium_Warehouse_Items_Orders extends Module {
 					if ($vals!==null) {
 						if (!isset($vals['form']) || !is_array($vals['form'])) $vals['form'] = array();
 						$vals['form']['status'] = ($vals['option']=='po')?2:21; 
-//						if ($vals['option']=='so')
-//							foreach ($items as $v)
-//								Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders_details', $v['id'], $vals['form']['item__'.$v['id']]);
 						Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $trans['id'], $vals['form']);
 						location(array());
 					}
@@ -861,22 +1102,11 @@ class Premium_Warehouse_Items_Orders extends Module {
 					$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$trans['id']));
 					$items_unavailable = $this->check_if_items_available($trans, $items);
 
-					$serials = $this->init_module('Libs/QuickForm');
-//					$serials->addElement('static', 'item_header', '');
-//					$serials->setDefaults(array('item_header'=>$this->t('Please select serial numbers for Serialized Items')));
 					$any_item = false;
-//					foreach ($items as $v) {
-//						if (Utils_RecordBrowserCommon::get_value('premium_warehouse_items', $v['item_name'], 'item_type')==1) {
-//							$any_item = true; 
-//							$loc_id = Utils_RecordBrowserCommon::get_id('premium_warehouse_location', array('item_sku', 'warehouse'), array($v['item_name'], $trans['warehouse']));
-//							if (!$loc_id) continue; // failsafe
-//							$item_serials = array(''=>'---')+DB::GetAssoc('SELECT id, serial FROM premium_warehouse_location_serial WHERE active=1 AND location_id=%d', array($loc_id));
-//							for ($i=0;$i<$v['quantity'];$i++)
-//								$serials->addElement('select', 'serial__'.$v['id'].'__'.$i, Premium_Warehouse_Items_OrdersCommon::display_item_name($v, true), $item_serials);
-//						}
-//					}
+					$serials = $this->get_select_serials_form($trans, $items, $any_item);
 
 					$lp->add_option('available', $this->t('Items Available'), null, ($items_unavailable===null)?($any_item?$serials:null):$items_unavailable);
+
 					// check items qty
 					$lp->add_option('onhold', $this->t('Put On Hold'), null, null);
 					$this->display_module($lp, array($this->t('Final Inspection: All items available?')));
@@ -886,19 +1116,20 @@ class Premium_Warehouse_Items_Orders extends Module {
 						$vals['form']['status'] = ($vals['option']=='available')?5:4;
 						if ($items_unavailable!==null && $vals['form']['status']==5) break;
 						Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $trans['id'], $vals['form']);
+						$trans['status'] = $vals['form']['status'];
 						if ($vals['form']['status']==5) {
 							foreach ($items as $v) {
+								$serials = array();
 								for ($i=0;$i<$v['quantity'];$i++)
-									if (isset($vals['form']['serial__'.$v['id'].'__'.$i]) && is_numeric($vals['form']['serial__'.$v['id'].'__'.$i])) {
-										DB::Execute('UPDATE premium_warehouse_location_serial SET active=0 WHERE id=%d', array($vals['form']['serial__'.$v['id'].'__'.$i]));
-										// TODO: sign this transaction for those serials
-									}
+									$serials[] = $vals['form']['serial__'.$v['id'].'__'.$i];
+								Premium_Warehouse_Items_OrdersCommon::selected_serials($v, $trans, $serials);
 							}
 						}
 						location(array());
 					}
 					break;
 				case 5:
+					$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$trans['id']));
 					$ship_received = $this->init_module('Libs/QuickForm');
 					$emps_ids = CRM_ContactsCommon::get_contacts(Premium_Warehouse_ItemsCommon::employee_crits(), array(), array('last_name'=>'ASC','first_name'=>'ASC'));
 					$emps = array(''=>'---');
@@ -927,6 +1158,16 @@ class Premium_Warehouse_Items_Orders extends Module {
 							$vals['form']['status'] = 6;
 						}
 						Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $trans['id'], $vals['form']);
+						$trans['status'] = $vals['form']['status'];
+						if ($vals['form']['status'] == 20) {
+							foreach ($items as $v) {
+								$ret = DB::Execute('SELECT serial_id FROM premium_warehouse_location_orders_serial WHERE order_details_id=%d', array($v['id']));
+								$serials = array();
+								while ($row = $ret->FetchRow())
+									$serials[] = $row['serial_id'];
+								Premium_Warehouse_Items_OrdersCommon::selected_serials($v, $trans, $serials);
+							}
+						}
 						location(array());
 					}
 					break;
@@ -955,9 +1196,11 @@ class Premium_Warehouse_Items_Orders extends Module {
 					break;
 				case 6:
 					if($trans['created_by']==Acl::get_user()) {
-						$this->href = Utils_TooltipCommon::open_tag_attrs(Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Only target warehouse employee can mark this transfer as delivered.'),false);
-						break;					
+//						$this->href = Utils_TooltipCommon::open_tag_attrs(Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Only target warehouse employee can mark this transfer as delivered.'),false);
+//						break;					
 					}
+					$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$trans['id']));
+
 					$lp->add_option('delivered', $this->t('Delivered'), null, null);
 					$lp->add_option('missing', $this->t('Missing'), null, null);
 					$this->display_module($lp, array($this->t('Was the shipment delivered?')));
@@ -966,6 +1209,15 @@ class Premium_Warehouse_Items_Orders extends Module {
 					if ($vals!==null) {
 						$vals['form']['status'] = ($vals['option']=='delivered')?20:22;
 						Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $trans['id'], $vals['form']);
+						if ($vals['form']['status']==20) {
+							foreach ($items as $v) {
+								$ret = DB::Execute('SELECT serial_id FROM premium_warehouse_location_orders_serial WHERE order_details_id=%d', array($v['id']));
+								$loc_id = Utils_RecordBrowserCommon::get_id('premium_warehouse_location', array('item_sku', 'warehouse'), array($v['item_name'], $trans['target_warehouse']));
+								while ($row = $ret->FetchRow()) {
+									DB::Execute('UPDATE premium_warehouse_location_serial SET location_id=%d WHERE id=%d', array($loc_id, $row['serial_id']));
+								}
+							}
+						}
 						location(array());
 					}
 					break;
@@ -1053,7 +1305,6 @@ class Premium_Warehouse_Items_Orders extends Module {
 	}
 	
 	public function contact_orders_addon($arg){
-		// TODO: service?
 		$rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items_orders');
 		$order = array(
 			array('contact'=>$arg['id']), 
@@ -1080,7 +1331,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 	}
 
 	public function caption(){
-		return $this->rb->caption();
+		return $this->rb?$this->rb->caption():'';
 	}
 }
 

@@ -1,0 +1,2 @@
+swfmill simple $1  `echo $1 | sed -e 's/\.xml/.swf/' -`
+xsltproc -o  `echo $1 | sed -e 's/\.xml/.hx/' -` library.xslt $1

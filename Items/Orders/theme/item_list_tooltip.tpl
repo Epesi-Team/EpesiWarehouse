@@ -9,15 +9,17 @@
 		<th nowrap="1">
 			{$header.quantity}
 		</th>
-		<th nowrap="1">
-			{$header.net_price}
-		</th>
-		<th nowrap="1">
-			{$header.tax}
-		</th>
-		<th nowrap="1">
-			{$header.gross_price}
-		</th>
+		{if isset($header.net_price)}
+			<th nowrap="1">
+				{$header.net_price}
+			</th>
+			<th nowrap="1">
+				{$header.tax}
+			</th>
+			<th nowrap="1">
+				{$header.gross_price}
+			</th>
+		{/if}
 	</tr>
 	{foreach item=i from=$items}
 		<tr>
@@ -30,15 +32,17 @@
 			<td nowrap="1" style="padding:2px; border-right:1px solid; border-bottom:1px solid;" align="right">
 				{$i.quantity}
 			</td>
-			<td nowrap="1" style="padding:2px; border-right:1px solid; border-bottom:1px solid;" align="right">
-				{$i.net_price}
-			</td>
-			<td nowrap="1" style="padding:2px; border-right:1px solid; border-bottom:1px solid;">
-				{$i.tax}
-			</td>
-			<td nowrap="1" style="padding:2px; border-right:1px solid; border-bottom:1px solid;" align="right">
-				{$i.gross_price}
-			</td>
+			{if isset($header.net_price)}
+				<td nowrap="1" style="padding:2px; border-right:1px solid; border-bottom:1px solid;" align="right">
+					{$i.net_price}
+				</td>
+				<td nowrap="1" style="padding:2px; border-right:1px solid; border-bottom:1px solid;">
+					{$i.tax}
+				</td>
+				<td nowrap="1" style="padding:2px; border-right:1px solid; border-bottom:1px solid;" align="right">
+					{$i.gross_price}
+				</td>
+			{/if}
 		</tr>
 	{/foreach}
 </table>

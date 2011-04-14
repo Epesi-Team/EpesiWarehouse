@@ -24,7 +24,7 @@ class Premium_Warehouse_Items_LocationInstall extends ModuleInstall {
 		$fields = array(
 			array('name'=>'Item SKU', 	'type'=>'select', 'required'=>true, 'param'=>'premium_warehouse_items::SKU;Premium_Warehouse_Items_OrdersCommon::items_crits', 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_item_sku')),
 			array('name'=>'Item Name', 	'type'=>'calculated', 'required'=>false, 'param'=>'premium_warehouse_items::Item Name/Item SKU', 'extra'=>false, 'visible'=>false, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_item_name')),
-			array('name'=>'Quantity',	'type'=>'integer', 'required'=>true, 'extra'=>false, 'visible'=>true),
+			array('name'=>'Quantity',	'type'=>'integer', 'required'=>true, 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_LocationCommon', 'display_quantity')),
 			array('name'=>'Warehouse', 	'type'=>'select', 'required'=>true, 'param'=>'premium_warehouse::Warehouse;::', 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_LocationCommon', 'display_warehouse'))
 		);
 
@@ -44,6 +44,7 @@ class Premium_Warehouse_Items_LocationInstall extends ModuleInstall {
 //		Utils_RecordBrowserCommon::new_addon('premium_warehouse_location', 'Premium/Warehouse/Location', 'attachment_addon', 'Notes');
 		Utils_RecordBrowserCommon::new_addon('premium_warehouse_items', 'Premium/Warehouse/Items/Location', 'location_addon', 'Premium_Warehouse_Items_LocationCommon::location_addon_parameters');
 		Utils_RecordBrowserCommon::new_addon('premium_warehouse_items', 'Premium/Warehouse/Items/Location', 'location_serial_addon', 'Premium_Warehouse_Items_LocationCommon::location_serial_addon_parameters');
+		Utils_RecordBrowserCommon::new_addon('company', 'Premium/Warehouse/Items/Location', 'company_items_addon', 'Premium_Warehouse_Items_LocationCommon::company_items_addon_parameters');
 		Utils_RecordBrowserCommon::new_addon('premium_warehouse', 'Premium/Warehouse/Items/Location', 'warehouse_item_list_addon', 'Item List');
 		Utils_RecordBrowserCommon::set_addon_pos('premium_warehouse', 'Premium/Warehouse/Items/Location', 'warehouse_item_list_addon', 1);
 
@@ -56,11 +57,15 @@ class Premium_Warehouse_Items_LocationInstall extends ModuleInstall {
 					'id I AUTO KEY,'.
 					'location_id I,'.
 					'serial C(128),'.
-					'active I1 DEFAULT 1',
+					'notes C(255),'.
+					'shelf C(255),'.
+					'owner C(32)',
 					array('constraints'=>''));
 
+		$this->add_aco('browse my location',array('Customer'));
 		$this->add_aco('browse location',array('Employee'));
 		$this->add_aco('view location',array('Employee'));
+		$this->add_aco('view my location',array('Customer'));
 		$this->add_aco('edit location',array('Employee'));
 		$this->add_aco('delete location',array('Employee Manager'));
 
@@ -78,6 +83,7 @@ class Premium_Warehouse_Items_LocationInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::unset_display_callback('premium_warehouse_items', 'Quantity on Hand');
 		Base_ThemeCommon::uninstall_default_theme($this->get_type());
 		Utils_RecordBrowserCommon::delete_addon('premium_warehouse_items', 'Premium/Warehouse/Location', 'location_addon');
+		Utils_RecordBrowserCommon::delete_addon('premium_warehouse_items', 'Premium/Warehouse/Items/Location', 'company_items_addon');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_warehouse_location');
 		return true;
 	}

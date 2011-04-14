@@ -25,7 +25,8 @@ class Premium_Warehouse_Items extends Module {
 			$this->rb->set_additional_actions_method(array($this, 'actions_for_position'));
 			$this->rb->force_order(array('position'=>'ASC','category_name'=>'ASC'));
 			$this->display_module($this->rb, array(array(),array('parent_category'=>'')));
-			Base_ActionBarCommon::add('attach',$this->ht('Merge categories'),$this->create_callback_href(array($this,'merge_categories')));
+			if($this->acl_check('edit items'))
+    			Base_ActionBarCommon::add('attach',$this->t('Merge categories'),$this->create_callback_href(array($this,'merge_categories')));
 			return;
 		}
 		$this->rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items');
@@ -209,13 +210,13 @@ class Premium_Warehouse_Items extends Module {
 //									));
 		$rb->set_additional_actions_method(array($this, 'actions_for_position'));
 		$this->display_module($rb,$order,'show_data');
-		Base_ActionBarCommon::add('attach',$this->ht('Merge categories'),$this->create_callback_href(array($this,'merge_categories'),array($arg['id'])));
+		Base_ActionBarCommon::add('attach',$this->t('Merge categories'),$this->create_callback_href(array($this,'merge_categories'),array($arg['id'])));
 	}
 
 	public function applet($conf,$opts) {
 		$opts['go'] = true; // enable full screen
 		$xxx = array(1209600=>'2 weeks', 2419200=>'4 weeks', 4838400=>'2 months', 10281600=>'4 months');
-		$opts['title'] = 'Not sold for '.$xxx[$conf['older']];
+		$opts['title'] = $this->t('Not sold for %s',array(Base_LangCommon::ts('Base_Dashboard',$xxx[$conf['older']])));
 		$rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items','premium_warehouse_items');
 		$limit = null;
 		$crits = array();

@@ -1,0 +1,5 @@
+# Client
+-swf9 video.swf
+-main client.Main
+-swf-lib data/swflib.swf
+

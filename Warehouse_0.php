@@ -41,6 +41,7 @@ class Premium_Warehouse extends Module {
 				location(array());
 			return;
 		}
+		$orders = (ModuleManager::is_installed('Premium_Warehouse_Items_Orders')>-1);
 	
 		$form = & $this->init_module('Libs/QuickForm');
 
@@ -54,6 +55,23 @@ class Premium_Warehouse extends Module {
 		$form->addRule('volume_units', $this->t('Field required'), 'required');
 
 		$form->addElement('static', 'notice', $this->t('Notice'), 'You can use upper indexing.<br />Example: "dm^3" will be displayed as "dm<sup>3</sup>"');
+
+		if ($orders) {
+			$form->addElement('header', 'disable_trans_types_header', $this->t('Disable Transaction Types'));
+			$form->addElement('checkbox', 'disable_purchase', $this->t('Disable Purchase'));
+			$form->addElement('checkbox', 'disable_sales_quote', $this->t('Disable Sales Quote'));
+			$form->addElement('checkbox', 'disable_sale', $this->t('Disable Sale'));
+			$form->addElement('checkbox', 'disable_inv_adj', $this->t('Disable Inv. Adjustment'));
+//			$form->addElement('checkbox', 'disable_rental', $this->t('Disable Rental'));
+			$form->addElement('checkbox', 'disable_transfer', $this->t('Disable Warehouse Transfer'));
+			$form->addElement('checkbox', 'disable_checkin', $this->t('Check-in'));
+			$form->addElement('checkbox', 'disable_checkout', $this->t('Check-out'));
+			$disabled = Variable::get('premium_warehouse_trans_types', false);
+			if (!$disabled) $disabled = array();
+			foreach ($disabled as $d)
+				$form->setDefaults(array($d=>true));
+		}
+
 		
 		$form->setDefaults(array(
 			'weight_units'=>preg_replace('/\<sup\>([0-9]+)\<\/sup\>/', '^$1', Variable::get('premium_warehouse_weight_units')),
@@ -66,6 +84,15 @@ class Premium_Warehouse extends Module {
 			$vals['volume_units']=preg_replace('/\^([0-9]+)/', '<sup>$1</sup>', $vals['volume_units']);
 			Variable::set('premium_warehouse_weight_units', $vals['weight_units']);
 			Variable::set('premium_warehouse_volume_units', $vals['volume_units']);
+
+			if ($orders) {
+				$result = array();
+				foreach ($vals as $k=>$v) {
+					if (strpos($k, 'disable_')!==false && $v==true) $result[] = $k;
+				}
+				Variable::set('premium_warehouse_trans_types', $result);
+			}
+
 			if($this->parent->get_type()=='Base_Admin')
 				$this->parent->reset();
 			else

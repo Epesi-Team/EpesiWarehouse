@@ -241,7 +241,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 
     public static function QFfield_fckeditor(&$form, $field, $label, $mode, $default) {
         if ($mode=='add' || $mode=='edit') {
-            $fck = $form->addElement('fckeditor', $field, $label);
+            $fck = $form->addElement('ckeditor', $field, $label);
             $fck->setFCKProps('800','300',true);
             if ($mode=='edit') $form->setDefaults(array($field=>$default));
         } else {

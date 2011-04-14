@@ -59,36 +59,56 @@ class Premium_Warehouse_Items_LocationCommon extends ModuleCommon {
 	public static function access_location($action, $param){
 		$i = self::Instance();
 		switch ($action) {
-			case 'browse_crits':	return $i->acl_check('browse location');
-			case 'browse':	return $i->acl_check('browse location');
+			case 'browse_crits':	if($i->acl_check('browse location')) return true;
+			                        if($i->acl_check('browse my location')) {
+                			            $myrec = CRM_ContactsCommon::get_my_record();
+			                            return array('id'=>DB::GetCol('select ls.location_id FROM  premium_warehouse_location_serial ls where ls.owner=%d',array($myrec['id'])));
+			                        }
+			                        return false;
+			case 'browse':	return ($i->acl_check('browse location') || $i->acl_check('browse my location'));
 			case 'view':	return true;
 			case 'clone':
 			case 'add':
-			case 'edit':	$ret = array('item_sku'=>false, 'warehouse'=>false);
+			case 'edit':	if(!$i->acl_check('edit location')) return false;
+			                $ret = array('item_sku'=>false, 'warehouse'=>false);
 							if (!Base_AclCommon::i_am_sa()) $ret['quantity'] = false;
 							return $ret;
 			case 'delete':	return false;
 		}
 		return false;
     }
+    
+    public static function display_quantity($r,$nolink=false) {
+		$i = self::Instance();
+		if($i->acl_check('view location'))
+		    return $r['quantity'];
+        $myrec = CRM_ContactsCommon::get_my_record();
+		return DB::GetOne('SELECT SUM(id) FROM premium_warehouse_location_serial WHERE owner = %d AND location_id=%d',array($myrec['id'],$r['id']));
+    }
 	
-	public static function get_item_quantity_in_warehouse($r, $warehouse=null, $rental=false) {
+	public static function get_item_quantity_in_warehouse($item_id, $warehouse=null, $rental=false) {
 		$my_quantity = 0;
-		$crits = array('item_sku'=>$r['id']);
+		$crits = array('item_sku'=>$item_id);
 		if ($warehouse!==null) $crits['warehouse'] = $warehouse;
 //		if ($rental) $crits['rental_item']=1;
 //		else $crits['rental_item']=array(0,'');
-		$recs = Utils_RecordBrowserCommon::get_records('premium_warehouse_location', $crits, array('quantity'));
-		foreach ($recs as $v) {
-			$my_quantity += $v['quantity'];
-		}
+		$i = self::Instance();
+		if($i->acl_check('browse location')) {
+    		$recs = Utils_RecordBrowserCommon::get_records('premium_warehouse_location', $crits, array('quantity'));
+	    	foreach ($recs as $v) {
+		    	$my_quantity += $v['quantity'];
+    		}
+        } else {
+            $myrec = CRM_ContactsCommon::get_my_record();
+    		$recs = Utils_RecordBrowserCommon::get_records('premium_warehouse_location', $crits, array('id'));
+            $l_ids = array();
+            foreach($recs as $r)
+                $l_ids[] = $r['id'];
+            $my_quantity = DB::GetOne('SELECT SUM(id) FROM premium_warehouse_location_serial WHERE owner = %d AND location_id IN '.implode(',',$l_ids),array($myrec['id']));
+        }
 		return $my_quantity;
 	}
 
-	public static function display_quantity($r, $nolink=false) {
-		return '';
-	}
-	
 	public static function display_item_quantity($r, $nolink=false) {
 		$my_warehouse = Base_User_SettingsCommon::get('Premium_Warehouse','my_warehouse');
 		return self::display_item_quantity_in_warehouse_and_total($r, $my_warehouse, $nolink);
@@ -122,7 +142,12 @@ class Premium_Warehouse_Items_LocationCommon extends ModuleCommon {
 			$locations = Utils_RecordBrowserCommon::get_records('premium_warehouse_location', array('item_sku'=>$r['id']), array(), array('quantity'=>'DESC'));
 			$max_shown = 5;
 			$quantities = array();
+			$i = self::Instance();
 			foreach ($locations as $v) {
+        		if(!$i->acl_check('browse location') && $i->acl_check('browse my location')) {
+                    $myrec = CRM_ContactsCommon::get_my_record();
+                    $v['quantity'] = DB::GetOne('SELECT SUM(id) FROM premium_warehouse_location_serial WHERE owner = %d AND location_id=%d',array($myrec['id'],$v['id']));
+                }
 				$total += $v['quantity'];
 				if ($nolink) {
 					$quantities[$v['warehouse']] = $v['quantity'];
@@ -133,7 +158,7 @@ class Premium_Warehouse_Items_LocationCommon extends ModuleCommon {
 					$tooltip .= '<tr><td></td><td>...</td></tr>';
 					if (isset($quantities[$warehouse])) continue;
 					$v['warehouse'] = $warehouse;
-					$v['quantity'] = self::get_item_quantity_in_warehouse($r, $warehouse);
+					$v['quantity'] = self::get_item_quantity_in_warehouse($r['id'], $warehouse);
 					if ($v['quantity']==0) continue;
 				}
 				$max_shown--;
@@ -201,5 +226,12 @@ class Premium_Warehouse_Items_LocationCommon extends ModuleCommon {
 		if ($record['item_type']!=1) return array('show'=>false);
 		return array('show'=>true, 'label'=>'Items Serials');
 	}
+
+	public static function company_items_addon_parameters($record) {
+	    $items = DB::GetOne('SELECT count(location_id) FROM premium_warehouse_location_serial WHERE owner="C:%d"', array($record['id']));
+		if (!$items) return array('show'=>false);
+		return array('show'=>true, 'label'=>'Warehouse Items');
+	}
 }
+
 ?>

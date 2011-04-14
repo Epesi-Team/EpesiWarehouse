@@ -1,0 +1,25 @@
+<html>
+    <head>
+        <style>
+        html,body {
+            padding:0;
+            margin:0;
+            overflow:hidden;
+        }
+        </style>
+    </head>
+    <body>
+        <script src="http://java.com/js/deployJava.js"></script>
+        <script>
+            var attributes = {
+                name:       "posnetApplet",
+                width: 1,
+                height: 1
+            };
+            var parameters = {eager:"True", jnlp_href:"Posnet.jnlp"}; <!-- Applet Parameters -->
+            var version = "1.5"; <!-- Required Java Version -->
+            deployJava.runApplet(attributes, parameters, version);
+            parent.window.posnet_applet = posnetApplet;
+        </script>
+    </body>
+</html>

@@ -21,22 +21,45 @@ class Premium_Warehouse_Items_Location extends Module {
 		$gb = $this->init_module('Utils/GenericBrowser','premium_warehouse_location_serials','premium_warehouse_location_serials');
 		$gb->set_table_columns(array(
 			array('name'=>'Serial'),
-			array('name'=>'Warehouse')
+			array('name'=>'Warehouse'),
+			array('name'=>'Owner'),
+			array('name'=>'Notes'),
+			array('name'=>'Shelf')
 								));
 		$recs = Utils_RecordBrowserCommon::get_records('premium_warehouse_location', array('item_sku'=>$arg['id']));
+		$na_serials = array();
+		$myrec = CRM_ContactsCommon::get_my_record();
 		foreach ($recs as $v) {
-			$item_serials = DB::GetAssoc('SELECT id, serial FROM premium_warehouse_location_serial WHERE active=1 AND location_id=%d', array($v['id']));
+		    if($this->acl_check('browse location'))
+              	$item_serials = DB::GetAssoc('SELECT id, serial, owner, notes, shelf FROM premium_warehouse_location_serial WHERE location_id=%d', array($v['id']));
+    	    elseif($this->acl_check('browse my location'))
+              	$item_serials = DB::GetAssoc('SELECT id, serial, owner, notes, shelf FROM premium_warehouse_location_serial WHERE location_id=%d AND owner=%d', array($v['id'],$myrec['id']));
 			foreach ($item_serials as $w) {
-				$gb->add_row($w, Utils_RecordBrowserCommon::create_linked_label('premium_warehouse', 'Warehouse', $v['warehouse']));
+				if (!$w['serial']) {
+					if (!isset($na_serials[$v['warehouse']])) $na_serials[$v['warehouse']] = array();
+					if (!isset($na_serials[$v['warehouse']][$w['owner']])) $na_serials[$v['warehouse']][$w['owner']] = 0;
+					$na_serials[$v['warehouse']][$w['owner']]++;
+					continue;
+				}
+				$gb->add_row(
+					$w['serial'], 
+					Utils_RecordBrowserCommon::create_linked_label('premium_warehouse', 'Warehouse', $v['warehouse']),
+					CRM_ContactsCommon::autoselect_company_contact_format($w['owner']),
+					$w['notes'],
+					$w['shelf']
+				);
 			}
 		}
+		foreach ($na_serials as $w=>$mag)
+			foreach ($mag as $owner=>$q)
+				$gb->add_row($this->t('n/a').' ('.$q.')', Utils_RecordBrowserCommon::create_linked_label('premium_warehouse', 'Warehouse', $w), CRM_ContactsCommon::autoselect_company_contact_format($owner), '', '');
 		$this->display_module($gb);
 	}
 
 	public function location_addon($arg){
 		$rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_location');
 		$rb->set_button(false);
-		$order = array(array('item_sku'=>$arg['id'], '!quantity'=>0), array('item_sku'=>false), array('warehouse'=>'ASC'));
+		$order = array(array('item_sku'=>$arg['id'],'!quantity'=>0), array('item_sku'=>false), array('warehouse'=>'ASC'));
 		$this->display_module($rb,$order,'show_data');
 	}
 
@@ -49,6 +72,11 @@ class Premium_Warehouse_Items_Location extends Module {
 		$this->display_module($rb, array(array('warehouse'=>$arg['id'], '!quantity'=>0), array('warehouse'=>false,'item_name'=>true), array('item_name'=>'ASC')), 'show_data');
 	}
 
+	public function company_items_addon($arg){
+	    $items = DB::GetCol('SELECT location_id FROM premium_warehouse_location_serial WHERE owner="C:%d"', array($arg['id']));
+		$rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_location','premium_warehouse_location_module');
+		$this->display_module($rb, array(array('id'=>$items, '!quantity'=>0), array('warehouse'=>false,'item_name'=>true), array('item_name'=>'ASC')), 'show_data');
+	}
 }
 
 ?>

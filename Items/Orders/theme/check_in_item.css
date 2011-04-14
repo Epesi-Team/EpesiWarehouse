@@ -1,0 +1,152 @@
+#Premium_Warehouse_Orders__check_in_table {
+    width: 100%;
+}
+
+#Premium_Warehouse_Orders__check_in_table table.edit {
+    border-top: none;
+    width: 100%;
+}
+
+#Premium_Warehouse_Orders__check_in_table table {
+    width: 100%;
+}
+
+#Premium_Warehouse_Orders__check_in_table td.column  { vertical-align: top; }
+
+#Premium_Warehouse_Orders__check_in_table .label {
+    background-color: #336699;
+    color: #FFFFFF;
+    border-bottom: 1px solid #B3B3B3;
+    height: 20px;
+    vertical-align: middle;
+    padding-left: 5px;
+    padding-right: 5px;
+    width: 150px;
+    text-align: left;
+}
+
+#Premium_Warehouse_Orders__check_in_table .empty {
+    height: 20px;
+    vertical-align: middle;
+    padding-left: 5px;
+    padding-right: 5px;
+    width: 150px;
+    text-align: left;
+}
+
+#Premium_Warehouse_Orders__check_in_table .long_label {
+    text-align: left;
+    width: 20%;
+}
+
+#Premium_Warehouse_Orders__check_in_table .data {
+    text-align: left;
+    /*
+	width: 60%;
+	*/
+}
+
+#Premium_Warehouse_Orders__check_in_table .currency {
+    text-align: right;
+}
+
+#Premium_Warehouse_Orders__check_in_table .number {
+    text-align: right;
+}
+
+#Premium_Warehouse_Orders__check_in_table table.edit .data {
+    border-bottom: none;
+    padding-left: 4px;
+    padding-right: 4px;
+}
+
+#Premium_Warehouse_Orders__check_in_table .long_data {
+    width: 80%;
+}
+
+#Premium_Warehouse_Orders__check_in_table table.edit .long_data {
+    border-right: none;
+}
+
+#Premium_Warehouse_Orders__check_in_table .data input,
+#Premium_Warehouse_Orders__check_in_table .data select,
+#Premium_Warehouse_Orders__check_in_table .data textarea {
+    border: 0px;
+    background-color: #e6ecf2;
+    width: 100%;
+}
+
+#Premium_Warehouse_Orders__check_in_table .time input,
+#Premium_Warehouse_Orders__check_in_table .time select,
+#Premium_Warehouse_Orders__check_in_table .timestamp input,
+#Premium_Warehouse_Orders__check_in_table .timestamp select {
+    width: auto;
+}
+
+#Premium_Warehouse_Orders__check_in_table .data input[type="checkbox"],
+#Premium_Warehouse_Orders__check_in_table .data input[type="radio"] {
+    width: auto;
+}
+
+#Premium_Warehouse_Orders__check_in_table .data input:focus,
+#Premium_Warehouse_Orders__check_in_table .data select:focus,
+#Premium_Warehouse_Orders__check_in_table .data textarea:focus {
+    /*background-color: #f2f2e6;
+    background-color: #ffffa5;*/
+    background-color: #ffffa5;
+}
+
+#Premium_Warehouse_Orders__check_in_table #multiselect .form-element select,
+#Premium_Warehouse_Orders__check_in_table #multiselect .to-element select {
+    /*width: 150px;*/
+    width: 100%;
+    height: 100px;
+}
+
+#Premium_Warehouse_Orders__check_in_table .data input#due_date {
+    display: block;
+    margin-top: 1px;
+    float: left;
+}
+
+#Premium_Warehouse_Orders__check_in_table .data a.button {
+    height: 20px;
+    display: block;
+    float: right;
+}
+
+.Premium_Warehouse_Orders__check_in_header {
+    width: 100%;
+    vertical-align: middle;
+    height: 31px;
+}
+
+.Premium_Warehouse_Orders__check_in_header .icon {
+    width: 32px;
+    height: 27px;
+    text-align: left;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    vertical-align: top;
+    background-color: #666666;
+    background-image: url('images/dark-gray.gif');
+}
+
+.Premium_Warehouse_Orders__check_in_header .icon img {
+    position: absolute;
+    clip: rect(0px, 32px, 28px, 0px);
+}
+
+.Premium_Warehouse_Orders__check_in_header .name {
+    width: 290px;
+    text-align: left;
+    font-size: 14px;
+    font-weight: bold;
+    color: #FFFFFF;
+    padding-left: 10px;
+    padding-top: 7px;
+    height: 24px;
+    vertical-align: top;
+    background-image: url('images/dark-gray-gradient.gif');
+    background-repeat: repeat-y;
+}

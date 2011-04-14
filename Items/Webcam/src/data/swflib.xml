@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+<movie version="9" width="512" height="414" framerate="15">
+  <background color="#ffffff"/>
+  <frame>
+    <library>
+      <bitmap id="client.NoCameraBitmap" import="nocamera.png" />
+    </library>
+  </frame>
+</movie>

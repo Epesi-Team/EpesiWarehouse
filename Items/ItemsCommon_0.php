@@ -32,10 +32,11 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 	}
 	
 	public static function employee_crits() {
-		return array('company_name'=>CRM_ContactsCommon::get_main_company());
+		return array('(company_name'=>CRM_ContactsCommon::get_main_company(),'|related_companies'=>array(CRM_ContactsCommon::get_main_company()));
 	}
 
     public static function display_item_name($v, $nolink=false) {
+		if (!is_array($v)) $v = Utils_RecordBrowserCommon::get_record('premium_warehouse_items', $v);
 		$ret = Utils_RecordBrowserCommon::create_linked_label_r('premium_warehouse_items', 'Item Name', $v, $nolink);
 		if (!$nolink) {
 			$ret = Utils_TooltipCommon::create($ret, $v['description'],false);
@@ -72,17 +73,34 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 		return $ret;
 	}
 	
+	public static function display_serials() {}
+	
 	public static function display_quantity_sold($r, $nolink) {
 		return '--';
 	}
 	
 	public static function access_items($action, $param=null){
 		$i = self::Instance();
+        $myrec = CRM_ContactsCommon::get_my_record();
 		switch ($action) {
-			case 'browse_crits':	return $i->acl_check('browse items');
-			case 'browse':	return $i->acl_check('browse items');
-			case 'view':	if($i->acl_check('view items')) return true;
-							return false;
+			case 'browse_crits':	
+			        if($i->acl_check('browse items'))
+			            return true;
+			        if(ModuleManager::is_installed('Premium_Warehouse_Items_Location')>=0 && $i->acl_check('browse my items')) {
+			            $myrec = CRM_ContactsCommon::get_my_record();
+			            return array('id'=>DB::GetCol('select l1.f_item_sku from premium_warehouse_location_data_1 l1 inner join premium_warehouse_location_serial ls on ls.location_id=l1.id where ls.owner=%d',array($myrec['id'])));
+			        }
+			        return false;
+			case 'browse':	return ($i->acl_check('browse items') || (ModuleManager::is_installed('Premium_Warehouse_Items_Location')>=0 && $i->acl_check('browse my items')));
+			case 'view':	
+			        if($i->acl_check('view items'))
+			            return true;
+			        if(ModuleManager::is_installed('Premium_Warehouse_Items_Location')>=0 && $i->acl_check('view my items')) {
+			            $myrec = CRM_ContactsCommon::get_my_record();
+			            if(DB::GetOne('select 1 from premium_warehouse_location_data_1 l1 inner join premium_warehouse_location_serial ls on ls.location_id=l1.id where l1.f_item_sku=%d AND ls.owner=%d',array($param['id'],$myrec['id'])))
+			               return true;
+			        }
+			        return false;
 			case 'clone':
 			case 'add':
 			case 'edit':	if (!$i->acl_check('edit items')) return false;
@@ -259,9 +277,12 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 	}
 
 	public static function applet_info_format($r){
-		return
-			'Item Name: '.$r['item_name'].'<HR>'.
-			'Description: '.$r['description'];
+		$arr = array(
+			'Item Name'=>$r['item_name'],
+			'Description'=>htmlspecialchars($r['description'])
+		);
+		$ret = array('notes'=>Utils_TooltipCommon::format_info_tooltip($arr,'Premium_Warehouse_Items'));
+		return $ret;
 	}
 
 	public static function applet_settings() {
@@ -305,7 +326,7 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 							return;
 						}
 						$icon = Base_ThemeCommon::get_template_file('Premium_Warehouse_Items_Orders','deactivate.png');
-						$label = Base_LangCommon::ts('Utils_Watchdog','Add to my Trans.');
+						$label = 'Add to my Trans.';
 						$defaults = array(
 							'transaction_id'=>$my_trans,
 							'quantity'=>1,
@@ -366,4 +387,5 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 	}
 
 }
+
 ?>

@@ -1,24 +1,11 @@
-warehouse_itemAutocompleter = Class.create(Ajax.Autocompleter, {
-  last_update_value:null,
-  initialize: function(element, update, url, options, trans) {
-	options.frequency = 0.6;
-    this.baseInitialize(element, update, options);
-    this.options.asynchronous  = true;
-    this.options.onComplete    = this.onComplete.bind(this);
-    this.options.defaultParams = this.options.parameters || null;
-    this.url                   = url;
-    this.trans				   = trans;
-  },
+var last_update_value = null;
 
-  hide: function() {
-    this.stopIndicator();
-    if(Element.getStyle(this.update, 'display')!='none') this.options.onHide(this.element, this.update);
-    if(this.iefix) Element.hide(this.iefix);
+warehouse_update_item_details = function(trans) {
 	var e = $('item_name');
 	if(!e) return;
 	var value = e.value;
-	if(value==this.last_update_value) return;
-	this.last_update_value=value;
+	if(value==last_update_value) return;
+	last_update_value=value;
 	e = $('description');
 	if(e) e.disabled=true;
 	e = $('sww');
@@ -39,11 +26,10 @@ warehouse_itemAutocompleter = Class.create(Ajax.Autocompleter, {
 		method: 'post',
 		parameters:{
 			rec_id:Object.toJSON(value),
-			trans:Object.toJSON(this.trans),
+			trans:Object.toJSON(trans),
 			cid: Epesi.client_id
 		},
 		onSuccess:function(t) {
-			eval(t.responseText);
 			var e = $('item_name');
 			if(e) e.disabled=false;
 			e = $('description');
@@ -62,7 +48,8 @@ warehouse_itemAutocompleter = Class.create(Ajax.Autocompleter, {
 			if(e) e.disabled=false;
 			e = $('tax_rate');
 			if(e) e.disabled=false;
+			eval(t.responseText);
 		}
 	});
-   }
-});
+}
+

@@ -30,7 +30,7 @@ class Premium_Warehouse_InvoicePLInstall extends ModuleInstall {
 
 		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items_orders_details','SWW','text', true, false, '32', 'integer', false, false, 12);
 
-		Utils_RecordBrowserCommon::new_browse_mode_details_callback('premium_warehouse_items_orders', 'Premium/Warehouse/InvoicePL', 'browse_mode_details');
+		Utils_RecordBrowserCommon::new_record_field('data_tax_rates','Tax Code','text', true, false, '8', '', false, false);
 
 		return true;
 	}
@@ -44,6 +44,8 @@ class Premium_Warehouse_InvoicePLInstall extends ModuleInstall {
 
 		Utils_RecordBrowserCommon::delete_record_field('premium_warehouse','Invoice Number Code');
 		Utils_RecordBrowserCommon::delete_record_field('premium_warehouse','Invoice Display Name');
+
+		Utils_RecordBrowserCommon::delete_record_field('data_tax_rates','Tax Code');
 
 		Utils_RecordBrowserCommon::delete_record_field('premium_warehouse_items_orders_details','SWW');
 

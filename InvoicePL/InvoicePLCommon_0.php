@@ -18,13 +18,21 @@ class Premium_Warehouse_InvoicePLCommon extends ModuleCommon {
 	private static $rb_obj=null;
 	
 	public static function invoice_pl_addon_parameters($record) {
-		if ($record['transaction_type']<=1) {
-			$href = 'href="modules/Premium/Warehouse/InvoicePL/print_invoice.php?'.http_build_query(array('record_id'=>$record['id'], 'cid'=>CID)).'"';
-			if (!$record['invoice_number'] && $record['transaction_type']==1) {
-				$href .= ' '.Utils_TooltipCommon::open_tag_attrs(Base_LangCommon::ts('Premium_Warehouse_InvoicePL','Number is not defined<br>It will be assigned automatically upon print'), false);
-			}
-			if (!$record['receipt']) Base_ActionBarCommon::add('print', 'Print Invoice', $href);
-			else Base_ActionBarCommon::add('print', 'Print Receipt', $href);
+		if ($record['transaction_type']==1 && (!isset($record['payment']) || $record['payment'])) {
+		    if (!$record['receipt']) {
+    			$href = 'href="modules/Premium/Warehouse/InvoicePL/print_invoice.php?'.http_build_query(array('record_id'=>$record['id'], 'cid'=>CID)).'"';
+	    		if (!$record['invoice_number'] && $record['transaction_type']==1) {
+		    		$href .= ' '.Utils_TooltipCommon::open_tag_attrs(Base_LangCommon::ts('Premium_Warehouse_InvoicePL','Number is not defined<br>It will be assigned automatically upon print'), false);
+			    }
+    			Base_ActionBarCommon::add('print', 'Print Invoice', $href);
+    	    } elseif (!$record['invoice_print_date']) {
+    	        if(isset($_GET['receipt_printed']) && $_GET['receipt_printed']==$record['id']) {
+        	    	Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $record['id'], array('invoice_print_date'=>date('Y-m-d')));
+                } else {
+        	        load_js('modules/Premium/Warehouse/InvoicePL/receipt.js');
+    	            Base_ActionBarCommon::add('print', 'Print Receipt', 'onClick="print_receipt('.$record['id'].')" href="javascript:void(0)"');
+    	        }
+    	    }
 		}
 		return array('show'=>false);
 	}

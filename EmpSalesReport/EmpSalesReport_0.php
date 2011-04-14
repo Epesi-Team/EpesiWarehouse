@@ -32,7 +32,7 @@ class Premium_Warehouse_EmpSalesReport extends Module {
 		return;
 		}
 
-		$recs = Utils_RecordBrowserCommon::get_records('contact',array('company_name'=>CRM_ContactsCommon::get_main_company()),array(),array('last_name'=>'ASC','first_name'=>'ASC'));
+		$recs = Utils_RecordBrowserCommon::get_records('contact',array('(company_name'=>CRM_ContactsCommon::get_main_company(),'|related_companies'=>array(CRM_ContactsCommon::get_main_company())),array(),array('last_name'=>'ASC','first_name'=>'ASC'));
 		$this->rbr->set_reference_records($recs);
 		$this->rbr->set_reference_record_display_callback(array('CRM_ContactsCommon','contact_format_no_company'));
 

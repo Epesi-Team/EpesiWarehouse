@@ -22,7 +22,7 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 		Base_ThemeCommon::install_default_theme($this->get_type());
 		$fields = array(
 			array('name'=>'Transaction ID', 'type'=>'calculated', 'required'=>false, 'param'=>Utils_RecordBrowserCommon::actual_db_type('text',16), 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon','display_transaction_id')),
-			array('name'=>'Transaction Type','type'=>'commondata', 'required'=>true, 'extra'=>false, 'visible'=>true, 'param'=>array('order_by_key'=>true,'Premium_Items_Orders_Trans_Types')),
+			array('name'=>'Transaction Type','type'=>'commondata', 'required'=>true, 'extra'=>false, 'visible'=>true, 'param'=>array('order_by_key'=>true,'Premium_Items_Orders_Trans_Types'), 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon','display_transaction_type_order')),
 			array('name'=>'Warehouse', 		'type'=>'select', 'required'=>false, 'extra'=>false, 'filter'=>true, 'visible'=>true, 'param'=>'premium_warehouse::Warehouse;::', 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_warehouse')),
 			array('name'=>'Target Warehouse','type'=>'select', 'required'=>true, 'extra'=>false, 'visible'=>false, 'param'=>'premium_warehouse::Warehouse;::', 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_warehouse')),
 			array('name'=>'Ref No', 		'type'=>'text', 'param'=>'64', 'required'=>false, 'extra'=>false, 'visible'=>true),
@@ -47,6 +47,7 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 			array('name'=>'Total Value',	'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_total_value'), 'style'=>'currency'),
 			array('name'=>'Tax Value',		'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_tax_value'), 'style'=>'currency'),
 			array('name'=>'Status',			'type'=>'text', 'extra'=>false, 'param'=>'8', 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_status'),'QFfield_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'QFfield_status')),
+			array('name'=>'Related',		'type'=>'select', 'required'=>false, 'param'=>'premium_warehouse_items_orders::Transaction ID;Premium_Warehouse_Items_OrdersCommon::related_transactions_crits', 'extra'=>false, 'visible'=>false, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_related_transaction')),
 
 			array('name'=>'Memo',			'type'=>'long text', 'required'=>false, 'param'=>'255', 'extra'=>false),
 
@@ -93,7 +94,6 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 			array('name'=>'Description', 		'type'=>'long text', 'required'=>false, 'param'=>'255', 'extra'=>false, 'visible'=>true),
 			array('name'=>'Debit',				'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>false, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_debit'), 'QFfield_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'QFfield_debit')),
 			array('name'=>'Credit',				'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>false, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_credit'), 'QFfield_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'QFfield_credit')),
-//			array('name'=>'Serial',				'type'=>'text', 'required'=>false, 'param'=>'128', 'extra'=>false, 'visible'=>true, 'QFfield_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'QFfield_serial'), 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_serial')),
 			array('name'=>'Quantity',			'type'=>'integer', 'required'=>true, 'extra'=>false, 'visible'=>true, 'QFfield_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'QFfield_quantity')),
 
 			array('name'=>'Return Date', 		'type'=>'date', 'required'=>true, 'extra'=>false, 'visible'=>false, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon','display_return_date')),
@@ -104,8 +104,9 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 			array('name'=>'Tax Rate', 			'type'=>'select', 'required'=>true, 'extra'=>false, 'visible'=>true, 'param'=>'data_tax_rates::Name', 'QFfield_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'QFfield_details_tax_rate')),
 			array('name'=>'Net Total', 			'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_order_details_total'), 'style'=>'currency'),
 			array('name'=>'Tax Value', 			'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_order_details_tax_value'), 'style'=>'currency'),
-			array('name'=>'Gross Total', 		'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_order_details_gross_price'), 'style'=>'currency')
-//			array('name'=>'Quantity On Hand',	'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_order_details_qty'), 'style'=>'integer')
+			array('name'=>'Gross Total', 		'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_order_details_gross_price'), 'style'=>'currency'),
+			array('name'=>'Serials',			'type'=>'page_split', 'required'=>false),
+			array('name'=>'Serial', 			'type'=>'calculated', 'required'=>false, 'extra'=>true, 'visible'=>false, 'QFfield_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_serials'))
 		);
 
 		Utils_RecordBrowserCommon::install_new_recordset('premium_warehouse_items_orders_details', $fields);
@@ -127,12 +128,14 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::new_addon('premium_warehouse_items', 'Premium/Warehouse/Items/Orders', 'transaction_history_addon', 'Transaction History');
 		Utils_RecordBrowserCommon::new_addon('contact', 'Premium/Warehouse/Items/Orders', 'contact_orders_addon', 'Premium_Warehouse_Items_OrdersCommon::contact_orders_label');
 		Utils_RecordBrowserCommon::new_addon('company', 'Premium/Warehouse/Items/Orders', 'company_orders_addon', 'Premium_Warehouse_Items_OrdersCommon::company_orders_label');
+		Utils_RecordBrowserCommon::new_addon('premium_warehouse_items_orders', 'Premium/Warehouse/Items/Orders', 'order_serial_addon', 'Serial Numbers');
 		
 		Utils_RecordBrowserCommon::set_addon_pos('premium_warehouse_items', 'Premium/Warehouse/Items/Orders', 'transaction_history_addon', 2);
 		Utils_RecordBrowserCommon::set_addon_pos('premium_warehouse_items', 'Premium/Warehouse/Items/Location', 'location_addon', 1);
 
 // ************ other ************** //
 		Utils_RecordBrowserCommon::set_access_callback('premium_warehouse_items', array('Premium_Warehouse_Items_OrdersCommon', 'access_items'));
+		Utils_RecordBrowserCommon::register_processing_callback('premium_warehouse_items', array('Premium_Warehouse_Items_OrdersCommon', 'submit_new_item_from_order'));
 
 		Utils_CommonDataCommon::new_array('Premium_Items_Orders_Trans_Types',array(0=>'Purchase',1=>'Sale',2=>'Inventory Adjustment',3=>'Rental',4=>'Transfer'));
 		Utils_CommonDataCommon::new_array('Premium_Items_Orders_Payment_Types',array(0=>'Cash',1=>'Check'));
@@ -158,7 +161,10 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 					array('constraints'=>''));
 	
 		$this->add_aco('browse orders',array('Employee'));
+		$this->add_aco('browse my orders',array('Customer'));
 		$this->add_aco('view orders',array('Employee'));
+		$this->add_aco('view my orders',array('Customer'));
+		$this->add_aco('checkout orders',array('Customer Manager'));
 		$this->add_aco('edit orders',array('Employee'));
 		$this->add_aco('delete orders',array('Employee Manager'));
 
@@ -174,6 +180,7 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 	
 	public function uninstall() {
 		DB::DropTable('premium_warehouse_location_orders_serial');
+		Utils_RecordBrowserCommon::unregister_processing_callback('premium_warehouse_items', array('Premium_Warehouse_Items_OrdersCommon', 'submit_new_item_from_order'));
 		Utils_RecordBrowserCommon::unregister_processing_callback('premium_warehouse_items_orders', array('Premium_Warehouse_Items_OrdersCommon', 'submit_order'));
 		Utils_RecordBrowserCommon::unregister_processing_callback('premium_warehouse_items_orders_details', array('Premium_Warehouse_Items_OrdersCommon', 'submit_order_details'));
 		

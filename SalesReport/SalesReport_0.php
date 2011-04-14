@@ -432,7 +432,7 @@ class Premium_Warehouse_SalesReport extends Module {
 	public function sales_by_item() {
 		Base_ActionBarCommon::add('folder', 'Currencies', $this->create_callback_href(array($this, 'currency_exchange_editor')));
 		Base_ActionBarCommon::add('search', 'Scan', $this->create_callback_href(array($this, 'recalculate')));
-		print('<br><b>Numbers in brackets indicate items sold that were omitted in earning calculation.</b><br><br>');
+		print('<br><b>'.$this->t('Numbers in brackets indicate items sold that were omitted in earning calculation.').'</b><br><br>');
 		$form = $this->init_module('Libs/QuickForm');
 		$form->addElement('select', 'method', $this->t('Method'), array('fifo'=>$this->t('FIFO'), 'lifo'=>$this->t('LIFO')));
 		$form->addElement('select', 'prices', $this->t('Prices'), array('net'=>$this->t('Net'), 'gross'=>$this->t('Gross')));

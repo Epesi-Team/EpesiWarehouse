@@ -363,6 +363,56 @@ class Premium_Warehouse_Wholesale extends Module {
         $gb->set_default_order(array($this->t('Item Name')=>'ASC'));
         $order = $gb->get_query_order();
 
+        $form2 = $this->init_module('Libs/QuickForm');
+        $form2->addElement('text', 'item_name', $this->t('Item Name'),array('id'=>'add_item_name'));
+        $form2->addElement('commondata', 'item_type', $this->t('Item Type'), 'Premium_Warehouse_Items_Type', array('empty_option'=>true, 'order_by_key'=>true));
+        $form2->addElement('text', 'product_code', $this->t('Product Code'));
+        $form2->addElement('static', 'manufacturer', $this->t('Manufacturer'),'<span id="add_item_man"></span>');
+        $form2->addElement('text', 'manufacturer_part_number', $this->t('Manufacturer Part Number'),array('id'=>'add_item_mpn'));
+        $form2->addElement('text', 'upc', $this->t('UPC'),array('id'=>'add_item_upc'));
+        $form2->addElement('text', 'weight', $this->t('Weight'));
+        $taxes = array(''=>'---',)+Data_TaxRatesCommon::get_tax_rates();
+        $form2->addElement('select', 'tax_rate', $this->t('Tax Rate'),$taxes);
+        $ecommerce_on = ModuleManager::is_installed('Premium_Warehouse_eCommerce')!=-1;
+        if($ecommerce_on) {
+            $form2->addElement('checkbox', 'ecommerce', $this->t('eCommerce publish'));
+            $form2->addElement('static', '3rd party', $this->t('Available data'),'<span id="3rdp_info_frame"></span>');
+        }
+        $form2->setDefaults(array('item_type'=>1, 'tax_rate'=>$arg['tax_rate']));
+        $lp = $this->init_module('Utils_LeightboxPrompt');
+        $lp->add_option('add', 'Add', '', $form2);
+        $this->display_module($lp, array($this->t('Create new item'), array('internal_id')));
+        $vals = $lp->export_values();
+        if ($vals) {
+            $validate = true;
+            if (!isset($vals['form']['item_name']) || !$vals['form']['item_name']) {
+                Epesi::alert($this->t('Item name is required'));
+                $validate = false;
+            }
+            if (!isset($vals['form']['item_type']) || $vals['form']['item_type']==='') {
+                Epesi::alert($this->t('Item type is required'));
+                $validate = false;
+            }
+            if(!isset($vals['form']['weight']) || !is_numeric($vals['form']['weight'])) {
+                Epesi::alert($this->t('Weight is required and should be numeric'));
+                $validate = false;
+            }
+
+            if ($validate) {
+                list($dist_cat,$manufacturer,$mpn,$upc) = DB::GetRow('SELECT distributor_category,manufacturer,manufacturer_part_number,upc FROM premium_warehouse_wholesale_items WHERE id=%d',array($vals['params']['internal_id']));
+                $categories = Utils_RecordBrowserCommon::get_record('premium_warehouse_distr_categories',$dist_cat);
+                $new_vals = array('category'=>$categories['epesi_category'],'manufacturer'=>$manufacturer,'vendor'=>$arg['company']);
+                if($mpn && (!isset($vals['form']['manufacturer_part_number']) || !$vals['form']['manufacturer_part_number'])) $new_vals['manufacturer_part_number']=$mpn;
+                if($upc && (!isset($vals['form']['upc']) || !$vals['form']['upc'])) $new_vals['upc']=$upc;
+                $iid = Utils_RecordBrowserCommon::new_record('premium_warehouse_items', array_merge($vals['form'],$new_vals));
+                DB::Execute('UPDATE premium_warehouse_wholesale_items SET item_id=%d WHERE id=%d', array($iid, $vals['params']['internal_id']));
+                if($ecommerce_on && isset($vals['form']['ecommerce']) && $vals['form']['ecommerce']) {
+                    load_js($this->get_module_dir().'/add_item.js');
+                    eval_js('wholesale_add_item('.$iid.')');
+                }
+            }
+        }
+
         // $ret = DB::SelectLimit('SELECT *, whl.id AS id,cat.f_foreign_category_name as category FROM premium_warehouse_wholesale_items AS whl LEFT JOIN premium_warehouse_items_data_1 AS itm ON itm.id=whl.item_id LEFT JOIN premium_warehouse_distr_categories_data_1 cat ON (cat.f_distributor=distributor_id AND cat.id=distributor_category) WHERE distributor_id=%d AND (quantity!=%d OR quantity_info!=%s) '.$where.' '.$order, $limit['numrows'], $limit['offset'], array($arg['id'],0,''));
 
         $ret = DB::SelectLimit('SELECT *, c.f_company_name as manufacturer_name, whl.id AS id,cat.f_foreign_category_name as category FROM premium_warehouse_wholesale_items AS whl LEFT JOIN company_data_1 c ON c.id=whl.manufacturer LEFT JOIN premium_warehouse_items_data_1 AS itm ON itm.id=whl.item_id LEFT JOIN premium_warehouse_distr_categories_data_1 cat ON (cat.f_distributor=distributor_id AND cat.id=distributor_category) WHERE distributor_id=%d '.$where.' '.$order, $limit['numrows'], $limit['offset'], array($arg['id']));

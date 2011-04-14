@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="1.0+"
+	codebase=""
+	href="Posnet.jnlp">
+	<information>
+  		<title>Posnet Applet</title>
+  		<vendor>Telaxus LLC</vendor>
+  		<homepage href="http://www.epesibim.com" />
+  		<description>Posnet protocol implementation as applet</description>
+  		<description>Control Example</description>
+	</information>
+
+	<security>
+		<all-permissions />
+	</security>
+
+	<resources>
+		<j2se version="1.4+" />
+		<jar href="Posnet.jar" />
+		<jar href="ThermalLib.jar" />
+	</resources>
+
+	<resources os="Windows" arch="x86">
+		<nativelib href="swt-win32-windows-x86.jar" />
+	</resources>
+
+	<resources os="Windows" arch="x86_64">
+		<nativelib href="swt-win32-windows-x86_64.jar" />
+	</resources>
+
+	<resources os="Windows" arch="amd64">
+		<nativelib href="swt-win32-windows-amd64.jar" />
+	</resources>
+
+ <applet-desc height="1" main-class="Main" name="Posnet" width="1">
+
+    <param name="eager" value="True"/>
+</applet-desc>
+</jnlp>

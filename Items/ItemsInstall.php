@@ -28,7 +28,7 @@ class Premium_Warehouse_ItemsInstall extends ModuleInstall {
 			array('name'=>'Product Code', 	'type'=>'text', 'required'=>false, 'param'=>'32', 'extra'=>false, 'visible'=>false),
 			array('name'=>'UPC', 			'type'=>'text', 'required'=>false, 'param'=>'128', 'extra'=>false, 'visible'=>false),
 			array('name'=>'Quantity on Hand','type'=>'integer', 'required'=>true, 'extra'=>false, 'visible'=>true),
-			array('name'=>'Quantity Sold',	'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_ItemsCommon', 'display_quantity_sold')),
+			array('name'=>'Quantity Sold',	'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>false, 'display_callback'=>array('Premium_Warehouse_ItemsCommon', 'display_quantity_sold')),
 			array('name'=>'Reorder point', 	'type'=>'integer', 'required'=>true, 'extra'=>false, 'visible'=>false),
 			array('name'=>'Weight', 		'type'=>'float', 'required'=>true, 'extra'=>false, 'visible'=>false, 'display_callback'=>array('Premium_Warehouse_ItemsCommon', 'display_weight')),
 			array('name'=>'Volume',	 		'type'=>'float', 'required'=>false, 'extra'=>false, 'visible'=>false, 'display_callback'=>array('Premium_Warehouse_ItemsCommon', 'display_volume')),
@@ -64,7 +64,7 @@ class Premium_Warehouse_ItemsInstall extends ModuleInstall {
 		
 		Utils_RecordBrowserCommon::set_caption('premium_warehouse_items_categories', 'Items Categories');
 		Utils_RecordBrowserCommon::set_icon('premium_warehouse_items_categories', Base_ThemeCommon::get_template_filename('Premium/Warehouse/Items', 'icon.png'));
-		Utils_RecordBrowserCommon::set_access_callback('premium_warehouse_items_categories', 'Premium_Warehouse_ItemsCommon', 'access_items_categories');
+		Utils_RecordBrowserCommon::set_access_callback('premium_warehouse_items_categories', array('Premium_Warehouse_ItemsCommon', 'access_items_categories'));
 		Utils_RecordBrowserCommon::register_processing_callback('premium_warehouse_items_categories', array('Premium_Warehouse_ItemsCommon', 'submit_position'));
 
 // ************ addons ************** //
@@ -77,7 +77,9 @@ class Premium_Warehouse_ItemsInstall extends ModuleInstall {
 		Utils_CommonDataCommon::extend_array('Companies_Groups',array('manufacturer'=>'Manufacturer'));
 
 		$this->add_aco('browse items',array('Employee'));
+		$this->add_aco('browse my items',array('Customer'));
 		$this->add_aco('view items',array('Employee'));
+		$this->add_aco('view my items',array('Customer'));
 		$this->add_aco('edit items',array('Employee'));
 		$this->add_aco('delete items',array('Employee Manager'));
 
