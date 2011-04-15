@@ -51,7 +51,7 @@ class Pages
       $iCount   = count( $this->mData[0] );
 
       $num_of_langs = count($config['available_lang']);
-      if($iType==1 && $num_of_langs>1) {
+      if($iType==10 && $num_of_langs>1) {
     	$aData = array();
 	$aData['sName'] = '<img src="config/'.LANGUAGE_CONFIG.'.gif" style="width:29px;height:20px" />';
 	$aData['iCount'] = $num_of_langs;
@@ -419,9 +419,9 @@ class Pages
 	$id = 3;
 	$config['basket_page'] = $id;
 	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => $lang['Basket'], 'sNameTitle' => '', 'sDescriptionShort' => '', 'iPosition' => 0,
-					 'iType' => 1, 'iSubpagesShow' => 1, 'iProducts' => 0);
+					 'iType' => 9, 'iSubpagesShow' => 1, 'iProducts' => 0);
     $this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
-    $this->aPagesParentsTypes[1][] = $id;
+    $this->aPagesParentsTypes[9][] = $id;
 	//order
 	$id = 7;
 	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => $lang['Order_form'], 'sNameTitle' => '', 'sDescriptionShort' => '', 'iPosition' => 0,
