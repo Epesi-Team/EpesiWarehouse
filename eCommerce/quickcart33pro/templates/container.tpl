@@ -50,6 +50,8 @@
         <h1><a href="$config[index]" tabindex="1"><img src="$config[dir_templates]img/logo.gif" alt="$config[title]" /></a></h1>
         <h2>$config[slogan]</h2>
       </div>
+      $sLanguage
+      $sBasket
       $sMenu1
       <div id="searchform">$sSearchForm</div>
     </div>

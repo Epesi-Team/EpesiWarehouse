@@ -98,20 +98,26 @@ div#searchform .input {
 }
 
 /* MENU TOP ABOVE LOGO */
-#menu1 {
+#menu1, #menu_basket, #menu_language {
   float: right;
   margin: 20px 15px 4px 0;
   list-style: none;
 }
+#menu_language li,
+#menu_basket li,
 #menu1 li{
   float:left;
   padding:0px 8px 0;
 }
+#menu_language li li,
+#menu_basket li li,
 #menu1 li li {
   float:none;
   padding:0px 0px 0px 12px;
   list-style: none;
 }
+#menu_language li a,
+#menu_basket li a,
 #menu1 li a {
   padding-left: 13px;
   background: url('img/point.gif') no-repeat 0 5px;
@@ -121,49 +127,49 @@ div#searchform .input {
 }
 #menu1 li a:hover, #menu1 .selected{background-color:inherit;color:#993333;text-decoration:underline;}
 
-#menu1 li#basketMenu {
+#menu_basket li#basketMenu {
   padding: 5px 8px 5px 20px;
 }
-#menu1 li#basketMenu a {
+#menu_basket li#basketMenu a {
   padding: 2px 0 0 18px;
   background: url('img/cart.gif') no-repeat 0;
   color: #993333;
 }
-#menu1 li#basketMenu span {
+#menu_basket li#basketMenu span {
   display: block;
   font-size: 0.727em;
   font-family: sans-serif;
   color: #000;
 }
-#menu1 li#basketMenu span strong {
+#menu_basket li#basketMenu span strong {
   background-color: inherit;
   color: #993333;
 }
-#menu1 li#langMenu {
+#menu_language li#langMenu {
   padding: 0px 0px 0px 0px;
 }
-#menu1 span#langMenu {
+#menu_lanugage span#langMenu {
 float:left;
 }
-#menu1 li#langMenu a, #menu1 span#langMenu a {
+#menu_lanugage li#langMenu a, #menu_lanugage span#langMenu a {
 	background: none;
 	color: #e62808;
 	padding: 3px 5px 3px 5px;
 	display: block;
 }
 
-#menu1 span#langMenu a:hover {
+#menu_lanugage span#langMenu a:hover {
 	background-color:#c3bda6;
 }
 
-#menu1 span#langMenu .selected{
+#menu_lanugage span#langMenu .selected{
 	background-color: #c3bda6;
 }
 
-#menu1 li#langMenu span{display:block;font-size:0.727em;font-family:sans-serif;}
-#menu1 li#langMenu span strong{background-color:inherit;color:#e62808;}
+#menu_lanugage li#langMenu span{display:block;font-size:0.727em;font-family:sans-serif;}
+#menu_lanugage li#langMenu span strong{background-color:inherit;color:#e62808;}
 
-#menu1 #langPopup {
+#menu_lanugage #langPopup {
 	display: none;
 	z-index: 10;
 	position: absolute;
