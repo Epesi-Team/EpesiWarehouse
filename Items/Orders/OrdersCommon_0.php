@@ -1264,7 +1264,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			}
 		}
 		if ($trans['transaction_type']==1) {
-			if ($trans['status']>=6 && $trans['status']!=21 && Utils_RecordBrowserCommon::is_active('premium_warehouse_items_orders_details',$details['id'])) {
+			if ($trans['status']>=6 && $trans['status']!=21 && Utils_RecordBrowserCommon::is_active('premium_warehouse_items_orders_details',$details['id']) && $details['quantity']>0) {
 				// Make sure amount of serials matches quantity
 				$serials = array_fill(1, $details['quantity'], null);
 				self::selected_serials($details, $trans, $serials, false);
