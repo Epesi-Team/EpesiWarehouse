@@ -41,7 +41,7 @@ class Premium_WarehouseCommon extends ModuleCommon {
 			));
 	}
 	
-	public static function access_warehouse($action, $param){
+	public static function access_warehouse($action, $param=null){
 		$i = self::Instance();
 		switch ($action) {
 			case 'browse_crits': return $i->acl_check('browse warehouses');
@@ -56,7 +56,9 @@ class Premium_WarehouseCommon extends ModuleCommon {
     }
 
     public static function menu() {
-		return array('Warehouse'=>array('__submenu__'=>1,'Warehouses'=>array()));
+		if (self::access_warehouse('browse'))
+			return array('Warehouse'=>array('__submenu__'=>1,'Warehouses'=>array()));
+		return array();
 	}
 
 	public static function watchdog_label($rid = null, $events = array(), $details = true) {

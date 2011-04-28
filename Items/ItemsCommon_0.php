@@ -91,7 +91,7 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 			            return array('id'=>DB::GetCol('select l1.f_item_sku from premium_warehouse_location_data_1 l1 inner join premium_warehouse_location_serial ls on ls.location_id=l1.id where ls.owner=%d',array($myrec['id'])));
 			        }
 			        return false;
-			case 'browse':	return ($i->acl_check('browse items') || (ModuleManager::is_installed('Premium_Warehouse_Items_Location')>=0 && $i->acl_check('browse my items')));
+			case 'browse':	return $i->acl_check('browse items');
 			case 'view':	
 			        if($i->acl_check('view items'))
 			            return true;
@@ -261,7 +261,9 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
     }
 
     public static function menu() {
-		return array('Warehouse'=>array('__submenu__'=>1,'Items'=>array(), 'Items: Categories'=>array('recordset'=>'categories')));
+		if (self::access_items('browse'))
+			return array('Warehouse'=>array('__submenu__'=>1,'Items'=>array(), 'Items: Categories'=>array('recordset'=>'categories')));
+		return array();
 	}
 
 	public static function generate_id($id) {

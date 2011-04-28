@@ -22,7 +22,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
         $i = self::Instance();
         switch ($action) {
             case 'browse_crits':    return $i->acl_check('browse ecommerce');
-            case 'browse':  return true;
+            case 'browse':  return $i->acl_check('browse ecommerce');
             case 'view':    if (!$i->acl_check('view ecommerce')) return false;
                             return array('position'=>false);
             case 'clone':
@@ -255,14 +255,16 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
     }
 
     public static function menu() {
-        return array('Warehouse'=>array(
-            '__submenu__'=>1,
-            'eCommerce'=>array('__submenu__'=>1,
-                'Express publish'=>array('__function__'=>'fast_fill'),
-                'Comments queue'=>array('__function__'=>'comments'),
-                'Newsletter'=>array('__function__'=>'newsletter'),
-                'Products'=>array(),
-                'Stats'=>array('__function__'=>'stats'))));
+		if (self::access_parameters('browse'))
+			return array('Warehouse'=>array(
+				'__submenu__'=>1,
+				'eCommerce'=>array('__submenu__'=>1,
+					'Express publish'=>array('__function__'=>'fast_fill'),
+					'Comments queue'=>array('__function__'=>'comments'),
+					'Newsletter'=>array('__function__'=>'newsletter'),
+					'Products'=>array(),
+					'Stats'=>array('__function__'=>'stats'))));
+		return array();
     }
 
     public static function get_quickcarts() {

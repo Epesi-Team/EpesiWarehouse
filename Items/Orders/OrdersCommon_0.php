@@ -1050,7 +1050,11 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
     }
 
     public static function menu() {
-		return array('Warehouse'=>array('__submenu__'=>1,'Items: Transactions'=>array()));
+		if (self::Instance()->acl_check('browse orders'))
+			return array('Warehouse'=>array('__submenu__'=>1,'Items: Transactions'=>array()));
+		if (self::Instance()->acl_check('browse my orders'))
+			return array('Orders'=>array());
+		return array();
 	}
 
 	public static function applet_caption() {

@@ -95,11 +95,11 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 		Base_ThemeCommon::display_smarty($theme,'Premium_Warehouse_Wholesale','dist_qty_tooltip');
 	}
 	
-	public static function access_distributor($action, $param){
+	public static function access_distributor($action, $param=null){
 		$i = self::Instance();
 		switch ($action) {
 			case 'browse_crits':	return $i->acl_check('browse distributors');
-			case 'browse':	return true;
+			case 'browse':	return $i->acl_check('browse distributors');
 			case 'view':	return $i->acl_check('view distributors');
 			case 'clone':
 			case 'add':
@@ -339,7 +339,9 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 	}
 	
     public static function menu() {
-		return array('Warehouse'=>array('__submenu__'=>1,'Distributors'=>array()));
+		if (self::access_distributor('browse'))
+			return array('Warehouse'=>array('__submenu__'=>1,'Distributors'=>array()));
+		return array();
 	}
 
 	public static function watchdog_label($rid = null, $events = array(), $details = true) {

@@ -46,6 +46,7 @@ class Premium_Warehouse_InvoicePLCommon extends ModuleCommon {
 	}
 
 	public static function generate_invoice_number($order) {
+		if (!Premium_Warehouse_Items_OrdersCommon::access_orders('edit', $order)) return '';
 		if (!$order['warehouse']) return '';
 		$t = strtotime($order['transaction_date']);
 		$invoice_number = DB::GetOne('SELECT MAX(f_invoice_number) FROM premium_warehouse_items_orders_data_1 WHERE f_warehouse=%d AND f_transaction_type=%d AND f_receipt=%d AND f_transaction_date>=%D AND f_transaction_date<=%D', array($order['warehouse'], $order['transaction_type'], $order['receipt']?1:0, date('Y-m-01',$t), date('Y-m-t',$t)));
@@ -138,7 +139,7 @@ class Premium_Warehouse_InvoicePLCommon extends ModuleCommon {
 			}
 			$postfix = '';
 			if (Utils_RecordBrowser::$last_record['transaction_type']==1) {
-				if (!Utils_RecordBrowser::$last_record['invoice_number']) {
+				if (!Utils_RecordBrowser::$last_record['invoice_number'] && Premium_Warehouse_Items_OrdersCommon::access_orders('edit', Utils_RecordBrowser::$last_record)) {
 					if (isset($_REQUEST['assign_invoice_number']) &&
 						$_REQUEST['assign_invoice_number'] == Utils_RecordBrowser::$last_record['id']) {
 						$default = self::generate_invoice_number(Utils_RecordBrowser::$last_record);

@@ -47,8 +47,8 @@ class Premium_WarehouseInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::new_addon('premium_warehouse', 'Premium/Warehouse', 'attachment_addon', 'Notes');
 
 // ************ other ************** //	
-		$this->add_aco('browse warehouses',array('Employee','Customer'));
-		$this->add_aco('view warehouses',array('Employee','Customer'));
+		$this->add_aco('browse warehouses',array('Employee'));
+		$this->add_aco('view warehouses',array('Employee'));
 		$this->add_aco('edit warehouses',array('Employee'));
 		$this->add_aco('delete warehouses',array('Employee Manager'));
 
