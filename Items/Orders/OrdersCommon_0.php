@@ -31,7 +31,12 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 				array('name'=>'filter_by_my_warehouse','label'=>'Filter items by my warehouse','type'=>'select','values'=>array(0=>'No', 1=>'Yes'),'default'=>1)
 			));
 	}
-	
+	public static function attachment_addon_access() {
+		return self::access_orders('edit');
+	}
+	public static function order_serial_addon_access() {
+		return self::access_orders('edit');
+	}
     public static function get_order($id) {
 		return Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $id);
     }

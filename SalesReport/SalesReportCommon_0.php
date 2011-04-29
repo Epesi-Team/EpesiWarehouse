@@ -16,7 +16,9 @@ class Premium_Warehouse_SalesReportCommon extends ModuleCommon {
 	public function admin_caption() {
 		return "Sales Report";
 	}
-	
+	public static function currency_exchange_addon_access() {
+		return Premium_Warehouse_Items_OrdersCommon::access_orders('edit');
+	}
 	public function menu() {
 		if (!Base_AclCommon::i_am_admin()) return;
 		return array('Reports'=>array('__submenu__'=>1, 
