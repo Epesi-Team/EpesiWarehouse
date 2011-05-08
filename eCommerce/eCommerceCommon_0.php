@@ -48,11 +48,11 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
         return false;
     }
 
-    public function display_item_name($r, $nolink, $desc) {
+    public static function display_item_name($r, $nolink, $desc) {
         return Utils_RecordBrowserCommon::create_linked_label('premium_warehouse_items','item_name',$r['item_name'],$nolink);
     }
 
-    public function QFfield_description_language(&$form, $field, $label, $mode, $default, $desc, $rb_obj) {
+    public static function QFfield_description_language(&$form, $field, $label, $mode, $default, $desc, $rb_obj) {
         $opts = array(''=>'---')+Utils_CommonDataCommon::get_translated_array('Premium/Warehouse/eCommerce/Languages');
         if ($mode!='view') {
             $form->addElement('select', $field, $label, $opts, array('id'=>$field));
@@ -62,7 +62,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
         }
     }
 
-    public function display_parameter_label($r, $nolink, $desc) {
+    public static function display_parameter_label($r, $nolink, $desc) {
         $lang_code = Base_User_SettingsCommon::get('Base_Lang_Administrator','language');
         $id = Utils_RecordBrowserCommon::get_id('premium_ecommerce_parameter_labels', array('parameter', 'language'), array($r['id'], $lang_code));
         if (!is_numeric($id)) {
@@ -72,7 +72,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
         return Utils_RecordBrowserCommon::get_value('premium_ecommerce_parameter_labels',$id,'label');
     }
 
-    public function display_parameter_group_label($r, $nolink, $desc) {
+    public static function display_parameter_group_label($r, $nolink, $desc) {
         $lang_code = Base_User_SettingsCommon::get('Base_Lang_Administrator','language');
         $id = Utils_RecordBrowserCommon::get_id('premium_ecommerce_param_group_labels', array('group', 'language'), array($r['id'], $lang_code));
         if (!is_numeric($id)) {
@@ -82,7 +82,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
         return Utils_RecordBrowserCommon::get_value('premium_ecommerce_param_group_labels',$id,'label');
     }
 
-    public function display_description($r, $nolink, $desc) {
+    public static function display_description($r, $nolink, $desc) {
         $lang_code = Base_User_SettingsCommon::get('Base_Lang_Administrator','language');
         $id = Utils_RecordBrowserCommon::get_id('premium_ecommerce_descriptions', array('item_name', 'language'), array($r['item_name'], $lang_code));
         if (!is_numeric($id)) {
@@ -92,7 +92,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
         return Utils_RecordBrowserCommon::get_value('premium_ecommerce_descriptions',$id,'short_description');
     }
 
-    public function display_product_name($r, $nolink, $desc) {
+    public static function display_product_name($r, $nolink, $desc) {
         $lang_code = Base_User_SettingsCommon::get('Base_Lang_Administrator','language');
         $id = Utils_RecordBrowserCommon::get_id('premium_ecommerce_descriptions', array('item_name', 'language'), array($r['item_name'], $lang_code));
         if (!is_numeric($id)) {
@@ -104,17 +104,17 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
                 Utils_RecordBrowserCommon::record_link_close_tag();
     }
 
-    public function display_sku($r, $nolink, $desc) {
+    public static function display_sku($r, $nolink, $desc) {
         return Utils_RecordBrowserCommon::record_link_open_tag('premium_warehouse_items',$r['item_name'],$nolink).
                 Utils_RecordBrowserCommon::get_value('premium_warehouse_items',$r['item_name'],'sku').
                 Utils_RecordBrowserCommon::record_link_close_tag();
     }
 
-    public function items_crits() {
+    public static function items_crits() {
         return array();
     }
 
-    public function customer_crits() {
+    public static function customer_crits() {
         return array('group'=>'custm');
     }
 

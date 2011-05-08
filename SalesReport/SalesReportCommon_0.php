@@ -13,13 +13,13 @@
 defined("_VALID_ACCESS") || die('Direct access forbidden');
 
 class Premium_Warehouse_SalesReportCommon extends ModuleCommon {
-	public function admin_caption() {
+	public static function admin_caption() {
 		return "Sales Report";
 	}
 	public static function currency_exchange_addon_access() {
 		return Premium_Warehouse_Items_OrdersCommon::access_orders('edit');
 	}
-	public function menu() {
+	public static function menu() {
 		if (!Base_AclCommon::i_am_admin()) return;
 		return array('Reports'=>array('__submenu__'=>1, 
 			'Sales by Warehouse'=>array('mode'=>'sales_by_warehouse'), 

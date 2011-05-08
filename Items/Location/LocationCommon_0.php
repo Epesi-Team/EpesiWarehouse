@@ -31,7 +31,7 @@ class Premium_Warehouse_Items_LocationCommon extends ModuleCommon {
 		return array();
 	}
 
-	public function display_rental($r, $nolink = false){
+	public static function display_rental($r, $nolink = false){
 		if (isset($_REQUEST['warehouse_change_rental_status']) &&
 			$_REQUEST['warehouse_change_rental_status']==$r['id']) {
 			unset($_REQUEST['warehouse_change_rental_status']);
