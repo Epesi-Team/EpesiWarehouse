@@ -259,7 +259,7 @@ if( isset( $iContent ) && is_numeric( $iContent ) ){
 			$countries[$k] = $translations['Utils_CommonData'][$v];
 	  }
 	  foreach($countries as $k=>$v) {
-		$countriesList .= '<option value="'.$k.'" '.(strtolower($k)==LANGUAGE?'selected="1"':'').'>'.$v.'</option>';
+		$countriesList .= '<option value="'.$k.'" '.(strtolower($k)==LANGUAGE_CONFIG?'selected="1"':'').'>'.$v.'</option>';
 	  }
 	  
 	  $oTpl->setVariables('countriesList',$countriesList);
