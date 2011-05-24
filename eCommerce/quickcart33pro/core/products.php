@@ -21,13 +21,6 @@ class Products
   */
   function Products( ){
 //    $this->generateCache( );
-	$uncategorized = DB::GetOne('SELECT 1 FROM premium_ecommerce_products_data_1 pr
-					INNER JOIN (premium_warehouse_items_data_1 it,premium_ecommerce_availability_data_1 av) ON (pr.f_item_name=it.id AND av.id=pr.f_available)
-					 WHERE pr.f_publish=1 AND pr.active=1 AND it.f_category is NULL');
-
-	if(!$uncategorized) {//remove uncategorized category
-	    unset(Pages::getInstance()->aPages[23]);
-	}
   } // end function Pages
 /*
   function generateCache() {

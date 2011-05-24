@@ -455,9 +455,15 @@ class Pages
 
 	//uncategorized products
 	$id = 23;
-	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => $lang['Uncategorized'], 'sNameTitle' => 'Uncategorized', 'sDescriptionShort' => '', 'iPosition' => 1000, 'iType' => 3, 'iSubpagesShow' => 1, 'iProducts' => 1, 'sDescriptionFull'=>'', 'sMetaDescription' => '', 'sMetaKeywords' =>'' );
-	$this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
-	$this->aPagesParentsTypes[3][] = $id;
+	$uncategorized = DB::GetOne('SELECT 1 FROM premium_ecommerce_products_data_1 pr
+					INNER JOIN (premium_warehouse_items_data_1 it,premium_ecommerce_availability_data_1 av) ON (pr.f_item_name=it.id AND av.id=pr.f_available)
+					 WHERE pr.f_publish=1 AND pr.active=1 AND it.active=1 AND it.f_category is NULL');
+
+	if($uncategorized) {//remove uncategorized category
+		$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => $lang['Uncategorized'], 'sNameTitle' => 'Uncategorized', 'sDescriptionShort' => '', 'iPosition' => 1000, 'iType' => 3, 'iSubpagesShow' => 1, 'iProducts' => 1, 'sDescriptionFull'=>'', 'sMetaDescription' => '', 'sMetaKeywords' =>'' );
+		$this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
+		$this->aPagesParentsTypes[3][] = $id;
+	}
 	
 	//sitemap
 	$id = 27;
