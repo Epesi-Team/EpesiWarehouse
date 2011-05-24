@@ -316,17 +316,22 @@ class Pages
 		}
 	}
 	$categories = array_filter($categories,'is_numeric');
+	while($categories) {
 	$query = 'SELECT c.id, c.f_category_name, c.f_parent_category,
 					d.f_page_title, d.f_meta_description, d.f_keywords, 
 					d.f_display_name, d.f_short_description, d.f_long_description,
 					c.f_position
 			FROM premium_warehouse_items_categories_data_1 c LEFT JOIN premium_ecommerce_cat_descriptions_data_1 d ON (c.id=d.f_category AND d.f_language="'.LANGUAGE.'" AND d.active=1) WHERE c.active=1'.($categories?' AND c.id IN ('.implode(',',$categories).')':'');
 	$x = DB::GetAll($query.' ORDER BY c.f_parent_category,c.f_position');
+	$new_categories = array();
 	foreach($x as $r) {
 		if(!$r['f_parent_category']) 
 			$r['f_parent_category'] = 0;
-		else
+		else {
+			if(!isset($this->aPages[$r['f_parent_category']*4]) && !in_array($r['f_parent_category'],$categories) && !in_array($r['f_parent_category'],$new_categories))
+				$new_categories[] = $r['f_parent_category'];
 			$r['f_parent_category'] *= 4;
+		}
 		$id = $r['id']*4;
         $this->aPages[$id] = array('iPage' => $id, 'iPageParent' => $r['f_parent_category'], 'sName' => $r['f_display_name']?$r['f_display_name']:$r['f_category_name'], 'sNameTitle' => $r['f_page_title'], 'sDescriptionShort' => $r['f_short_description'], 'iPosition' => $r['f_position'], 'iType' => 3, 'iSubpagesShow' => $r['f_show_as']===null?0:$r['f_show_as'], 'iProducts' => 1, 'sDescriptionFull'=>$r['f_long_description'], 'sMetaDescription' => $r['f_meta_description'], 'sMetaKeywords' =>$r['f_keywords'] );
         $this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
@@ -336,6 +341,8 @@ class Pages
         }else{
             $this->aPagesParentsTypes[3][] = $id;
         }
+	}
+        	$categories = $new_categories;
 	}
 
 	//companies - id mod 4 == 1
