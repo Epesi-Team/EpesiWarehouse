@@ -18,6 +18,32 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 	public static $plugin_path = 'modules/Premium/Warehouse/eCommerce/3rdp_plugins/';
     private static $curr_opts;
 
+    public static function access_products($action, $param=null){
+        $i = self::Instance();
+        switch ($action) {
+            case 'browse_crits':    return $i->acl_check('browse ecommerce');
+            case 'browse':  if(!$i->acl_check('browse ecommerce')) return false;
+                            $ret = array('position'=>false);
+                            if(!Variable::get('ecommerce_item_descriptions')) {
+                                $ret['product_name'] = false;
+                                $ret['description'] = false;
+                            }
+                            return $ret;                            
+            case 'view':    if (!$i->acl_check('view ecommerce')) return false;
+                            $ret = array('position'=>false);
+                            if(!Variable::get('ecommerce_item_descriptions')) {
+                                $ret['product_name'] = false;
+                                $ret['description'] = false;
+                            }
+                            return $ret;
+            case 'clone':
+            case 'add':
+            case 'edit':    return $i->acl_check('edit ecommerce');
+            case 'delete':  return $i->acl_check('delete ecommerce');
+        }
+        return false;
+    }
+
     public static function access_parameters($action, $param=null){
         $i = self::Instance();
         switch ($action) {
@@ -135,6 +161,22 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
     public static function users_addon_parameters($r) {
 //      $ret = Utils_RecordBrowserCommon::get_records('premium_ecommerce_users',array('contact'=>$r['id']));
         if(!in_array('custm',$r['group']))
+            return array('show'=>false);
+        return array('show'=>true, 'label'=>'eCommerce user');
+    }
+
+    public static function prices_addon_parameters($r) {
+        if(!Variable::get('ecommerce_item_prices'))
+            return array('show'=>false);
+        return array('show'=>true, 'label'=>'eCommerce user');
+    }
+    public static function parameters_addon_parameters($r) {
+        if(!Variable::get('ecommerce_item_parameters'))
+            return array('show'=>false);
+        return array('show'=>true, 'label'=>'eCommerce user');
+    }
+    public static function descriptions_addon_parameters($r) {
+        if(!Variable::get('ecommerce_item_descriptions'))
             return array('show'=>false);
         return array('show'=>true, 'label'=>'eCommerce user');
     }

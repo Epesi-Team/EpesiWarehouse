@@ -34,6 +34,8 @@ class Premium_Warehouse_eCommerce extends Module {
 						'icon'=>null);
 		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'contactus_page')).'>'.$this->t('Contact us').'</a>',
 						'icon'=>null);
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'features')).'>'.$this->t('Features').'</a>',
+						'icon'=>null);
 		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'compare_services')).'>'.$this->t('Links for compare services').'</a>',
 						'icon'=>null);
 		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'order_email_page')).'>'.$this->t('New order e-mail header').'</a>',
@@ -71,7 +73,9 @@ class Premium_Warehouse_eCommerce extends Module {
 		$this->rb->set_defaults(array('publish'=>1,'status'=>1));
 		$this->rb->set_additional_actions_method(array($this, 'actions_for_position'));
 		$this->rb->force_order(array('position'=>'ASC'));
-		$this->display_module($this->rb);
+//		$cols = array('item_name'=>array('name'=>'Item name')
+//		        );
+		$this->display_module($this->rb);//,array(array('position'=>'ASC'),array(),$cols));
 	}
 	
 	public function compare_services() {
@@ -834,6 +838,35 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 					'})');
 	}
 	
+	public function features() {
+		if($this->is_back()) return false;
+	
+		$form = & $this->init_module('Libs/QuickForm');
+
+		$form->addElement('header', null, $this->t('eCommerce item tabs'));
+		
+		$form->setDefaults(array('prices'=>Variable::get('ecommerce_item_prices'),
+		            'parameters'=>Variable::get('ecommerce_item_parameters')
+				    ,'descriptions'=>Variable::get('ecommerce_item_descriptions')));
+
+		$form->addElement('checkbox', 'prices', $this->t('Prices'),'');
+		$form->addElement('checkbox', 'parameters', $this->t('Parameters'),'');
+		$form->addElement('checkbox', 'descriptions', $this->t('Descriptions'),'');
+
+		if($form->validate()) {
+			$vals = $form->exportValues();
+			Variable::set('ecommerce_item_prices',(isset($vals['prices']) && $vals['prices'])?true:false);
+			Variable::set('ecommerce_item_descriptions',(isset($vals['descriptions']) && $vals['descriptions'])?true:false);
+			Variable::set('ecommerce_item_parameters',(isset($vals['parameters']) && $vals['parameters'])?true:false);
+			return false;
+		} else $form->display();
+
+		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
+		Base_ActionBarCommon::add('save', 'Save', $form->get_submit_form_href(true,$this->t('creating thumbnails, please wait')));
+		
+    		return true;
+	}
+	
 	public function prices() {
 		if($this->is_back()) return false;
 	
@@ -973,8 +1006,9 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
  		$this->display_module($m);
 
 		//langs
- 		$m = & $this->init_module('Utils/GenericBrowser',null,'t1');
- 		$m->set_table_columns(array(
+        if(Variable::get('ecommerce_item_descriptions')) {
+     		$m = & $this->init_module('Utils/GenericBrowser',null,'t1');
+ 	    	$m->set_table_columns(array(
 				array('name'=>$this->t('Language')),
 				array('name'=>$this->t('Name')),
 				array('name'=>$this->t('Description')),
@@ -982,40 +1016,42 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 				array('name'=>$this->t('Attachments')),
 				array('name'=>$this->t('Actions'))
 					    ));
-		$langs = Utils_CommonDataCommon::get_array('Premium/Warehouse/eCommerce/Languages');
-		foreach($langs as $code=>$name) {
-		    $descs = Utils_RecordBrowserCommon::get_records('premium_ecommerce_descriptions',array('item_name'=>$rec['item_name'],'language'=>$code),array('display_name','short_description'));
-		    $descs = array_pop($descs);
-		    $params = Utils_RecordBrowserCommon::get_records('premium_ecommerce_products_parameters',array('item_name'=>$rec['item_name'],'language'=>$code));
-		    $attachments = Utils_AttachmentCommon::count('premium_ecommercedescriptions/'.$code.'/'.$arg['id']);
- 		    $m->add_row($name,($descs && isset($descs['display_name']) && $descs['display_name'])?$on:$off,($descs && isset($descs['short_description']) && $descs['short_description'])?$on:$off,empty($params)?$off:$on,$attachments,
- 		    		$descs?Utils_RecordBrowserCommon::record_link_open_tag('premium_ecommerce_descriptions',$descs['id'],false,'edit').$this->t('Edit').Utils_RecordBrowserCommon::record_link_close_tag():'<a '.Utils_RecordBrowserCommon::create_new_record_href('premium_ecommerce_descriptions',array('language'=>$code,'item_name'=>$arg['id'])).'>'.$this->t('Add').'</a>');
-		}
- 		$this->display_module($m);
-
+    		$langs = Utils_CommonDataCommon::get_array('Premium/Warehouse/eCommerce/Languages');
+	    	foreach($langs as $code=>$name) {
+		        $descs = Utils_RecordBrowserCommon::get_records('premium_ecommerce_descriptions',array('item_name'=>$rec['item_name'],'language'=>$code),array('display_name','short_description'));
+		        $descs = array_pop($descs);
+    		    $params = Utils_RecordBrowserCommon::get_records('premium_ecommerce_products_parameters',array('item_name'=>$rec['item_name'],'language'=>$code));
+	    	    $attachments = Utils_AttachmentCommon::count('premium_ecommercedescriptions/'.$code.'/'.$arg['id']);
+ 		        $m->add_row($name,($descs && isset($descs['display_name']) && $descs['display_name'])?$on:$off,($descs && isset($descs['short_description']) && $descs['short_description'])?$on:$off,empty($params)?$off:$on,$attachments,
+ 		        		$descs?Utils_RecordBrowserCommon::record_link_open_tag('premium_ecommerce_descriptions',$descs['id'],false,'edit').$this->t('Edit').Utils_RecordBrowserCommon::record_link_close_tag():'<a '.Utils_RecordBrowserCommon::create_new_record_href('premium_ecommerce_descriptions',array('language'=>$code,'item_name'=>$arg['id'])).'>'.$this->t('Add').'</a>');
+    		}
+ 	    	$this->display_module($m);
+        }
+        
 		//currencies
- 		$m = & $this->init_module('Utils/GenericBrowser',null,'t2');
- 		$m->set_table_columns(array(
+        if(Variable::get('ecommerce_item_prices')) {
+     		$m = & $this->init_module('Utils/GenericBrowser',null,'t2');
+ 	    	$m->set_table_columns(array(
 				array('name'=>$this->t('Currency')),
 				array('name'=>$this->t('Gross Price')),
 				array('name'=>$this->t('Tax Rate')),
 				array('name'=>$this->t('Actions'))
 					    ));
-		$curr_opts = Premium_Warehouse_eCommerceCommon::get_currencies();
-		foreach($curr_opts as $id=>$code) {
-		    $prices = Utils_RecordBrowserCommon::get_records('premium_ecommerce_prices',array('item_name'=>$rec['item_name'],'currency'=>$id),array('gross_price','tax_rate'));
-		    $prices = array_pop($prices);
-		    if($prices && isset($prices['gross_price'])) {
+    		$curr_opts = Premium_Warehouse_eCommerceCommon::get_currencies();
+	    	foreach($curr_opts as $id=>$code) {
+		        $prices = Utils_RecordBrowserCommon::get_records('premium_ecommerce_prices',array('item_name'=>$rec['item_name'],'currency'=>$id),array('gross_price','tax_rate'));
+		        $prices = array_pop($prices);
+    		    if($prices && isset($prices['gross_price'])) {
     			    $tax = Utils_RecordBrowserCommon::get_record('data_tax_rates',$prices['tax_rate']);
     			    $m->add_row($code,$prices['gross_price'],$tax['name'],
  		    		Utils_RecordBrowserCommon::record_link_open_tag('premium_ecommerce_prices',$prices['id'],false,'edit').$this->t('Edit').Utils_RecordBrowserCommon::record_link_close_tag());
- 		    		
-		    } else {
+	    	    } else {
          		    $m->add_row($code,$off,$off,
          		    	'<a '.Utils_RecordBrowserCommon::create_new_record_href('premium_ecommerce_prices',array('currency'=>$id,'item_name'=>$arg['id'])).'>'.$this->t('Add').'</a>');
-		    }
-		}
- 		$this->display_module($m);
+    		    }
+	    	}
+ 		    $this->display_module($m);
+ 		}
 	}
 	
 	public function stats() {
