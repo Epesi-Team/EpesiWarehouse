@@ -1,5 +1,5 @@
 <?php
-$config['currency_symbol'] = 'PLN';
+$config['currency_symbol'] = 'USD';
 $config['delivery_free'] = 10000;
 $config['title'] = 'Epesi eCommerce - szybki i prosty sklep internetowy oparty o rozbudowany magazyn';
 $config['description'] = 'Szybki i prosty sklep internetowy. Skrypt napisany w języku PHP, oparty o plikową bazę danych i zgodny ze standardami XHTML 1.1 i WAI.';

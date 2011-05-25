@@ -1,12 +1,12 @@
 <?php
-define('EPESI_DATA_DIR','/home/shacky/Projects/epesi-trunk/data');
+define('EPESI_DATA_DIR','/var/www/viking/demo/data');
 if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi, log in as administrator, go to Menu->Adminitration->eCommerce->QuickCart settings and add \''.dirname(dirname(__FILE__)).'\' directory to setup quickcart');
-$config['default_lang'] = 'pl';
-$config['available_lang'] = array('nl','en','fr','it','pl','ru','us');
+$config['default_lang'] = 'us';
+$config['available_lang'] = array('us');
 $config['text_size'] = true;
-$config['email'] = 'shacky7@gmail.com';
+$config['email'] = 'jtylek@telaxus.com';
 $config['skapiec_shop_id'] = 2222;
-$config['products_list'] = 3;
+$config['products_list'] = 6;
 $config['news_list'] = 5;
 $config['site_map_products'] = false;
 $config['time_diff'] = 0;
