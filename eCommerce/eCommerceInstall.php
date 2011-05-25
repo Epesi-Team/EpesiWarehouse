@@ -78,7 +78,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 
 		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_descriptions', 'Premium/Warehouse/eCommerce', 'attachment_product_desc_addon', 'Notes');
 
-		Utils_CommonDataCommon::new_array('Premium_Items_Orders_Payment_Types',array('DotPay'=>'DotPay','Przelewy24'=>'Przelewy24','PayPal'=>'PayPal', 'Platnosci.pl'=>'Platnosci.pl', 'Zagiel'=>'Żagiel'));
+		Utils_CommonDataCommon::new_array('Premium_Items_Orders_Payment_Types',array('DotPay'=>'DotPay','Przelewy24'=>'Przelewy24','PayPal'=>'PayPal', 'Platnosci.pl'=>'Platnosci.pl', 'Zagiel'=>'Żagiel','CreditCardBasic'=>'Credit Card (basic)'));
 		//payments and carriers
 		$fields = array(
 			array('name'=>'Payment', 	'type'=>'commondata', 'required'=>true, 'extra'=>false, 'visible'=>true, 'param'=>array('order_by_key'=>true,'Premium_Items_Orders_Payment_Types')),

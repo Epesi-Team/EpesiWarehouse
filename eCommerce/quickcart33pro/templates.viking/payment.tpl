@@ -125,6 +125,32 @@
 </form>
 <!-- END PAYMENT_FORM_5 -->
 
+<!-- BEGIN PAYMENT_FORM_6 -->
+<form action="http://www.zagiel.com.pl/kalkulator/index_smart.php" method="post" id="formPayment">
+  <fieldset>
+    <input type="hidden" name="action" value="getklientdet_si" />
+    <input type="hidden" name="IDZamowienieSklep" value="$iOrder" />
+    <input type="hidden" name="ImieSklep" value="$aOrder[sFirstName]" />
+    <input type="hidden" name="NazwiskoSklep" value="$aOrder[sLastName]" />
+    <input type="hidden" name="EmailSklep" value="$aOrder[sEmail]" />
+    <input type="hidden" name="TelKontaktSklep" value="$aOrder[sPhone]" />
+    <input type="hidden" name="UlicaSklep" value="$aOrder[sStreetName]" />
+    <input type="hidden" name="NrDomuSklep" value="$aStreet[sStreetNumber1]" />
+    <input type="hidden" name="NrMieszkaniaSklep" value="$aStreet[sStreetNumber2]" />
+    <input type="hidden" name="MiejscowoscSklep" value="$aOrder[sCity]" />
+    <input type="hidden" name="KodPocztowySklep" value="$aOrder[sZipCode]" />
+    <input type="hidden" name="wniosekZapisany" value="$aUrl[scheme]://$aUrl[host]$aUrl[path]?,return,payment&amp;status=OK" />
+    <input type="hidden" name="wniosekAnulowany" value="$aUrl[scheme]://$aUrl[host]$aUrl[path]?,return,payment&amp;status=FAIL" />
+    <input type="hidden" name="shopNo" value="$config[zagiel_id]" />
+    <input type="hidden" name="shopName" value="$aUrl[host]$aUrl[path]" />
+    <input type="hidden" name="shopHttp" value="$aUrl[scheme]://$aUrl[host]$aUrl[path]" />
+    <input type="hidden" name="shopMailAdress" value="$config['email']" />
+    <input type="hidden" name="shopPhone" value="" />
+  
+  </fieldset>
+</form>
+<!-- END PAYMENT_FORM_6 -->
+
 <!-- BEGIN PAYMENT_OUTER -->
 <div id="paymentOuter">
   $sPaymentOuterForm
