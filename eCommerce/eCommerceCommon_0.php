@@ -168,17 +168,17 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
     public static function prices_addon_parameters($r) {
         if(!Variable::get('ecommerce_item_prices'))
             return array('show'=>false);
-        return array('show'=>true, 'label'=>'eCommerce user');
+        return array('show'=>true, 'label'=>'Prices');
     }
     public static function parameters_addon_parameters($r) {
         if(!Variable::get('ecommerce_item_parameters'))
             return array('show'=>false);
-        return array('show'=>true, 'label'=>'eCommerce user');
+        return array('show'=>true, 'label'=>'Parameters');
     }
     public static function descriptions_addon_parameters($r) {
         if(!Variable::get('ecommerce_item_descriptions'))
             return array('show'=>false);
-        return array('show'=>true, 'label'=>'eCommerce user');
+        return array('show'=>true, 'label'=>'Descriptions');
     }
 
     public static function access_users($action, $param=null){
@@ -279,21 +279,6 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
     public static function get_currencies() {
         self::init_currency();
         return self::$curr_opts;
-    }
-
-    public static function QFfield_fckeditor(&$form, $field, $label, $mode, $default) {
-        if ($mode=='add' || $mode=='edit') {
-            $fck = $form->addElement('ckeditor', $field, $label);
-            $fck->setFCKProps('800','300',true);
-            if ($mode=='edit') $form->setDefaults(array($field=>$default));
-        } else {
-            $form->addElement('static', $field, $label);
-            $form->setDefaults(array($field=>html_entity_decode($default)));
-        }
-    }
-
-    public static function display_fckeditor($r, $nolink=false, $desc=null) {
-        return html_entity_decode(html_entity_decode($r[$desc['id']]));
     }
 
     public static function menu() {
