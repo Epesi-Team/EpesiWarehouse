@@ -21,6 +21,13 @@ class Products
   */
   function Products( ){
 //    $this->generateCache( );
+	$uncategorized = DB::GetOne('SELECT 1 FROM premium_ecommerce_products_data_1 pr
+					INNER JOIN (premium_warehouse_items_data_1 it,premium_ecommerce_availability_data_1 av) ON (pr.f_item_name=it.id AND av.id=pr.f_available)
+					 WHERE pr.f_publish=1 AND pr.active=1 AND it.f_category is NULL');
+
+	if(!$uncategorized) {//remove uncategorized category
+	    unset(Pages::getInstance()->aPages[23]);
+	}
   } // end function Pages
 /*
   function generateCache() {
@@ -58,6 +65,7 @@ class Products
 
 	$ret = DB::GetAll('SELECT 	it.id as iProduct, 
 								it.f_item_name as sName2, 
+								it.f_description as sEpesiDescription, 
 								pri.f_gross_price as fPrice, 
 								pri.f_tax_rate as tax,
 								pr.f_position as iPosition, 
@@ -229,7 +237,10 @@ class Products
 			if(!$aExp[$kkk])
 				$aExp[$kkk] = $aExp[$kkk.'En'];
 			unset($aExp[$kkk.'En']);
-		}
+		} 
+		if(!$aExp['sDescriptionFull'])
+		    $aExp['sDescriptionFull'] = $aExp['sEpesiDescription'];
+		unset($aExp['sEpesiDescription']);
 		
 		$meta_cats = ($meta_cats?implode(',',array_unique($meta_cats)):'');
 		if(!$aExp['sMetaDescription']) $aExp['sMetaDescription'] = $aExp['sName'].'. '.strip_tags($aExp['sDescriptionShort'],'').'. '.$meta_cats;

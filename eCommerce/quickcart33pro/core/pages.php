@@ -294,7 +294,7 @@ class Pages
   /**
   * Generate cache variables
   * @return void
-  */
+  */ 
   function generateCache( ){
   	//epesi {
 	global $config,$lang;
