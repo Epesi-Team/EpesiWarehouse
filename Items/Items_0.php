@@ -111,6 +111,10 @@ class Premium_Warehouse_Items extends Module {
 				$master = substr($master,1);
 			else
 				$master = $vals['master_cat'];
+				
+			DB::Execute('DELETE FROM premium_warehouse_items_recent');
+			DB::Execute('DELETE FROM premium_warehouse_items_categories_recent');
+			DB::Execute('DELETE FROM premium_ecommerce_cat_descriptions_recent');
 			$cats = array();
 			foreach($vals['cats'] as $cat) {
 				$cat2 = strrchr($cat,'/');
