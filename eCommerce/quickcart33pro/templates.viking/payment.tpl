@@ -126,58 +126,26 @@
 <!-- END PAYMENT_FORM_5 -->
 
 <!-- BEGIN PAYMENT_FORM_6 -->
-<div id="order">
-  <form action="$aData[sLinkName]" method="post" onsubmit="return checkForm( this )" id="orderForm">
-    <input type="hidden" name="order_id" value="$iOrder" />
-    <fieldset id="personalDataBlock">
-      <legend>$lang[Your_personal_information]</legend>
-      <fieldset id="personalData">
-        <fieldset id="setBasic">
-          <div id="firstName">
-            <label for="oFirstName">$lang[First_name]</label>
-            <input type="text" name="sFirstName" value="$aOrder[sFirstName]" maxlength="30" class="input" id="oFirstName" alt="simple" />
-          </div>
-          <div id="lastName">
-            <label for="oLastName">$lang[Last_name]</label>
-            <input type="text" name="sLastName" value="$aOrder[sLastName]" maxlength="40" class="input" id="oLastName" alt="simple" />
-          </div>
-          <div id="company">
-            <label for="oCompany">$lang[Company]</label>
-            <input type="text" name="sCompanyName" value="$aOrder[sCompanyName]" maxlength="100" class="input" id="oCompany" />
-          </div>
-          <div id="street">
-            <label for="oStreet">$lang[Street]</label>
-            <input type="text" name="sStreet" value="$aOrder[sStreet]" maxlength="40" class="input" id="oStreet" alt="simple" />
-          </div>
-          <div id="zipCode">
-            <label for="oZipCode">$lang[Zip_code]</label>
-            <input type="text" name="sZipCode" value="$aOrder[sZipCode]" maxlength="20" class="input" id="oZipCode" alt="simple" />
-          </div>
-          <div id="city">
-            <label for="oCity">$lang[City]</label>
-            <input type="text" name="sCity" value="$aOrder[sCity]" maxlength="40" class="input" id="oCity" alt="simple" />
-          </div>
-        </fieldset>
-        <fieldset id="setExtend">
-          <div id="country">
-            <label for="oCountry">$lang[Country]</label>
-            <select name="sCountry" value="$aOrder[sCountry]" class="input" id="oCountry" alt="simple" />
-    	    $countriesList
-    	    </select>
-          </div>
-          <div id="phone">
-            <label for="oPhone">$lang[Telephone]</label>
-            <input type="text" name="sPhone" value="$aOrder[sPhone]" maxlength="40" class="input" id="oPhone" alt="simple" />
-          </div>
-          <div id="email">
-            <label for="oEmail">$lang[Email]</label>
-            <input type="text" name="sEmail" value="$aOrder[sEmail]" maxlength="40" class="input" id="oEmail" alt="email" />
-          </div>
-        </fieldset>
-      </fieldset>
-    </fieldset>
-  </form>
-</div>
+<form action="http://localhost/epesi-trunk/modules/Premium/Payments/" method="post" id="formPayment">
+  <fieldset>
+    <input type="hidden" name="record_id" value="$iOrder" />
+    <input type="hidden" name="record_type" value="premium_warehouse_items_orders" />
+    <input type="hidden" name="amount" value="$aData[sOrderSummary]" />
+    <input type="hidden" name="currency" value="$config[currency_symbol]" />
+    <input type="hidden" name="description" value="Order ID $iOrder" />
+    <input type="hidden" name="url_ok" value="$aUrl[scheme]://$aUrl[host]$aUrl[path]?,return,payment&amp;status=OK" />
+    <input type="hidden" name="url_error" value="$aUrl[scheme]://$aUrl[host]$aUrl[path]?,return,payment&amp;status=FAIL" />
+
+    <input type="hidden" name="first_name" value="$aOrder[sFirstName]" />
+    <input type="hidden" name="last_name" value="$aOrder[sLastName]" />
+    <input type="hidden" name="address_1" value="$aOrder[sStreet]" />
+    <input type="hidden" name="city" value="$aOrder[sCity]" />
+    <input type="hidden" name="postal_code" value="$aOrder[sZipCode]" />
+    <input type="hidden" name="country" value="$aOrder[sCountryCode]" />
+    <input type="hidden" name="email" value="$aOrder[sEmail]" />
+    <input type="hidden" name="phone" value="$aOrder[sPhone]" />
+  </fieldset>
+</form>
 <!-- END PAYMENT_FORM_6 -->
 
 <!-- BEGIN PAYMENT_OUTER -->

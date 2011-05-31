@@ -61,7 +61,7 @@
 			<desc><![CDATA[$aData[sName]]]></desc>
 			<price>$aData[fPrice]</price>
 			<dprice></dprice>
-			<partnr></partnr>
+			<partnr>$aData[sPartNumber]</partnr>
 			<catid>$aData[iPage]</catid>
       $aData[sImage]
       <desclong><![CDATA[$aData[sDescriptionFull]]]></desclong>

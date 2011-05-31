@@ -92,7 +92,8 @@ class Products
 								it.f_tax_rate tax2,
 								pr.f_exclude_compare_services,
 								pr.f_always_on_stock,
-								it.f_upc
+								it.f_upc,
+								if.f_manufacturer_part_number as sPartNumber
 					FROM premium_ecommerce_products_data_1 pr
 					INNER JOIN (premium_warehouse_items_data_1 it) ON (pr.f_item_name=it.id)
 					LEFT JOIN premium_ecommerce_prices_data_1 pri ON (pri.f_item_name=it.id AND pri.active=1 AND pri.f_currency='.$currency.')
