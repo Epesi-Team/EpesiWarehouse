@@ -126,29 +126,58 @@
 <!-- END PAYMENT_FORM_5 -->
 
 <!-- BEGIN PAYMENT_FORM_6 -->
-<form action="http://www.zagiel.com.pl/kalkulator/index_smart.php" method="post" id="formPayment">
-  <fieldset>
-    <input type="hidden" name="action" value="getklientdet_si" />
-    <input type="hidden" name="IDZamowienieSklep" value="$iOrder" />
-    <input type="hidden" name="ImieSklep" value="$aOrder[sFirstName]" />
-    <input type="hidden" name="NazwiskoSklep" value="$aOrder[sLastName]" />
-    <input type="hidden" name="EmailSklep" value="$aOrder[sEmail]" />
-    <input type="hidden" name="TelKontaktSklep" value="$aOrder[sPhone]" />
-    <input type="hidden" name="UlicaSklep" value="$aOrder[sStreetName]" />
-    <input type="hidden" name="NrDomuSklep" value="$aStreet[sStreetNumber1]" />
-    <input type="hidden" name="NrMieszkaniaSklep" value="$aStreet[sStreetNumber2]" />
-    <input type="hidden" name="MiejscowoscSklep" value="$aOrder[sCity]" />
-    <input type="hidden" name="KodPocztowySklep" value="$aOrder[sZipCode]" />
-    <input type="hidden" name="wniosekZapisany" value="$aUrl[scheme]://$aUrl[host]$aUrl[path]?,return,payment&amp;status=OK" />
-    <input type="hidden" name="wniosekAnulowany" value="$aUrl[scheme]://$aUrl[host]$aUrl[path]?,return,payment&amp;status=FAIL" />
-    <input type="hidden" name="shopNo" value="$config[zagiel_id]" />
-    <input type="hidden" name="shopName" value="$aUrl[host]$aUrl[path]" />
-    <input type="hidden" name="shopHttp" value="$aUrl[scheme]://$aUrl[host]$aUrl[path]" />
-    <input type="hidden" name="shopMailAdress" value="$config['email']" />
-    <input type="hidden" name="shopPhone" value="" />
-  
-  </fieldset>
-</form>
+<div id="order">
+  <form action="$aData[sLinkName]" method="post" onsubmit="return checkForm( this )" id="orderForm">
+    <input type="hidden" name="order_id" value="$iOrder" />
+    <fieldset id="personalDataBlock">
+      <legend>$lang[Your_personal_information]</legend>
+      <fieldset id="personalData">
+        <fieldset id="setBasic">
+          <div id="firstName">
+            <label for="oFirstName">$lang[First_name]</label>
+            <input type="text" name="sFirstName" value="$aOrder[sFirstName]" maxlength="30" class="input" id="oFirstName" alt="simple" />
+          </div>
+          <div id="lastName">
+            <label for="oLastName">$lang[Last_name]</label>
+            <input type="text" name="sLastName" value="$aOrder[sLastName]" maxlength="40" class="input" id="oLastName" alt="simple" />
+          </div>
+          <div id="company">
+            <label for="oCompany">$lang[Company]</label>
+            <input type="text" name="sCompanyName" value="$aOrder[sCompanyName]" maxlength="100" class="input" id="oCompany" />
+          </div>
+          <div id="street">
+            <label for="oStreet">$lang[Street]</label>
+            <input type="text" name="sStreet" value="$aOrder[sStreet]" maxlength="40" class="input" id="oStreet" alt="simple" />
+          </div>
+          <div id="zipCode">
+            <label for="oZipCode">$lang[Zip_code]</label>
+            <input type="text" name="sZipCode" value="$aOrder[sZipCode]" maxlength="20" class="input" id="oZipCode" alt="simple" />
+          </div>
+          <div id="city">
+            <label for="oCity">$lang[City]</label>
+            <input type="text" name="sCity" value="$aOrder[sCity]" maxlength="40" class="input" id="oCity" alt="simple" />
+          </div>
+        </fieldset>
+        <fieldset id="setExtend">
+          <div id="country">
+            <label for="oCountry">$lang[Country]</label>
+            <select name="sCountry" value="$aOrder[sCountry]" class="input" id="oCountry" alt="simple" />
+    	    $countriesList
+    	    </select>
+          </div>
+          <div id="phone">
+            <label for="oPhone">$lang[Telephone]</label>
+            <input type="text" name="sPhone" value="$aOrder[sPhone]" maxlength="40" class="input" id="oPhone" alt="simple" />
+          </div>
+          <div id="email">
+            <label for="oEmail">$lang[Email]</label>
+            <input type="text" name="sEmail" value="$aOrder[sEmail]" maxlength="40" class="input" id="oEmail" alt="email" />
+          </div>
+        </fieldset>
+      </fieldset>
+    </fieldset>
+  </form>
+</div>
 <!-- END PAYMENT_FORM_6 -->
 
 <!-- BEGIN PAYMENT_OUTER -->

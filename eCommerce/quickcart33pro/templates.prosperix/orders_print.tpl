@@ -25,11 +25,6 @@
   </dl>
   <h4>$lang[Ordered_products]</h4>
   $sOrderProducts
-  <script type="text/javascript">
-  <!--
-  AddOnload( delSavedUserData );
-  //-->
-  </script>
 </div>
 <!-- END ORDER_PRINT -->
 

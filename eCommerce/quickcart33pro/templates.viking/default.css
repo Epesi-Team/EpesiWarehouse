@@ -814,9 +814,11 @@ float:left;
 
 #order #personalData #setBasic, #order #personalData #setExtend{float:left;width:50%;}
 #order #personalData label{display:block;font-weight:bold;}
-#order #personalData #company label, #order #personalData #comment label{font-weight:normal;}
+#order #personalData #company label, #order #personalData #comment label, #order #personalData #promotionCode label{font-weight:normal;}
 #order #personalData .input, #order #personalData #oComment{width:90%;margin:0 0 5px;}
 #order #personalData #oComment{height:125px;}
+#order #personalData #addressesList{width:95%; text-align:center;padding:20px 0px;}
+#order #personalData #addressesList select {width:100%;}
 
 #order #deliveryAndPayment table {
   margin-top: 10px;

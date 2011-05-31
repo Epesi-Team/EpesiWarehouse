@@ -61,9 +61,23 @@
         <fieldset id="setExtend">
           <div id="country">
             <label for="oCountry">$lang[Country]</label>
-            <select name="sCountry" value="$aUser[sCountry]" class="input" onblur="saveUserData( this.name, this.value )" id="oCountry" alt="simple" />
+            <select name="sCountry" class="input" onblur="saveUserData( this.name, this.value )" id="oCountry" alt="simple" />
     	    $countriesList
     	    </select>
+    	    <script type="text/javascript">
+                <!--
+    	        var c = throwCookie("sCountry");
+    	        if(!c || c=='') {
+        	        var a=document.getElementById("oCountry");
+        	        for(var i=0; i<a.length; i++) {
+    	                if(a.options[i].value=="$aUser[sCountry]") {
+    	                    a.selectedIndex=i;
+    	                    break;
+    	                }
+        	        }
+        	    }
+                //-->
+    	    </script>
           </div>
           <div id="phone">
             <label for="oPhone">$lang[Telephone]</label>
@@ -99,7 +113,106 @@
     </fieldset>
   </form>
 </div>
+<script type="text/javascript">
+<!--
+AddOnload( checkSavedUserData );
+//-->
+</script>
 <!-- END ORDER_FORM -->
+<!-- BEGIN ORDER_FORM_LOGGED -->
+<script type="text/javascript" src="$config[dir_core]checkForm.js"></script>
+<div id="order">
+  <form action="$aData[sLinkName]" method="post" onsubmit="return checkForm( this )" id="orderForm">
+    <fieldset id="personalDataBlock">
+      <legend>$lang[Your_personal_information]</legend>
+      <fieldset id="personalData">
+        <div id="addressesList">
+        $addressesList
+        </div>
+        <fieldset id="setBasic">
+          <div id="firstName">
+            <label for="oFirstName">$lang[First_name]</label>
+            <input type="text" name="sFirstName" value="$aUser[sFirstName]" maxlength="30" class="input" onblur="saveUserData( this.name, this.value )" id="oFirstName" alt="simple" />
+          </div>
+          <div id="lastName">
+            <label for="oLastName">$lang[Last_name]</label>
+            <input type="text" name="sLastName" value="$aUser[sLastName]" maxlength="40" class="input" onblur="saveUserData( this.name, this.value )" id="oLastName" alt="simple" />
+          </div>
+          <div id="company">
+            <label for="oCompany">$lang[Company]</label>
+            <input type="text" name="sCompanyName" value="$aUser[sCompanyName]" maxlength="100" class="input" onblur="saveUserData( this.name, this.value )" id="oCompany" />
+          </div>
+          <div id="nip">
+            <label for="oNip">$lang[Nip]</label>
+            <input type="text" name="sNip" value="$aUser[sNip]" maxlength="20" class="input" onblur="saveUserData( this.name, this.value )" id="oNip" />
+          </div>
+          <div id="invoice">
+            <input type="checkbox" name="iInvoice" value="1" id="oInvoice" />
+            <label for="oInvoice">$lang[Invoice_info]</label>
+          </div>
+          <div id="street">
+            <label for="oStreet">$lang[Street]</label>
+            <input type="text" name="sStreet" value="$aUser[sStreet]" maxlength="40" class="input" onblur="saveUserData( this.name, this.value )" id="oStreet" alt="simple" />
+          </div>
+          <div id="zipCode">
+            <label for="oZipCode">$lang[Zip_code]</label>
+            <input type="text" name="sZipCode" value="$aUser[sZipCode]" maxlength="20" class="input" onblur="saveUserData( this.name, this.value )" id="oZipCode" alt="simple" />
+          </div>
+          <div id="city">
+            <label for="oCity">$lang[City]</label>
+            <input type="text" name="sCity" value="$aUser[sCity]" maxlength="40" class="input" onblur="saveUserData( this.name, this.value )" id="oCity" alt="simple" />
+          </div>
+        </fieldset>
+        <fieldset id="setExtend">
+          <div id="country">
+            <label for="oCountry">$lang[Country]</label>
+            <select name="sCountry" class="input" onblur="saveUserData( this.name, this.value )" id="oCountry" alt="simple" />
+    	    $countriesList
+    	    </select>
+    	    <script type="text/javascript">
+                <!--
+        	        var a=document.getElementById("oCountry");
+        	        for(var i=0; i<a.length; i++) {
+    	                if(a.options[i].value=="$aUser[sCountry]") {
+    	                    a.selectedIndex=i;
+    	                    break;
+        	            }
+        	        }
+                //-->
+    	    </script>
+          </div>
+          <div id="phone">
+            <label for="oPhone">$lang[Telephone]</label>
+            <input type="text" name="sPhone" value="$aUser[sPhone]" maxlength="40" class="input" onblur="saveUserData( this.name, this.value )" id="oPhone" alt="simple" />
+          </div>
+          <input type="hidden" name="sEmail" value="$aUser[sEmail]" maxlength="40" class="input" onblur="saveUserData( this.name, this.value )" id="oEmail" alt="email" />
+          <div id="promotionCode">
+            <label for="oPromotionCode">$lang[Promotion_code]</label>
+            <input type="text" name="sPromotionCode" value="$aUser[sPromotionCode]" maxlength="100" class="input" onblur="saveUserData( this.name, this.value )" id="oPromotionCode" />
+          </div>
+          <div id="comment">
+            <label for="oComment">$lang[Order_comment]</label>
+            <textarea name="sComment" cols="50" rows="9" id="oComment" style="height:155px"></textarea>
+          </div>
+        </fieldset>
+      </fieldset>
+    </fieldset>
+    $sNewAccount
+    <fieldset id="deliveryAndPayment">
+      <legend>$lang[Delivery_and_payment]</legend>
+      $sPaymentCarriers
+    </fieldset>
+    <fieldset id="pickupShop" style="display:none">
+      <legend>$lang[Pickup_shop]</legend>
+      $sPickupShops
+    </fieldset>
+    <fieldset id="orderedProducts">
+      <legend>$lang[Ordered_products]</legend>
+      $sOrderProducts
+    </fieldset>
+  </form>
+</div>
+<!-- END ORDER_FORM_LOGGED -->
 <!-- BEGIN RULES_ACCEPT -->
 <input type="hidden" name="iRules" value="1" />
 <em><input type="checkbox" name="iRulesAccept" value="1" alt="box;$lang[Require_rules_accept]" onChange="saveUserData( this.name, this.checked )" /></em>
@@ -126,7 +239,6 @@
 <script type="text/javascript">
 <!--
 var fOrderSummary = "$aData[fProductsSummary]";
-AddOnload( checkSavedUserData );
 //-->
 </script>
 <div>
