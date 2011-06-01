@@ -608,6 +608,7 @@ class Premium_Warehouse_eCommerce extends Module {
 		$form->addRule('platnosci_pos_auth_key', $this->t('This field should be numeric'), 'numeric');
 		$form->addElement('text', 'platnosci_key1', $this->t('Platnosci key 1'));
 		$form->addElement('text', 'platnosci_key2', $this->t('Platnosci key 2'));
+		$form->addElement('text', 'epesi_payments_url', $this->t('Epesi Payments module URL'));
 
 		$form->addElement('text', 'zagiel_id', $this->t('Zagiel ID'));
 		$form->addRule('zagiel_id', $this->t('This field should be numeric'), 'numeric');
@@ -669,6 +670,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 \$config['platnosci_pos_auth_key'] = ".$vals['platnosci_pos_auth_key'].";
 \$config['platnosci_key1'] = '".$vals['platnosci_key1']."';
 \$config['platnosci_key2'] = '".$vals['platnosci_key2']."';
+\$config['epesi_payments_url'] = '".$vals['epesi_payments_url']."';
 \$config['zagiel_id'] = ".($vals['zagiel_id']?$vals['zagiel_id']:'null').";
 \$config['zagiel_min_price'] = ".($vals['zagiel_min_price']?$vals['zagiel_min_price']:'null').";
 \$config['paypal_email'] = '".$vals['paypal_email']."';

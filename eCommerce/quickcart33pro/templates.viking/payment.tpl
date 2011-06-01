@@ -126,7 +126,7 @@
 <!-- END PAYMENT_FORM_5 -->
 
 <!-- BEGIN PAYMENT_FORM_6 -->
-<form action="http://localhost/epesi-trunk/modules/Premium/Payments/" method="post" id="formPayment">
+<form action="$config[epesi_payments_url]" method="post" id="formPayment">
   <fieldset>
     <input type="hidden" name="record_id" value="$iOrder" />
     <input type="hidden" name="record_type" value="premium_warehouse_items_orders" />

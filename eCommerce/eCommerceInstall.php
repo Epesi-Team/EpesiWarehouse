@@ -518,6 +518,8 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Variable::set('ecommerce_item_prices',true);
 		Variable::set('ecommerce_item_descriptions',true);
 		Variable::set('ecommerce_item_parameters',true);
+		
+		Premium_PaymentsCommon::new_addon('premium_warehouse_items_orders');
 
 		$this->create_data_dir();
 		@mkdir($this->get_data_dir().'banners');
@@ -552,6 +554,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_pages', 'Premium/Warehouse/eCommerce', 'pages_stats_addon');
 		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_products', 'Premium/Warehouse/eCommerce', 'products_stats_addon');
 		Utils_RecordBrowserCommon::delete_addon('premium_warehouse_items_categories', 'Premium/Warehouse/eCommerce', 'categories_stats_addon');
+		Premium_PaymentsCommon::delete_addon('premium_warehouse_items_orders');
 
 	
 		$langs = Utils_CommonDataCommon::get_array('Premium/Warehouse/eCommerce/Languages');
@@ -649,6 +652,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 			array('name'=>'Libs/Leightbox','version'=>0),
 			array('name'=>'Utils/RecordBrowser', 'version'=>0),
             array('name'=>'Premium/Warehouse/Wholesale', 'version'=>0),
+            array('name'=>'Premium/Payments', 'version'=>0),
             array('name'=>'Premium/MultipleAddresses', 'version'=>0));
 	}
 	
