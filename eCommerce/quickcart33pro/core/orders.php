@@ -364,11 +364,14 @@ class Orders
     	$colst = array('contact'=>array('email'=>'sEmail', 'last_name'=>'sLastName', 'first_name'=>'sFirstName', 'address_1'=>'sStreet', 'postal_code'=>'sZipCode', 'city'=>'sCity', 'country'=>'sCountry', 'work_phone'=>'sPhone'));
     	if($company!==null)
     		$colst['company']=array('email'=>'sEmail', 'company_name'=>'sCompanyName', 'tax_id'=>'sNip', 'address_1'=>'sStreet', 'postal_code'=>'sZipCode', 'city'=>'sCity', 'country'=>'sCountry', 'phone'=>'sPhone');
+    	$insert_multipleaddress=false;
 	    foreach($colst as $tab=>$cols) {    			
 	    	$modified = false;
     		foreach($cols as $epesi=>$local)
     			if($aUser[$local]!=$aForm[$local]) {
     				$modified = true;
+    				if(in_array($epesi,array('last_name','first_name','address_1','postal_code','city','country','company_name')))
+        				$insert_multipleaddress = true;
 	    			break;
     			}
 	    	if($modified) {
@@ -381,6 +384,14 @@ class Orders
 		    		}
     		}
     	}
+   		if($insert_multipleaddress) {
+   		    $ex = DB::GetOne('select 1 from premium_multiple_addresses_data_1 where f_last_name=%s AND f_first_name=%s AND f_company_name=%s AND f_address_1=%s AND f_city=%s AND f_country=%s AND f_postal_code=%s AND f_record_id=%d AND f_record_type="contact"',array($aUser['sLastName'],$aUser['sFirstName'],$aUser['sCompanyName'],$aUser['sStreet'],$aUser['sCity'],$aUser['sCountry'],$aUser['sZipCode'],$contact));
+   		    if(!$ex) {
+   		        DB::Execute('insert into premium_multiple_addresses_data_1 (f_last_name,f_first_name,f_company_name,f_address_1,f_city,f_country,f_postal_code,created_on,f_record_id,f_record_type) VALUES(%s,%s,%s,%s,%s,%s,%s,%T,%d,"contact")',array($aUser['sLastName'],$aUser['sFirstName'],$aUser['sCompanyName'],$aUser['sStreet'],$aUser['sCity'],$aUser['sCountry'],$aUser['sZipCode'],$t,$contact));
+   		        $mcid = DB::Insert_ID('premium_multiple_addresses_data_1','id');
+   		        DB::Execute('update premium_multiple_addresses_data_1 SET f_nickname=%s where id=%d',array($this->t('Address').' #'.str_pad($mcid,6,'0',STR_PAD_LEFT),$mcid));
+   		    }
+   		}
     } else {
     	$company = DB::GetOne('SELECT id FROM company_data_1 WHERE f_email=%s AND active=1',array($aForm['sEmail']));
     	if(!$company) $company = null;
@@ -429,7 +440,16 @@ class Orders
 		    	DB::Execute('INSERT INTO premium_ecommerce_users_data_1(created_on,f_contact,f_password) VALUES (%T,%d,%s)',
     				array($t,$contact,$mdpass));
     			$oldpass = $mdpass;
-    		}
+    		} elseif(strlen($oldpass)==35) { //OS Commerce
+    	        $stack = explode(':', $oldpass);
+                if (sizeof($stack) == 2) {
+                    if (md5($stack[1] . $aForm['sPassword']) == $stack[0]) {
+                        $oldpass = $mdpass;
+                        DB::Execute('UPDATE premium_ecommerce_users_data_1 SET f_password=%s WHERE f_contact=%d',
+            				array($mdpass,$contact));
+                    }
+                }
+    	    }
     		if($oldpass==$mdpass) {
 	   	    	//mark logged in
 	    		$_SESSION['user'] = DB::Insert_ID('premium_ecomerce_users_data_1','id');
@@ -506,7 +526,7 @@ class Orders
 				    w.f_address_1 as sStreet,
 				    w.f_postal_code as sZipCode,
 				    w.f_city as sCity,
-				    w.f_country as sCountry,
+				    w.f_country as sCountryCode,
 				    w.f_phone as sPhone,
 				    w.f_tax_id as sNip,
 				    o.f_comment as sComment,
@@ -529,7 +549,7 @@ class Orders
       $countries_id = DB::GetOne('SELECT id FROM utils_commondata_tree WHERE akey="Countries"');
       if($countries_id===false)
 	    die('Common data key "Countries" not defined.');
-      $aData['sCountry'] = DB::GetOne('SELECT p.value FROM utils_commondata_tree p WHERE p.parent_id=%d AND p.akey=%s ORDER BY p.akey',array($countries_id,$aData['sCountry']));
+      $aData['sCountry'] = DB::GetOne('SELECT p.value FROM utils_commondata_tree p WHERE p.parent_id=%d AND p.akey=%s ORDER BY p.akey',array($countries_id,$aData['sCountryCode']));
       global $translations;
       if(isset($translations['Utils_CommonData'][$aData['sCountry']]) && $translations['Utils_CommonData'][$aData['sCountry']])
 	$aData['sCountry'] = $translations['Utils_CommonData'][$aData['sCountry']];
@@ -624,7 +644,7 @@ class Orders
     return false;
   } // end function throwPaymentCarrier
   
-  static $payments_to_qcpayments = array('DotPay'=>1,'Przelewy24'=>2,'PayPal'=>3, 'Platnosci.pl'=>4, 'Zagiel'=>5);
+  static $payments_to_qcpayments = array('DotPay'=>1,'Przelewy24'=>2,'PayPal'=>3, 'Platnosci.pl'=>4, 'Zagiel'=>5, 'CreditCardBasic'=>6);
   private $is_pickup = false;
 
   /**

@@ -24,8 +24,22 @@ class Users
   function login( $v ){
 	global $config;
 
-	$uid = DB::GetRow('SELECT e.id, c.id as cid, c.f_company_name FROM premium_ecommerce_users_data_1 e INNER JOIN contact_data_1 c ON c.id=e.f_contact WHERE e.f_password=%s AND c.f_email=%s AND e.active=1 AND c.active=1',array(md5($v['sPassword']),$v['sEmail']));
+	$uid = DB::GetRow('SELECT e.id, e.f_password, c.id as cid, c.f_company_name FROM premium_ecommerce_users_data_1 e INNER JOIN contact_data_1 c ON c.id=e.f_contact WHERE c.f_email=%s AND e.active=1 AND c.active=1',array($v['sEmail']));
 	if(!$uid) return false;
+    
+    $mdpass = md5($v['sPassword']);
+    
+    if(strlen($uid['f_password'])==35) { //OS Commerce
+        $stack = explode(':', $uid['f_password']);
+        if (sizeof($stack) == 2) {
+           if (md5($stack[1] . $aForm['sPassword']) == $stack[0]) {
+              $uid['f_password'] = $mdpass;
+              DB::Execute('UPDATE premium_ecommerce_users_data_1 SET f_password=%s WHERE f_contact=%d',
+     				array($mdpass,$uid['id']));
+           }
+        }
+    }
+	if($uid['f_password']!=$mdpass) return false;
 
 	$oPage =& Pages::getInstance( );
       	
@@ -33,9 +47,9 @@ class Users
       	$_SESSION['contact'] = $uid['cid'];
       	$company = explode('__',trim($uid['f_company_name'],'__'));
       	$_SESSION['company'] = array_shift($company);
-      	if(!$_SESSION['company'])
+      	if(!$_SESSION['company'] || !DB::GetOne('SELECT 1 FROM company_data_1 WHERE id=%d AND active=1',array($_SESSION['company'])))
       		$_SESSION['company'] = null;
-
+  
         if( $_SESSION['iOrderQuantity'.LANGUAGE] && isset( $config['order_page'] ) && isset( $oPage->aPages[$config['order_page']] ) ){
           header( 'Location: '.REDIRECT.$oPage->aPages[$config['order_page']]['sLinkName'] );
         } else {
@@ -121,6 +135,17 @@ class Users
         $sOrder .= $oTpl->tbHtml( 'orders_panel.tpl', 'ORDER_FOOTER' );
         return $sOrder;
   }
+  
+  function throwAddresses() {
+    if(!self::logged()) return null;
+    global $aUser;
+    $ret = array('default'=>array('sLastName'=>$aUser['sLastName'],'sFirstName'=>$aUser['sFirstName'],'sCompanyName'=>$aUser['sCompanyName'],'sStreet'=>$aUser['sStreet'],'sCity'=>$aUser['sCity'],'sCountry'=>$aUser['sCountry'],'sZipCode'=>$aUser['sZipCode']));
+    $a = DB::Execute('SELECT * from premium_multiple_addresses_data_1 WHERE f_record_type="contact" and f_record_id=%d ORDER BY id DESC',array($_SESSION['contact']));
+    while($row = $a->FetchRow()) {
+        $ret[$row['id']] = array('sLastName'=>$row['f_last_name'],'sFirstName'=>$row['f_first_name'],'sCompanyName'=>$row['f_company_name'],'sStreet'=>$row['f_address_1'],'sCity'=>$row['f_city'],'sCountry'=>$row['f_country'],'sZipCode'=>$row['f_postal_code']);
+    }
+    return $ret;
+  } 
 }
 
 ?>
