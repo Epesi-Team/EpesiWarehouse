@@ -48,6 +48,16 @@
 </form>
 <!-- END BASKET -->
 
+<!-- BEGIN BASKET_AJAX -->
+<form action="$sBasketPage" method="post" id="addBasket">
+  <fieldset>
+    <input type="hidden" name="iProductAdd" value="$aData[iProduct]" />
+    <input type="hidden" name="iQuantity" value="1" />
+    <input type="submit" value="$lang[Basket_add]" class="submit" />
+  </fieldset>
+</form>
+<!-- END BASKET_AJAX -->
+
 <!-- BEGIN PRICE --><div id="price"><em>$lang['Price']:</em><strong id="priceValue">$aData[sPrice]</strong><span>$config[currency_symbol]</span></div><!-- END PRICE -->
 <!-- BEGIN NO_PRICE --><div id="noPrice">$lang['Call_for_price']</div><!-- END NO_PRICE -->
 <!-- BEGIN OUT_OF_STOCK --><div id="noPrice">$lang['Out_of_stock']</div><!-- END OUT_OF_STOCK -->
@@ -178,6 +188,7 @@
     $aData[sImage]
     <a href="$aData[sLinkName]" title="$aData[sName]">$aData[sName]</a>
     $aData[sPrice]
+    =$sData[sBasketAjax]=
   </td>
 <!-- END RELATED_LIST -->
 <!-- BEGIN RELATED_PRICE --><div class="price"><strong>$aData[sPrice]</strong><span>$config[currency_symbol]</span></div><!-- END RELATED_PRICE -->

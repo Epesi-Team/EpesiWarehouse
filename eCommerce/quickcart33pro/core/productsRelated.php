@@ -62,9 +62,15 @@ function listProductsRelated( $sFile, $iProduct ){
     $aData['sPrice'] = is_numeric( $aData['fPrice'] ) ? displayPrice( $aData['fPrice'] ) : $aData['fPrice'];
     $oTpl->setVariables( 'aData', $aData );
 
-    if( is_numeric( $aData['fPrice'] ) )
+    if( is_numeric( $aData['fPrice'] ) ) {
+      global $config,$oPage;
+      if( isset( $config['basket_page'] ) && isset( $oPage->aPages[$config['basket_page']] ) ){
+        global $sBasketPage;
+        $sBasketPage = $oPage->aPages[$config['basket_page']]['sLinkName'];
+        $aData['sBasketAjax'] = $oTpl->tbHtml( $sFile, 'BASKET_AJAX' );
+      }
       $aData['sPrice'] = $oTpl->tbHtml( $sFile, 'RELATED_PRICE' );
-    else
+    } else
       $aData['sPrice'] = $oTpl->tbHtml( $sFile, 'RELATED_NO_PRICE' );
 
     $oTpl->setVariables( 'aData', $aData );
