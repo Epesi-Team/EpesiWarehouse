@@ -259,11 +259,25 @@ if( isset( $iContent ) && is_numeric( $iContent ) ){
 			$countries[$k] = $translations['Utils_CommonData'][$v];
 	  }
 	  foreach($countries as $k=>$v) {
-		$countriesList .= '<option value="'.$k.'" '.(strtolower($k)==LANGUAGE_CONFIG?'selected="1"':'').'>'.$v.'</option>';
+		$countriesList .= '<option name="sAddress" value="'.$k.'" '.(strtolower($k)==LANGUAGE?'selected="1"':'').'>'.$v.'</option>';
 	  }
 	  
 	  $oTpl->setVariables('countriesList',$countriesList);
-          $sOrder = $sOrderError.$oTpl->tbHtml( 'orders_form.tpl', 'ORDER_FORM');
+	  
+	  $addresses = $oUser->throwAddresses();
+	  if($addresses) {
+    	  $addressesList = '<select onChange="changeAddr(this.value)">';
+    	  foreach($addresses as $id=>$addr) {
+    	    if(!$addr['sFirstName'] || !$addr['sLastName']) continue;
+    	    $addressesList .= '<option value="'.$id.'" '.($id=='default'?'selected':'').'>'.$addr['sFirstName'].' '.$addr['sLastName'].($addr['sCompanyName']?', '.$addr['sCompanyName']:'').($addr['sStreet']?', '.$addr['sStreet']:'').($addr['sCity']?', '.$addr['sCity']:'').($addr['sZipCode']?', '.$addr['sZipCode']:'').'</option>';
+    	  }
+   	      $addressesList .= '<option value="new">-- '.$GLOBALS['lang']['New_address'].' --</option>';
+   	      $addresses['new'] = array('sFirstName'=>'','sLastName'=>'','sCompanyName'=>'','sStreet'=>'','sCity'=>'','sCountry'=>'','sZipCode'=>'');
+	      $addressesList .= '</select><script type="text/javascript">var addressesList='.json_encode($addresses).';function changeAddr(val){var a=addressesList[val];for(p in a){document.forms["orderForm"].elements[p].value=a[p]}}</script>';
+	      $oTpl->setVariables('addressesList',$addressesList);
+	  }
+	  
+          $sOrder = $sOrderError.$oTpl->tbHtml( 'orders_form.tpl', 'ORDER_FORM'.($oUser->logged()?'_LOGGED':''));
         }
       }
       else{

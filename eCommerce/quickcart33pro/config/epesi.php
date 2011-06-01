@@ -1,5 +1,5 @@
 <?php
-define('EPESI_DATA_DIR','/var/www/viking/demo/data');
+define('EPESI_DATA_DIR','/home/shacky/Projects/epesi-trunk/data');
 if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi, log in as administrator, go to Menu->Adminitration->eCommerce->QuickCart settings and add \''.dirname(dirname(__FILE__)).'\' directory to setup quickcart');
 $config['default_lang'] = 'us';
 $config['available_lang'] = array('us');
