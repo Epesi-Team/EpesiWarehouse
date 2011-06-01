@@ -202,7 +202,7 @@ $lang['Compare_services_links'] = 'Links for compare services';
 $lang['Skapiec_shop_id'] = 'Shop id in skapiec.pl';
 
 $lang['open_authorization_window'] =  'open authorization window';
-$lang['There_are_money_to_pay'] =     'There are money to pay on your account';
+$lang['There_are_money_to_pay'] =     'Thank you, your order has been received.';
 $lang['There_are_no_money_to_pay'] =  'There are no money to pay on your account, contact you bank and try again later.';
 $lang['Authorization_error'] =        'There was an error during authorization.';
 $lang['Pay_realized'] =               'Payment realized';
@@ -365,4 +365,5 @@ $lang['Remind_password'] = 'Remind password';
 $lang['Password_reminder_mail_subject'] = 'Password reminder';
 $lang['Password_reminder_mail_body'] = 'New password: %s';
 $lang['New_password_sent'] = 'New password has been sent';
+$lang['New_address'] = 'New address';
 ?>

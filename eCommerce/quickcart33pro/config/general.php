@@ -93,7 +93,7 @@ $config['display_expanded_menu'] = false;
 $config['display_subcategory_products'] = true;
 $config['change_files_names'] = false;
 
-$aOuterPaymentOption = Array( 1 => 'DotPay', 2 => 'Przelewy24', 3 => 'PayPal', 4 => 'Platnosci.pl', 5 => 'Żagiel' );
+$aOuterPaymentOption = Array( 1 => 'DotPay', 2 => 'Przelewy24', 3 => 'PayPal', 4 => 'Platnosci.pl', 5 => 'Żagiel', 6=>'Credit Card (basic)' );
 define( 'DIR_CORE',       $config['dir_core'] );
 define( 'DIR_FILES',      $config['dir_files'] );
 define( 'DIR_BACKUP', DIR_FILES.'backup/' );

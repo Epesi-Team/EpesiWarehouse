@@ -371,4 +371,5 @@ $lang['Remind_password'] = 'Remind password';
 $lang['Password_reminder_mail_subject'] = 'Password reminder';
 $lang['Password_reminder_mail_body'] = 'New password: %s';
 $lang['New_password_sent'] = 'New password has been sent';
+$lang['New_address'] = 'New address';
 ?>

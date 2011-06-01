@@ -18,11 +18,6 @@
   </h3>
 </div>
 <!-- END REQUIRED_FIELDS -->
-<!-- BEGIN COMMENT_ADDED -->
-<div class="message" id="ok">
-  <h3>$lang['Comment_added']</h3>
-</div>
-<!-- END COMMENT_ADDED -->
 
 <!-- BEGIN MAIL_SEND_CORRECT -->
 <div class="message">
@@ -46,21 +41,3 @@
   </h3>
 </div>
 <!-- END REQUIRED_FIELDS -->
-<!-- BEGIN COMMENT_ADDED -->
-<div class="message" id="ok">
-  <h3>$lang['Comment_added']</h3>
-</div>
-<!-- END COMMENT_ADDED -->
-<!-- BEGIN REQUIRED_FIELDS -->
-<div class="message" id="error">
-  <h3>
-    $lang[cf_no_word]<br />
-    <a href="javascript:history.back();">&laquo; $lang[back]</a>
-  </h3>
-</div>
-<!-- END REQUIRED_FIELDS -->
-<!-- BEGIN COMMENT_ADDED -->
-<div class="message" id="ok">
-  <h3>$lang['Comment_added']</h3>
-</div>
-<!-- END COMMENT_ADDED -->

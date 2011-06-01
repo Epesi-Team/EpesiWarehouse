@@ -16,6 +16,7 @@ $config['platnosci_id']	= 1001;
 $config['platnosci_pos_auth_key'] = 1111;
 $config['platnosci_key1'] = 'asdf786sdf65asdf78sd785fs7d6f57s';
 $config['platnosci_key2'] = 'zkjxcv87sd989zxcv79sd6ds98fs7df9';
+$config['epesi_payments_url'] = 'http://localhost/epesi-trunk/modules/Premium/Payments/';
 $config['zagiel_id'] = null;
 $config['zagiel_min_price'] = null;
 $config['paypal_email'] = 'test@test.com';

@@ -203,7 +203,7 @@ $lang['Skapiec_shop_id'] = 'Identyfikator sklepu w serwisie skapiec.pl';
 $lang['Compare_services_links'] = 'Linki dla porównywarek';
 
 $lang['open_authorization_window'] =  'otwórz okno autoryzacji';
-$lang['There_are_money_to_pay'] =     'Na twoim koncie są dostepne środki do realizacji zamówienia.';
+$lang['There_are_money_to_pay'] =     'Zamówienie zostało przyjęte do realizacji.';
 $lang['There_are_no_money_to_pay'] =  'Na twoim koncie brak wystarczających srodków do realizacji zamówienia lub bank odrzucił autoryzacje transakcji z innego powodu. Skontaktuj sie ze swoim bankiem w celu wyjaśnienia sprawy. Później zapraszamy do ponownego złożenia zamówienia.';
 $lang['Authorization_error'] =        'W czasie autoryzacji wystąpił błąd.';
 $lang['Pay_realized'] =               'Płatność zrealizowana';
@@ -366,4 +366,5 @@ $lang['Remind_password'] = 'Przypomnij hasło';
 $lang['Password_reminder_mail_subject'] = 'Przypomnienie hasła do sklepu '.$_SERVER['HTTP_HOST'];
 $lang['Password_reminder_mail_body'] = 'Twoje hasło do sklepu internetowego '.$_SERVER['HTTP_HOST'].' zostało zresetowane.<br>Nowe hasło: %s<br><br>Życzymy udanych zakupów';
 $lang['New_password_sent'] = 'Nowe hasło zostało wysłane na podany adres e-mail';
+$lang['New_address'] = 'nowy adres';
 ?>
