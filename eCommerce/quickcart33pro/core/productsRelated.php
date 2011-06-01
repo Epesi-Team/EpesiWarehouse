@@ -114,7 +114,6 @@ function throwProductsRelated( $iProduct ){
     $rel = array_filter(explode('__',DB::GetOne('SELECT f_related_products FROM premium_ecommerce_products_data_1 WHERE f_item_name=%d AND active=1',array($iProduct))));
     if($rel)
 	return array_combine($rel,$rel);
-    return array();
     //} epesi
 } // end function
 

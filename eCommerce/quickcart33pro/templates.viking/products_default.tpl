@@ -49,13 +49,7 @@
 <!-- END BASKET -->
 
 <!-- BEGIN BASKET_AJAX -->
-<form action="$sBasketPage" method="post" id="addBasket">
-  <fieldset>
-    <input type="hidden" name="iProductAdd" value="$aData[iProduct]" />
-    <input type="hidden" name="iQuantity" value="1" />
-    <input type="submit" value="$lang[Basket_add]" class="submit" />
-  </fieldset>
-</form>
+<button class="submit" onClick="this.disabled=true;this.style.backgroundColor='#DDDDDD';new ajax('$sBasketPage&amp;ajax=1&amp;iProductAdd=$aData[iProduct]&amp;iQuantity=1',{update:$('basketNumProducts')})">$lang[Basket_add]"</button>
 <!-- END BASKET_AJAX -->
 
 <!-- BEGIN PRICE --><div id="price"><em>$lang['Price']:</em><strong id="priceValue">$aData[sPrice]</strong><span>$config[currency_symbol]</span></div><!-- END PRICE -->
@@ -188,7 +182,7 @@
     $aData[sImage]
     <a href="$aData[sLinkName]" title="$aData[sName]">$aData[sName]</a>
     $aData[sPrice]
-    =$sData[sBasketAjax]=
+    $aData[sBasketAjax]
   </td>
 <!-- END RELATED_LIST -->
 <!-- BEGIN RELATED_PRICE --><div class="price"><strong>$aData[sPrice]</strong><span>$config[currency_symbol]</span></div><!-- END RELATED_PRICE -->

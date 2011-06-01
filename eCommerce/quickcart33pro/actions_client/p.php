@@ -173,7 +173,15 @@ if( isset( $iContent ) && is_numeric( $iContent ) ){
       if( isset( $iProductAdd ) && is_numeric( $iProductAdd ) && isset( $iQuantity ) && is_numeric( $iQuantity ) && $iQuantity > 0 && $iQuantity < 10000 && $prod && is_numeric( $prod['fPrice'] ) ){
         // add product to basket
         $oOrder->addToBasket( $iProductAdd, $iQuantity );
-        header( 'Location: '.REDIRECT.$aData['sLinkName'] );
+        if(isset($_REQUEST['ajax'])) {
+            $oOrder->generateBasket( );
+            $qty = 0;
+            foreach($oOrder->aProducts as $p)
+                $qty += $p['iQuantity'];
+            print($qty);
+        } else {
+            header( 'Location: '.REDIRECT.$aData['sLinkName'] );
+        }
         exit;
       }
       // display basket
