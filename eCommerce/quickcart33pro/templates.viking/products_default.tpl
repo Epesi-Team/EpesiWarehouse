@@ -182,7 +182,7 @@
     $aData[sImage]
     <a href="$aData[sLinkName]" title="$aData[sName]">$aData[sName]</a>
     $aData[sPrice]
-    $aData[sBasketAjax]
+    $aData[sBasket]
   </td>
 <!-- END RELATED_LIST -->
 <!-- BEGIN RELATED_PRICE --><div class="price"><strong>$aData[sPrice]</strong><span>$config[currency_symbol]</span></div><!-- END RELATED_PRICE -->

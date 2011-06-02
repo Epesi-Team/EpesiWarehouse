@@ -17,7 +17,7 @@ function listProductsRelated( $sFile, $iProduct ){
     $aProducts = array();
     if($aRelatedIds) {
 	    $oProduct =& Products::getInstance( );
-	    $aProducts = $oProduct->getProducts('pr.id in ('.implode($aRelatedIds,',').')');
+	    $aProducts = $oProduct->getProducts('it.id in ('.implode($aRelatedIds,',').')');
     }
 
   $iColumns = 3;
@@ -63,11 +63,11 @@ function listProductsRelated( $sFile, $iProduct ){
     $oTpl->setVariables( 'aData', $aData );
 
     if( is_numeric( $aData['fPrice'] ) ) {
-      global $config,$oPage;
+      global $config,$oPage,$iContent;
       if( isset( $config['basket_page'] ) && isset( $oPage->aPages[$config['basket_page']] ) ){
         global $sBasketPage;
         $sBasketPage = $oPage->aPages[$config['basket_page']]['sLinkName'];
-        $aData['sBasketAjax'] = $oTpl->tbHtml( $sFile, 'BASKET_AJAX' );
+        $aData['sBasket'] = $oTpl->tbHtml( $sFile, 'BASKET'.($iContent == $config['basket_page']?'':'_AJAX') );
       }
       $aData['sPrice'] = $oTpl->tbHtml( $sFile, 'RELATED_PRICE' );
     } else
@@ -111,9 +111,18 @@ function checkThrowProductsRelated( $aData, $iProduct ){
 function throwProductsRelated( $iProduct ){
     //{ epesi
     $aReturn  = array();
-    $rel = array_filter(explode('__',DB::GetOne('SELECT f_related_products FROM premium_ecommerce_products_data_1 WHERE f_item_name=%d AND active=1',array($iProduct))));
+    if(!is_array($iProduct)) $iProduct = array($iProduct);
+    $rels = DB::GetCol('SELECT f_related_products FROM premium_ecommerce_products_data_1 WHERE f_item_name IN ('.implode(',',$iProduct).') AND active=1');
+    $rel = array();
+    foreach($rels as $rr)
+        $rel = array_merge($rel,array_filter(explode('__',$rr)));
+    if(!$rel) return array();
+    $rel = array_unique($rel);
+    $rel = DB::GetCol('SELECT f_item_name FROM premium_ecommerce_products_data_1 WHERE id IN ('.implode(',',$rel).') AND active=1');
+    $rel = array_diff($rel,$iProduct);
     if($rel)
-	return array_combine($rel,$rel);
+    	return array_combine($rel,$rel);
+	return array();
     //} epesi
 } // end function
 

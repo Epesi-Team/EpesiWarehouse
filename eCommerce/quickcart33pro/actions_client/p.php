@@ -188,6 +188,14 @@ if( isset( $iContent ) && is_numeric( $iContent ) ){
       $sBasketList = $oOrder->listProducts( 'orders_basket.tpl' );
       if( !isset( $sBasketList ) )
         $sBasketList = $oTpl->tbHtml( 'orders_basket.tpl', 'BASKET_EMPTY' );
+      else {
+        require_once DIR_CORE.'productsRelated.php';
+        $prods = array();
+        foreach($oOrder->aProducts as $p) $prods[] = $p['iProduct'];
+        $sProductsRelated = listProductsRelated( $config['default_products_template'], $prods );
+        $sCrossSell = ( isset( $config['cross_sell'] ) && $config['cross_sell'] === true ) ? $oProduct->listProductsCrossSell( $config['default_products_template'], $prods ) : null;
+        $sBasketList .= '<br/>'.$sProductsRelated.'<br/>'.$sCrossSell;
+      }
     }
     else{
       $sBasketList = null;

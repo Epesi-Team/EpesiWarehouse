@@ -699,11 +699,13 @@ class Products
     $content= null;
     $oTpl   =& TplParser::getInstance( );
     
+    if(!is_array($iProduct)) $iProduct = array($iProduct);
+    
     $products = DB::GetAssoc('SELECT or_det.f_item_name,count(or_det.f_item_name) FROM premium_warehouse_items_orders_details_data_1 or_det 
-			    WHERE or_det.f_item_name!=%d AND or_det.f_transaction_id IN 
+			    WHERE or_det.f_item_name NOT IN ('.implode(',',$iProduct).') AND or_det.f_transaction_id IN 
 			    (SELECT ord.f_transaction_id FROM premium_warehouse_items_orders_details_data_1 or_det2 
 			    INNER JOIN premium_ecommerce_orders_data_1 ord ON ord.f_transaction_id=or_det2.f_transaction_id
-			    WHERE ord.f_language=%s AND or_det2.f_item_name=%d) GROUP BY or_det.f_item_name ORDER BY count(or_det.f_item_name) DESC LIMIT 5',array($iProduct,LANGUAGE,$iProduct));
+			    WHERE ord.f_language=%s AND or_det2.f_item_name IN ('.implode(',',$iProduct).')) GROUP BY or_det.f_item_name ORDER BY count(or_det.f_item_name) DESC LIMIT 5',array(LANGUAGE));
 
 
     foreach($products as $p=>$num) {
