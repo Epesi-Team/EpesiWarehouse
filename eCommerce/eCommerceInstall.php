@@ -652,6 +652,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 			array('name'=>'Libs/OpenFlashChart','version'=>0),
 			array('name'=>'Libs/Leightbox','version'=>0),
 			array('name'=>'Utils/RecordBrowser', 'version'=>0),
+			array('name'=>'Utils/RecordBrowser/RecordPicker', 'version'=>0),
             array('name'=>'Premium/Warehouse/Wholesale', 'version'=>0),
             array('name'=>'Premium/Payments', 'version'=>0),
             array('name'=>'Premium/MultipleAddresses', 'version'=>0));

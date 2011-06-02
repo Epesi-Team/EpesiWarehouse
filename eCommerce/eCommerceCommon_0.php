@@ -972,8 +972,12 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 
     public static function QFfield_related_products(&$form, $field, $label, $mode, $default,$y,$x) {
         if ($mode=='edit' || $mode=='add') {
-            $form->addElement('automulti', $field, $label, array('Premium_Warehouse_eCommerceCommon', 'automulti_search'), array($x->record), array('Premium_Warehouse_eCommerceCommon','automulti_format'));
+            $el = $form->addElement('automulti', $field, $label, array('Premium_Warehouse_eCommerceCommon', 'automulti_search'), array($x->record), array('Premium_Warehouse_eCommerceCommon','automulti_format'));
             $form->setDefaults(array($field=>$default));
+
+			$rp = $x->init_module('Utils/RecordBrowser/RecordPicker',array());
+    		$x->display_module($rp, array('premium_ecommerce_products',$field,array('Premium_Warehouse_eCommerceCommon','automulti_format'),array('!id'=>$x->record['id']),array(),array(),array(),array()));
+			$el->set_search_button('<a '.$rp->create_open_href().' '.Utils_TooltipCommon::open_tag_attrs($x->t('Advanced Selection')).' href="javascript:void(0);"><img border="0" src="'.Base_ThemeCommon::get_template_file('Utils_RecordBrowser','icon_zoom.jpg').'"></a>');
         } else {
             $form->addElement('static', $field, $label, self::display_related_product_name(array($field=>$default),false));
         }
@@ -981,8 +985,12 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 
     public static function QFfield_popup_products(&$form, $field, $label, $mode, $default,$y,$x) {
         if ($mode=='edit' || $mode=='add') {
-            $form->addElement('automulti', $field, $label, array('Premium_Warehouse_eCommerceCommon', 'automulti_search'), array($x->record), array('Premium_Warehouse_eCommerceCommon','automulti_format'));
+            $el = $form->addElement('automulti', $field, $label, array('Premium_Warehouse_eCommerceCommon', 'automulti_search'), array($x->record), array('Premium_Warehouse_eCommerceCommon','automulti_format'));
             $form->setDefaults(array($field=>$default));
+
+			$rp = $x->init_module('Utils/RecordBrowser/RecordPicker',array());
+			$x->display_module($rp, array('premium_ecommerce_products',$field,array('Premium_Warehouse_eCommerceCommon','automulti_format'),array('!id'=>$x->record['id']),array(),array(),array(),array()));
+			$el->set_search_button('<a '.$rp->create_open_href().' '.Utils_TooltipCommon::open_tag_attrs($this->t('Advanced Selection')).' href="javascript:void(0);"><img border="0" src="'.Base_ThemeCommon::get_template_file('Utils_RecordBrowser','icon_zoom.jpg').'"></a>');
         } else {
             $form->addElement('static', $field, $label, self::display_popup_product_name(array($field=>$default),false));
         }
@@ -994,6 +1002,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
     }
 
     public static function automulti_format($id) {
+        if(is_array($id)) return DB::GetOne('SELECT f_item_name FROM premium_warehouse_items_data_1 WHERE id=%d',array($id['item_name']));
         return DB::GetOne('SELECT wp.f_item_name FROM premium_ecommerce_products_data_1 ep INNER JOIN premium_warehouse_items_data_1 wp ON ep.f_item_name=wp.id WHERE ep.id=%d',array($id));
     }
 }
