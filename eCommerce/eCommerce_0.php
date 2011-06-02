@@ -73,11 +73,15 @@ class Premium_Warehouse_eCommerce extends Module {
 		$this->rb->set_defaults(array('publish'=>1,'status'=>1));
 		$this->rb->set_additional_actions_method(array($this, 'actions_for_position'));
 		$this->rb->force_order(array('position'=>'ASC'));
+
+		$opts = Premium_Warehouse_eCommerceCommon::get_categories();
+		$this->rb->set_custom_filter('item_name',array('type'=>'select','label'=>$this->t('Category'),'args'=>$opts,'trans_callback'=>array('Premium_Warehouse_eCommerceCommon', 'category_filter')));
+
 //		$cols = array('item_name'=>array('name'=>'Item name')
 //		        );
 		$this->display_module($this->rb);//,array(array('position'=>'ASC'),array(),$cols));
 	}
-	
+
 	public function compare_services() {
 		if($this->is_back()) return false;
 		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
