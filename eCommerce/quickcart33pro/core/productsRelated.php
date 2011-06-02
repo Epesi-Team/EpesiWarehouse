@@ -112,7 +112,7 @@ function throwProductsRelated( $iProduct, $tbl = 'related' ){
     //{ epesi
     $aReturn  = array();
     if(!is_array($iProduct)) $iProduct = array($iProduct);
-    $rels = DB::GetCol('SELECT f_'.$tbl.'_products FROM premium_ecommerce_products_data_1 WHERE f_item_name IN ('.implode(',',$iProduct).') AND active=1');
+    $rels = DB::GetCol('SELECT f_'.$tbl.'_products FROM premium_ecommerce_products_data_1 WHERE f_item_name IN ('.implode(',',$iProduct).') AND active=1 AND f_publish=1');
     $rel = array();
     foreach($rels as $rr)
         $rel = array_merge($rel,array_filter(explode('__',$rr)));
