@@ -62,7 +62,7 @@ class Products
 		$availability_codes = DB::GetAssoc('SELECT id, f_availability_code FROM premium_ecommerce_availability_data_1 WHERE active=1');
 		$availability_labels = DB::GetAssoc('SELECT f_availability, f_label FROM premium_ecommerce_availability_labels_data_1 WHERE f_language="'.LANGUAGE.'" AND active=1');
 	}
-
+	
 	$ret = DB::GetAll('SELECT 	it.id as iProduct, 
 								it.f_item_name as sName2, 
 								it.f_description as sEpesiDescription, 

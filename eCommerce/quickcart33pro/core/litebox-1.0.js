@@ -134,6 +134,11 @@ Lightbox.prototype = {
 		var objLightboxImage = document.createElement("img");
 		objLightboxImage.setAttribute('id','lightboxImage');
 		objImageContainer.appendChild(objLightboxImage);
+
+		var objLightboxContent = document.createElement("div");
+		objLightboxContent.setAttribute('id','lightboxContent');
+		objLightboxContent.style.display = 'none';
+		objImageContainer.appendChild(objLightboxContent);
 	
 		var objHoverNav = document.createElement("div");
 		objHoverNav.setAttribute('id','hoverNav');
@@ -259,7 +264,7 @@ Lightbox.prototype = {
 		activeImage = imageNum;	// update global var
 
 		// hide elements during transition
-		Element.show('loading');
+   		Element.show('loading');
 		imageDetailsEffect.hide();
 		imageEffect.hide();
 		navEffect.hide();
@@ -267,13 +272,28 @@ Lightbox.prototype = {
 		Element.hide('nextLink');
 		Element.hide('numberDisplay');
 		
-		imgPreloader = new Image();
-		// once image is preloaded, resize image container
-		imgPreloader.onload=function(){
-			Element.setSrc('lightboxImage', imageArray[activeImage][0]);
-			myLightbox.resizeImageContainer(imgPreloader.width, imgPreloader.height);
+		if(imageArray[activeImage][0].substring(0,1)=='#') {
+     		Element.hide('loading');
+		    Element.hide('lightboxImage');
+		    Element.show('lightboxContent');
+   			var e = document.getElementById(imageArray[activeImage][0].substring(1));
+		    Element.show(e);
+		    var c = document.getElementById('lightboxContent');
+		    for(var i=0; i<c.children.length; i++)
+		        Element.hide(c.children[i]);
+		    c.appendChild(e);
+   			myLightbox.resizeImageContainer(Element.getWidth(e), Element.getHeight(e));
+		} else {
+		    Element.hide('lightboxContent');
+		    Element.show('lightboxImage');
+    		imgPreloader = new Image();
+	    	// once image is preloaded, resize image container
+		    imgPreloader.onload=function(){
+			    Element.setSrc('lightboxImage', imageArray[activeImage][0]);
+    			myLightbox.resizeImageContainer(imgPreloader.width, imgPreloader.height);
+	    	}
+		    imgPreloader.src = imageArray[activeImage][0];
 		}
-		imgPreloader.src = imageArray[activeImage][0];
 	},
 
 	//
@@ -330,10 +350,12 @@ Lightbox.prototype = {
 	},
 
 	updateNav: function() {
-
+        var displayed = false;
+        
 		// if not first image in set, display prev image button
 		if(activeImage != 0){
 			Element.show('prevLink');
+			displayed=true;
 			document.getElementById('prevLink').onclick = function() {
 				myLightbox.changeImage(activeImage - 1); return false;
 			}
@@ -342,10 +364,14 @@ Lightbox.prototype = {
 		// if not last image in set, display next image button
 		if(activeImage != (imageArray.length - 1)){
 			Element.show('nextLink');
+			displayed=true;
 			document.getElementById('nextLink').onclick = function() {
 				myLightbox.changeImage(activeImage + 1); return false;
 			}
 		}
+		
+		if(!displayed)
+		    Element.hide('hoverNav');
 		
 		this.enableKeyboardNav();
 	},

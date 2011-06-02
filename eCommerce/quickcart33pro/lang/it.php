@@ -366,4 +366,6 @@ $lang['Password_reminder_mail_subject'] = 'Password reminder';
 $lang['Password_reminder_mail_body'] = 'New password: %s';
 $lang['New_password_sent'] = 'New password has been sent';
 $lang['New_address'] = 'New address';
+$lang['Product_added_to_basket'] = 'Product added to basket';
+$lang['Show_basket'] = 'Show basket';
 ?>

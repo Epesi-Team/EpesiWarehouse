@@ -54,6 +54,7 @@ if( isset( $aActions['a'] ) && is_numeric( $aActions['a'] ) ){
     $sFilesList = $oFile->listFiles( $aData['sTemplate'], $iProduct, 2 );
 
     $sProductsRelated = listProductsRelated( $aData['sTemplate'], $iProduct );
+    $sPopupProducts = listProductsRelated( $aData['sTemplate'], $iProduct, 'popup' );
     $sFeatures  = listProductFeatures( $aData['sTemplate'], $iProduct );
     $sCrossSell = ( isset( $config['cross_sell'] ) && $config['cross_sell'] === true ) ? $oProduct->listProductsCrossSell( $aData['sTemplate'], $iProduct ) : null;
 
@@ -62,7 +63,10 @@ if( isset( $aActions['a'] ) && is_numeric( $aActions['a'] ) ){
     if( is_numeric( $aData['fPrice'] ) && $aData['iQuantity'] ){
       if( isset( $config['basket_page'] ) && isset( $oPage->aPages[$config['basket_page']] ) ){
         $sBasketPage = $oPage->aPages[$config['basket_page']]['sLinkName'];
-        $sBasket = $oTpl->tbHtml( $aData['sTemplate'], 'BASKET' );
+        if($sPopupProducts)
+            $sBasket = $oTpl->tbHtml( $aData['sTemplate'], 'BASKET_POPUP' );
+        else
+            $sBasket = $oTpl->tbHtml( $aData['sTemplate'], 'BASKET' );
       }
       $sPrice = $oTpl->tbHtml( $aData['sTemplate'], 'PRICE' );
     } elseif( is_numeric( $aData['fPrice'] ) ) {

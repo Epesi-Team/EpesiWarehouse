@@ -830,6 +830,20 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
         return implode($ret,', ');
     }
 
+    public static function display_popup_product_name($r, $nolink=true) {
+        $ret = array();
+        if(isset($r['popup_products']))
+        foreach($r['popup_products'] as $p) {
+            $rr = Utils_RecordBrowserCommon::get_record('premium_ecommerce_products',$p);
+            $name = self::display_product_name_short($rr);
+            if($nolink)
+                $ret[] = $name;
+            else
+                $ret[] = Utils_RecordBrowserCommon::record_link_open_tag('premium_ecommerce_products',$p).$name.Utils_RecordBrowserCommon::record_link_close_tag();
+        }
+        return implode($ret,', ');
+    }
+
     public static function display_category_available_languages($r, $nolink) {
         $rr = Utils_RecordBrowserCommon::get_records('premium_ecommerce_cat_descriptions',array('category'=>$r['id']),array('language'));
         $ret = array();
@@ -961,7 +975,16 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
             $form->addElement('automulti', $field, $label, array('Premium_Warehouse_eCommerceCommon', 'automulti_search'), array($x->record), array('Premium_Warehouse_eCommerceCommon','automulti_format'));
             $form->setDefaults(array($field=>$default));
         } else {
-            $form->addElement('static', $field, $label, self::display_related_product_name(array('related_products'=>$default),false));
+            $form->addElement('static', $field, $label, self::display_related_product_name(array($field=>$default),false));
+        }
+    }
+
+    public static function QFfield_popup_products(&$form, $field, $label, $mode, $default,$y,$x) {
+        if ($mode=='edit' || $mode=='add') {
+            $form->addElement('automulti', $field, $label, array('Premium_Warehouse_eCommerceCommon', 'automulti_search'), array($x->record), array('Premium_Warehouse_eCommerceCommon','automulti_format'));
+            $form->setDefaults(array($field=>$default));
+        } else {
+            $form->addElement('static', $field, $label, self::display_popup_product_name(array($field=>$default),false));
         }
     }
 

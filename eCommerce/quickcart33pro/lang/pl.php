@@ -367,4 +367,6 @@ $lang['Password_reminder_mail_subject'] = 'Przypomnienie hasła do sklepu '.$_SE
 $lang['Password_reminder_mail_body'] = 'Twoje hasło do sklepu internetowego '.$_SERVER['HTTP_HOST'].' zostało zresetowane.<br>Nowe hasło: %s<br><br>Życzymy udanych zakupów';
 $lang['New_password_sent'] = 'Nowe hasło zostało wysłane na podany adres e-mail';
 $lang['New_address'] = 'nowy adres';
+$lang['Product_added_to_basket'] = 'Dodano do koszyka';
+$lang['Show_basket'] = 'Pokaż koszyk';
 ?>

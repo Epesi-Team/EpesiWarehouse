@@ -6,11 +6,11 @@
 * @param string $sFile
 * @param int    $iProduct
 */
-function listProductsRelated( $sFile, $iProduct ){
+function listProductsRelated( $sFile, $iProduct, $tbl='related' ){
 //  $oFF    =& FlatFiles::getInstance( );//commented by epesi team
   $oTpl   =& TplParser::getInstance( );
   $oFile  =& Files::getInstance( );
-  $aRelatedIds = throwProductsRelated( $iProduct );
+  $aRelatedIds = throwProductsRelated( $iProduct, $tbl );
   $sLanguageUrl = LANGUAGE.LANGUAGE_SEPARATOR;
   if( !isset( $aRelatedIds ) )
     return null;
@@ -64,7 +64,7 @@ function listProductsRelated( $sFile, $iProduct ){
 
     if( is_numeric( $aData['fPrice'] ) ) {
       global $config,$oPage,$iContent;
-      if( isset( $config['basket_page'] ) && isset( $oPage->aPages[$config['basket_page']] ) ){
+      if( isset( $config['basket_page'] ) && isset( $oPage->aPages[$config['basket_page']] ) && $aData['iQuantity']){
         global $sBasketPage;
         $sBasketPage = $oPage->aPages[$config['basket_page']]['sLinkName'];
         $aData['sBasket'] = $oTpl->tbHtml( $sFile, 'BASKET'.($iContent == $config['basket_page']?'':'_AJAX') );
@@ -108,11 +108,11 @@ function checkThrowProductsRelated( $aData, $iProduct ){
 * @return array
 * @param int  $iProduct
 */
-function throwProductsRelated( $iProduct ){
+function throwProductsRelated( $iProduct, $tbl = 'related' ){
     //{ epesi
     $aReturn  = array();
     if(!is_array($iProduct)) $iProduct = array($iProduct);
-    $rels = DB::GetCol('SELECT f_related_products FROM premium_ecommerce_products_data_1 WHERE f_item_name IN ('.implode(',',$iProduct).') AND active=1');
+    $rels = DB::GetCol('SELECT f_'.$tbl.'_products FROM premium_ecommerce_products_data_1 WHERE f_item_name IN ('.implode(',',$iProduct).') AND active=1');
     $rel = array();
     foreach($rels as $rr)
         $rel = array_merge($rel,array_filter(explode('__',$rr)));
