@@ -29,7 +29,7 @@ class Premium_Warehouse_eCommerce_3rdp__Plugin_bdk implements Premium_Warehouse_
             return;
         }
 
-    	include("xmlrpc.inc");
+    	require_once("xmlrpc.inc");
         $GLOBALS['xmlrpc_internalencoding']='UTF-8';
 
 	    $c = new xmlrpc_client("/export/test/", "www.kupic.pl", 80);
@@ -191,7 +191,7 @@ class Premium_Warehouse_eCommerce_3rdp__Plugin_bdk implements Premium_Warehouse_
         if(!$upc)
             return;
 
-    	include("xmlrpc.inc");
+    	require_once("xmlrpc.inc");
         $GLOBALS['xmlrpc_internalencoding']='UTF-8';
 
 	    $c = new xmlrpc_client("/export/test/", "www.kupic.pl", 80);

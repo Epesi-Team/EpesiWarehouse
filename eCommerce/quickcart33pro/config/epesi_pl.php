@@ -1,5 +1,5 @@
 <?php
-$config['currency_symbol'] = 'USD';
+$config['currency_symbol'] = 'PLN';
 $config['delivery_free'] = 10000;
 $config['title'] = 'Sklep Internetowy - UMnieTaniej';
 $config['description'] = '';

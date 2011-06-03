@@ -992,7 +992,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
     		$opts = Premium_Warehouse_eCommerceCommon::get_categories();
 			$rp = $x->init_module('Utils/RecordBrowser/RecordPicker',array());
     		$x->display_module($rp, array('premium_ecommerce_products',$field,array('Premium_Warehouse_eCommerceCommon','automulti_format'),array('!id'=>$x->record['id']),array(),array(),array(),array(),array('item_name'=>array('type'=>'select','label'=>Base_LangCommon::ts('Premium_Warehouse_eCommerce','Category'),'args'=>$opts,'trans_callback'=>array('Premium_Warehouse_eCommerceCommon', 'category_filter')))));
-			$el->set_search_button('<a '.$rp->create_open_href().' '.Utils_TooltipCommon::open_tag_attrs($this->t('Advanced Selection')).' href="javascript:void(0);"><img border="0" src="'.Base_ThemeCommon::get_template_file('Utils_RecordBrowser','icon_zoom.jpg').'"></a>');
+			$el->set_search_button('<a '.$rp->create_open_href().' '.Utils_TooltipCommon::open_tag_attrs($x->t('Advanced Selection')).' href="javascript:void(0);"><img border="0" src="'.Base_ThemeCommon::get_template_file('Utils_RecordBrowser','icon_zoom.jpg').'"></a>');
         } else {
             $form->addElement('static', $field, $label, self::display_popup_product_name(array($field=>$default),false));
         }

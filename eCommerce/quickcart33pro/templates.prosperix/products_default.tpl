@@ -212,7 +212,7 @@ $sPopupProducts
 
 <!-- BEGIN RELATED_HEAD -->
 <div class="clear">&nbsp;</div>
-<h3 class="productsRelated">$lang[Products_related_client]</h3>
+<h3 class="productsRelated">$sCategoryName</h3>
 <table id="productsRelated" cellspacing="0">
   <tr>
 <!-- END RELATED_HEAD -->

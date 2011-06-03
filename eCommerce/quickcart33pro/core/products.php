@@ -710,6 +710,7 @@ class Products
 
     foreach($products as $p=>$num) {
           $aData = $this->getProduct($p);
+          if(!$aData) continue;
           $aData['iQuantity'] = $aSort[$i][0];
           $aData['iStyle'] = ( $i % 2 ) ? 0: 1;
           $aData['sStyle'] = ( $i == ( $iCount - 1 ) ) ? 'L': $i + 1;

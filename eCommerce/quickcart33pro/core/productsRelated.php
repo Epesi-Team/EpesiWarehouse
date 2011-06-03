@@ -7,6 +7,7 @@
 * @param int    $iProduct
 */
 function listProductsRelated( $sFile, $iProduct, $tbl='related' ){
+  global $lang;
 //  $oFF    =& FlatFiles::getInstance( );//commented by epesi team
   $oTpl   =& TplParser::getInstance( );
   $oFile  =& Files::getInstance( );
@@ -27,7 +28,22 @@ function listProductsRelated( $sFile, $iProduct, $tbl='related' ){
   if( function_exists( 'throwSpecialProductPrice' ) )
     $bDiscount = true;
 
-  $content      = null;
+  $output      = null;
+  if(count($aProducts)<=6) {
+    $arr = array($lang['Products_related_client']=>$aProducts);
+  } else {
+    $oPage  =& Pages::getInstance( );
+    $arr = array();
+    foreach($aProducts as $aData){
+	$cat = $oPage->aPages[array_shift($aData['aCategories'])]['sName'];
+	if(!isset($arr[$cat])) $arr[$cat]=array();
+	$arr[$cat][] = $aData;
+    }
+  }
+  
+  foreach($arr as $cat=>$aProducts) {
+  $i2       = 0;
+  $content = null;
   foreach($aProducts as $aData){
     $aData['iWidth'] = $iWidth;
     if( $i2 % 2 )
@@ -83,9 +99,12 @@ function listProductsRelated( $sFile, $iProduct, $tbl='related' ){
     $i2++;
   } // end while
 
-  if( !empty( $content ) )
-    return $oTpl->tbHtml( $sFile, 'RELATED_HEAD' ).$content.$oTpl->tbHtml( $sFile, 'RELATED_FOOT' );
-  return $content;
+  if( !empty( $content ) ) {
+     $oTpl->setVariables('sCategoryName',$cat);
+     $output .= $oTpl->tbHtml( $sFile, 'RELATED_HEAD' ).$content.$oTpl->tbHtml( $sFile, 'RELATED_FOOT' );
+  }
+  }
+  return $output;
 } // end function
 
 /**
