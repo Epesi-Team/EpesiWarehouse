@@ -277,10 +277,10 @@ Lightbox.prototype = {
 		    Element.hide('lightboxImage');
 		    Element.show('lightboxContent');
    			var e = document.getElementById(imageArray[activeImage][0].substring(1));
-		    Element.show(e);
 		    var c = document.getElementById('lightboxContent');
 		    for(var i=0; i<c.children.length; i++)
 		        Element.hide(c.children[i]);
+		    Element.show(e);
 		    c.appendChild(e);
    			myLightbox.resizeImageContainer(Element.getWidth(e), Element.getHeight(e));
 		} else {
