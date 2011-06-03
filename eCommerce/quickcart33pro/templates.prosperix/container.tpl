@@ -122,6 +122,8 @@
         <h2>$config[slogan]</h2>
       </div>
       $sMenu1
+      $sBasket
+      $sLanguage
     </div>
     <div id="head3">
       $sMenu2
