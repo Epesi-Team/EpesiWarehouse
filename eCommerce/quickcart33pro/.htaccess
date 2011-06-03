@@ -13,3 +13,5 @@ RewriteRule ^(.*),(.*)\.html ?,$1,$2 [QSA]
 RewriteRule ^.*,(.*),(.*)\.xml ?,$1,$2 [QSA]
 
 RewriteRule ^sitemap\.xml ?p=sitemap-xml [QSA]
+
+ErrorDocument 404 /404page.html

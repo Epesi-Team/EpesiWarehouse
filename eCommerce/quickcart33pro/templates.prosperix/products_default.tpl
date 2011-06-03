@@ -74,6 +74,23 @@
 </form>
 <!-- END BASKET -->
 
+<!-- BEGIN BASKET_AJAX -->
+<button class="submit" onClick="this.disabled=true;this.style.backgroundColor='#DDDDDD';new ajax('$sBasketPage&amp;ajax=1&amp;iProductAdd=$aData[iProduct]&amp;iQuantity=1',{update:$('basketNumProducts')})">$lang[Basket_add]</button>
+<!-- END BASKET_AJAX -->
+
+<!-- BEGIN BASKET_POPUP -->
+<div id="basketPopup" style="display:none;width:500px;">
+<h1>$lang[Product_added_to_basket]: <br />$aData[sName]</h1>
+<div style="clear:both">&nbsp;</div>
+$sPopupProducts
+<h1><a href="$sBasketPage" rel="nofollow">$lang[Show_basket]</a></h1>
+</div>
+<a rel="lightbox" style="display:none" href="#basketPopup" id="basketPopupL"></a>
+<div id="addBasket">
+<button class="submit" onClick="myLightbox.start(document.getElementById('basketPopupL'));new ajax('$sBasketPage&amp;ajax=1&amp;iProductAdd=$aData[iProduct]&amp;iQuantity=1',{update:$('basketNumProducts')})">$lang[Basket_add]</button>
+</div>
+<!-- END BASKET_POPUP -->
+
 <!-- BEGIN PRICE --><div id="price"><em>$lang['Price']:</em><strong id="priceValue">$aData[sPrice]</strong><span>$config[currency_symbol]</span></div><!-- END PRICE -->
 <!-- BEGIN NO_PRICE --><div id="noPrice">$lang['Call_for_price']</div><!-- END NO_PRICE -->
 <!-- BEGIN OUT_OF_STOCK --><div id="noPrice">$lang['Out_of_stock']</div><!-- END OUT_OF_STOCK -->
@@ -204,6 +221,7 @@
     $aData[sImage]
     <a href="$aData[sLinkName]" title="$aData[sName]">$aData[sName]</a>
     $aData[sPrice]
+    $aData[sBasket]
   </td>
 <!-- END RELATED_LIST -->
 <!-- BEGIN RELATED_PRICE --><div class="price"><strong>$aData[sPrice]</strong><span>$config[currency_symbol]</span></div><!-- END RELATED_PRICE -->

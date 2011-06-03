@@ -1,12 +1,12 @@
 <?php
 
-$aMenuTypes[1] = 'Top menu above logo';
-$aMenuTypes[2] = 'Top menu under logo';
-$aMenuTypes[3] = 'Categories';
-$aMenuTypes[4] = 'Producers';
-$aMenuTypes[5] = 'Hidden page';
+$aMenuTypes[1] = 'Top-Men� oben Logo';
+$aMenuTypes[2] = 'Top-Men� unter Logo';
+$aMenuTypes[3] = 'Rubriken';
+$aMenuTypes[4] = 'Die Hersteller';
+$aMenuTypes[5] = 'Hidden Seite';
 
-$aPay[1][0] = 'Credit card';
+$aPay[1][0] = 'Kreditkarten';
 $aPay[1][1] = 'mTransfer (mBank)';
 $aPay[1][2] = 'Płacę z Inteligo (PKO BP Inteligo)';
 $aPay[1][3] = 'Multitransfer (MultiBank)';
@@ -33,5 +33,5 @@ $aPay[4]['d'] = 'Płac z Nordea';
 $aPay[4]['p'] = 'Płac z PKO BP';
 $aPay[4]['h'] = 'Płac z BPH';
 $aPay[4]['g'] = 'Płac z ING';
-$aPay[4]['c'] = 'Credit card';
+$aPay[4]['c'] = 'Kreditkarten';
 ?>

@@ -34,24 +34,15 @@ class Pages
   * @param int    $iDepthLimit
   */
   function throwMenu( $sFile, $iType, $iPageCurrent = null, $iDepthLimit = 1 ){
-
-    if( !isset( $this->aPagesParentsTypes[$iType] ) )
-      return null;
-    $this->mData = null;
-
-    if( isset( $iPageCurrent ) )
-      $this->generatePageParents( $iPageCurrent );
-
-    $this->generateMenuData( $iType, $iPageCurrent, $iDepthLimit, 0 );
-    if( isset( $this->mData[0] ) ){
       global $config;
       $oTpl     =& TplParser::getInstance( );
       $content  = null;
       $i        = 0;
       $iCount   = count( $this->mData[0] );
 
+    if($iType==10) {
       $num_of_langs = count($config['available_lang']);
-      if($iType==10 && $num_of_langs>1) {
+      if($num_of_langs>1) {
     	$aData = array();
 	$aData['sName'] = '<img src="config/'.LANGUAGE_CONFIG.'.gif" style="width:29px;height:20px" />';
 	$aData['iCount'] = $num_of_langs;
@@ -92,7 +83,18 @@ class Pages
 	$oTpl->setVariables( 'aData', $aData );
 	$content .= $oTpl->tbHtml( $sFile, 'FOOT_LANG' );
       }
-      
+    } else {
+
+    if( !isset( $this->aPagesParentsTypes[$iType] ) )
+      return null;
+    $this->mData = null;
+
+    if( isset( $iPageCurrent ) )
+      $this->generatePageParents( $iPageCurrent );
+
+    $this->generateMenuData( $iType, $iPageCurrent, $iDepthLimit, 0 );
+    if( isset( $this->mData[0] ) ){
+
       foreach( $this->mData[0] as $iPage => $bValue ){
         $aData = $this->aPages[$iPage];
 
@@ -108,12 +110,12 @@ class Pages
 
         $i++;
       } // end foreach
-
-      if( isset( $content ) ){
+    }
+    }
+    if( isset( $content ) ){
         $aData['sMenuType'] = $GLOBALS['aMenuTypes'][$iType];
         $oTpl->setVariables( 'aData', $aData );
         return $oTpl->tbHtml( $sFile, 'HEAD' ).$content.$oTpl->tbHtml( $sFile, 'FOOT' );
-      }
     }
   } // end function throwMenu
 

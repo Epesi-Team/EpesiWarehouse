@@ -251,14 +251,14 @@ Quick.Cart default plugins stylesheet
 	width: 100%;
 	z-index: 100;
 	text-align: center;
-	line-height: 0;
+/*	line-height: 0;*/
 	}
 
 #lightbox a img{ border: none; }
 
 #outerImageContainer{
   position: relative;
-  background-color: #000;
+  background-color: white;
   width: 250px;
   height: 250px;
   margin: 0 auto;
@@ -267,6 +267,10 @@ Quick.Cart default plugins stylesheet
 #imageContainer{
   border:10px solid #fff;
   }
+
+#basketPopup h1 {
+    margin-bottom:30px;
+}
 
 #loading{
 	position: absolute;

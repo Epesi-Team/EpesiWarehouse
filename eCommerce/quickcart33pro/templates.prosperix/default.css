@@ -103,15 +103,17 @@ div#searchform .input {
   margin: 20px 15px 4px 0;
   list-style: none;
 }
+#menu1 {
+    margin-right: 25px;
+}
 #menu_language li,
-#menu_basket li,
-#menu1 li{
+#menu_basket li{
   float:left;
   padding:0px 8px 0;
 }
 #menu_language li li,
 #menu_basket li li,
-#menu1 li li {
+#menu1 li {
   float:none;
   padding:0px 0px 0px 12px;
   list-style: none;
@@ -148,28 +150,28 @@ div#searchform .input {
 #menu_language li#langMenu {
   padding: 0px 0px 0px 0px;
 }
-#menu_lanugage span#langMenu {
+#menu_language span#langMenu {
 float:left;
 }
-#menu_lanugage li#langMenu a, #menu_lanugage span#langMenu a {
+#menu_language li#langMenu a, #menu_language span#langMenu a {
 	background: none;
 	color: #e62808;
 	padding: 3px 5px 3px 5px;
 	display: block;
 }
 
-#menu_lanugage span#langMenu a:hover {
+#menu_language span#langMenu a:hover {
 	background-color:#c3bda6;
 }
 
-#menu_lanugage span#langMenu .selected{
+#menu_language span#langMenu .selected{
 	background-color: #c3bda6;
 }
 
-#menu_lanugage li#langMenu span{display:block;font-size:0.727em;font-family:sans-serif;}
-#menu_lanugage li#langMenu span strong{background-color:inherit;color:#e62808;}
+#menu_language li#langMenu span{display:block;font-size:0.727em;font-family:sans-serif;}
+#menu_language li#langMenu span strong{background-color:inherit;color:#e62808;}
 
-#menu_lanugage #langPopup {
+#menu_language #langPopup {
 	display: none;
 	z-index: 10;
 	position: absolute;
