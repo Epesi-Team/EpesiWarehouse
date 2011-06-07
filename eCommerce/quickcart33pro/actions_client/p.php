@@ -164,6 +164,14 @@ if( isset( $iContent ) && is_numeric( $iContent ) ){
       if( isset( $iProductDelete ) && is_numeric( $iProductDelete ) ){
         // delete product from basket
         $oOrder->deleteFromBasket( $iProductDelete );
+        if(isset($_REQUEST['ajax'])) {
+            $oOrder->generateBasket( );
+            $qty = 0;
+            foreach($oOrder->aProducts as $p)
+                $qty += $p['iQuantity'];
+            print('$("basketNumProducts").innerHTML = "'.$qty.'";elem.style.display="none";elem.previousSibling.style.display="inline";elem.disabled=0;');
+            exit;
+        }
       }
       if( isset( $_POST['iProductAdd'] ) && isset( $_POST['iQuantity'] ) ){
         $iProductAdd = $_POST['iProductAdd'];
@@ -178,7 +186,9 @@ if( isset( $iContent ) && is_numeric( $iContent ) ){
             $qty = 0;
             foreach($oOrder->aProducts as $p)
                 $qty += $p['iQuantity'];
-            print($qty);
+            print('$("basketNumProducts").innerHTML = "'.$qty.'";elem.style.display="none";elem.nextSibling.style.display="inline";elem.disabled=0;');
+            if($_REQUEST['ajax']=='2')
+                print('alert("'.$lang['Product_added_to_basket'].'");');
         } else {
             header( 'Location: '.REDIRECT.$aData['sLinkName'] );
         }
@@ -241,10 +251,16 @@ if( isset( $iContent ) && is_numeric( $iContent ) ){
             $sOrderError = $oTpl->tbHtml( 'messages.tpl', 'PASSWORD_MISMATCH' );          
           } elseif( $checkFieldsRet === 'basket_empty' ){
             $ppid = $config['basket_page'];
-            $sOrder = '<script type="text/javascript">alert(\''.addcslashes($GLOBALS['lang']['Stock_exceeded_basket_empty'],'\\\'').'\');var endOfRef = window.location.href.length;if (window.location.search.length > 0 && window.location.href.indexOf(window.location.search) > 0)endOfRef = window.location.href.indexOf(window.location.search);window.location.replace(window.location.href.substring(0,endOfRef)+"?'.change2Url( $oPage->aPages[$ppid]['sName'] ).','.$ppid.'");</script>';
+            if(isset($_REQUEST['ajax']))
+        	print('alert(\''.addcslashes($GLOBALS['lang']['Stock_exceeded_basket_empty'],'\\\'').'\');var endOfRef = window.location.href.length;if (window.location.search.length > 0 && window.location.href.indexOf(window.location.search) > 0)endOfRef = window.location.href.indexOf(window.location.search);window.location.replace(window.location.href.substring(0,endOfRef)+"?'.change2Url( $oPage->aPages[$ppid]['sName'] ).','.$ppid.'");');
+            else
+                $sOrder = '<script type="text/javascript">alert(\''.addcslashes($GLOBALS['lang']['Stock_exceeded_basket_empty'],'\\\'').'\');var endOfRef = window.location.href.length;if (window.location.search.length > 0 && window.location.href.indexOf(window.location.search) > 0)endOfRef = window.location.href.indexOf(window.location.search);window.location.replace(window.location.href.substring(0,endOfRef)+"?'.change2Url( $oPage->aPages[$ppid]['sName'] ).','.$ppid.'");</script>';
           } elseif( $checkFieldsRet === 'stock_exceeded' ){
             $ppid = $config['basket_page'];
-            $sOrder = '<script type="text/javascript">alert(\''.addcslashes($GLOBALS['lang']['Stock_exceeded_some'],'\\\'').'\');var endOfRef = window.location.href.length;if (window.location.search.length > 0 && window.location.href.indexOf(window.location.search) > 0)endOfRef = window.location.href.indexOf(window.location.search);window.location.replace(window.location.href.substring(0,endOfRef)+"?'.change2Url( $oPage->aPages[$ppid]['sName'] ).','.$ppid.'");</script>';
+            if(isset($_REQUEST['ajax']))
+        	print('alert(\''.addcslashes($GLOBALS['lang']['Stock_exceeded_some'],'\\\'').'\');var endOfRef = window.location.href.length;if (window.location.search.length > 0 && window.location.href.indexOf(window.location.search) > 0)endOfRef = window.location.href.indexOf(window.location.search);window.location.replace(window.location.href.substring(0,endOfRef)+"?'.change2Url( $oPage->aPages[$ppid]['sName'] ).','.$ppid.'");');
+            else
+                $sOrder = '<script type="text/javascript">alert(\''.addcslashes($GLOBALS['lang']['Stock_exceeded_some'],'\\\'').'\');var endOfRef = window.location.href.length;if (window.location.search.length > 0 && window.location.href.indexOf(window.location.search) > 0)endOfRef = window.location.href.indexOf(window.location.search);window.location.replace(window.location.href.substring(0,endOfRef)+"?'.change2Url( $oPage->aPages[$ppid]['sName'] ).','.$ppid.'");</script>';
           } else {
             $sOrderError = $oTpl->tbHtml( 'messages.tpl', 'REQUIRED_FIELDS' );
           }
