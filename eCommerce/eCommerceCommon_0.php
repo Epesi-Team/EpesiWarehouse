@@ -1040,7 +1040,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 
 	public static function category_filter($choice) {
 		if ($choice=='__NULL__') return array();
-		$ids = DB::GetCol('SELECT id FROM premium_warehouse_items_data_1 WHERE f_category LIKE CONCAT("%%\_\_",%d,"\_\_%%") AND active=1',array($choice));
+		$ids = DB::GetCol('SELECT id FROM premium_warehouse_items_data_1 WHERE (f_category LIKE CONCAT("%%\_\_",%d,"\_\_%%") OR f_category LIKE CONCAT("%%\_\_",%d,"\/%%") OR f_category LIKE CONCAT("%%\/",%d,"\_\_%%") OR f_category LIKE CONCAT("%%\/",%d,"\/%%")) AND active=1',array($choice,$choice,$choice,$choice));
 		return array('item_name'=>$ids);
 	}
 	
