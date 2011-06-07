@@ -49,19 +49,21 @@
 <!-- END BASKET -->
 
 <!-- BEGIN BASKET_AJAX -->
-<button class="submit" onClick="this.disabled=true;this.style.backgroundColor='#DDDDDD';new ajax('$sBasketPage&amp;ajax=1&amp;iProductAdd=$aData[iProduct]&amp;iQuantity=1',{update:$('basketNumProducts')})">$lang[Basket_add]</button>
+<button class="submit" onClick="var elem=this;this.disabled=1;new ajax('$sBasketPage&amp;ajax=2&amp;iProductAdd=$aData[iProduct]&amp;iQuantity=1',{onComplete:function(res){eval(res.responseText)}})">$lang[Basket_add]</button><button class="submit" style="display:none" onClick="var elem=this;this.disabled=1;new ajax('$sBasketPage&amp;ajax=1&amp;iProductDelete=$aData[iProduct]&amp;iQuantity=1',{onComplete:function(res){eval(res.responseText)}})">$lang[Basket_delete]</button>
 <!-- END BASKET_AJAX -->
 
 <!-- BEGIN BASKET_POPUP -->
-<div id="basketPopup" style="display:none;width:500px;">
+<div id="basketPopup" style="display:none;width:600px;">
 <h1>$lang[Product_added_to_basket]: <br />$aData[sName]</h1>
 <div style="clear:both">&nbsp;</div>
 $sPopupProducts
-<h1><a href="$sBasketPage" rel="nofollow">$lang[Show_basket]</a></h1>
+<span class="prev"><a href="javascript:void(0)" onClick="myLightbox.end();Element.show('bottomNavClose')">$lang[Continue_shopping]</a></span>
+<span class="next"><a href="$sBasketPage" rel="nofollow">$lang[Show_basket]</a></span>
+<div style="clear:both">&nbsp;</div>
 </div>
 <a rel="lightbox" style="display:none" href="#basketPopup" id="basketPopupL"></a>
 <div id="addBasket">
-<button class="submit" onClick="myLightbox.start(document.getElementById('basketPopupL'));new ajax('$sBasketPage&amp;ajax=1&amp;iProductAdd=$aData[iProduct]&amp;iQuantity=1',{update:$('basketNumProducts')})">$lang[Basket_add]</button>
+<button class="submit" onClick="myLightbox.start(document.getElementById('basketPopupL'));Element.hide('bottomNavClose');new ajax('$sBasketPage&amp;ajax=1&amp;iProductAdd=$aData[iProduct]&amp;iQuantity=1',{onComplete:function(res){eval(res.responseText)}})">$lang[Basket_add]</button>
 </div>
 <!-- END BASKET_POPUP -->
 
@@ -199,7 +201,6 @@ $sPopupProducts
   </td>
 <!-- END RELATED_LIST -->
 <!-- BEGIN RELATED_PRICE --><div class="price"><strong>$aData[sPrice]</strong><span>$config[currency_symbol]</span></div><!-- END RELATED_PRICE -->
-<!-- BEGIN RELATED_NO_PRICE --><div class="price">$aData[sPrice]</div><!-- END RELATED_NO_PRICE -->
 <!-- BEGIN RELATED_BREAK -->
   </tr>
   <tr>
