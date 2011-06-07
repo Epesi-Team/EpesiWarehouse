@@ -35,6 +35,7 @@ function listProductsRelated( $sFile, $iProduct, $tbl='related' ){
     $oPage  =& Pages::getInstance( );
     $arr = array();
     foreach($aProducts as $aData){
+        if( !is_numeric( $aData['fPrice'] ) || !$aData['iQuantity']) continue;
 	$cat = $oPage->aPages[array_shift($aData['aCategories'])]['sName'];
 	if(!isset($arr[$cat])) $arr[$cat]=array();
 	$arr[$cat][] = $aData;
@@ -78,16 +79,13 @@ function listProductsRelated( $sFile, $iProduct, $tbl='related' ){
     $aData['sPrice'] = is_numeric( $aData['fPrice'] ) ? displayPrice( $aData['fPrice'] ) : $aData['fPrice'];
     $oTpl->setVariables( 'aData', $aData );
 
-    if( is_numeric( $aData['fPrice'] ) ) {
-      global $config,$oPage,$iContent;
-      if( isset( $config['basket_page'] ) && isset( $oPage->aPages[$config['basket_page']] ) && $aData['iQuantity']){
+    global $config,$oPage,$iContent;
+    if( isset( $config['basket_page'] ) && isset( $oPage->aPages[$config['basket_page']] )){
         global $sBasketPage;
         $sBasketPage = $oPage->aPages[$config['basket_page']]['sLinkName'];
         $aData['sBasket'] = $oTpl->tbHtml( $sFile, 'BASKET'.($iContent == $config['basket_page']?'':'_AJAX') );
-      }
-      $aData['sPrice'] = $oTpl->tbHtml( $sFile, 'RELATED_PRICE' );
-    } else
-      $aData['sPrice'] = $oTpl->tbHtml( $sFile, 'RELATED_NO_PRICE' );
+    }
+    $aData['sPrice'] = $oTpl->tbHtml( $sFile, 'RELATED_PRICE' );
 
     $oTpl->setVariables( 'aData', $aData );
     $content .= $oTpl->tbHtml( $sFile, 'RELATED_LIST' );

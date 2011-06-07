@@ -89,8 +89,12 @@ class Orders
 	    $_SESSION['iOrderQuantity'.LANGUAGE]  = 0;
     	$_SESSION['fOrderSummary'.LANGUAGE]   = null;
 	if($_SESSION['stock_exceeded']) {
-		print('<script type="text/javascript">alert(\''.addcslashes($GLOBALS['lang']['Stock_exceeded'],'\\\'').'\')</script>');
 		$_SESSION['stock_exceeded'] = false;
+		if(isset($_REQUEST['ajax'])) {
+			print('alert(\''.addcslashes($GLOBALS['lang']['Stock_exceeded'],'\\\'').'\');');
+			die();
+		}
+		print('<script type="text/javascript">alert(\''.addcslashes($GLOBALS['lang']['Stock_exceeded'],'\\\'').'\')</script>');
 	}
 	
 		$ret = DB::Execute('SELECT * FROM premium_ecommerce_orders_temp WHERE customer=%s',array($_SESSION['iCustomer'.LANGUAGE]));
