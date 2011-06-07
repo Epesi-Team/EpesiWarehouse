@@ -88,7 +88,7 @@ $lang['Admin_items_on_page'] = "Elementów na stronę w administracji";
 $lang['Rules_page'] = "Strona z regulaminem";
 $lang['Basket_page'] = "Strona z koszykiem";
 $lang['Basket_empty'] = "Koszyk jest pusty";
-$lang['Basket_delete'] = "Usuń";
+$lang['Basket_delete'] = "Usuń z koszyka";
 $lang['Basket_update'] = "Przelicz";
 $lang['Basket_next'] = "Finalizuj zamówienie";
 $lang['Basket_add'] = "Do koszyka";
@@ -368,5 +368,6 @@ $lang['Password_reminder_mail_body'] = 'Twoje hasło do sklepu internetowego '.$
 $lang['New_password_sent'] = 'Nowe hasło zostało wysłane na podany adres e-mail';
 $lang['New_address'] = 'nowy adres';
 $lang['Product_added_to_basket'] = 'Dodano do koszyka';
-$lang['Show_basket'] = 'Pokaż koszyk';
+$lang['Show_basket'] = 'Przejdź do koszyka';
+$lang['Continue_shopping'] = 'Kontynuuj zakupy';
 ?>
