@@ -988,6 +988,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
         if ($mode=='edit' || $mode=='add') {
             $el = $form->addElement('automulti', $field, $label, array('Premium_Warehouse_eCommerceCommon', 'automulti_search'), array($x->record), array('Premium_Warehouse_eCommerceCommon','automulti_format'));
             $form->setDefaults(array($field=>$default));
+            $form->addRule($field,Base_LangCommon::ts('Premium_Warehouse_eCommerce','You can select up to 6 items'),'callback',array('Premium_Warehouse_eCommerceCommon','check_related'));
 
     		$opts = Premium_Warehouse_eCommerceCommon::get_categories();
 			$rp = $x->init_module('Utils/RecordBrowser/RecordPicker',array());
@@ -996,6 +997,10 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
         } else {
             $form->addElement('static', $field, $label, self::display_popup_product_name(array($field=>$default),false));
         }
+    }
+    
+    public static function check_related($el) {
+	return count(array_filter(explode('__SEP__',$el)))<=6;
     }
 
     public static function automulti_search($arg,$r) {
