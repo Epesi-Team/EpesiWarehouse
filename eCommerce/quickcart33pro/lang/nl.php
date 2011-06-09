@@ -372,4 +372,6 @@ $lang['New_address'] = 'New address';
 $lang['Product_added_to_basket'] = 'Product added to basket';
 $lang['Show_basket'] = 'Show basket';
 $lang['Continue_shopping'] = 'Continue shopping';
+$lang['Delivery_cost_starts_at'] = "Delivery cost starts at";
+$lang['More_products'] = 'More products...';
 ?>

@@ -370,4 +370,6 @@ $lang['New_address'] = 'nowy adres';
 $lang['Product_added_to_basket'] = 'Dodano do koszyka';
 $lang['Show_basket'] = 'Przejdź do koszyka';
 $lang['Continue_shopping'] = 'Kontynuuj zakupy';
+$lang['Delivery_cost_starts_at'] = "Dostawa od";
+$lang['More_products'] = 'Pokaż więcej produktów...';
 ?>
