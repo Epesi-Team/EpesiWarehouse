@@ -49,7 +49,7 @@
 <!-- END BASKET -->
 
 <!-- BEGIN BASKET_AJAX -->
-<button class="submit" onClick="var elem=this;this.disabled=1;new ajax('$sBasketPage&amp;ajax=2&amp;iProductAdd=$aData[iProduct]&amp;iQuantity=1',{onComplete:function(res){eval(res.responseText)}})">$lang[Basket_add]</button><button class="submit" style="display:none" onClick="var elem=this;this.disabled=1;new ajax('$sBasketPage&amp;ajax=1&amp;iProductDelete=$aData[iProduct]&amp;iQuantity=1',{onComplete:function(res){eval(res.responseText)}})">$lang[Basket_delete]</button>
+<button class="submit" $aData[sDisplayAddButton] onClick="var elem=this;this.disabled=1;new ajax('$sBasketPage&amp;ajax=1&amp;iProductAdd=$aData[iProduct]&amp;iQuantity=1',{onComplete:function(res){eval(res.responseText)}})">$lang[Basket_add]</button><button class="submit" $aData[sDisplayDeleteButton] onClick="var elem=this;this.disabled=1;new ajax('$sBasketPage&amp;ajax=1&amp;iProductDelete=$aData[iProduct]&amp;iQuantity=1',{onComplete:function(res){eval(res.responseText)}})">$lang[Basket_delete]</button>
 <!-- END BASKET_AJAX -->
 
 <!-- BEGIN BASKET_POPUP -->
@@ -227,3 +227,11 @@ $sPopupProducts
 <!-- BEGIN PREV_PRODUCT -->
 <a href="$aData[sPrevLinkName]">Previous</a>
 <!-- END PREV_PRODUCT -->
+
+<!-- BEGIN RELATED_MORE -->
+  </tr>
+</table>
+<div class="clear">&nbsp;</div>
+<a href="javascript:void(0)" style="float:right" onClick="this.nextSibling.style.display='block';this.style.display='none';"><h3 class="productsRelated" style="border-top:0px;margin-right:20px;margin-bottom:15px">$lang[More_products]</h3></a><table id="productsRelated" cellspacing="0" style="display:none">
+  <tr>
+<!-- END RELATED_MORE -->

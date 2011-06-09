@@ -103,6 +103,9 @@ div#searchform .input {
   margin: 20px 15px 4px 0;
   list-style: none;
 }
+#menu_basket {
+  margin: 10px 15px 4px 0;
+}
 #menu1 {
     margin-right: 25px;
 }
@@ -929,4 +932,38 @@ html>/**/body #product .imagesList#imagesList2 li div{margin:0 auto;}
 
 #orderedProducts {
 	padding: 0px 20px 0px 20px;
+}
+
+#basketPopup h1 {
+    margin-bottom:30px;
+}
+
+#basketPopup .next a,
+#basketPopup .prev a {
+	margin-left: 20px;
+	line-height: 20px;
+}
+
+#basketPopup .next a ,
+#basketPopup .prev a {
+	text-decoration: none;
+	font-weight: bold;
+	color: #993333;
+}
+
+#basketPopup .next a:hover,
+#basketPopup .prev a:hover {
+	text-decoration: underline;
+}
+
+#basketPopup .next a {
+	padding-right: 20px;
+	background: url('img/next.gif') no-repeat right;
+	float:right;
+}
+
+#basketPopup .prev a {
+	padding-left: 20px;
+	background: url('img/prev.gif') no-repeat left;
+	float:left;
 }

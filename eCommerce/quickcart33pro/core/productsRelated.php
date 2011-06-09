@@ -7,8 +7,9 @@
 * @param int    $iProduct
 */
 function listProductsRelated( $sFile, $iProduct, $tbl='related' ){
-  global $lang;
+  global $lang,$oOrder;
 //  $oFF    =& FlatFiles::getInstance( );//commented by epesi team
+  $oOrder->generateBasket( );
   $oTpl   =& TplParser::getInstance( );
   $oFile  =& Files::getInstance( );
   $aRelatedIds = throwProductsRelated( $iProduct, $tbl );
@@ -46,6 +47,9 @@ function listProductsRelated( $sFile, $iProduct, $tbl='related' ){
   $i2       = 0;
   $content = null;
   foreach($aProducts as $aData){
+    if($i2==6) 
+        $content .= $oTpl->tbHtml( $sFile, 'RELATED_MORE' );
+
     $aData['iWidth'] = $iWidth;
     if( $i2 % 2 )
       $aData['iStyle'] = 0;
@@ -77,6 +81,13 @@ function listProductsRelated( $sFile, $iProduct, $tbl='related' ){
       $aData['fPrice'] = throwSpecialProductPrice( $aData['iProduct'], $aData['fPrice'] );
 
     $aData['sPrice'] = is_numeric( $aData['fPrice'] ) ? displayPrice( $aData['fPrice'] ) : $aData['fPrice'];
+    if(isset($oOrder->aProducts[$aData['iProduct']])) {
+        $aData['sDisplayAddButton'] = 'style="display:none"';
+	$aData['sDisplayDeleteButton'] = '';
+    } else {
+        $aData['sDisplayAddButton'] = '';
+	$aData['sDisplayDeleteButton'] = 'style="display:none"';
+    }
     $oTpl->setVariables( 'aData', $aData );
 
     global $config,$oPage,$iContent;

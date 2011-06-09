@@ -166,10 +166,10 @@ if( isset( $iContent ) && is_numeric( $iContent ) ){
         $oOrder->deleteFromBasket( $iProductDelete );
         if(isset($_REQUEST['ajax'])) {
             $oOrder->generateBasket( );
-            $qty = 0;
-            foreach($oOrder->aProducts as $p)
-                $qty += $p['iQuantity'];
-            print('$("basketNumProducts").innerHTML = "'.$qty.'";elem.style.display="none";elem.previousSibling.style.display="inline";elem.disabled=0;');
+	    $iOrderProducts = isset( $_SESSION['iOrderQuantity'.LANGUAGE] ) ? $_SESSION['iOrderQuantity'.LANGUAGE] : 0;
+	    $fOrderSummary  = isset( $_SESSION['fOrderSummary'.LANGUAGE] ) ? displayPrice( $_SESSION['fOrderSummary'.LANGUAGE] ) : displayPrice( 0 );
+	    $sBasket = $oPage->throwMenu( 'menu_basket.tpl', 9, $iContent, 0 );
+            print('var b=$("menu_basket");var re = document.createElement("ul");re.innerHTML = "'.addcslashes($sBasket,'\\"').'";b.parentNode.replaceChild(re,b);elem.style.display="none";elem.previousSibling.style.display="inline";elem.disabled=0;');
             exit;
         }
       }
@@ -183,12 +183,10 @@ if( isset( $iContent ) && is_numeric( $iContent ) ){
         $oOrder->addToBasket( $iProductAdd, $iQuantity );
         if(isset($_REQUEST['ajax'])) {
             $oOrder->generateBasket( );
-            $qty = 0;
-            foreach($oOrder->aProducts as $p)
-                $qty += $p['iQuantity'];
-            print('$("basketNumProducts").innerHTML = "'.$qty.'";elem.style.display="none";elem.nextSibling.style.display="inline";elem.disabled=0;');
-            if($_REQUEST['ajax']=='2')
-                print('alert("'.$lang['Product_added_to_basket'].'");');
+	    $iOrderProducts = isset( $_SESSION['iOrderQuantity'.LANGUAGE] ) ? $_SESSION['iOrderQuantity'.LANGUAGE] : 0;
+	    $fOrderSummary  = isset( $_SESSION['fOrderSummary'.LANGUAGE] ) ? displayPrice( $_SESSION['fOrderSummary'.LANGUAGE] ) : displayPrice( 0 );
+	    $sBasket = $oPage->throwMenu( 'menu_basket.tpl', 9, $iContent, 0 );
+            print('var b=$("menu_basket");var re = document.createElement("ul");re.innerHTML = "'.addcslashes($sBasket,'\\"').'";b.parentNode.replaceChild(re,b);elem.style.display="none";elem.nextSibling.style.display="inline";elem.disabled=0;');
         } else {
             header( 'Location: '.REDIRECT.$aData['sLinkName'] );
         }
