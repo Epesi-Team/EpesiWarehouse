@@ -56,7 +56,7 @@ class Premium_Warehouse_Wholesale__Plugin_abdata implements Premium_Warehouse_Wh
 	public function download_file($parameters, $distributor) {
 		$dir = ModuleManager::get_data_dir('Premium_Warehouse_Wholesale');
 
-	    $c = curl_init();
+/*	    $c = curl_init();
 	    $url = 'http://dealer.ab.pl/main.php';
 
 	    curl_setopt($c, CURLOPT_URL, $url);
@@ -86,13 +86,14 @@ class Premium_Warehouse_Wholesale__Plugin_abdata implements Premium_Warehouse_Wh
 			return false;
 		}
 
-		
+	    curl_close($c);
+		*/
+		$output = '';//cenniki wysyłane na maila, nawet nie pytaj!
 	    $time = time();
 
 		$filename = $dir.'ab_data_'.$time.'.tmp';
 		file_put_contents($filename, iconv("cp1250","UTF-8",$output));
 
-	    curl_close($c);
 
 		Premium_Warehouse_WholesaleCommon::file_download_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','File downloaded.'), 1, true);
 	    
