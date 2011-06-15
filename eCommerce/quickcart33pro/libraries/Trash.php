@@ -476,7 +476,6 @@ function getAction( $p ){
   }
 } // end function getAction
 
-//$oDupa  =& Dupa::getInstance( );
 /**
 * Change string parameter to url name
 * @return string

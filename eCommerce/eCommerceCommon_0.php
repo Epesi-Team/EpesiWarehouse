@@ -690,7 +690,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
         return self::get_payment_channel($r2['payment_type'],$r['payment_channel']);
     }
 
-    public static function QFfield_payment_channel(&$form, $field, $label, $mode, $default,$dupa,$parent_rb) {
+    public static function QFfield_payment_channel(&$form, $field, $label, $mode, $default, $desc, $parent_rb) {
         $ord = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders',$parent_rb->record['transaction_id']);
         $form->addElement('static', $field, $label, self::get_payment_channel($ord['payment_type'],$default));
     }
@@ -702,7 +702,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
         return Utils_CurrencyFieldCommon::format($r['promotion_shipment_discount'],$curr).' ('.Base_LangCommon::ts('Premium_Warehouse_eCommerce','"Shipment Cost" is already discounted').')';
     }
 
-    public static function QFfield_promotion_shipment_discount(&$form, $field, $label, $mode, $default,$dupa,$parent_rb) {
+    public static function QFfield_promotion_shipment_discount(&$form, $field, $label, $mode, $default,$desc,$parent_rb) {
         $form->addElement('static', $field, $label, self::display_promotion_shipment_discount($parent_rb->record));
     }
 
