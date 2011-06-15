@@ -962,7 +962,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 							foreach ($items as $v) {
 								$serials = array();
 								for ($i=0;$i<$v['quantity'];$i++)
-									$serials[] = $vals['form']['serial__'.$v['id'].'__'.$i];
+									if (isset($vals['form']['serial__'.$v['id'].'__'.$i])) $serials[] = $vals['form']['serial__'.$v['id'].'__'.$i];
 								Premium_Warehouse_Items_OrdersCommon::selected_serials($v, $trans, $serials);
 							}
 						}
@@ -1121,7 +1121,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 							foreach ($items as $v) {
 								$serials = array();
 								for ($i=0;$i<$v['quantity'];$i++)
-									$serials[] = $vals['form']['serial__'.$v['id'].'__'.$i];
+									if (isset($vals['form']['serial__'.$v['id'].'__'.$i])) $serials[] = $vals['form']['serial__'.$v['id'].'__'.$i];
 								Premium_Warehouse_Items_OrdersCommon::selected_serials($v, $trans, $serials);
 							}
 						}
