@@ -36,6 +36,7 @@ class Premium_Warehouse_SalesReportCommon extends ModuleCommon {
 	} 
 	
 	public static function recalculate() {
+		set_time_limit(0);
 		$currency = Variable::get('premium_warehouse_ex_currency');
 		$prec = Utils_CurrencyFieldCommon::get_precission($currency);
 		$multip = pow(10,$prec);
