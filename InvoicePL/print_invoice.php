@@ -78,11 +78,12 @@ $net_total_sum = array();
 $tax_total_sum = array();
 
 foreach ($items as $k=>$v) {
+	$tax = Data_TaxRatesCommon::get_tax_rate($items[$k]['tax_rate']);
 	$items[$k]['item_details'] = Utils_RecordBrowserCommon::get_record('premium_warehouse_items', $v['item_name']);
 	$items[$k]['net_price'] = Utils_CurrencyFieldCommon::get_values($items[$k]['net_price']);
 	$items[$k]['gross_price'] = array();
 	$items[$k]['gross_price'][1] = $items[$k]['net_price'][1];
-	$items[$k]['gross_price'][0] = round((100+Data_TaxRatesCommon::get_tax_rate($items[$k]['tax_rate']))*$items[$k]['net_price'][0]/100, Utils_CurrencyFieldCommon::get_precission($items[$k]['net_price'][1])); 
+	$items[$k]['gross_price'][0] = round((100+$tax)*$items[$k]['net_price'][0]/100, Utils_CurrencyFieldCommon::get_precission($items[$k]['net_price'][1])); 
 
 	$gross_total = $items[$k]['gross_price'][0]*$items[$k]['quantity'];
 	$net_total = $items[$k]['net_price'][0]*$items[$k]['quantity'];
@@ -95,17 +96,22 @@ foreach ($items as $k=>$v) {
 	$currency = $items[$k]['gross_price'][1];
 
 	if (!isset($gross_total_sum[$currency])) {
-		$gross_total_sum[$currency] = 0;
-		$net_total_sum[$currency] = 0;
-		$tax_total_sum[$currency] = 0;
+		$gross_total_sum[$currency] = array();
+		$net_total_sum[$currency] = array();
+		$tax_total_sum[$currency] = array();
 	}
-	$gross_total_sum[$currency] += $gross_total;
-	$net_total_sum[$currency] += $net_total;
-	$tax_total_sum[$currency] += $tax_total;
+	if (!isset($gross_total_sum[$currency][$tax])) {
+		$gross_total_sum[$currency][$tax] = 0;
+		$net_total_sum[$currency][$tax] = 0;
+		$tax_total_sum[$currency][$tax] = 0;
+	}
+	$gross_total_sum[$currency][$tax] += $gross_total;
+	$net_total_sum[$currency][$tax] += $net_total;
+	$tax_total_sum[$currency][$tax] += $tax_total;
 	
 	$items[$k]['gross_price'] = Utils_CurrencyFieldCommon::format($items[$k]['gross_price'][0], $items[$k]['gross_price'][1]);
 	$items[$k]['net_price'] = Utils_CurrencyFieldCommon::format($items[$k]['net_price'][0], $items[$k]['net_price'][1]);
-	$items[$k]['tax_name'] = Data_TaxRatesCommon::get_tax_rate($items[$k]['tax_rate']).'%';
+	$items[$k]['tax_name'] = $tax.'%';
 
 	$theme = Base_ThemeCommon::init_smarty();
 	$theme->assign('details', $items[$k]);
@@ -136,13 +142,20 @@ foreach (array('shipment'=>'Koszt wysyłki', 'handling'=>'Opłata manipulacyjna'
 		$gross = Utils_CurrencyFieldCommon::format($gross_val, $additional_cost[$k][1]);
 		$net = Utils_CurrencyFieldCommon::format($net_val, $additional_cost[$k][1]);
 
-		if (!isset($gross_total_sum[$additional_cost[$k][1]])) $gross_total_sum[$additional_cost[$k][1]] = 0;
-		if (!isset($net_total_sum[$additional_cost[$k][1]])) $net_total_sum[$additional_cost[$k][1]] = 0;
-		if (!isset($tax_total_sum[$additional_cost[$k][1]])) $tax_total_sum[$additional_cost[$k][1]] = 0;
+		if (!isset($gross_total_sum[$additional_cost[$k][1]])) {
+			$gross_total_sum[$additional_cost[$k][1]] = array();
+			$net_total_sum[$additional_cost[$k][1]] = array();
+			$tax_total_sum[$additional_cost[$k][1]] = array();
+		}
+		if (!isset($gross_total_sum[$additional_cost[$k][1]][$vat])) {
+			$gross_total_sum[$additional_cost[$k][1]][$vat] = 0;
+			$net_total_sum[$additional_cost[$k][1]][$vat] = 0;
+			$tax_total_sum[$additional_cost[$k][1]][$vat] = 0;
+		}
 
-		$gross_total_sum[$additional_cost[$k][1]] += $gross_val;
-		$net_total_sum[$additional_cost[$k][1]] += $net_val;
-		$tax_total_sum[$additional_cost[$k][1]] += $tax_val;
+		$gross_total_sum[$additional_cost[$k][1]][$vat] += $gross_val;
+		$net_total_sum[$additional_cost[$k][1]][$vat] += $net_val;
+		$tax_total_sum[$additional_cost[$k][1]][$vat] += $tax_val;
 
 		$details = array(
 				'item_details'=>array('item_name'=>$v),
@@ -170,9 +183,24 @@ $gross_total_sum_f = array();
 $net_total_sum_f = array();
 $tax_total_sum_f = array();
 foreach ($gross_total_sum as $k=>$v) {
-	$gross_total_sum_f[$k] = Utils_CurrencyFieldCommon::format($gross_total_sum[$k], $k);
-	$net_total_sum_f[$k] = Utils_CurrencyFieldCommon::format($net_total_sum[$k], $k);
-	$tax_total_sum_f[$k] = Utils_CurrencyFieldCommon::format($tax_total_sum[$k], $k);
+	$gross_total_sum_f[$k] = array();
+	$net_total_sum_f[$k] = array();
+	$tax_total_sum_f[$k] = array();
+	$sum = array('gross'=>0,'net'=>0,'tax'=>0);
+	foreach($v as $vat=>$vv) {
+		$sum['gross'] += $gross_total_sum[$k][$vat];
+		$gross_total_sum_f[$k][$vat.'%'] = Utils_CurrencyFieldCommon::format($gross_total_sum[$k][$vat], $k);
+		$sum['net'] += $net_total_sum[$k][$vat];
+		$net_total_sum_f[$k][$vat.'%'] = Utils_CurrencyFieldCommon::format($net_total_sum[$k][$vat], $k);
+		$sum['tax'] += $tax_total_sum[$k][$vat];
+		$tax_total_sum_f[$k][$vat.'%'] = Utils_CurrencyFieldCommon::format($tax_total_sum[$k][$vat], $k);
+	}
+	$gross_total_sum[$k]['x'] = $sum['gross'];
+	$net_total_sum[$k]['x'] = $sum['net'];
+	$tax_total_sum[$k]['x'] = $sum['tax'];
+	$gross_total_sum_f[$k]['x'] = Utils_CurrencyFieldCommon::format($sum['gross'], $k);
+	$net_total_sum_f[$k]['x'] = Utils_CurrencyFieldCommon::format($sum['net'], $k);
+	$tax_total_sum_f[$k]['x'] = Utils_CurrencyFieldCommon::format($sum['tax'], $k);
 }
 
 $theme = Base_ThemeCommon::init_smarty();
@@ -243,9 +271,11 @@ function cash2word ($arg) {
 
 $theme = Base_ThemeCommon::init_smarty();
 $theme->assign('order', $order);
-$theme->assign('total', implode(', ',$gross_total_sum_f));
+$total = array();
+foreach($gross_total_sum_f as $gr) $total[] = $gr['x'];
+$theme->assign('total', implode(', ',$total));
 $PLN = DB::GetOne('SELECT id FROM utils_currency WHERE code=%s', array('PLN'));
-if (is_numeric($PLN) && isset($gross_total_sum[$PLN])) $wording = cash2word($gross_total_sum[$PLN]);
+if (is_numeric($PLN) && isset($gross_total_sum[$PLN]['x'])) $wording = cash2word($gross_total_sum[$PLN]['x']);
 else $wording = '';
 $theme->assign('total_word', $wording);
 
