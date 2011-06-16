@@ -31,15 +31,16 @@ class Premium_Warehouse_Items_Orders extends Module {
 			$disabled = Variable::get('premium_warehouse_trans_types', false);
 			if (!$disabled) $disabled = array();
 			else $disabled = array_flip($disabled);
+			$defaults2 = $defaults;
 			$defaults = array();
-    		if (!isset($disabled['disable_purchase'])) $defaults[$this->t('Purchase')] = array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'purchase.png'), 'defaults'=>array_merge($defaults,array('transaction_type'=>0,'terms'=>0,'payment'=>1,'transaction_date'=>date('Y-m-d'))));
-		    if (!isset($disabled['disable_sales_quote'])) $defaults[$this->t('Sales Quote')] = array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'sale.png'), 'defaults'=>array_merge($defaults,array('transaction_type'=>1,'terms'=>0,'payment'=>1,'transaction_date'=>date('Y-m-d'))));
-			if (!isset($disabled['disable_sale'])) $defaults[$this->t('Sale')] = array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'quick_sale.png'), 'defaults'=>array_merge($defaults,array('transaction_type'=>1, 'status'=>2,'payment'=>1, 'payment_type'=>0, 'shipment_type'=>0,'terms'=>0,'transaction_date'=>date('Y-m-d'))));
-    		if (!isset($disabled['disable_inv_adj'])) $defaults[$this->t('Inv. Adjustment')] = array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'inv_adj.png'), 'defaults'=>array_merge($defaults,array('transaction_type'=>2,'transaction_date'=>date('Y-m-d'))));
+    		if (!isset($disabled['disable_purchase'])) $defaults[$this->t('Purchase')] = array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'purchase.png'), 'defaults'=>array_merge($defaults2,array('transaction_type'=>0,'terms'=>0,'payment'=>1,'transaction_date'=>date('Y-m-d'))));
+		    if (!isset($disabled['disable_sales_quote'])) $defaults[$this->t('Sales Quote')] = array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'sale.png'), 'defaults'=>array_merge($defaults2,array('transaction_type'=>1,'terms'=>0,'payment'=>1,'transaction_date'=>date('Y-m-d'))));
+			if (!isset($disabled['disable_sale'])) $defaults[$this->t('Sale')] = array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'quick_sale.png'), 'defaults'=>array_merge($defaults2,array('transaction_type'=>1, 'status'=>2,'payment'=>1, 'payment_type'=>0, 'shipment_type'=>0,'terms'=>0,'transaction_date'=>date('Y-m-d'))));
+    		if (!isset($disabled['disable_inv_adj'])) $defaults[$this->t('Inv. Adjustment')] = array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'inv_adj.png'), 'defaults'=>array_merge($defaults2,array('transaction_type'=>2,'transaction_date'=>date('Y-m-d'))));
 //	    	if (!isset($disabled['disable_rental'])) $defaults[$this->t('Rental')] = array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'rental.png'), 'defaults'=>array_merge($defaults,array('transaction_type'=>3,'transaction_date'=>date('Y-m-d'))));
-		    if (!isset($disabled['disable_transfer'])) $defaults[$this->t('Warehouse Transfer')] = array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'warehouse_transfer.png'), 'defaults'=>array_merge($defaults,array('transaction_type'=>4,'transaction_date'=>date('Y-m-d'))));
-    		if (!isset($disabled['disable_checkin'])) $defaults[$this->t('Check-in')] = array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'purchase.png'), 'defaults'=>array_merge($defaults,array('transaction_type'=>0,'terms'=>0,'payment'=>0,'transaction_date'=>date('Y-m-d'))));
-	    	if (!isset($disabled['disable_checkout'])) $defaults[$this->t('Check-out')] = array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'sale.png'), 'defaults'=>array_merge($defaults,array('transaction_type'=>1,'terms'=>0,'payment'=>0,'transaction_date'=>date('Y-m-d'))));
+		    if (!isset($disabled['disable_transfer'])) $defaults[$this->t('Warehouse Transfer')] = array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'warehouse_transfer.png'), 'defaults'=>array_merge($defaults2,array('transaction_type'=>4,'transaction_date'=>date('Y-m-d'))));
+    		if (!isset($disabled['disable_checkin'])) $defaults[$this->t('Check-in')] = array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'purchase.png'), 'defaults'=>array_merge($defaults2,array('transaction_type'=>0,'terms'=>0,'payment'=>0,'transaction_date'=>date('Y-m-d'))));
+	    	if (!isset($disabled['disable_checkout'])) $defaults[$this->t('Check-out')] = array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'sale.png'), 'defaults'=>array_merge($defaults2,array('transaction_type'=>1,'terms'=>0,'payment'=>0,'transaction_date'=>date('Y-m-d'))));
 			$this->rb->set_defaults($defaults, true);
 		} else {
 		    $defaults['transaction_type'] = 1;
