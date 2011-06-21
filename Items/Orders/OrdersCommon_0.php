@@ -657,7 +657,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			if (isset($default) && is_numeric($default)) $form->setDefaults(array($field=>$default));
 			$form->addFormRule(array('Premium_Warehouse_Items_OrdersCommon','check_qty_on_hand'));
 			load_js('modules/Premium/Warehouse/Items/Orders/item_autocomplete.js');
-			eval_js('if($("item_name").value=="")focus_by_id("item_name");');
+			eval_js('if($("item_name") && $("item_name").value=="")focus_by_id("item_name");');
 		} else {
 			$form->addElement('static', $field, $label);
 			$form->setDefaults(array($field=>self::display_item_name(array('item_name'=>$default), null, array('id'=>'item_name'))));
