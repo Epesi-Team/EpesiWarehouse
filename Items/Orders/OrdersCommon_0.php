@@ -1549,6 +1549,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 				if (isset($_REQUEST['serial_1']) && $item_type==1)
 					self::process_sent_serials($values, $trans);
 				if ($mode=='added') location(array());
+				Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders_details', $values['id'], $values);
 				return $values;
 			case 'view':
 				return $values;
