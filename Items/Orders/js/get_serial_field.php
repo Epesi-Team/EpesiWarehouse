@@ -52,7 +52,9 @@ if ($trans['transaction_type']==1 || $trans['transaction_type']==4) {
 	$selected_serials = DB::GetAssoc('SELECT s.id, s.serial FROM premium_warehouse_location_orders_serial os LEFT JOIN premium_warehouse_location_serial s ON s.id=os.serial_id WHERE os.order_details_id=%d ORDER BY s.location_id ASC, s.id ASC', array($det));
 	$selected_serials_ids = array();
 	foreach ($selected_serials as $id=>$s) $selected_serials_ids[] = $id;
-	$item_serials_raw = DB::Execute('SELECT * FROM premium_warehouse_location_serial WHERE location_id=%d OR id IN ('.implode(',',$selected_serials_ids).') ORDER BY serial', array($loc_id));
+	if (!empty($selected_serials_ids)) $sel_ser_where = 'OR id IN ('.implode(',',$selected_serials_ids).') ';
+	else $sel_ser_where = '';
+	$item_serials_raw = DB::Execute('SELECT * FROM premium_warehouse_location_serial WHERE location_id=%d '.$sel_ser_where.'ORDER BY serial', array($loc_id));
 	$item_serials = array();
 	$empty = 0;
 	$i = 1;
