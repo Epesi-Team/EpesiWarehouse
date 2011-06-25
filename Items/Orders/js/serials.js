@@ -3,6 +3,8 @@ set_serials_fields = function(qty, order_details) {
 	if (serial_el) {
 		serial_el.parentNode.style.display = "none";
 		var tbody = serial_el.parentNode.parentNode;
+	} else {
+	    return;
 	}
 	qty+=2;
 	for( var x = 0; tbody.childNodes[x]; x++ ) {
