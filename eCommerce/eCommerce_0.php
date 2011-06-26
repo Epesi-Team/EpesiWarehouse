@@ -40,9 +40,7 @@ class Premium_Warehouse_eCommerce extends Module {
 						'icon'=>null);
 		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'order_email_page')).'>'.$this->t('New order e-mail header').'</a>',
 						'icon'=>null);
-		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'order_received_email_page')).'>'.$this->t('Order received e-mail').'</a>',
-						'icon'=>null);
-		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'order_shipped_email_page')).'>'.$this->t('Order shipped e-mail').'</a>',
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'order_status_change_email_page')).'>'.$this->t('Order status change e-mails').'</a>',
 						'icon'=>null);
 		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'pages')).'>'.$this->t('Pages').'</a>',
 						'icon'=>null);
@@ -406,12 +404,14 @@ class Premium_Warehouse_eCommerce extends Module {
 		return $this->edit_variable_with_lang('Order e-mail header','ecommerce_order_email');
 	}
 	
-	public function order_received_email_page() {
-		return $this->edit_mail_with_lang('Order e-mail header','ecommerce_order_rec_email');
-	}
-	
-	public function order_shipped_email_page() {
-		return $this->edit_mail_with_lang('Order e-mail header','ecommerce_order_shi_email');
+	public function order_status_change_email_page() {
+		if($this->is_back()) return false;
+		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
+		
+		$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_emails');
+		$this->display_module($this->rb);		
+
+        return true;	    
 	}
 	
 	public function rules_page() {
@@ -456,21 +456,6 @@ class Premium_Warehouse_eCommerce extends Module {
 			return false;
 		}
 		$f->display();	
-		return true;
-	}
-
-	private function edit_mail_with_lang($header,$v) {
-		if($this->is_back()) return false;
-		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
-		
-		print('<h1>'.$header.'</h1>'.$this->t('Choose language to edit:').'<ul>');
-
-		$langs = Utils_CommonDataCommon::get_array('Premium/Warehouse/eCommerce/Languages');
-		print('<li><a '.$this->create_callback_href(array($this,'edit_variable_mail'),array($header,$v)).'>default (if translation is available)</a></li>');
-		foreach($langs as $k=>$name) {
-			print('<li><a '.$this->create_callback_href(array($this,'edit_variable_mail'),array($header,$v.'_'.$k)).'>'.$name.'</a></li>');
-		}
-		print('</ul>');
 		return true;
 	}
 

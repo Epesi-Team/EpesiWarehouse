@@ -195,6 +195,26 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
         return $values;
     }
 
+    private static $order_statuses = array(-1=>'New Online Order', 2=>'Order Received', 3=>'Payment Confirmed', 4=>'Order Confirmed', 5=>'On Hold', 6=>'Order Ready to Ship', 7=>'Shipped', 20=>'Delivered', 21=>'Canceled', 22=>'Missing');
+
+    public static function QFfield_order_status(&$form, $field, $label, $mode, $default) {
+        if ($mode=='add' || $mode=='edit') {
+            $statuses = array();
+            foreach(self::$order_statuses as $k=>$v)
+                $statuses[$k] = Base_LangCommon::ts('Premium_Warehouse_Items_Orders',$v);
+            $form->addElement('select', $field, $label, $statuses, array('id'=>$field));
+            $form->addRule($field,'Field required','required');
+            if ($mode=='edit') $form->setDefaults(array($field=>$default));
+        } else {
+            $form->addElement('static', $field, $label);
+            $form->setDefaults(array($field=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders',self::$order_statuses[$default])));
+        }
+    }
+
+    public static function display_order_status($r, $nolink=false) {
+        return Base_LangCommon::ts('Premium_Warehouse_Items_Orders',self::$order_statuses[$r['type']]);
+    }
+
     private static $page_opts = array(''=>'---','1'=>'Top menu above logo','2'=>'Top menu under logo','5'=>'Hidden');
 
     public static function QFfield_page_type(&$form, $field, $label, $mode, $default) {
@@ -210,6 +230,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
     public static function display_page_type($r, $nolink=false) {
         return self::$page_opts[$r['type']];
     }
+
 
     private static $subpage_as_opts = array(1=>"List (name, description)",2=>"List (name, description, photo)",3=>'News (name, description, photo)',4=>'Gallery (name, picture)');
 
@@ -890,39 +911,20 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
     public static function submit_warehouse_order($values, $mode) {
         if ($mode=='edit' && $values['transaction_type']==1 && $values['online_order']) {
             $txt = '';
-            switch($values['status']) {
-                case 2:
-                    $erec = Utils_RecordBrowserCommon::get_records('premium_ecommerce_orders',array('transaction_id'=>$values['id']));
-                    if($erec && is_array($erec) && count($erec)==1) {
-                        $erec = array_shift($erec);
-                        $txt = Variable::get('ecommerce_order_rec_email_'.$erec['language'],false);
-                        if(!$txt)
-                            $txt = Variable::get('ecommerce_order_rec_email');
-                        $title = Variable::get('ecommerce_order_rec_email_'.$erec['language'].'S',false);
-                        if(!$title)
-                            $title = Variable::get('ecommerce_order_rec_emailS');
-                    } else {
-                        $txt = Variable::get('ecommerce_order_rec_email');
-                        $title = Variable::get('ecommerce_order_rec_emailS');
+            $erec = Utils_RecordBrowserCommon::get_records('premium_ecommerce_orders',array('transaction_id'=>$values['id']));
+            if($erec && is_array($erec) && count($erec)==1) {
+                $erec = array_shift($erec);
+                $emails = Utils_RecordBrowserCommon::get_records('premium_ecommerce_emails',array('send_on_status'=>$values['status'],'language'=>$erec['language']));
+                if(!$emails)
+                    $emails = Utils_RecordBrowserCommon::get_records('premium_ecommerce_emails',array('send_on_status'=>$values['status']));
+                if($emails) {
+                    $email = array_shift($emails);
+                    $txt = $email['content'];
+                    $title = $email['subject'];
+                    foreach($values as $name=>$val) {
+                        $txt = str_replace('__'.strtoupper($name).'__',$val,$txt);
                     }
-                    break;
-                case 7:
-                    $erec = Utils_RecordBrowserCommon::get_records('premium_ecommerce_orders',array('transaction_id'=>$values['id']));
-                    if($erec && is_array($erec) && count($erec)==1) {
-                        $erec = array_shift($erec);
-                        $txt = Variable::get('ecommerce_order_shi_email_'.$erec['language'],false);
-                        if(!$txt)
-                            $txt = Variable::get('ecommerce_order_shi_email');
-                        $title = Variable::get('ecommerce_order_shi_email_'.$erec['language'].'S',false);
-                        if(!$title)
-                            $title = Variable::get('ecommerce_order_shi_emailS');
-                    } else {
-                        $txt = Variable::get('ecommerce_order_shi_email');
-                        $title = Variable::get('ecommerce_order_shi_emailS');
-                    }
-                    $txt = str_replace('__TRACKING_INFO__',$values['tracking_info'],$txt);
-                    $txt = str_replace('__SHIPMENT_NO__',$values['shipment_no'],$txt);
-                    break;
+                }
             }
             if($txt) {
                 $it_tmp = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details',array('transaction_id'=>$values['id']),array('item_name'));

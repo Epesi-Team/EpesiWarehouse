@@ -361,6 +361,19 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_boxes', array('Premium_Warehouse_eCommerceCommon', 'access_parameters'));
 		Utils_RecordBrowserCommon::register_processing_callback('premium_ecommerce_boxes', array('Premium_Warehouse_eCommerceCommon', 'submit_boxes_position'));
 
+        //emails
+		$fields = array(
+			array('name'=>'Subject',	'type'=>'text', 'param'=>128, 'required'=>true, 'extra'=>false, 'visible'=>true),
+			array('name'=>'Content', 	'type'=>'long text', 'required'=>true, 'extra'=>false, 'visible'=>false, 'QFfield_callback'=>array('Libs_CKEditorCommon', 'QFfield_cb'), 'display_callback'=>array('Libs_CKEditorCommon', 'display_cb')),
+			array('name'=>'Language', 	'type'=>'commondata', 'required'=>false, 'extra'=>false, 'param'=>array('Premium/Warehouse/eCommerce/Languages'), 'visible'=>true),
+			array('name'=>'Send On Status', 		'type'=>'integer', 'required'=>true, 'extra'=>false,'visible'=>false, 'QFfield_callback'=>array('Premium_Warehouse_eCommerceCommon', 'QFfield_order_status'), 'display_callback'=>array('Premium_Warehouse_eCommerceCommon', 'display_order_status'))
+		);
+		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_emails', $fields);
+
+		Utils_RecordBrowserCommon::set_favorites('premium_ecommerce_emails', false);
+		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_emails', 'eCommerce - e-mails');
+		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_emails', array('Premium_Warehouse_eCommerceCommon', 'access_parameters'));
+
 		//promotion codes
 		$fields = array(
 			array('name'=>'Employee', 	'type'=>'crm_contact', 'param'=>array('field_type'=>'select','crits'=>array('Premium_Warehouse_ItemsCommon','employee_crits'), 'format'=>array('CRM_ContactsCommon','contact_format_no_company')), 'required'=>true, 'extra'=>false, 'visible'=>true),
@@ -507,10 +520,6 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Variable::set('ecommerce_rules','You can edit this page in Administration - eCommerce settings.');
 		Variable::set('ecommerce_contactus','You can edit this page in Administration - eCommerce settings.');
 		Variable::set('ecommerce_order_email','');
-		Variable::set('ecommerce_order_rec_email','');
-		Variable::set('ecommerce_order_shi_email','');
-		Variable::set('ecommerce_order_rec_emailS','Order received');
-		Variable::set('ecommerce_order_shi_emailS','Order shipped');
 
 		Variable::set('ecommerce_autoprice',false);
 		Variable::set('ecommerce_minimal_profit','');
@@ -563,16 +572,8 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 			Variable::delete('ecommerce_rules_'.$k,false);
 			Variable::delete('ecommerce_contactus_'.$k,false);
 			Variable::delete('ecommerce_order_email_'.$k,false);
-			Variable::delete('ecommerce_order_rec_email_'.$k,false);
-			Variable::delete('ecommerce_order_shi_email_'.$k,false);
-			Variable::delete('ecommerce_order_rec_email_'.$k.'S',false);
-			Variable::delete('ecommerce_order_shi_email_'.$k.'S',false);
 		}
 		Variable::delete('ecommerce_order_email');
-		Variable::delete('ecommerce_order_rec_email');
-		Variable::delete('ecommerce_order_shi_email');
-		Variable::delete('ecommerce_order_rec_emailS');
-		Variable::delete('ecommerce_order_shi_emailS');
 		Variable::delete('ecommerce_rules');
 		Variable::delete('ecommerce_contactus');
 		Variable::delete('ecommerce_autoprice');
@@ -610,6 +611,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::delete_addon('premium_warehouse_items_orders', 'Premium/Warehouse/eCommerce', 'orders_addon');
 		Utils_RecordBrowserCommon::delete_addon('contact', 'Premium/Warehouse/eCommerce', 'users_addon');
 
+		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_emails');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_3rdp_info');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_products');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_cat_descriptions');
