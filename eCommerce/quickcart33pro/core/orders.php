@@ -403,11 +403,14 @@ class Orders
     	if(!$contact) {
     		$contact = null;
     	} elseif($company) { //jest kontakt i firma - sprawdz czy kontakt jest pod ta firma, jezeli nie to dodaj kontakt do firmy
-	    	$companies = DB::GetOne('SELECT f_company_name FROM contact_data_1 WHERE id=%d',array($contact));
-	    	if(strstr($companies,'__'.$company.'__')===false) {
-	    		if($companies) $companies .= $company.'__';
-	    		else $companies = '__'.$company.'__';
-	    		DB::Execute('UPDATE contact_data_1 SET f_company_name=%s WHERE id=%d',array($companies,$contact));
+	    	$companies = DB::GetRow('SELECT f_company_name as main,f_related_companies as related FROM contact_data_1 WHERE id=%d',array($contact));
+	    	if(strstr($companies['related'],'__'.$company.'__')===false && $companies['main']!=$company) {
+	    		if($companies['main']) {
+		    		if($companies['related']) $companies['related'] .= $company.'__';
+		    		else $companies['related'] = '__'.$company.'__';
+	    			DB::Execute('UPDATE contact_data_1 SET f_related_companies=%s WHERE id=%d',array($companies['related'],$contact));
+	    		} else
+	    			DB::Execute('UPDATE contact_data_1 SET f_company_name=%s WHERE id=%d',array($companies['main'],$contact));
 	    	}
     	}
         //add user
@@ -422,18 +425,21 @@ class Orders
 		}
 		if(!$contact) { //jezeli nie ma kontaktu stworz go
 			if($company)
-				$company2 = '__'.$company.'__';
+				$company2 = $company;
 			else
 				$company2 = null;
 		    	DB::Execute('INSERT INTO contact_data_1(created_on,f_first_name,f_last_name,f_address_1,f_postal_code,f_city,f_country,f_work_phone,f_email,f_company_name,f_group,f_permission) VALUES (%T,%s,%s,%s,%s,%s,%s,%s,%s,%s,\'__custm__\',0)',
     				array($t,$aForm['sFirstName'],$aForm['sLastName'],$aForm['sStreet'],$aForm['sZipCode'],$aForm['sCity'],$aForm['sCountry'],$aForm['sPhone'],$aForm['sEmail'],$company2));
 			$contact = DB::Insert_ID('contact_data_1','id');
 		} elseif($new_company) { //a jezeli jest kontakt o tym mailu, ale nie bylo firmy i zostala stworzona to dodaj ta firme do kontaktu
-		    	$companies = DB::GetOne('SELECT f_company_name FROM contact_data_1 WHERE id=%d',array($contact));
-		    	if(strstr($companies,'__'.$company.'__')===false) {
-	    			if($companies) $companies .= $company.'__';
-	    			else $companies = '__'.$company.'__';
-		    		DB::Execute('UPDATE contact_data_1 SET f_company_name=%s WHERE id=%d',array($companies,$contact));
+		    	$companies = DB::GetRow('SELECT f_company_name as main,f_related_companies as related FROM contact_data_1 WHERE id=%d',array($contact));
+		    	if(strstr($companies['related'],'__'.$company.'__')===false && $companies['main']!=$company) {
+	    			if($companies['main']) {
+		    			if($companies['related']) $companies['related'] .= $company.'__';
+		    			else $companies['related'] = '__'.$company.'__';
+		    			DB::Execute('UPDATE contact_data_1 SET f_related_companies=%s WHERE id=%d',array($companies['related'],$contact));
+		    		} else
+	    				DB::Execute('UPDATE contact_data_1 SET f_company_name=%s WHERE id=%d',array($companies['main'],$contact));
 		    	}
 		}
 		//add ecommerce user
