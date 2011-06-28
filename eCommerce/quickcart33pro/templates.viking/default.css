@@ -130,7 +130,7 @@ a:hover {
 #menu_basket li {
   float: right;
   padding-top: 2px;
-  width: 150px;
+  width: 160px;
 }
 
 #menu_basket li a {
@@ -144,7 +144,7 @@ a:hover {
 #menu_basket li a:hover, #menu_basket .selected{background-color:inherit;color:#e62808;text-decoration:underline;}
 
 #menu_basket li#basketMenu {
-  padding: 15px 15px 15px 15px;
+  padding: 8px;
 }
 
 #menu_basket li#basketMenu a {

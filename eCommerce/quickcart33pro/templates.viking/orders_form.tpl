@@ -70,7 +70,7 @@
     	        if(!c || c=='') {
         	        var a=document.getElementById("oCountry");
         	        for(var i=0; i<a.length; i++) {
-    	                if(a.options[i].value=="$aUser[sCountry]") {
+    	                if(("$aUser[sCountry]"!="" && a.options[i].value=="$aUser[sCountry]") || (a.options[i].value.toLowerCase()=="$config[language]") || (a.options[i].value=="US" && "en"=="$config[language]")) {
     	                    a.selectedIndex=i;
     	                    break;
     	                }
