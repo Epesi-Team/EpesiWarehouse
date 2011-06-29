@@ -1006,7 +1006,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
     }
 
     public static function automulti_search($arg,$r) {
-        $ret = DB::GetAssoc('SELECT ep.id, wp.f_item_name FROM premium_ecommerce_products_data_1 ep INNER JOIN premium_warehouse_items_data_1 wp ON ep.f_item_name=wp.id WHERE ep.active=1 AND wp.active=1 AND (wp.f_item_name LIKE CONCAT("%%",%s,"%%") OR wp.f_sku LIKE CONCAT("%%",%s,"%%"))'.(isset($r['id'])?' AND ep.id!='.$r['id']:'').' ORDER BY wp.f_item_name LIMIT 10',array($arg,$arg));
+        $ret = DB::GetAssoc('SELECT ep.id, wp.f_item_name FROM premium_ecommerce_products_data_1 ep INNER JOIN premium_warehouse_items_data_1 wp ON ep.f_item_name=wp.id WHERE ep.active=1 AND wp.active=1 AND (wp.f_item_name '.DB::like().' CONCAT("%%",%s,"%%") OR wp.f_sku '.DB::like().' CONCAT("%%",%s,"%%"))'.(isset($r['id'])?' AND ep.id!='.$r['id']:'').' ORDER BY wp.f_item_name LIMIT 10',array($arg,$arg));
         return $ret;
     }
 
@@ -1047,7 +1047,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 
 	public static function category_filter($choice) {
 		if ($choice=='__NULL__') return array();
-		$ids = DB::GetCol('SELECT id FROM premium_warehouse_items_data_1 WHERE (f_category LIKE CONCAT("%%\_\_",%d,"\_\_%%") OR f_category LIKE CONCAT("%%\_\_",%d,"\/%%") OR f_category LIKE CONCAT("%%\/",%d,"\_\_%%") OR f_category LIKE CONCAT("%%\/",%d,"\/%%")) AND active=1',array($choice,$choice,$choice,$choice));
+		$ids = DB::GetCol('SELECT id FROM premium_warehouse_items_data_1 WHERE (f_category '.DB::like().' CONCAT("%%\_\_",%d,"\_\_%%") OR f_category '.DB::like().' CONCAT("%%\_\_",%d,"\/%%") OR f_category '.DB::like().' CONCAT("%%\/",%d,"\_\_%%") OR f_category '.DB::like().' CONCAT("%%\/",%d,"\/%%")) AND active=1',array($choice,$choice,$choice,$choice));
 		return array('item_name'=>$ids);
 	}
 	

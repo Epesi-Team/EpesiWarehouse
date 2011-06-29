@@ -241,7 +241,7 @@ class Orders
     if($aForm['sPromotionCode']) {
 	$promotion = $this->throwPromotions($aForm['sPromotionCode']);
 	if(!$promotion) {
-   		$c = DB::GetOne('SELECT 1 FROM premium_ecommerce_promotion_codes_data_1 WHERE f_promotion_code LIKE %s AND active=1',array($aForm['sPromotionCode']));
+   		$c = DB::GetOne('SELECT 1 FROM premium_ecommerce_promotion_codes_data_1 WHERE f_promotion_code '.DB::like().' %s AND active=1',array($aForm['sPromotionCode']));
    		if($c)
 			return 'promotion_expired';
 		return 'promotion_invalid';
@@ -617,7 +617,7 @@ class Orders
   function throwPromotions($code) {
    	static $c;
    	if(!isset($c)) {
-   		$c = DB::GetAll('SELECT f_employee as employee, f_discount as discount FROM premium_ecommerce_promotion_codes_data_1 WHERE f_expiration>%D AND f_promotion_code LIKE %s AND active=1',array(date('Y-m-d'),$code));
+   		$c = DB::GetAll('SELECT f_employee as employee, f_discount as discount FROM premium_ecommerce_promotion_codes_data_1 WHERE f_expiration>%D AND f_promotion_code '.DB::like().' %s AND active=1',array(date('Y-m-d'),$code));
    	}
   	return $c;
   }

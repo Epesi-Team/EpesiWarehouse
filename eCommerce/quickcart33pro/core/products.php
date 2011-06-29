@@ -287,7 +287,7 @@ class Products
 	if(count($products)>1 && $this->searchedWords) {
     	$query = '1';
 	    foreach($this->searchedWords as $w) {
-    		$query .= ' AND (((d.f_display_name is null OR d.f_display_name="") AND it.f_item_name LIKE \'%%'.DB::addq($w).'%%\') OR d.f_display_name LIKE \'%%'.DB::addq($w).'%%\')';
+    		$query .= ' AND (((d.f_display_name is null OR d.f_display_name="") AND it.f_item_name '.DB::like().' \'%%'.DB::addq($w).'%%\') OR d.f_display_name '.DB::like().' \'%%'.DB::addq($w).'%%\')';
 	    }
     	$in_title_ids = DB::GetCol('SELECT it.id 
 					FROM premium_ecommerce_products_data_1 pr
@@ -325,7 +325,7 @@ class Products
     	  $this->searchedWords = $aWords;
     	$query = '1';
     	foreach($aWords as $w) {
-	    	$query .= ' AND (it.f_sku LIKE \'%%'.DB::addq($w).'\' OR it.f_product_code LIKE \''.DB::addq($w).'\' OR it.f_upc LIKE \''.DB::addq($w).'\' OR it.f_item_name LIKE \'%%'.DB::addq($w).'%%\' OR d.f_display_name LIKE \'%%'.DB::addq($w).'%%\' OR d_en.f_display_name LIKE \'%%'.DB::addq($w).'%%\' OR d.f_short_description LIKE \'%%'.DB::addq($w).'%%\' OR d_en.f_short_description LIKE \'%%'.DB::addq($w).'%%\')';
+	    	$query .= ' AND (it.f_sku '.DB::like().' \'%%'.DB::addq($w).'\' OR it.f_product_code '.DB::like().' \''.DB::addq($w).'\' OR it.f_upc '.DB::like().' \''.DB::addq($w).'\' OR it.f_item_name '.DB::like().' \'%%'.DB::addq($w).'%%\' OR d.f_display_name '.DB::like().' \'%%'.DB::addq($w).'%%\' OR d_en.f_display_name '.DB::like().' \'%%'.DB::addq($w).'%%\' OR d.f_short_description '.DB::like().' \'%%'.DB::addq($w).'%%\' OR d_en.f_short_description '.DB::like().' \'%%'.DB::addq($w).'%%\')';
     	}
     $sUrlExt .= ((defined( 'FRIENDLY_LINKS' ) && FRIENDLY_LINKS == true)?null:'&amp;').'sPhrase='.$GLOBALS['sPhrase'];
   }else{
@@ -339,11 +339,11 @@ class Products
     	      $aData = $oPage->throwAllChildrens( $iContent );
               if( isset( $aData ) ){
 	        foreach( $aData as $iValue ){
-	          $query .= 'it.f_category LIKE \'%\\_\\_'.($iValue/4).'\\_\\_%\' OR it.f_category LIKE \'%/'.($iValue/4).'\\_\\_%\' OR ';
+	          $query .= 'it.f_category '.DB::like().' \'%\\_\\_'.($iValue/4).'\\_\\_%\' OR it.f_category '.DB::like().' \'%/'.($iValue/4).'\\_\\_%\' OR ';
         	}
               }
 	    }
-    	    $query .= 'it.f_category LIKE \'%\\_\\_'.($iContent/4).'\\_\\_%\' OR it.f_category LIKE \'%/'.($iContent/4).'\\_\\_%\'';
+    	    $query .= 'it.f_category '.DB::like().' \'%\\_\\_'.($iContent/4).'\\_\\_%\' OR it.f_category '.DB::like().' \'%/'.($iContent/4).'\\_\\_%\'';
 
 	} else {
     	    $query .= 'it.f_manufacturer='.(($iContent-1)/4);	
@@ -662,7 +662,7 @@ class Products
           $aProducts[] = $prod['iProduct'];
         }
       }
-      $aProducts = $this->getProducts('it.f_category LIKE \'%\\_\\_'.($iPage/4).'\\_\\_%\' OR it.f_category LIKE \'%/'.($iPage/4).'\\_\\_%\'');
+      $aProducts = $this->getProducts('it.f_category '.DB::like().' \'%\\_\\_'.($iPage/4).'\\_\\_%\' OR it.f_category '.DB::like().' \'%/'.($iPage/4).'\\_\\_%\'');
 
       if( isset( $aProducts ) ){
         $oTpl   =& TplParser::getInstance( );

@@ -1672,7 +1672,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		}
 		foreach ($words as $w) {
 			$str = DB::Concat(DB::qstr('%'), '%s', DB::qstr('%'));
-			$qry[] = '(f_item_name LIKE '.$str.' OR f_sku LIKE '.$str.')';
+			$qry[] = '(f_item_name '.DB::like().' '.$str.' OR f_sku '.DB::like().' '.$str.')';
 			$vals[] = $w;
 			$vals[] = $w;
 		}
