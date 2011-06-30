@@ -818,11 +818,14 @@ float:left;
   color: #555555;
 }
 
-#order #personalData #setBasic, #order #personalData #setExtend{float:left;width:50%;}
-#order #personalData label{display:block;font-weight:bold;}
+#order #personalData #setBasic, #order #personalData #setExtend{float:left;width:33%;}
+#order #personalData #setBasic div, #order #personalData #setExtend div{clear:both;}
+#order #personalData #setBasic #invoice {clear:none}
+#order #personalData label{display:block;font-weight:bold;float:left;width:100px;text-align:right;margin-right:7px;}
 #order #personalData #company label, #order #personalData #comment label, #order #personalData #promotionCode label{font-weight:normal;}
-#order #personalData .input, #order #personalData #oComment{width:90%;margin:0 0 5px;}
-#order #personalData #oComment{height:125px;}
+#order #personalData .input, #order #personalData #oComment{width:140px;margin:0 0 5px;}
+#order #personalData #oComment{height:35px;}
+#order #personalData #invoice label {width:140px;text-align:left;}
 #order #personalData #addressesList{width:95%; text-align:center;padding:20px 0px;}
 #order #personalData #addressesList select {width:100%;}
 

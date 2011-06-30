@@ -47,6 +47,8 @@
             <input type="checkbox" name="iInvoice" value="1" id="oInvoice" />
             <label for="oInvoice">$lang[Invoice_info]</label>
           </div>
+        </fieldset>
+        <fieldset id="setBasic">
           <div id="street">
             <label for="oStreet">$lang[Street]</label>
             <input type="text" name="sStreet" value="$aUser[sStreet]" maxlength="40" class="input" onblur="saveUserData( this.name, this.value )" id="oStreet" alt="simple" />
@@ -59,8 +61,6 @@
             <label for="oCity">$lang[City]</label>
             <input type="text" name="sCity" value="$aUser[sCity]" maxlength="40" class="input" onblur="saveUserData( this.name, this.value )" id="oCity" alt="simple" />
           </div>
-        </fieldset>
-        <fieldset id="setExtend">
           <div id="country">
             <label for="oCountry">$lang[Country]</label>
             <select name="sCountry" class="input" onblur="saveUserData( this.name, this.value )" id="oCountry" alt="simple" />
@@ -81,6 +81,8 @@
                 //-->
     	    </script>
           </div>
+        </fieldset>
+        <fieldset id="setExtend">
           <div id="phone">
             <label for="oPhone">$lang[Telephone]</label>
             <input type="text" name="sPhone" value="$aUser[sPhone]" maxlength="40" class="input" onblur="saveUserData( this.name, this.value )" id="oPhone" alt="simple" />
