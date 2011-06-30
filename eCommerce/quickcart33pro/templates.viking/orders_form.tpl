@@ -1,6 +1,7 @@
 <!-- BEGIN ORDER_NEW_ACCOUNT -->
     <fieldset id="personalDataBlock">
-      <legend>$lang[Create_account]</legend>
+      <legend>$lang[Create_account] <input type="checkbox" onChange="if(this.checked)Element.show('new_account_block'); else Element.hide('new_account_block');" /></legend>
+      <span id="new_account_block" style="display:none">
       <fieldset id="personalData">
         <fieldset id="setBasic">
           <div id="password1">
@@ -15,6 +16,7 @@
           </div>
         </fieldset>
       </fieldset>
+      </span>
     </fieldset>
 <!-- END ORDER_NEW_ACCOUNT -->
 <!-- BEGIN ORDER_FORM -->

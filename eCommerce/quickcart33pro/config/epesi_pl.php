@@ -1,9 +1,9 @@
 <?php
-$config['currency_symbol'] = 'PLN';
+$config['currency_symbol'] = 'USD';
 $config['delivery_free'] = 10000;
-$config['title'] = 'Sklep Internetowy - UMnieTaniej';
+$config['title'] = 'Viking Importing';
 $config['description'] = '';
-$config['slogan'] = 'Sklep internetowy UMnieTaniej';
+$config['slogan'] = 'The Leading Importer of Doilies and Baking Cups in USA';
 $config['keywords'] = '';
-$config['foot_info'] = 'Copyright &copy; 2009 <a href=\'http://prosperixgroup.com\'>Prosperix Group</a>';
+$config['foot_info'] = 'Copyright &copy; 2011 <a href=\'?\'>vikingimporting.com</a>';
 ?>

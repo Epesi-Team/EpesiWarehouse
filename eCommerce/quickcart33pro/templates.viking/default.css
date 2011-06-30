@@ -77,10 +77,17 @@ a:hover {
 /* HEADER WITH TOP MENU ABOVE LOGO */
 #head1 .container .main {
   height: 100px;
-  float: right;
   width: 100%;
   margin: 0;
+}
+
+#head1 .logo {
+  height: 100px;
+  float:left;
+  width: 240px;
+  margin: 0;
   background:url('img/logo.gif') no-repeat 0;
+  text-decoration: none;
 }
 
 /* MENU TOP 1 */
@@ -96,7 +103,6 @@ a:hover {
   float: left;
   width: 500px;
   height: 100px;
-  margin-left: 240px;
   background-image: url('img/banner.gif');
   background-repeat: no-repeat;
   text-align: center;

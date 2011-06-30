@@ -1,8 +1,8 @@
 <!-- BEGIN LIST --><li class="l$aData[sStyle]"><a href="$aData[sLinkName]" $aData[sSelected]>$aData[sName]</a>$aData[sSubContent]</li><!-- END LIST -->
 
-<!-- BEGIN HEAD --><ul id="menu1"><!-- END HEAD -->
+<!-- BEGIN HEAD --><!-- END HEAD -->
 
-<!-- BEGIN FOOT --></ul><!-- END FOOT -->
+<!-- BEGIN FOOT --></ul></ul></div><div class="right"></div><!-- END FOOT -->
 
 <!-- BEGIN HEAD_SUB --><ul class="sub$aData[iDepth]"><!-- END HEAD_SUB -->
 <!-- BEGIN FOOT_SUB --></ul><!-- END FOOT_SUB -->

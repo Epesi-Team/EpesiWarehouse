@@ -98,6 +98,7 @@
   <div id="head1">
     <div class="container">
       <div class="main">
+        <a class="logo" href="?">&nbsp;</a>
         <div class="banner">AS SEEN ON THE <a href="">MARTHA STEWART</a> SHOW</div>
       </div>
     </div>
@@ -126,6 +127,7 @@
   <div id="head1">
     <div class="container">
       <div class="main">
+        <a class="logo" href="?">&nbsp;</a>
         <div class="banner">AS SEEN ON THE <a href="">MARTHA STEWART</a> SHOW</div>
 
         $sBasket
@@ -136,13 +138,13 @@
     <div class="container">
       <div class="main">
         $sMenu2
+        $sMenu1
       </div>
     </div>
   </div>
   <div id="head4">
     <div class="container">
       <div class="main">
-        $sMenu1
       </div>
     </div>
   </div>
