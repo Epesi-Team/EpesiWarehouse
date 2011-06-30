@@ -54,13 +54,12 @@ class Premium_Warehouse_Wholesale__Plugin_abcdata implements Premium_Warehouse_W
 	    curl_setopt($c, CURLOPT_URL, $url);
 		curl_setopt($c, CURLOPT_SSL_VERIFYPEER, false);
 		curl_setopt($c, CURLOPT_HEADER, false);
-		curl_setopt($c, CURLOPT_POST, true);
 		curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($c, CURLOPT_USERAGENT, "Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)");
+		curl_setopt($c, CURLOPT_USERAGENT, "Mozilla/4.0 (compatible; MSIE 6.01; Windows XP)");
 		curl_setopt($c, CURLOPT_FOLLOWLOCATION, true);
 		curl_setopt($c, CURLOPT_COOKIEFILE, $dir.'cookiefile.cf');
 		curl_setopt($c, CURLOPT_COOKIEJAR, $dir.'cookiefile.cf'); 
-        curl_setopt($c, CURLOPT_USERPWD, $parameters['Login'].':'.$parameters['Password']); 
+		curl_setopt($c, CURLOPT_USERPWD, $parameters['Login'].':'.$parameters['Password']); 
 
 		$output = curl_exec($c);
 
@@ -72,7 +71,7 @@ class Premium_Warehouse_Wholesale__Plugin_abcdata implements Premium_Warehouse_W
 	    curl_close($c);
 
 	    $time = time();
-	    $filename = $dir.'abc_data_'.$time.'.tmp';
+	    $filename = $dir.'current_scan_'.$time.'.tmp';
 		file_put_contents($filename, $output);
 
 		Premium_Warehouse_WholesaleCommon::file_download_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','File downloaded.'), 1, true);
@@ -84,7 +83,7 @@ class Premium_Warehouse_Wholesale__Plugin_abcdata implements Premium_Warehouse_W
 		try {
 			$xls = Libs_PHPExcelCommon::load($filename);
 		} catch(Exception $e) {
-			Premium_Warehouse_WholesaleCommon::file_scan_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Unable to parse uploaded file, invalid XLS.'), 2, true);
+			Premium_Warehouse_WholesaleCommon::file_scan_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Unable to parse uploaded file, invalid XLS. '.$e), 2, true);
 			return false;
 		}
 
@@ -112,14 +111,15 @@ class Premium_Warehouse_Wholesale__Plugin_abcdata implements Premium_Warehouse_W
 				} else {
 					$tmp = array();
 					foreach ($cellIterator as $j=>$cell) {
-						if(!isset($this->col_flip_names[$cols[$j]]))
+						if(!isset($map[$cols[$j]]))
 							continue;
-						$tmp[$this->col_flip_names[$cols[$j]]] = trim($cell->getValue());
+						$tmp[$map[$cols[$j]]] = trim($cell->getValue());
 					}
 					$uploaded_data[] = $tmp;
 				}
 			}
 		}
+		unset($xls);
 
 		$total = null;
 		$scanned = 0;
@@ -142,7 +142,7 @@ class Premium_Warehouse_Wholesale__Plugin_abcdata implements Premium_Warehouse_W
 
 		Premium_Warehouse_WholesaleCommon::file_scan_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Scanning...'));
 		foreach ($uploaded_data as $row) {
-		    if($row['Waluta']!='PLN') continue;
+			if(!isset($row['Waluta']) || $row['Waluta']!='PLN') continue;
 			Premium_Warehouse_WholesaleCommon::update_scan_status($total, $scanned, $available, $item_exist, $link_exist, $new_items, $new_categories);
 			$scanned++;
 			
@@ -215,15 +215,15 @@ class Premium_Warehouse_Wholesale__Plugin_abcdata implements Premium_Warehouse_W
 				}
 				if (!is_numeric($row['Cena netto'])) $row['Cena netto'] = 0;
 				if ($w_item!==null) {
-					DB::Execute('INSERT INTO premium_warehouse_wholesale_items (item_id, internal_key, distributor_item_name, distributor_id, quantity, quantity_info, price, price_currency,distributor_category,manufacturer,manufacturer_part_number) VALUES (%d, %s, %s, %d, %d, %s, %f, %d,%d,%d, %s)', array($w_item, $row['Kod produktu'], $row['Nazwa produktu'], $distributor['id'], $quantity, $quantity_info, $row['Cena netto'], $pln_id,$category,$manufacturer, substr($row['Kod producenta'],0,32)));
+					DB::Execute('INSERT INTO premium_warehouse_wholesale_items (item_id, internal_key, distributor_item_name, distributor_id, quantity, quantity_info, price, price_currency,distributor_category,manufacturer,manufacturer_part_number) VALUES (%d, %s, %s, %d, %d, %s, %f, %d,%d,%d, %s)', array($w_item, $row['Kod produktu'], $row['Nazwa produktu'], $distributor['id'], $row['Stan mag'], '', $row['Cena netto'], $pln_id,$category,$manufacturer, substr($row['Kod producenta'],0,32)));
 				} else {
-					DB::Execute('INSERT INTO premium_warehouse_wholesale_items (internal_key, distributor_item_name, distributor_id, quantity, quantity_info, price, price_currency,distributor_category,manufacturer,manufacturer_part_number) VALUES (%s, %s, %d, %d, %s, %f, %d,%d,%d, %s)', array($row['Kod produktu'], $row['Nazwa produktu'], $distributor['id'], $quantity, $quantity_info, $row['Cena netto'], $pln_id,$category,$manufacturer, substr($row['Kod producenta'],0,32)));
+					DB::Execute('INSERT INTO premium_warehouse_wholesale_items (internal_key, distributor_item_name, distributor_id, quantity, quantity_info, price, price_currency,distributor_category,manufacturer,manufacturer_part_number) VALUES (%s, %s, %d, %d, %s, %f, %d,%d,%d, %s)', array($row['Kod produktu'], $row['Nazwa produktu'], $distributor['id'], $row['Stan mag'], '', $row['Cena netto'], $pln_id,$category,$manufacturer, substr($row['Kod producenta'],0,32)));
 				}
 			} else {
 				if (!is_numeric($row['Cena netto'])) $row['Cena netto'] = 0;
 				/*** there's an exact match in the system already ***/
 				$link_exist++;
-				DB::Execute('UPDATE premium_warehouse_wholesale_items SET quantity=%d, quantity_info=%s, price=%f, price_currency=%d,distributor_category=%d,manufacturer=%d,manufacturer_part_number=%s WHERE internal_key=%s AND distributor_id=%d', array($quantity, $quantity_info, $row['Cena netto'], $pln_id, $category,$manufacturer, substr($row['Kod producenta'],0,32), $row['Kod produktu'], $distributor['id']));
+				DB::Execute('UPDATE premium_warehouse_wholesale_items SET quantity=%d, quantity_info=%s, price=%f, price_currency=%d,distributor_category=%d,manufacturer=%d,manufacturer_part_number=%s WHERE internal_key=%s AND distributor_id=%d', array($row['Stan mag'], '', $row['Cena netto'], $pln_id, $category,$manufacturer, substr($row['Kod producenta'],0,32), $row['Kod produktu'], $distributor['id']));
 			}
 		} 
 		foreach($categories_to_del as $name=>$id) {

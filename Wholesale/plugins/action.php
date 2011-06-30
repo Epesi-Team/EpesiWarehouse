@@ -111,7 +111,7 @@ class Premium_Warehouse_Wholesale__Plugin_action implements Premium_Warehouse_Wh
 		}
 	    $time = time();
 
-		$filename = $dir.'ab_data_'.$time.'.tmp';
+		$filename = $dir.'action_'.$time.'.tmp';
 		file_put_contents($filename, iconv("cp1250","UTF-8",$output));
 
 	    curl_close($c);

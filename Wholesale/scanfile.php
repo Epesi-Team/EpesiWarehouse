@@ -9,7 +9,7 @@ define('READ_ONLY_SESSION',true);
 require_once('../../../../include.php');
 ModuleManager::load_modules();
 @set_time_limit(0);
-ini_set("memory_limit","512M");
+ini_set("memory_limit","1024M");
 
 if(!Acl::is_user()) die('Not logged in');
 
