@@ -71,7 +71,7 @@ class Premium_Warehouse_Wholesale__Plugin_abcdata implements Premium_Warehouse_W
 	    curl_close($c);
 
 	    $time = time();
-	    $filename = $dir.'current_scan_'.$time.'.tmp';
+	    $filename = $dir.'abcdata_'.$time.'.tmp';
 		file_put_contents($filename, $output);
 
 		Premium_Warehouse_WholesaleCommon::file_download_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','File downloaded.'), 1, true);
