@@ -195,7 +195,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
         return $values;
     }
 
-    private static $order_statuses = array(-1=>'New Online Order', 2=>'Order Received', 3=>'Payment Confirmed', 4=>'Order Confirmed', 5=>'On Hold', 6=>'Order Ready to Ship', 7=>'Shipped', 20=>'Delivered', 21=>'Canceled', 22=>'Missing');
+    private static $order_statuses = array( 2=>'Order Received', 3=>'Payment Confirmed', 4=>'Order Confirmed', 5=>'On Hold', 6=>'Order Ready to Ship', 7=>'Shipped', 20=>'Delivered', 21=>'Canceled', 22=>'Missing');
 
     public static function QFfield_order_status(&$form, $field, $label, $mode, $default) {
         if ($mode=='add' || $mode=='edit') {
