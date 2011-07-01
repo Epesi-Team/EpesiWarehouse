@@ -10,20 +10,20 @@
  * @license Commercial
  * @version 1.0
  * @package epesi-premium
- * @subpackage warehouse-items-invoicepl
+ * @subpackage warehouse-items-invoice
  */
 defined("_VALID_ACCESS") || die('Direct access forbidden');
 
-class Premium_Warehouse_InvoicePLInstall extends ModuleInstall {
+class Premium_Warehouse_InvoiceInstall extends ModuleInstall {
 
 	public function install() {
 		Base_ThemeCommon::install_default_theme($this->get_type());
 
-		Utils_RecordBrowserCommon::new_addon('premium_warehouse_items_orders', 'Premium_Warehouse_InvoicePL', 'invoicepl', 'Premium_Warehouse_InvoicePLCommon::invoice_pl_addon_parameters');
+		Utils_RecordBrowserCommon::new_addon('premium_warehouse_items_orders', 'Premium_Warehouse_Invoice', 'invoice', 'Premium_Warehouse_InvoiceCommon::invoice_addon_parameters');
 		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items_orders','Invoice Print Date','date', false, false, '', '', false, false);
 		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items_orders','Invoice Number','text', true, false, '32', 'integer', false, false);
-		Utils_RecordBrowserCommon::set_display_callback('premium_warehouse_items_orders','Invoice Number',array('Premium_Warehouse_InvoicePLCommon', 'display_invoice_number'));
-		Utils_RecordBrowserCommon::set_QFfield_callback('premium_warehouse_items_orders','Invoice Number',array('Premium_Warehouse_InvoicePLCommon', 'QFfield_invoice_number'));
+		Utils_RecordBrowserCommon::set_display_callback('premium_warehouse_items_orders','Invoice Number',array('Premium_Warehouse_InvoiceCommon', 'display_invoice_number'));
+		Utils_RecordBrowserCommon::set_QFfield_callback('premium_warehouse_items_orders','Invoice Number',array('Premium_Warehouse_InvoiceCommon', 'QFfield_invoice_number'));
 
 		Utils_RecordBrowserCommon::new_record_field('premium_warehouse','Invoice Display Name','text', false, false, '64', '', false, false);
 		Utils_RecordBrowserCommon::new_record_field('premium_warehouse','Invoice Number Code','text', false, false, '16', '', false, false);
@@ -36,9 +36,9 @@ class Premium_Warehouse_InvoicePLInstall extends ModuleInstall {
 	}
 	
 	public function uninstall() {
-		Utils_RecordBrowserCommon::delete_browse_mode_details_callback('premium_warehouse_items_orders', 'Premium/Warehouse/InvoicePL', 'browse_mode_details');
+		Utils_RecordBrowserCommon::delete_browse_mode_details_callback('premium_warehouse_items_orders', 'Premium/Warehouse/Invoice', 'browse_mode_details');
 
-		Utils_RecordBrowserCommon::delete_addon('premium_warehouse_items_orders', 'Premium_Warehouse_InvoicePL', 'invoicepl');
+		Utils_RecordBrowserCommon::delete_addon('premium_warehouse_items_orders', 'Premium_Warehouse_Invoice', 'invoice');
 		Utils_RecordBrowserCommon::delete_record_field('premium_warehouse_items_orders','Invoice Number');
 		Utils_RecordBrowserCommon::delete_record_field('premium_warehouse_items_orders','Invoice Print Date');
 

@@ -10,11 +10,11 @@
  * @license Commercial
  * @version 1.0
  * @package epesi-premium
- * @subpackage warehouse-items-invoicepl
+ * @subpackage warehouse-items-invoice
  */
 defined("_VALID_ACCESS") || die('Direct access forbidden');
 
-class Premium_Warehouse_InvoicePL extends Module {
+class Premium_Warehouse_Invoice extends Module {
 	public function browse_mode_details($form, $filters, $vals, $crits, $dont_hide, $rb) {
 		$rb->set_search_calculated_callback(array($this, 'search_invoice_number'));
 	}

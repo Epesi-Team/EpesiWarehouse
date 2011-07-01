@@ -1,8 +1,8 @@
 <?php
 /**
- * Download file
+ * Download invoice
  *
- * @author Paul Bukowski <pbukowski@telaxus.com>
+ * @author Arkadiusz Bisaga <abisaga@telaxus.com>
  * @copyright Copyright &copy; 2006, Telaxus LLC
  * @version 1.0
  * @license MIT
@@ -18,7 +18,7 @@ define('CID', $cid);
 define('READ_ONLY_SESSION',true);
 require_once('../../../../include.php');
 ModuleManager::load_modules();
-//Base_ThemeCommon::install_default_theme('Premium_Warehouse_InvoicePL');
+//Base_ThemeCommon::install_default_theme('Premium_Warehouse_Invoice');
 $order = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $order_id);
 
 if (!Acl::is_user() || !Utils_RecordBrowserCommon::get_access('premium_warehouse_items_orders', 'view', $order)) die('Unauthorized access');
@@ -30,15 +30,15 @@ $company = CRM_ContactsCommon::get_company(CRM_ContactsCommon::get_main_company(
 
 if ($order['transaction_type']==1) {
 	if (!$order['invoice_number']) {
-		$order['invoice_number'] = Premium_Warehouse_InvoicePLCommon::generate_invoice_number($order);
+		$order['invoice_number'] = Premium_Warehouse_InvoiceCommon::generate_invoice_number($order);
 	}
 	$order['proforma_id'] = str_pad($order['id'], 4, '0', STR_PAD_LEFT);
-	$order['invoice_id'] = Premium_Warehouse_InvoicePLCommon::format_invoice_number($order['invoice_number'], $order);
+	$order['invoice_id'] = Premium_Warehouse_InvoiceCommon::format_invoice_number($order['invoice_number'], $order);
 //	$header = 'Faktura VAT nr. '.$order['invoice_id'];
 }
 
 if ($order['transaction_type']==0) {
-	$order['po_id'] = Premium_Warehouse_InvoicePLCommon::format_invoice_number($order['invoice_number'], $order);
+	$order['po_id'] = Premium_Warehouse_InvoiceCommon::format_invoice_number($order['invoice_number'], $order);
 	$order['invoice_id'] = $order['invoice_number'];
 //	$header = 'Zamówienie '.$order['po_id'];
 }
@@ -63,8 +63,42 @@ $theme->assign('order', $order);
 $theme->assign('warehouse', $warehouse);
 $theme->assign('company', $company);
 $theme->assign('date', $order['invoice_print_date']);
+
+$labels = array(
+	'po' => 'Purchase Order no.',
+	'receipt' => 'Receipt no.',
+	'invoice' => 'Invoice no.',
+	'order' => 'Order no.',
+	'copy' => 'ORIGINAL | COPY',
+	'tel' => 'tel.',
+	'fax' => 'fax.',
+	'sales_date' => 'Date:',
+	'seller' => 'Seller:',
+	'seller_address' => 'Address:',
+	'seller_id_number' => 'TIN:',
+	'buyer' => 'Buyer:',
+	'buyer_address' => 'Address:',
+	'buyer_id_number' => 'SSN:',
+	'payment_method' => 'Payment method:',
+	'due_date' => 'due date:',
+	'bank' => 'BANK:',
+	'lp' => 'L.p.',
+	'item_name' => 'Item/service name',
+	'classification' => 'NAPCS',
+	'quantity' => 'qty',
+	'units' => 'units',
+	'net_price' => 'Net price',
+	'tax_rate' => 'Tax rate',
+	'gorss_value' => 'Gross value',
+	'net_value' => 'Net value',
+	'tax_value' => 'Tax value'
+);
+foreach ($labels as $k=>$v)
+	$labels[$k] = Base_LangCommon::ts('Premium_Warehouse_Invoice', $v);
+$theme->assign('labels', $labels);
+
 ob_start();
-Base_ThemeCommon::display_smarty($theme,'Premium_Warehouse_InvoicePL','invoice_form_top');
+Base_ThemeCommon::display_smarty($theme,'Premium_Warehouse_Invoice','invoice_form_top');
 $html = ob_get_clean();
 
 $html = Libs_TCPDFCommon::stripHTML($html);
@@ -117,7 +151,7 @@ foreach ($items as $k=>$v) {
 	$theme->assign('details', $items[$k]);
 	$theme->assign('lp', $lp);
 	ob_start();
-	Base_ThemeCommon::display_smarty($theme,'Premium_Warehouse_InvoicePL','invoice_form_table_row');
+	Base_ThemeCommon::display_smarty($theme,'Premium_Warehouse_Invoice','invoice_form_table_row');
 	$html = ob_get_clean();
 	
 	$html = Libs_TCPDFCommon::stripHTML($html);
@@ -169,7 +203,7 @@ foreach (array('shipment'=>'Koszt wysyłki', 'handling'=>'Opłata manipulacyjna'
 		$theme->assign('details', $details);
 		$theme->assign('lp', $lp);
 		ob_start();
-		Base_ThemeCommon::display_smarty($theme,'Premium_Warehouse_InvoicePL','invoice_form_table_row');
+		Base_ThemeCommon::display_smarty($theme,'Premium_Warehouse_Invoice','invoice_form_table_row');
 		$html = ob_get_clean();
 		
 		$html = Libs_TCPDFCommon::stripHTML($html);
@@ -208,7 +242,7 @@ $theme->assign('gross_total', $gross_total_sum_f);
 $theme->assign('net_total', $net_total_sum_f);
 $theme->assign('tax_total', $tax_total_sum_f);
 ob_start();
-Base_ThemeCommon::display_smarty($theme,'Premium_Warehouse_InvoicePL','invoice_form_summary');
+Base_ThemeCommon::display_smarty($theme,'Premium_Warehouse_Invoice','invoice_form_summary');
 $html = ob_get_clean();
 
 $html = Libs_TCPDFCommon::stripHTML($html);
@@ -279,8 +313,29 @@ if (is_numeric($PLN) && isset($gross_total_sum[$PLN]['x'])) $wording = cash2word
 else $wording = '';
 $theme->assign('total_word', $wording);
 
+$labels = array(
+	'amount_due'=>'AMOUNT DUE:',
+	'in_words'=>'IN WORDS:',
+	'receiver_sig'=>'',
+	'employee_sig'=>'Employee signature',
+	'legal_notice'=>'legal_notice'
+);
+if (!$order['receipt']) {
+	$labels['receiver_sig'] = 'Receiver signature';
+	$labels['employee_sig'] .= '<br/>Issuing invoice';
+}
+
+foreach ($labels as $k=>$v)
+	if ($v) $labels[$k] = Base_LangCommon::ts('Premium_Warehouse_Invoice', $v);
+	else $labels[$k] = '';
+
+if ($labels['legal_notice'] == 'legal_notice') $labels['legal_notice'] = '';
+
+$theme->assign('labels', $labels);
+
+
 ob_start();
-Base_ThemeCommon::display_smarty($theme,'Premium_Warehouse_InvoicePL','invoice_form_bottom');
+Base_ThemeCommon::display_smarty($theme,'Premium_Warehouse_Invoice','invoice_form_bottom');
 $html = ob_get_clean();
 
 $html = Libs_TCPDFCommon::stripHTML($html);

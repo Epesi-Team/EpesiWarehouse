@@ -4,12 +4,12 @@ posnet_applet.width = 1;
 posnet_applet.height = 1;
 var posnet_applet_param = document.createElement('param');
 posnet_applet_param.name = "jnlp_href";
-posnet_applet_param.value = "modules/Premium/Warehouse/InvoicePL/Posnet/Posnet.jnlp";
+posnet_applet_param.value = "modules/Premium/Warehouse/Invoice/Posnet/Posnet.jnlp";
 posnet_applet.appendChild(posnet_applet_param);
 document.body.appendChild(posnet_applet);*/
 var posnet_applet = null;
 var posnet_container = document.createElement('iframe');
-posnet_container.src = "modules/Premium/Warehouse/InvoicePL/Posnet/launch.html";
+posnet_container.src = "modules/Premium/Warehouse/Invoice/Posnet/launch.html";
 posnet_container.width = 3;
 posnet_container.height = 3;
 posnet_container.style.border = 0;
@@ -26,7 +26,7 @@ function print_receipt(order_id) {
         alert("Drukarka fiskalna niedostępna");
         return;
     }
-    new Ajax.Request('modules/Premium/Warehouse/InvoicePL/print_receipt.php', {
+    new Ajax.Request('modules/Premium/Warehouse/Invoice/print_receipt.php', {
 			method: 'post',
 			parameters: {
 			    record_id: order_id

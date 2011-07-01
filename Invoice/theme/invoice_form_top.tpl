@@ -5,38 +5,38 @@
 				{if isset($warehouse.invoice_display_name)}{$warehouse.invoice_display_name}{else}{$company.company_name}{/if}<br/>
 				{$warehouse.address_1}<br/>
 				{$warehouse.postal_code} {$warehouse.city}<br/>
-				{if $warehouse.phone}tel. {$warehouse.phone}<br/>{/if}
-				{if $warehouse.fax}fax. {$warehouse.fax}<br/>{/if}
+				{if $warehouse.phone}{$labels.tel} {$warehouse.phone}<br/>{/if}
+				{if $warehouse.fax}{$labels.fax} {$warehouse.fax}<br/>{/if}
 				{$company.web_address}
 			</font>
 		</td>
 		<td align="right">
 			{$warehouse.city}, {$date}<br/>
-			Data sprzedaży: {$order.transaction_date}
+			{$labels.sale_date} {$order.transaction_date}
 		</td>
 	</tr>
 </table>
 <div width="100%" align="center">
 	{if $order.status==1 || $order.status==""}
-		<font size=12><b>Proforma nr. {$order.proforma_id}</b></font><br>
+		<font size=12><b>{$labels.po} {$order.proforma_id}</b></font><br>
 	{else}
 		{if $order.receipt}
-			<font size=12><b>Paragon nr. {$order.invoice_id}</b></font><br>
+			<font size=12><b>{$labels.receipt} {$order.invoice_id}</b></font><br>
 		{else}
 			{if isset($order.invoice_id) && $order.invoice_id}
-				<font size=12><b>Faktura VAT nr. {$order.invoice_id}</b></font><br>
+				<font size=12><b>{$labels.invoice} {$order.invoice_id}</b></font><br>
 			{else}
-				{if isset($order.po_id)}<font size=11><b>Zamówienie {$order.po_id}</b></font><br>{/if}
+				{if isset($order.po_id)}<font size=11><b>{$labels.order} {$order.po_id}</b></font><br>{/if}
 			{/if}
 		{/if}
 	{/if}
-	ORYGINAŁ | KOPIA | DUPLIKAT
+	{$labels.copy}
 </div>
 <table>
 	<tr>
-		<td align="right" width="80px">
+		<td align="right" width="90px">
 			<font size=10><b>
-				Sprzedawca:
+				{$labels.seller}
 			</b></font>
 		</td>
 		<td width="10px">
@@ -46,8 +46,8 @@
 		</td>
 	</tr>
 	<tr>
-		<td align="right" width="80px">
-			Adres:
+		<td align="right" width="90px">
+			{$labels.seller_address}
 		</td>
 		<td width="10px">
 		</td>
@@ -56,8 +56,8 @@
 		</td>
 	</tr>
 	<tr>
-		<td align="right" width="80px">
-			Numer indentyf.:
+		<td align="right" width="90px">
+			{$labels.seller_id_number}
 		</td>
 		<td width="10px">
 		</td>
@@ -70,9 +70,9 @@
 {if !$order.receipt}
 <table>
 	<tr>
-		<td align="right" width="80px">
+		<td align="right" width="90px">
 			<font size=10><b>
-				Nabywca:
+				{$labels.buyer}
 			</b></font>
 		</td>
 		<td width="10px">
@@ -82,8 +82,8 @@
 		</td>
 	</tr>
 	<tr>
-		<td align="right" width="80px">
-			Adres:
+		<td align="right" width="90px">
+			{$labels.buyer_address}
 		</td>
 		<td width="10px">
 		</td>
@@ -92,8 +92,8 @@
 		</td>
 	</tr>
 	<tr>
-		<td align="right" width="80px">
-			Numer indentyf.:
+		<td align="right" width="90px">
+			{$labels.buyer_id_number}
 		</td>
 		<td width="10px">
 		</td>
@@ -106,16 +106,16 @@
 {/if}
 <table>
 	<tr>
-		<td align="right" width="80px">
-			<b>Sposób zapłaty:</b>
+		<td align="right" width="90px">
+			<b>{$labels.payment_method}</b>
 		</td>
 		<td width="10px">
 		</td>
-		<td width="80px" align="left">
+		<td width="90px" align="left">
 			{$order.payment_type_label}
 		</td>
-		<td width="80px" align="right">
-			termin zapłaty:
+		<td width="90px" align="right">
+			{$labels.due_date}
 		</td>
 		<td width="5px">
 		</td>
@@ -124,8 +124,8 @@
 		</td>
 	</tr>
 	<tr>
-		<td align="right" width="80px">
-			BANK:
+		<td align="right" width="90px">
+			{$labels.bank}
 		</td>
 		<td width="10px">
 		</td>
@@ -141,52 +141,52 @@
 		<tr>
 			<td width="20px">
 				<font size="7"><b>
-					L.p.
+					{$labels.lp}
 				</b></font>
 			</td>
 			<td width="192px">
 				<font size="7"><b>
-					Nazwa towaru/usługi
+					{$labels.item_name}
 				</b></font>
 			</td>
 			<td width="45px">
 				<font size="7"><b>
-					SWW
+					{$labels.classification}
 				</b></font>
 			</td>
 			<td width="35px">
 				<font size="7"><b>
-					Ilość
+					{$labels.quantity}
 				</b></font>
 			</td>
 			<td width="20px">
 				<font size="7"><b>
-					jm
+					{$labels.units}
 				</b></font>
 			</td>
 			<td width="45px">
 				<font size="7"><b>
-					&nbsp;&nbsp;Cena&nbsp;&nbsp; netto
+					{$labels.net_price}
 				</b></font>
 			</td>
 			<td width="32px">
 				<font size="7"><b>
-					Stawka VAT&nbsp;%
+					{$labels.tax_rate}
 				</b></font>
 			</td>
 			<td width="45px">
 				<font size="7"><b>
-					Wartość brutto
+					{$labels.gorss_value}
 				</b></font>
 			</td>
 			<td width="45px">
 				<font size="7"><b>
-					Wartość netto
+					{$labels.net_value}
 				</b></font>
 			</td>
 			<td width="45px">
 				<font size="7"><b>
-					Wartość &nbsp;VAT&nbsp;
+					{$labels.tax_value}
 				</b></font>
 			</td>
 		</tr>
