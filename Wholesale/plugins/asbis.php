@@ -12,7 +12,7 @@
  */
 defined("_VALID_ACCESS") || die('Direct access forbidden');
 
-class Premium_Warehouse_Wholesale__Plugin_abcdata implements Premium_Warehouse_Wholesale__Plugin {
+class Premium_Warehouse_Wholesale__Plugin_asbis implements Premium_Warehouse_Wholesale__Plugin {
 	/**
 	 * Returns the name of the plugin
 	 * 
@@ -48,7 +48,7 @@ class Premium_Warehouse_Wholesale__Plugin_abcdata implements Premium_Warehouse_W
 		@unlink($dir.'cookiefile.cf');
 
 	    $c = curl_init();
-	    $url = $parameters['Price URL'];
+	    $url = str_replace('&amp;','&',$parameters['Price URL']);
 
 	    curl_setopt($c, CURLOPT_URL, $url);
 		curl_setopt($c, CURLOPT_SSL_VERIFYPEER, false);
@@ -78,11 +78,10 @@ class Premium_Warehouse_Wholesale__Plugin_abcdata implements Premium_Warehouse_W
 	}
 
 	public function update_from_file($filename, $distributor) {
-		try {
-			ini_set("memory_limit","1024M");
-			$xls = simplexml_load_file($filename);
-		} catch(Exception $e) {
-			Premium_Warehouse_WholesaleCommon::file_scan_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Unable to parse uploaded file, invalid XLS. '.$e), 2, true);
+		ini_set("memory_limit","1024M");
+		$xls = @simplexml_load_file($filename);
+		if(!$xls) {
+			Premium_Warehouse_WholesaleCommon::file_scan_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Unable to parse uploaded file, invalid XML.'), 2, true);
 			return false;
 		}
 
