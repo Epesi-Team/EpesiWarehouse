@@ -76,11 +76,12 @@ class Premium_Warehouse_Wholesale__Plugin_abcdata implements Premium_Warehouse_W
 
 		Premium_Warehouse_WholesaleCommon::file_download_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','File downloaded.'), 1, true);
 	    
-	    return $dir.$filename;
+	    return $filename;
 	}
 
 	public function update_from_file($filename, $distributor) {
 		try {
+			ini_set("memory_limit","1024M");
 			$xls = Libs_PHPExcelCommon::load($filename);
 		} catch(Exception $e) {
 			Premium_Warehouse_WholesaleCommon::file_scan_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Unable to parse uploaded file, invalid XLS. '.$e), 2, true);
