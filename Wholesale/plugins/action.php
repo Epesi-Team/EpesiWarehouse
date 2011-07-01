@@ -186,9 +186,12 @@ class Premium_Warehouse_Wholesale__Plugin_action implements Premium_Warehouse_Wh
 			if (is_numeric($row['Stan mag'])) {
 				$quantity = $row['Stan mag'];
 				$quantity_info = '';
-			} else {
+			} elseif($row['Stan mag'] == 'powyżej 30') {
 				$quantity_info = $row['Stan mag'];
 				$quantity = 30;
+			} else {
+				$quantity_info = $row['Stan mag'];
+				$quantity = 0;
 			}
 				
 			if($row['Grupa towarowa'] || $row['Podgrupa towarowa']) {
