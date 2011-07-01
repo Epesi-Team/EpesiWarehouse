@@ -231,7 +231,6 @@ class Premium_Warehouse_Wholesale__Plugin_abcdata implements Premium_Warehouse_W
 		}
 		Premium_Warehouse_WholesaleCommon::file_scan_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Scan complete.'), 1);
 		Premium_Warehouse_WholesaleCommon::update_scan_status($scanned, $scanned, $available, $item_exist, $link_exist, $new_items, $new_categories);
-		fclose($f);
 		return true;
 	}
 }
