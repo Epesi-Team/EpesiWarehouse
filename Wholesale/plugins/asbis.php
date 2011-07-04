@@ -109,6 +109,8 @@ class Premium_Warehouse_Wholesale__Plugin_asbis implements Premium_Warehouse_Who
 			$uploaded_data[] = $tmp;
 		}
 		unset($xls);
+		
+		error_log(print_r($uploaded_data,true),3,'/tmp/loggggg');
 
 		$total = null;
 		$scanned = 0;
@@ -140,12 +142,10 @@ class Premium_Warehouse_Wholesale__Plugin_asbis implements Premium_Warehouse_Who
 			$sep = strpos($row['Producent'],'|');
 			if($sep!==false) $row['Producent'] = trim(substr($row['Producent'],0,$sep-1));
 			if (strlen($row['Nazwa produktu'])>127) $row['Nazwa produktu'] = substr($row['Nazwa produktu'],0,127);
-			if($row['Stan mag']=='+') $row['Stan mag']=1;
-			    else $row['Stan mag']=0;
 			
 			if ($row['Stan mag']!=0) {
 				$available++;
-				$row['Stan mag'] = intval($row['Stan mag']);
+				$row['Stan mag'] = intval(str_replace('+','',$row['Stan mag']));
 			}
 				
 			if($row['Grupa towarowa']) {
@@ -177,7 +177,8 @@ class Premium_Warehouse_Wholesale__Plugin_asbis implements Premium_Warehouse_Who
 			$internal_key = DB::GetOne('SELECT internal_key FROM premium_warehouse_wholesale_items WHERE internal_key=%s AND distributor_id=%d', array($row['Kod produktu'], $distributor['id']));
 			if (($internal_key===false || $internal_key===null) && $row['Kod producenta']) {
 				$w_item = null;
-				if($row['upc'])
+				$matches = array();
+				if(strlen($row['upc'])>0)
 					$matches = array_merge($matches,Utils_RecordBrowserCommon::get_records('premium_warehouse_items', array('upc'=>$row['upc'])));
 			    if(empty($matches))
     				/*** exact match not found, looking for candidates ***/
