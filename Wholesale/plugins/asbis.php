@@ -125,6 +125,7 @@ class Premium_Warehouse_Wholesale__Plugin_asbis implements Premium_Warehouse_Who
 		}
 
 		DB::Execute('UPDATE premium_warehouse_wholesale_items SET quantity=%d, quantity_info=%s WHERE distributor_id=%d', array(0, '', $distributor['id']));
+		DB::Execute('DELETE FROM premium_warehouse_wholesale_items WHERE distributor_id=%d', array($distributor['id']));
 		
 		$categories = DB::GetAssoc('SELECT f_foreign_category_name,id FROM premium_warehouse_distr_categories_data_1 WHERE active=1 AND f_distributor=%d',array($distributor['id']));
 		$categories_to_del = $categories;
@@ -177,9 +178,8 @@ class Premium_Warehouse_Wholesale__Plugin_asbis implements Premium_Warehouse_Who
 				$w_item = null;
 				$matches = array();
 				if(strlen($row['upc'])>0)
-					$matches = array_merge($matches,Utils_RecordBrowserCommon::get_records('premium_warehouse_items', array('upc'=>$row['upc'])));
+					$matches = Utils_RecordBrowserCommon::get_records('premium_warehouse_items', array('upc'=>$row['upc']));
 			    if(empty($matches))
-    				/*** exact match not found, looking for candidates ***/
     				$matches = Utils_RecordBrowserCommon::get_records('premium_warehouse_items', array(
 	    				'(~"item_name'=>DB::Concat(DB::qstr('%'),DB::qstr($row['Nazwa produktu']),DB::qstr('%')),
 		    			'|manufacturer_part_number'=>$row['Kod producenta']
@@ -193,7 +193,7 @@ class Premium_Warehouse_Wholesale__Plugin_asbis implements Premium_Warehouse_Who
 					} else {
 						/*** found more candidates, only product code is important now ***/
 						foreach ($matches as $v)
-							if ($v['manufacturer_part_number']==$row['Kod producenta'] || $v['upc']==$row['UPC']) {
+							if ($v['manufacturer_part_number']==$row['Kod producenta'] || $v['upc']==$row['upc']) {
 								$w_item = $v['id'];
 								break;
 							}
