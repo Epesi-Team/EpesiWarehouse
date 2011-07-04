@@ -110,8 +110,6 @@ class Premium_Warehouse_Wholesale__Plugin_asbis implements Premium_Warehouse_Who
 		}
 		unset($xls);
 		
-		error_log(print_r($uploaded_data,true),3,'/tmp/loggggg');
-
 		$total = null;
 		$scanned = 0;
 		$available = 0;
