@@ -212,11 +212,13 @@ if( isset( $iContent ) && is_numeric( $iContent ) ){
     if( $config['order_page'] == $iContent ){
       // order
       if( $oOrder->checkEmptyBasket( ) === false ){
-        if( isset( $_POST['sOrderSend'] ) ){
-          $checkFieldsRet = $oOrder->checkFields( $_POST );
-          if( $checkFieldsRet === true ){
+        if( isset( $_POST['sOrderSend'] ) && $_POST['sOrderSend']==2 ){
+          $checkFieldsRet1 = $oOrder->checkFields1( $_SESSION['order_step_1'] );
+          $checkFieldsRet2 = $oOrder->checkFields2( $_POST );
+          if( $checkFieldsRet1 === true  &&  $checkFieldsRet2 === true ) {
             // save and print order
-            $iOrder = $oOrder->addOrder( $_POST );
+            $iOrder = $oOrder->addOrder( $_POST+$_SESSION['order_step_1'] );
+            unset($_SESSION['order_step_1']);
             if( !empty( $config['email'] ) ){
               $oOrder->sendEmailWithOrderDetails( 'orders_print.tpl', $iOrder );
             }
@@ -241,19 +243,57 @@ if( isset( $iContent ) && is_numeric( $iContent ) ){
             if( !empty( $aPayment['sDescription'] ) || !empty( $sPaymentOuter ) )
               $sPaymentDescription = $oTpl->tbHtml( 'orders_print.tpl', 'ORDER_PRINT_PAYMENT' );
             $sOrder = $oTpl->tbHtml( 'orders_print.tpl', 'ORDER_PRINT' );
-          } elseif( $checkFieldsRet === 'promotion_invalid' ){
+          } elseif( $checkFieldsRet1 === 'promotion_invalid' ){
             $sOrderError = $oTpl->tbHtml( 'messages.tpl', 'PROMOTION_INVALID' );          
-          } elseif( $checkFieldsRet === 'promotion_invalid' ){
+          } elseif( $checkFieldsRet1 === 'promotion_invalid' ){
             $sOrderError = $oTpl->tbHtml( 'messages.tpl', 'PROMOTION_INVALID' );          
-          } elseif( $checkFieldsRet === 'password_mismatch' ){
+          } elseif( $checkFieldsRet1 === 'password_mismatch' ){
             $sOrderError = $oTpl->tbHtml( 'messages.tpl', 'PASSWORD_MISMATCH' );          
-          } elseif( $checkFieldsRet === 'basket_empty' ){
+          } elseif( $checkFieldsRet1 === 'basket_empty' ){
             $ppid = $config['basket_page'];
             if(isset($_REQUEST['ajax']))
         	print('alert(\''.addcslashes($GLOBALS['lang']['Stock_exceeded_basket_empty'],'\\\'').'\');var endOfRef = window.location.href.length;if (window.location.search.length > 0 && window.location.href.indexOf(window.location.search) > 0)endOfRef = window.location.href.indexOf(window.location.search);window.location.replace(window.location.href.substring(0,endOfRef)+"?'.change2Url( $oPage->aPages[$ppid]['sName'] ).','.$ppid.'");');
             else
                 $sOrder = '<script type="text/javascript">alert(\''.addcslashes($GLOBALS['lang']['Stock_exceeded_basket_empty'],'\\\'').'\');var endOfRef = window.location.href.length;if (window.location.search.length > 0 && window.location.href.indexOf(window.location.search) > 0)endOfRef = window.location.href.indexOf(window.location.search);window.location.replace(window.location.href.substring(0,endOfRef)+"?'.change2Url( $oPage->aPages[$ppid]['sName'] ).','.$ppid.'");</script>';
-          } elseif( $checkFieldsRet === 'stock_exceeded' ){
+          } elseif( $checkFieldsRet1 === 'stock_exceeded' ){
+            $ppid = $config['basket_page'];
+            if(isset($_REQUEST['ajax']))
+        	print('alert(\''.addcslashes($GLOBALS['lang']['Stock_exceeded_some'],'\\\'').'\');var endOfRef = window.location.href.length;if (window.location.search.length > 0 && window.location.href.indexOf(window.location.search) > 0)endOfRef = window.location.href.indexOf(window.location.search);window.location.replace(window.location.href.substring(0,endOfRef)+"?'.change2Url( $oPage->aPages[$ppid]['sName'] ).','.$ppid.'");');
+            else
+                $sOrder = '<script type="text/javascript">alert(\''.addcslashes($GLOBALS['lang']['Stock_exceeded_some'],'\\\'').'\');var endOfRef = window.location.href.length;if (window.location.search.length > 0 && window.location.href.indexOf(window.location.search) > 0)endOfRef = window.location.href.indexOf(window.location.search);window.location.replace(window.location.href.substring(0,endOfRef)+"?'.change2Url( $oPage->aPages[$ppid]['sName'] ).','.$ppid.'");</script>';
+          } else {
+            $sOrderError = $oTpl->tbHtml( 'messages.tpl', 'REQUIRED_FIELDS' );
+          }
+        }
+        if(!isset($sOrderError) && isset($_POST['sOrderSend']) && $_POST['sOrderSend']==1) {
+          $checkFieldsRet1 = $oOrder->checkFields1( $_POST );
+          if($checkFieldsRet1 === true) {
+              $_SESSION['order_step_1'] = $_POST;
+              $oTpl->unsetVariables( );
+              $sRules = null;
+              if( isset( $config['rules_page'] ) && isset( $oPage->aPages[$config['rules_page']] ) ){
+                $aRules = $oPage->aPages[$config['rules_page']];
+                $sRules = $oTpl->tbHtml( 'orders_form.tpl', 'RULES_ACCEPT' );
+              }
+              $sOrderProducts = $oOrder->listProducts( 'orders_form.tpl', null, 'ORDER_PRODUCTS_' );
+              $sPaymentCarriers = $oOrder->listCarriersPayments( 'orders_form.tpl' );
+              $sPickupShops = $oOrder->listPickupShops( 'orders_form.tpl' );
+              $oTpl->unsetVariables( );
+          
+              $sOrder = $oTpl->tbHtml( 'orders_form.tpl', 'ORDER_FORM_SHIPPING' );
+          } elseif( $checkFieldsRet1 === 'promotion_invalid' ){
+            $sOrderError = $oTpl->tbHtml( 'messages.tpl', 'PROMOTION_INVALID' );          
+          } elseif( $checkFieldsRet1 === 'promotion_invalid' ){
+            $sOrderError = $oTpl->tbHtml( 'messages.tpl', 'PROMOTION_INVALID' );          
+          } elseif( $checkFieldsRet1 === 'password_mismatch' ){
+            $sOrderError = $oTpl->tbHtml( 'messages.tpl', 'PASSWORD_MISMATCH' );          
+          } elseif( $checkFieldsRet1 === 'basket_empty' ){
+            $ppid = $config['basket_page'];
+            if(isset($_REQUEST['ajax']))
+        	print('alert(\''.addcslashes($GLOBALS['lang']['Stock_exceeded_basket_empty'],'\\\'').'\');var endOfRef = window.location.href.length;if (window.location.search.length > 0 && window.location.href.indexOf(window.location.search) > 0)endOfRef = window.location.href.indexOf(window.location.search);window.location.replace(window.location.href.substring(0,endOfRef)+"?'.change2Url( $oPage->aPages[$ppid]['sName'] ).','.$ppid.'");');
+            else
+                $sOrder = '<script type="text/javascript">alert(\''.addcslashes($GLOBALS['lang']['Stock_exceeded_basket_empty'],'\\\'').'\');var endOfRef = window.location.href.length;if (window.location.search.length > 0 && window.location.href.indexOf(window.location.search) > 0)endOfRef = window.location.href.indexOf(window.location.search);window.location.replace(window.location.href.substring(0,endOfRef)+"?'.change2Url( $oPage->aPages[$ppid]['sName'] ).','.$ppid.'");</script>';
+          } elseif( $checkFieldsRet1 === 'stock_exceeded' ){
             $ppid = $config['basket_page'];
             if(isset($_REQUEST['ajax']))
         	print('alert(\''.addcslashes($GLOBALS['lang']['Stock_exceeded_some'],'\\\'').'\');var endOfRef = window.location.href.length;if (window.location.search.length > 0 && window.location.href.indexOf(window.location.search) > 0)endOfRef = window.location.href.indexOf(window.location.search);window.location.replace(window.location.href.substring(0,endOfRef)+"?'.change2Url( $oPage->aPages[$ppid]['sName'] ).','.$ppid.'");');
@@ -265,15 +305,6 @@ if( isset( $iContent ) && is_numeric( $iContent ) ){
         }
         if( !isset( $_POST['sOrderSend'] ) || isset($sOrderError)){
           // display order form
-          $oTpl->unsetVariables( );
-          $sRules = null;
-          if( isset( $config['rules_page'] ) && isset( $oPage->aPages[$config['rules_page']] ) ){
-            $aRules = $oPage->aPages[$config['rules_page']];
-            $sRules = $oTpl->tbHtml( 'orders_form.tpl', 'RULES_ACCEPT' );
-          }
-          $sOrderProducts = $oOrder->listProducts( 'orders_form.tpl', null, 'ORDER_PRODUCTS_' );
-          $sPaymentCarriers = $oOrder->listCarriersPayments( 'orders_form.tpl' );
-          $sPickupShops = $oOrder->listPickupShops( 'orders_form.tpl' );
           $oTpl->unsetVariables( );
 
 	  if(!$oUser->logged())

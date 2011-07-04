@@ -223,21 +223,7 @@ class Orders
   * @return bool
   * @param array  $aForm
   */
-  function checkFields( $aForm ){
-    $carrier = null;
-    if( isset( $aForm['sPaymentCarrier'] ) ){
-      $aExp = explode( ';', $aForm['sPaymentCarrier'] );
-      if( isset( $aExp[0] ) && isset( $aExp[1] ) )
-      	$carrier = $aExp[0];
-        $sPrice = $this->throwPaymentCarrier( $aExp[0], $aExp[1]);
-	if($sPrice===false) unset($sPrice);
-    }
-    else{
-      return false;
-    }
-
-    $shops = DB::GetAssoc('SELECT id,1 FROM premium_warehouse_data_1 WHERE active=1 AND f_pickup_place=1');
-
+  function checkFields1( $aForm ){
     if($aForm['sPromotionCode']) {
 	$promotion = $this->throwPromotions($aForm['sPromotionCode']);
 	if(!$promotion) {
@@ -253,7 +239,7 @@ class Orders
 	    	return 'password_mismatch';
     }
 
-        $qty = DB::GetAssoc('SELECT product,quantity FROM premium_ecommerce_orders_temp WHERE customer=%s',array($_SESSION['iCustomer'.LANGUAGE]));
+    $qty = DB::GetAssoc('SELECT product,quantity FROM premium_ecommerce_orders_temp WHERE customer=%s',array($_SESSION['iCustomer'.LANGUAGE]));
 	$oProduct =& Products::getInstance( );
 	foreach($qty as $p=>$q) {
 		$iQuantity = $q;
@@ -277,8 +263,46 @@ class Orders
       && throwStrLen( $aForm['sCity'] ) > 1
       && throwStrLen( $aForm['sPhone'] ) > 1
       && throwStrLen( $aForm['sCountry'] ) > 1
-      && ((throwStrLen( $aForm['iPickupShop'] ) > 0 && $shops[$aForm['iPickupShop']]) || empty($shops) || $carrier!=0)
       && checkEmail( $aForm['sEmail'] )
+    )
+      return true;
+    else
+      return false;
+  } // end function checkFields
+
+  function checkFields2( $aForm ){
+    $carrier = null;
+    if( isset( $aForm['sPaymentCarrier'] ) ){
+      $aExp = explode( ';', $aForm['sPaymentCarrier'] );
+      if( isset( $aExp[0] ) && isset( $aExp[1] ) )
+      	$carrier = $aExp[0];
+        $sPrice = $this->throwPaymentCarrier( $aExp[0], $aExp[1]);
+	if($sPrice===false) unset($sPrice);
+    }
+    else{
+      return false;
+    }
+
+    $shops = DB::GetAssoc('SELECT id,1 FROM premium_warehouse_data_1 WHERE active=1 AND f_pickup_place=1');
+
+    $qty = DB::GetAssoc('SELECT product,quantity FROM premium_ecommerce_orders_temp WHERE customer=%s',array($_SESSION['iCustomer'.LANGUAGE]));
+	$oProduct =& Products::getInstance( );
+	foreach($qty as $p=>$q) {
+		$iQuantity = $q;
+		$prod = $oProduct->getProduct($p);
+		if($iQuantity>$prod['iQuantity']) {
+			$iQuantity = $prod['iQuantity'];
+			if($iQuantity<=0) {
+				DB::Execute('DELETE FROM premium_ecommerce_orders_temp WHERE customer=%s AND product=%d',array($_SESSION['iCustomer'.LANGUAGE],$p));
+				if(count($qty)==1)
+					return 'basket_empty';
+			} else
+				DB::Execute('UPDATE premium_ecommerce_orders_temp SET quantity=%d WHERE customer=%s AND product=%d',array($iQuantity,$_SESSION['iCustomer'.LANGUAGE],$p));
+			return 'stock_exceeded';
+		}
+	}
+    
+    if(((throwStrLen( $aForm['iPickupShop'] ) > 0 && $shops[$aForm['iPickupShop']]) || empty($shops) || $carrier!=0)
       && isset( $sPrice )
       && ( ( isset( $aForm['iRules'] ) && isset( $aForm['iRulesAccept'] ) ) || !isset( $aForm['iRules'] ) )
     )
@@ -649,7 +673,7 @@ class Orders
     $row = DB::GetRow('SELECT f_price,f_description,f_percentage_of_amount,f_order_terms FROM premium_ecommerce_payments_carriers_data_1 WHERE active=1 AND f_payment=%s AND f_shipment=%d AND f_currency=%d
     			AND (f_max_weight>=%f OR f_max_weight is null) ORDER BY (f_price+%f*f_percentage_of_amount/100)',array($iPayment,$iCarrier,$currency,$weight,$_SESSION['fOrderSummary'.LANGUAGE]));
     if($row) {
-	    return array('fPrice'=>$row['f_price']+$_SESSION['fOrderSummary'.LANGUAGE]*$row['f_percentage_of_amount']/100,'sDescription'=>str_replace("\n",'<br>',$row['f_description']), 'iPayment'=>$iPayment, 'iCarrier'=>$iCarrier, 'sTerms'=>$row['f_order_terms'],'shipment'=>$row['f_price'],'handling'=>$_SESSION['fOrderSummary'.LANGUAGE]*$row['f_percentage_of_amount']/100);
+	    return array('fPrice'=>$row['f_price']+$_SESSION['fOrderSummary'.LANGUAGE]*$row['f_percentage_of_amount']/100+($iCarrier==2 && isset($_SESSION['ups_addon'])?$_SESSION['ups_addon']:0),'sDescription'=>str_replace("\n",'<br>',$row['f_description']), 'iPayment'=>$iPayment, 'iCarrier'=>$iCarrier, 'sTerms'=>$row['f_order_terms'],'shipment'=>$row['f_price']+($iCarrier==2 && isset($_SESSION['ups_addon'])?$_SESSION['ups_addon']:0),'handling'=>$_SESSION['fOrderSummary'.LANGUAGE]*$row['f_percentage_of_amount']/100);
     }
     return false;
   } // end function throwPaymentCarrier
@@ -692,10 +716,23 @@ class Orders
       foreach( $aShipments as $iCarrier => $carrier_name ) {
         if(!isset($aPaymentsCarriers[$iCarrier])) continue;
         $aData = array('sName'=>$carrier_name, 'iCarrier'=>$iCarrier, 'sPayments'=>null, 'fPrice'=>0);
+        $addon = 0;
         if($iCarrier==0) $this->is_pickup = true; //pickup
+        elseif($iCarrier == 2) {
+            require_once('libraries/upsRate.php');
+            $addon = ups_rate($_SESSION['order_step_1']['sCountry'],$_SESSION['order_step_1']['sZipCode'], $weight);
+            if(!is_numeric($addon)){
+                $_SESSION['ups_addon'] = 0;
+                $aData['sPayments'].='<script type="text/javascript">alert("'.$addon.'");</script>';
+                $oTpl->setVariables( 'aData', $aData );
+                $content .= $oTpl->tbHtml( $sFile, 'ORDER_CARRIERS' );
+                continue; // skip UPS
+            }
+            $_SESSION['ups_addon'] = $addon;
+        }
         foreach( $aPayments as $iPayment => $sName ){
           if( isset( $aPaymentsCarriers[$iCarrier][$iPayment] ) ){
-            $aData['fPaymentCarrierPrice'] = normalizePrice( $aPaymentsCarriers[$iCarrier][$iPayment] );
+            $aData['fPaymentCarrierPrice'] = normalizePrice( $aPaymentsCarriers[$iCarrier][$iPayment]+$addon );
             $aData['sPaymentCarrierPrice'] = displayPrice( $aData['fPaymentCarrierPrice'] );
             $aData['iPayment'] = $iPayment;
             $oTpl->setVariables( 'aData', $aData );

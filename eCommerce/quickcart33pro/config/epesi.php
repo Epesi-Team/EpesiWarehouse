@@ -1,5 +1,5 @@
 <?php
-define('EPESI_DATA_DIR','/var/www/viking/demo/data');
+define('EPESI_DATA_DIR','/home/shacky/Projects/epesi-trunk/data');
 if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi, log in as administrator, go to Menu->Adminitration->eCommerce->QuickCart settings and add \''.dirname(dirname(__FILE__)).'\' directory to setup quickcart');
 $config['default_lang'] = 'us';
 $config['available_lang'] = array('us');
@@ -21,4 +21,13 @@ $config['zagiel_id'] = null;
 $config['zagiel_min_price'] = null;
 $config['paypal_email'] = 'test@test.com';
 $config['default_image_size'] = 0;
+$config['ups_accesskey'] = '1C7309629CE811B0';
+$config['ups_username'] = 'vikingimporting';
+$config['ups_password'] = 'viking';
+$config['ups_shipper_number'] = '267282';
+$config['ups_src_country'] = 'US';
+$config['ups_src_zip'] = '19064';
+$config['ups_service_area'] = 'US';
+$config['ups_service_id'] = '03';
+$config['ups_weight_unit'] = 'LBS';
 ?>

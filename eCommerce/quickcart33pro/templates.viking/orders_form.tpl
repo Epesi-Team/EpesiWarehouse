@@ -103,18 +103,8 @@
       </fieldset>
     </fieldset>
     $sNewAccount
-    <fieldset id="deliveryAndPayment">
-      <legend>$lang[Delivery_and_payment]</legend>
-      $sPaymentCarriers
-    </fieldset>
-    <fieldset id="pickupShop" style="display:none">
-      <legend>$lang[Pickup_shop]</legend>
-      $sPickupShops
-    </fieldset>
-    <fieldset id="orderedProducts">
-      <legend>$lang[Ordered_products]</legend>
-      $sOrderProducts
-    </fieldset>
+    <input type="hidden" value="1" name="sOrderSend" />
+    <input style="margin-top:10px" type="submit" value="$lang[Page_next]" class="submit" />
   </form>
 </div>
 <script type="text/javascript">
@@ -202,6 +192,15 @@ AddOnload( checkSavedUserData );
       </fieldset>
     </fieldset>
     $sNewAccount
+    <input type="hidden" value="1" name="sOrderSend" />
+    <input style="margin-top:10px" type="submit" value="$lang[Page_next]" class="submit" />
+  </form>
+</div>
+<!-- END ORDER_FORM_LOGGED -->
+<!-- BEGIN ORDER_FORM_SHIPPING -->
+<script type="text/javascript" src="$config[dir_core]checkForm.js"></script>
+<div id="order">
+  <form action="$aData[sLinkName]" method="post" onsubmit="return checkForm( this )" id="orderForm">
     <fieldset id="deliveryAndPayment">
       <legend>$lang[Delivery_and_payment]</legend>
       $sPaymentCarriers
@@ -216,7 +215,7 @@ AddOnload( checkSavedUserData );
     </fieldset>
   </form>
 </div>
-<!-- END ORDER_FORM_LOGGED -->
+<!-- END ORDER_FORM_SHIPPING -->
 <!-- BEGIN RULES_ACCEPT -->
 <input type="hidden" name="iRules" value="1" />
 <em><input type="checkbox" name="iRulesAccept" value="1" alt="box;$lang[Require_rules_accept]" onChange="saveUserData( this.name, this.checked )" /></em>
@@ -295,7 +294,8 @@ var fOrderSummary = "$aData[fProductsSummary]";
       </tr>
       <tr id="nextStep">
         <th colspan="4" class="nextStep">
-          <input type="submit" value="$lang[order_send] &raquo;" name="sOrderSend" class="submit" />
+          <input type="hidden" value="2" name="sOrderSend" />
+          <input type="submit" value="$lang[order_send] &raquo;" class="submit" />
         </th>
       </tr>
     </tfoot>
