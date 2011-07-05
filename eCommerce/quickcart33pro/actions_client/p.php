@@ -265,10 +265,11 @@ if( isset( $iContent ) && is_numeric( $iContent ) ){
             $sOrderError = $oTpl->tbHtml( 'messages.tpl', 'REQUIRED_FIELDS' );
           }
         }
-        if(!isset($sOrderError) && isset($_POST['sOrderSend']) && $_POST['sOrderSend']==1) {
-          $checkFieldsRet1 = $oOrder->checkFields1( $_POST );
+        if(isset($sOrderError) || (isset($_POST['sOrderSend']) && $_POST['sOrderSend']==1)) {
+          $checkFieldsRet1 = $oOrder->checkFields1( array_merge($_SESSION['order_step_1'],$_POST) );
           if($checkFieldsRet1 === true) {
-              $_SESSION['order_step_1'] = $_POST;
+	      if(!isset($sOrderError))
+                  $_SESSION['order_step_1'] = $_POST;
               $oTpl->unsetVariables( );
               $sRules = null;
               if( isset( $config['rules_page'] ) && isset( $oPage->aPages[$config['rules_page']] ) ){
@@ -280,7 +281,8 @@ if( isset( $iContent ) && is_numeric( $iContent ) ){
               $sPickupShops = $oOrder->listPickupShops( 'orders_form.tpl' );
               $oTpl->unsetVariables( );
           
-              $sOrder = $oTpl->tbHtml( 'orders_form.tpl', 'ORDER_FORM_SHIPPING' );
+              $sOrder = $sOrderError.$oTpl->tbHtml( 'orders_form.tpl', 'ORDER_FORM_SHIPPING' );
+              unset($sOrderError);
           } elseif( $checkFieldsRet1 === 'promotion_invalid' ){
             $sOrderError = $oTpl->tbHtml( 'messages.tpl', 'PROMOTION_INVALID' );          
           } elseif( $checkFieldsRet1 === 'promotion_invalid' ){
@@ -304,6 +306,11 @@ if( isset( $iContent ) && is_numeric( $iContent ) ){
           }
         }
         if( !isset( $_POST['sOrderSend'] ) || isset($sOrderError)){
+            if(isset($_SESSION['order_step_1'])) {
+    	        $_POST += $_SESSION['order_step_1'];
+	    }
+	  $aUserOld = $aUser;
+          $aUser = array_merge($aUser, $_POST);
           // display order form
           $oTpl->unsetVariables( );
 
@@ -313,14 +320,19 @@ if( isset( $iContent ) && is_numeric( $iContent ) ){
 	  $countries_id = DB::GetOne('SELECT id FROM utils_commondata_tree WHERE akey="Countries"');
 	  if($countries_id===false)
 		die('Common data key "Countries" not defined.');
-	  $countries = DB::GetAssoc('SELECT p.akey, p.value FROM utils_commondata_tree p WHERE p.parent_id=%d ORDER BY akey',array($countries_id));
+	  $countries = DB::GetAssoc('SELECT p.akey, p.value FROM utils_commondata_tree p WHERE p.parent_id=%d ORDER BY value',array($countries_id));
 	  global $translations;
 	  foreach($countries as $k=>$v) {
 		if(isset($translations['Utils_CommonData'][$v]) && $translations['Utils_CommonData'][$v])
 			$countries[$k] = $translations['Utils_CommonData'][$v];
 	  }
+
+	  $was_default = 0;
+	  print($aUser['sCountry']);
 	  foreach($countries as $k=>$v) {
-		$countriesList .= '<option name="sAddress" value="'.$k.'" '.(strtolower($k)==LANGUAGE?'selected="1"':'').'>'.$v.'</option>';
+		$default = !$was_default && (strtolower($k)==LANGUAGE || $k==$aUser['sCountry'] || ($k=='US' && LANGUAGE=='en' && (!isset($aUser['sCountry']) || !$aUser['sCountry'])));
+		$countriesList .= '<option name="sAddress" value="'.$k.'" '.($default?'selected="1"':'').'>'.$v.'</option>';
+		if($default) $was_default = 1;
 	  }
 	  
 	  $oTpl->setVariables('countriesList',$countriesList);
@@ -339,6 +351,7 @@ if( isset( $iContent ) && is_numeric( $iContent ) ){
 	  }
 	  
           $sOrder = $sOrderError.$oTpl->tbHtml( 'orders_form.tpl', 'ORDER_FORM'.($oUser->logged()?'_LOGGED':''));
+          $aUser = $aUserOld;
         }
       }
       else{
