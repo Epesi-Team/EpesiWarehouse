@@ -28,7 +28,7 @@ class Premium_Warehouse_InvoiceCommon extends ModuleCommon {
     	    } elseif (!$record['invoice_print_date']) {
     	        if(isset($_GET['receipt_printed']) && $_GET['receipt_printed']==$record['id']) {
         	    	Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $record['id'], array('invoice_print_date'=>date('Y-m-d')));
-                } else {
+                } elseif(defined('ENABLE_RECEIPT_PRINTING') && ENABLE_RECEIPT_PRINTING) {
         	        load_js('modules/Premium/Warehouse/Invoice/receipt.js');
     	            Base_ActionBarCommon::add('print', 'Print Receipt', 'onClick="print_receipt('.$record['id'].')" href="javascript:void(0)"');
     	        }
