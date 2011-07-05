@@ -984,9 +984,10 @@ class Premium_Warehouse_Items_Orders extends Module {
 					$ship_received->addElement('datepicker', 'shipment_eta', $this->t('Shipment - ETA'));
 					$ship_received->addElement('text', 'shipment_no', $this->t('Shipment No.'));
 					$ship_received->addElement('text', 'tracking_info', $this->t('Tracking Info'));
-					if (!isset($trans['shipment_date'])) $trans['shipment_date'] = date('Y-m-d');
-					if (!isset($trans['shipment_employee'])) $trans['shipment_employee'] = $my_id;
-					$ship_received->setDefaults(array('shipment_date'=>$trans['shipment_date'], 'shipment_employee'=>$trans['shipment_date'], 'shipment_eta'=>$trans['shipment_eta'], 'shipment_no'=>$trans['shipment_no'], 'tracking_info'=>$trans['tracking_info']));
+					if (!isset($trans['shipment_date']) || !$trans['shipment_date']) $trans['shipment_date'] = date('Y-m-d');
+					if (!isset($trans['shipment_employee']) || !$trans['shipment_employee']) $trans['shipment_employee'] = $my_id;
+					if (!isset($trans['shipment_eta']) || !$trans['shipment_eta']) $trans['shipment_eta'] = date('Y-m-d',time()+3600*36);
+					$ship_received->setDefaults(array('shipment_date'=>$trans['shipment_date'], 'shipment_employee'=>$trans['shipment_employee'], 'shipment_eta'=>$trans['shipment_eta'], 'shipment_no'=>$trans['shipment_no'], 'tracking_info'=>$trans['tracking_info']));
 
 					$lp->add_option('pickup', $this->t('Pickup'), null, null);
 					$lp->add_option('ship', $this->t('Ship'), null, $ship_received);

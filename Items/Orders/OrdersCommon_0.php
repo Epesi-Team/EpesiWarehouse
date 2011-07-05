@@ -1640,6 +1640,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		}
 		if (isset($rb_obj->record)) $record = $rb_obj->record;
 		else $record = $rb_obj;
+		if(!isset($record['id'])) return;
 		self::$order_details_id = $record['id'];
 
 		$trans = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $record['transaction_id']);
