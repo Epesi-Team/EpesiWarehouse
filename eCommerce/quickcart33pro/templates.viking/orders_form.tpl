@@ -66,20 +66,6 @@
             <select name="sCountry" class="input" onblur="saveUserData( this.name, this.value )" id="oCountry" alt="simple" />
     	    $countriesList
     	    </select>
-    	    <script type="text/javascript">
-                <!--
-    	        var c = throwCookie("sCountry");
-    	        if(!c || c=='') {
-        	        var a=document.getElementById("oCountry");
-        	        for(var i=0; i<a.length; i++) {
-    	                if(("$aUser[sCountry]"!="" && a.options[i].value=="$aUser[sCountry]") || (a.options[i].value.toLowerCase()=="$config[language]") || (a.options[i].value=="US" && "en"=="$config[language]")) {
-    	                    a.selectedIndex=i;
-    	                    break;
-    	                }
-        	        }
-        	    }
-                //-->
-    	    </script>
           </div>
         </fieldset>
         <fieldset id="setExtend">
@@ -163,17 +149,6 @@ AddOnload( checkSavedUserData );
             <select name="sCountry" class="input" onblur="saveUserData( this.name, this.value )" id="oCountry" alt="simple" />
     	    $countriesList
     	    </select>
-    	    <script type="text/javascript">
-                <!--
-        	        var a=document.getElementById("oCountry");
-        	        for(var i=0; i<a.length; i++) {
-    	                if(a.options[i].value=="$aUser[sCountry]") {
-    	                    a.selectedIndex=i;
-    	                    break;
-        	            }
-        	        }
-                //-->
-    	    </script>
           </div>
           <div id="phone">
             <label for="oPhone">$lang[Telephone]</label>
