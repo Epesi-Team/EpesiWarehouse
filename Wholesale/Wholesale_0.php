@@ -112,20 +112,19 @@ class Premium_Warehouse_Wholesale extends Module {
 			return false;
 		}
 
+		$dist_item = DB::GetRow('SELECT * FROM premium_warehouse_wholesale_items WHERE id=%d', array($dist_item_id));
+		if (!$dist_item) return false;
+
 		load_js('modules/Premium/Warehouse/Wholesale/js/sync_item.js');
 		
 		$form = $this->init_module('Libs_QuickForm');
 		$theme = $this->init_module('Base_Theme');
 
-		Base_ThemeCommon::install_default_theme('Premium_Warehouse_Wholesale');
-		
 		$manufacturers = array(''=>'---');
 		$rec = CRM_ContactsCommon::get_companies(array('group'=>'manufacturer'));
-		foreach ($rec as $r) $manufacturers[$r['id']] = $r['company_name'];
+		foreach ($rec as $r)
+			$manufacturers[$r['id']] = $r['company_name'];
 
-		$dist_item = DB::GetRow('SELECT * FROM premium_warehouse_wholesale_items WHERE id=%d', array($dist_item_id));
-		if (!$dist_item) return false;
-		
 		/** dist_item fields **/
 		$theme->assign('dist_item_icon', Base_ThemeCommon::get_template_filename('Premium_Warehouse_Items','icon.png'));
 		$theme->assign('dist_item_caption', $this->t('Distributor Item'));
@@ -134,7 +133,7 @@ class Premium_Warehouse_Wholesale extends Module {
 		$form->addElement('static', 'dist_price', $this->t('Price'), Utils_CurrencyFieldCommon::format($dist_item['price'],$dist_item['price_currency']));
 		$form->addElement('static', 'dist_category', $this->t('Category'), Utils_RecordBrowserCommon::get_value('premium_warehouse_distr_categories', $dist_item['distributor_category'], 'foreign_category_name'));
 		
-		$form->addElement('static', 'dist_manufacturer', $this->t('Manufacturer'), $dist_item['manufacturer']);
+		$form->addElement('static', 'dist_manufacturer', $this->t('Manufacturer'), $manufacturers[$dist_item['manufacturer']]);
 		$form->addElement('static', 'dist_mpn', $this->t('Manufacturer Part Number'), $dist_item['manufacturer_part_number']);
 		$form->addElement('static', 'dist_upc', $this->t('UPC'), $dist_item['upc']);
 		
@@ -187,7 +186,7 @@ class Premium_Warehouse_Wholesale extends Module {
 		));
 		
 		// find similar items
-		$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items', array('(manufacturer_part_number'=>$dist_item['manufacturer_part_number'], '|upc'=>$dist_item['upc']));
+		$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items', array('(manufacturer_part_number'=>$dist_item['manufacturer_part_number'], '|upc'=>$dist_item['upc']),array(),array(),20);
 		foreach ($items as $k=>$v) {
 			$item_info = Premium_Warehouse_WholesaleCommon::get_item_basic_info($v);
 			$gb_row = $gb->get_new_row();
@@ -226,16 +225,10 @@ class Premium_Warehouse_Wholesale extends Module {
 
 		$form->addElement('automulti', 'n_category', $this->t('Category'), array('Premium_Warehouse_ItemsCommon', 'automulti_search'), array(), array('Premium_Warehouse_ItemsCommon', 'automulti_format'));
 		
-		if ($dist_item['manufacturer']) {
-			$man = Utils_RecordBrowserCommon::get_records('company', array('group'=>'manufacturer', '~"company_name'=>DB::Concat(DB::qstr('%'), DB::qstr($dist_item['manufacturer']), DB::qstr('%'))));
-			$man = reset($man);
-			$man = $man['id'];
-		} else $man = '';
-		
 		$form->setDefaults(array(
 			'n_item_name'=>$dist_item['distributor_item_name'],
 			'n_category'=>Utils_RecordBrowserCommon::get_value('premium_warehouse_distr_categories', $dist_item['distributor_category'], 'epesi_category'),
-			'n_manufacturer'=>$man,
+			'n_manufacturer'=>$dist_item['manufacturer'],
 			'n_mpn'=>$dist_item['manufacturer_part_number'],
 			'n_upc'=>$dist_item['upc']
 		));
