@@ -1738,5 +1738,15 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			$result = '<ul style="width: 600px;"><li>'.implode('</li><li>',$result).'</li></ul>';
         return $result;
     }
+    
+    public static function create_shipping_map_href($r) {
+        return 'href="http://maps.google.com/maps?'.http_build_query(array('q'=>$r['shipping_address_1'].' '.$r['shipping_address_2'].', '.$r['shipping_city'].', '.$r['shipping_postal_code'].', '.Utils_CommonDataCommon::get_value('Countries/'.$r['shipping_country']))).'" target="_blank"';
+    }
+
+    public static function shipping_maplink($r,$nolink,$desc) {
+        if (!$nolink) return Utils_TooltipCommon::create('<a '.self::create_shipping_map_href($r).'>'.$r[$desc['id']].'</a>',Base_LangCommon::ts('CRM_Contacts','Click here to search this location using google maps'));
+        return $r[$desc['id']];
+    }
+
 }
 ?>
