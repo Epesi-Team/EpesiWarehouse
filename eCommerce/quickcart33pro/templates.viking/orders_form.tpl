@@ -214,6 +214,53 @@ AddOnload( checkSavedUserData );
       </fieldset>
     </fieldset>
     $sNewAccount
+    <fieldset id="shippingDataBlock">
+      <legend>$lang[Different_shipping_address] <input type="checkbox" onChange="if(this.checked)Element.show('shipping_address_block'); else Element.hide('shipping_address_block');" /></legend>
+      <span id="shipping_address_block" style="display:none">
+      <fieldset id="shippingData">
+        <fieldset id="setBasic">
+          <div id="firstName">
+            <label for="oShippingFirstName">$lang[First_name]</label>
+            <input type="text" name="sShippingFirstName" value="$aUser[sShippingFirstName]" maxlength="30" class="input" onblur="saveUserData( this.name, this.value )" id="oShippingFirstName" />
+          </div>
+          <div id="lastName">
+            <label for="oShippingLastName">$lang[Last_name]</label>
+            <input type="text" name="sShippingLastName" value="$aUser[sShippingLastName]" maxlength="40" class="input" onblur="saveUserData( this.name, this.value )" id="oShippingLastName" />
+          </div>
+          <div id="company">
+            <label for="oShippingCompany">$lang[Company]</label>
+            <input type="text" name="sShippingCompanyName" value="$aUser[sShippingCompanyName]" maxlength="100" class="input" onblur="saveUserData( this.name, this.value )" id="oShippingCompany" />
+          </div>
+        </fieldset>
+        <fieldset id="setBasic">
+          <div id="street">
+            <label for="oShippingStreet">$lang[Street]</label>
+            <input type="text" name="sShippingStreet" value="$aUser[sShippingStreet]" maxlength="40" class="input" onblur="saveUserData( this.name, this.value )" id="oShippingStreet" />
+          </div>
+          <div id="zipCode">
+            <label for="oShippingZipCode">$lang[Zip_code]</label>
+            <input type="text" name="sShippingZipCode" value="$aUser[sShippingZipCode]" maxlength="20" class="input" onblur="saveUserData( this.name, this.value )" id="oShippingZipCode" />
+          </div>
+          <div id="city">
+            <label for="oShippingCity">$lang[City]</label>
+            <input type="text" name="sShippingCity" value="$aUser[sShippingCity]" maxlength="40" class="input" onblur="saveUserData( this.name, this.value )" id="oShippingCity" />
+          </div>
+        </fieldset>
+        <fieldset id="setExtend">
+          <div id="country">
+            <label for="oShippingCountry">$lang[Country]</label>
+            <select name="sShippingCountry" class="input" onblur="saveUserData( this.name, this.value )" id="oShippingCountry" />
+    	    $shippingCountriesList
+    	    </select>
+          </div>
+          <div id="phone">
+            <label for="oShippingPhone">$lang[Telephone]</label>
+            <input type="text" name="sShippingPhone" value="$aUser[sShippingPhone]" maxlength="40" class="input" onblur="saveUserData( this.name, this.value )" id="oShippingPhone" />
+          </div>
+        </fieldset>
+      </fieldset>
+      </span>
+    </fieldset>
     <input type="hidden" value="1" name="sOrderSend" />
     <input style="margin-top:10px" type="submit" value="$lang[Page_next]" class="submit" />
   </form>
