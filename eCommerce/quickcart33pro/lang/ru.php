@@ -377,4 +377,5 @@ $lang['Show_basket'] = 'Show basket';
 $lang['Continue_shopping'] = 'Continue shopping';
 $lang['Delivery_cost_starts_at'] = "Delivery cost starts at";
 $lang['More_products'] = 'More products...';
+$lang['Different_shipping_address'] = 'Different shipping address';
 ?>

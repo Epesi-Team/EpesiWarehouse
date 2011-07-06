@@ -829,6 +829,21 @@ float:left;
 #order #personalData #addressesList{width:95%; text-align:center;padding:20px 0px;}
 #order #personalData #addressesList select {width:100%;}
 
+#order #shippingData {
+  padding: 12px 3%;
+  border-top: 2px solid #c0d4eb;
+  border-bottom: 2px solid #c0d4eb;
+  background: #e9f0f8;
+  color: #555555;
+}
+
+#order #shippingData #setBasic, #order #shippingData #setExtend{float:left;width:33%;}
+#order #shippingData #setBasic div, #order #shippingData #setExtend div{clear:both;}
+#order #shippingData label{display:block;float:left;width:100px;text-align:right;margin-right:7px;}
+#order #shippingData .input{width:140px;margin:0 0 5px;}
+#order #shippingData #addressesList{width:95%; text-align:center;padding:20px 0px;}
+#order #shippingData #addressesList select {width:100%;}
+
 #order #deliveryAndPayment table {
   margin-top: 10px;
   border-top: 2px solid #c0d4eb;

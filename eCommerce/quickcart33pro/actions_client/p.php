@@ -266,7 +266,7 @@ if( isset( $iContent ) && is_numeric( $iContent ) ){
           }
         }
         if(isset($sOrderError) || (isset($_POST['sOrderSend']) && $_POST['sOrderSend']==1)) {
-          $checkFieldsRet1 = $oOrder->checkFields1( array_merge($_SESSION['order_step_1'],$_POST) );
+          $checkFieldsRet1 = $oOrder->checkFields1( $_SESSION['order_step_1']?array_merge($_SESSION['order_step_1'],$_POST):$_POST );
           if($checkFieldsRet1 === true) {
 	      if(!isset($sOrderError))
                   $_SESSION['order_step_1'] = $_POST;
@@ -328,10 +328,15 @@ if( isset( $iContent ) && is_numeric( $iContent ) ){
 	  }
 
 	  $was_default = 0;
-	  print($aUser['sCountry']);
 	  foreach($countries as $k=>$v) {
 		$default = !$was_default && (strtolower($k)==LANGUAGE || $k==$aUser['sCountry'] || ($k=='US' && LANGUAGE=='en' && (!isset($aUser['sCountry']) || !$aUser['sCountry'])));
 		$countriesList .= '<option name="sAddress" value="'.$k.'" '.($default?'selected="1"':'').'>'.$v.'</option>';
+		if($default) $was_default = 1;
+	  }
+	  $was_default = 0;
+	  foreach($countries as $k=>$v) {
+		$default = !$was_default && (strtolower($k)==LANGUAGE || $k==$aUser['sShippingCountry'] || ($k=='US' && LANGUAGE=='en' && (!isset($aUser['sShippingCountry']) || !$aUser['sCountry'])));
+		$shippingCountriesList .= '<option name="sShippingAddress" value="'.$k.'" '.($default?'selected="1"':'').'>'.$v.'</option>';
 		if($default) $was_default = 1;
 	  }
 	  

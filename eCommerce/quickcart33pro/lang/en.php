@@ -146,7 +146,7 @@ $lang['Order_sent'] = "Your order was saved.<br />Thank you";
 $lang['Save_basket'] = "Save basket";
 $lang['Basket_info'] = "Here is content of your shopping cart. If you change quantity of any product, click 'update' button.<br />You can save your shopping cart for 72 hours by clicking 'Save basket' button.";
 $lang['Summary_cost'] = "Total cost";
-$lang['Your_personal_information'] = "Your personal data";
+$lang['Your_personal_information'] = "Billing data";
 $lang['Ordered_products'] = "Ordered products";
 $lang['Basket_products'] = "Products in basket";
 $lang['Select_delivery_and_payment'] = "Choose delivery and payment method";
@@ -371,4 +371,5 @@ $lang['Show_basket'] = 'Show basket';
 $lang['Continue_shopping'] = 'Continue shopping';
 $lang['Delivery_cost_starts_at'] = "Delivery cost starts at";
 $lang['More_products'] = 'More products...';
+$lang['Different_shipping_address'] = 'Different shipping address';
 ?>
