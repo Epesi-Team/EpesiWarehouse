@@ -78,8 +78,14 @@ if ($trans['transaction_type']==1 || $trans['transaction_type']==4) {
 		foreach ($item_serials as $k=>$v)
 			$serial_html .= '<option value="'.$k.'" '.($default==$k?'selected="1" ':'').'>'.$v['serial'].'</option>';
 		$serial_html .= '</select>';
-		$note_html = '<input type="text" name="note_'.$serial.'" id="serial__note__'.($serial-1).'" value="'.$item_serials[$default]['note'].'">';
-		$shelf_html = '<input type="text" name="shelf_'.$serial.'" id="serial__shelf__'.($serial-1).'" value="'.$item_serials[$default]['shelf'].'">';
+		$note = '';
+		$shelf = '';
+		if (isset($item_serial[$default])) {
+			$note = $item_serials[$default]['note'];
+			$shelf = $item_serials[$default]['shelf'];
+		}
+		$note_html = '<input type="text" name="note_'.$serial.'" id="serial__note__'.($serial-1).'" value="'.$note.'">';
+		$shelf_html = '<input type="text" name="shelf_'.$serial.'" id="serial__shelf__'.($serial-1).'" value="'.$shelf.'">';
 		$js = 'var serials_data=[];';
 		foreach ($item_serials as $k=>$v)
 			$js .= 'serials_data['.$k.'] = {"note":"'.$v['note'].'", "shelf":"'.$v['shelf'].'"};';
