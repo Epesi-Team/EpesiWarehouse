@@ -59,11 +59,11 @@ class Premium_Warehouse_Wholesale extends Module {
         unset($dists_tmp);
 
         if($dists)
-            $where = 'distributor_id IN ('.implode(',',array_keys($dists)).') ';
+            $where = 'distributor_id IN ('.implode(',',array_keys($dists)).')';
         else    
-            $where = '';
-        $where .= $gb->get_search_query(false,true);
-        if ($where) $where = ' AND '.$where;
+            $where = '1=1';
+        $where2 = $gb->get_search_query(false,true);
+        if($where2) $where .= ' AND '.$where;
         if($link_status!='all') {
             if($link_status=='linked')
                 $where .= ' AND item_id is not null';
