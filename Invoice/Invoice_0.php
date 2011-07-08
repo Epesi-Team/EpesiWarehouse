@@ -46,5 +46,28 @@ class Premium_Warehouse_Invoice extends Module {
 		}
 		return $crits;
 	}
+	
+	public function admin() {
+		if ($this->is_back()) {
+			$this->parent->reset();
+		}
+		
+		$form = $this->init_module('Libs/QuickForm');
+		$form->addElement('select', 'invoice_style', $this->t('Invoice Style'), array('US'=>'US', 'PL'=>'PL'));
+
+		$style = Variable::get('premium_warehouse_invoice_style', false);
+		if (!$style) $style = 'US';
+		
+		$form->setDefaults(array('invoice_style'=>$style));
+		
+		Base_ActionBarCommon::add('save', 'Save', $form->get_submit_form_href());
+		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
+		
+		if ($form->validate()) {
+			Variable::set('premium_warehouse_invoice_style', $form->exportValue('invoice_style'));
+			$this->parent->reset();
+		}
+		$form->display();
+	}
 }
 ?>

@@ -32,6 +32,8 @@ class Premium_Warehouse_InvoiceInstall extends ModuleInstall {
 
 		Utils_RecordBrowserCommon::new_record_field('data_tax_rates','Tax Code','text', true, false, '8', '', false, false);
 
+		Variable::set('premium_warehouse_invoice_style', 'US');
+
 		return true;
 	}
 	

@@ -12,7 +12,6 @@
 		</td>
 		<td align="right">
 			{$warehouse.city}, {$date}<br/>
-			{$labels.sale_date} {$order.transaction_date}
 		</td>
 	</tr>
 </table>
@@ -30,42 +29,7 @@
 			{/if}
 		{/if}
 	{/if}
-	{$labels.copy}
 </div>
-<table>
-	<tr>
-		<td align="right" width="90px">
-			<font size=10><b>
-				{$labels.seller}
-			</b></font>
-		</td>
-		<td width="10px">
-		</td>
-		<td align="left" width="400">
-			{$company.company_name}
-		</td>
-	</tr>
-	<tr>
-		<td align="right" width="90px">
-			{$labels.seller_address}
-		</td>
-		<td width="10px">
-		</td>
-		<td align="left" width="400">
-			{$warehouse.postal_code} {$warehouse.city}, {$warehouse.address_1}
-		</td>
-	</tr>
-	<tr>
-		<td align="right" width="90px">
-			{$labels.seller_id_number}
-		</td>
-		<td width="10px">
-		</td>
-		<td align="left" width="400">
-			<b>{$warehouse.tax_id}</b>
-		</td>
-	</tr>
-</table>
 <br>
 {if !$order.receipt}
 <table>
@@ -89,16 +53,6 @@
 		</td>
 		<td align="left" width="400">
 			{$order.postal_code} {$order.city}, {$order.address_1}
-		</td>
-	</tr>
-	<tr>
-		<td align="right" width="90px">
-			{$labels.buyer_id_number}
-		</td>
-		<td width="10px">
-		</td>
-		<td align="left" width="400">
-			<b>{if isset($order.tax_id)}{$order.tax_id}{/if}</b>
 		</td>
 	</tr>
 </table>
@@ -139,19 +93,19 @@
 <center>
 	<table border="1">
 		<tr>
-			<td width="20px">
+			<td width="40px">
 				<font size="7"><b>
-					{$labels.lp}
+					{$labels.no}
 				</b></font>
 			</td>
-			<td width="192px">
+			<td width="172px">
 				<font size="7"><b>
 					{$labels.item_name}
 				</b></font>
 			</td>
 			<td width="45px">
 				<font size="7"><b>
-					{$labels.classification}
+					{$labels.sku}
 				</b></font>
 			</td>
 			<td width="35px">

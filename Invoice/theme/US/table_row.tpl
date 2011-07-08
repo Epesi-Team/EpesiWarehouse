@@ -1,18 +1,18 @@
 <table border="1">
 	<tr>
-		<td width="20px" align="center">
+		<td width="40px" align="right">
 			<font size="7">
 				{$lp}
 			</font>
 		</td>
-		<td width="192px">
+		<td width="172px">
 			<font size="7">
 				&nbsp;{$details.item_details.item_name}
 			</font>
 		</td>
-		<td width="45px">
+		<td width="45px" style="text-align:right;">
 			<font size="7">
-				&nbsp;{if isset($details.sww)}{$details.sww}{/if}
+				&nbsp;{$details.item_details.sku}
 			</font>
 		</td>
 		<td width="35px" align="center">
@@ -22,7 +22,7 @@
 		</td>
 		<td width="20px" align="center">
 			<font size="7">
-				szt.
+				{$details.units}
 			</font>
 		</td>
 		<td width="45px" align="right">
