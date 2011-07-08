@@ -58,7 +58,11 @@ class Premium_Warehouse_Wholesale extends Module {
             $dists[$tmp['id']] = Utils_RecordBrowserCommon::create_linked_label_r('premium_warehouse_distributor','Name',$tmp);
         unset($dists_tmp);
 
-        $where = $gb->get_search_query(false,true);
+        if($dists)
+            $where = 'distributor_id IN ('.implode(',',array_keys($dists)).') ';
+        else    
+            $where = '';
+        $where .= $gb->get_search_query(false,true);
         if ($where) $where = ' AND '.$where;
         if($link_status!='all') {
             if($link_status=='linked')
@@ -68,11 +72,11 @@ class Premium_Warehouse_Wholesale extends Module {
         }
         if($available)
             $where .= ' AND quantity>0';
-        $limit = $gb->get_limit(DB::GetOne('SELECT COUNT(*) FROM premium_warehouse_wholesale_items LEFT JOIN company_data_1 c ON c.id=manufacturer LEFT JOIN premium_warehouse_distr_categories_data_1 cat ON (cat.f_distributor=distributor_id AND cat.id=distributor_category) WHERE distributor_id IN ('.implode(',',array_keys($dists)).') '.$where));
+        $limit = $gb->get_limit(DB::GetOne('SELECT COUNT(*) FROM premium_warehouse_wholesale_items LEFT JOIN company_data_1 c ON c.id=manufacturer LEFT JOIN premium_warehouse_distr_categories_data_1 cat ON (cat.f_distributor=distributor_id AND cat.id=distributor_category) WHERE '.$where));
         $gb->set_default_order(array($this->t('Item Name')=>'ASC'));
         $order = $gb->get_query_order();
 
-        $ret = DB::SelectLimit('SELECT *, c.f_company_name as manufacturer_name, whl.id AS id,cat.f_foreign_category_name as category FROM premium_warehouse_wholesale_items AS whl LEFT JOIN company_data_1 c ON c.id=whl.manufacturer LEFT JOIN premium_warehouse_items_data_1 AS itm ON itm.id=whl.item_id LEFT JOIN premium_warehouse_distr_categories_data_1 cat ON (cat.f_distributor=distributor_id AND cat.id=distributor_category) WHERE distributor_id IN ('.implode(',',array_keys($dists)).') '.$where.' '.$order, $limit['numrows'], $limit['offset']);
+        $ret = DB::SelectLimit('SELECT *, c.f_company_name as manufacturer_name, whl.id AS id,cat.f_foreign_category_name as category FROM premium_warehouse_wholesale_items AS whl LEFT JOIN company_data_1 c ON c.id=whl.manufacturer LEFT JOIN premium_warehouse_items_data_1 AS itm ON itm.id=whl.item_id LEFT JOIN premium_warehouse_distr_categories_data_1 cat ON (cat.f_distributor=distributor_id AND cat.id=distributor_category) WHERE '.$where.' '.$order, $limit['numrows'], $limit['offset']);
 
         while ($row=$ret->FetchRow()) {
             if ($row['item_id']) {
