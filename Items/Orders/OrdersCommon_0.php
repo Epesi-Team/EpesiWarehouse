@@ -1044,6 +1044,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 							    else
 							        $ret = array_merge($ret,array('quantity_sold'=>false));
 							}
+							break;
 			case 'clone':
 			case 'add':
 			case 'edit':	if($ret) {
