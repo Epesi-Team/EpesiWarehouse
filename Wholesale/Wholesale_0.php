@@ -63,7 +63,7 @@ class Premium_Warehouse_Wholesale extends Module {
         else    
             $where = '1=1';
         $where2 = $gb->get_search_query(false,true);
-        if($where2) $where .= ' AND '.$where;
+        if($where2) $where .= ' AND '.$where2;
         if($link_status!='all') {
             if($link_status=='linked')
                 $where .= ' AND item_id is not null';
@@ -266,7 +266,8 @@ class Premium_Warehouse_Wholesale extends Module {
 					'n_tax_rate' => 'tax_rate',
 					'n_manufacturer' => 'manufacturer'
 				) as $k=>$v) $item[$v] = $vals[$k];
-				$item['vendor'] = DB::GetOne('SELECT distributor_id FROM premium_warehouse_wholesale_items WHERE id=%d', array($dist_item_id));
+				$dist = Utils_RecordBrowserCommon::get_record('premium_warehouse_distributor',$dist_item['distributor_id']);
+				$item['vendor'] = $dist['company'];
 				$item_id = Utils_RecordBrowserCommon::new_record('premium_warehouse_items', $item);
 			} else {
 				$item_id = $vals['selected_existing_item'];
