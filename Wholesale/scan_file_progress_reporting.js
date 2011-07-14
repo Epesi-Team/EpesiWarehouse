@@ -1,10 +1,10 @@
-wholesale_processing_message = function (msg, det_disp, class) {
+wholesale_processing_message = function (msg, det_disp, cla) {
 	if($("wholesale_scan_file_form"))$("wholesale_scan_file_form").style.display="none";
 	if($("wholesale_scan_file_progress"))$("wholesale_scan_file_progress").style.display="block";
 	if($("wholesale_scan_status_details"))$("wholesale_scan_status_details").style.display=det_disp;
 	if($("wholesale_scan_status_message")){
 		$("wholesale_scan_status_message").innerHTML=msg;
-		$("wholesale_scan_status_message").setAttribute("class",class);
+		$("wholesale_scan_status_message").setAttribute("class",cla);
 	}
 },
 

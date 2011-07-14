@@ -111,11 +111,11 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
     }
     
     private static function get_processing_message_js($str, $type=0, $hide_details=false) {
-    	$class = 'notification';
-    	if ($type==1) $class = 'success';
-    	if ($type==2) $class = 'error';
+    	$cla = 'notification';
+    	if ($type==1) $cla = 'success';
+    	if ($type==2) $cla = 'error';
     	$det_disp = ($hide_details?'none':'block');
-    	return 'wholesale_processing_message("'.$str.'","'.$det_disp.'","'.$class.'");';
+    	return 'wholesale_processing_message("'.$str.'","'.$det_disp.'","'.$cla.'");';
     }
     
     /**
@@ -150,9 +150,20 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 		eval_js('wholesale_leightbox_switch_to_info();');
 	    $time = time();	    
 		$dir = ModuleManager::get_data_dir('Premium_Warehouse_Wholesale');
-		$filename = $dir.'current_scan_'.$time.'.tmp';
-		@copy($data, $filename);
-		@unlink($data);
+		if(is_array($data)) {
+		    $filename = array();
+		    foreach($data as $k=>$f) {
+		        $filename2 = $dir.'current_scan_'.$time.'_'.$k.'.tmp';
+			@copy($f, $filename2);
+			@unlink($f);
+			$filename[] = $filename2;
+		    }
+		    $filename = implode(',',$filename);
+		} else {
+		    $filename = $dir.'current_scan_'.$time.'.tmp';
+		    @copy($data, $filename);
+		    @unlink($data);
+		}
 		eval_js('wholesale_create_iframe('.Utils_RecordBrowser::$last_record['id'].',"'.$filename.'");');
     }
     
@@ -458,7 +469,11 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 				continue;
 			}
 			$res = @$plugin->update_from_file($filename, $dist);
-			@unlink($filename);
+			if(is_array($filename))
+			    foreach($filename as $filename2)
+				@unlink($filename2);
+			else
+				@unlink($filename);
 			ob_end_clean();
 			if ($res===true) { 
 				$ret .= 'updated: '.$dist['name'].'<br>';
