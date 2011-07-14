@@ -16,7 +16,8 @@ if(!Acl::is_user()) die('Not logged in');
 $dist = Utils_RecordBrowserCommon::get_record('premium_warehouse_distributor', $_GET['id']);
 $plugin = Premium_Warehouse_WholesaleCommon::get_plugin($dist['plugin']);
 
-$res = $plugin->update_from_file(preg_match('/,/',$_GET['file'])?explode(',',$_GET['file']):$_GET['file'], $dist);
+$file = preg_match('/,/',$_GET['file'])?explode(',',$_GET['file']):$_GET['file'];
+$res = $plugin->update_from_file($file, $dist);
 
 if ($res===true) { 
 	$time = time();
@@ -25,11 +26,18 @@ if ($res===true) {
 	flush();
 }
 
-$matches = array();
-preg_match('/scan\_([0-9]+)\.tmp/', $_GET['file'], $matches);
 $dir = ModuleManager::get_data_dir('Premium_Warehouse_Wholesale');
-unlink($dir.'current_scan_'.$matches[1].'.tmp');
-
+if(is_array($file)) {
+    foreach($file as $k=>$v) {
+        $matches = array();
+        preg_match('/scan\_([0-9]+)_'.$k.'\.tmp/', $v, $matches);
+        unlink($dir.'current_scan_'.$matches[1].'_'.$k.'.tmp');
+    }
+} else {
+    $matches = array();
+    preg_match('/scan\_([0-9]+)\.tmp/', $_GET['file'], $matches);
+    unlink($dir.'current_scan_'.$matches[1].'.tmp');
+}
 /*$its = DB::Execute('SELECT w.id as wid ,it.id as item_id FROM premium_warehouse_wholesale_items w INNER JOIN premium_warehouse_items_data_1 it ON it.f_upc=w.upc WHERE w.item_id is null AND w.upc is not null AND w.upc!=%s AND w.distributor_id=%d',array('',$dist['id']));
 $auto_assoc = 0;
 while($it = $its->FetchRow()) {
