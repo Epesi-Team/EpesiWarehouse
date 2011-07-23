@@ -147,6 +147,15 @@ class Premium_Warehouse_SalesReport extends Module {
 	}
 
 	public function admin() {
+		if($this->is_back()) {
+			if($this->parent->get_type()=='Base_Admin')
+				$this->parent->reset();
+			else
+				location(array());
+			return;
+		}
+		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
+
 		$tb = $this->init_module('Utils_TabbedBrowser');
 		$tb->set_tab('Currency', array($this, 'currency_admin'));
 		$tb->set_tab('QoH', array($this, 'qoh_admin'));

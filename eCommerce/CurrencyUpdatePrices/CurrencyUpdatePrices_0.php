@@ -21,8 +21,10 @@ class Premium_Warehouse_eCommerce_CurrencyUpdatePrices extends Module {
 			if($this->isset_module_variable('module') && $this->isset_module_variable('original')) {
 				$this->unset_module_variable('module');
 				$this->unset_module_variable('original');
-			} else
+			} else {
 				$this->parent->reset();
+				return;
+			}
 		}
 		
 		$form = & $this->init_module('Libs/QuickForm',null,'currency_setup');

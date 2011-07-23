@@ -50,6 +50,7 @@ class Premium_Warehouse_Invoice extends Module {
 	public function admin() {
 		if ($this->is_back()) {
 			$this->parent->reset();
+			return;
 		}
 		
 		$form = $this->init_module('Libs/QuickForm');

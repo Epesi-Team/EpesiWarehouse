@@ -20,6 +20,15 @@ class Premium_Warehouse_eCommerce extends Module {
 	private $caption;
 	
 	public function admin() {
+		if($this->is_back()) {
+			if($this->parent->get_type()=='Base_Admin')
+				$this->parent->reset();
+			else
+				location(array());
+			return;
+		}
+		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
+
 		$buttons = array();
 //		$icon = Base_ThemeCommon::get_template_file($name,'icon.png');
 		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'setup_3rd_party_plugins')).'>'.$this->t('3rd party info plugins').'</a>',
