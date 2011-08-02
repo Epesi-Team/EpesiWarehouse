@@ -24,45 +24,45 @@
 <div id="order">
   <form action="$aData[sLinkName]" method="post" onsubmit="return checkForm( this )" id="orderForm">
     <fieldset id="personalDataBlock">
-      <legend>$lang[Your_personal_information]</legend>
+      <legend style="width:100%"><span style="float:right;color:#ED1C24">*&nbsp;Required fields</span>$lang[Your_personal_information]</legend>
       <fieldset id="personalData">
         <fieldset id="setBasic">
           <div id="firstName">
-            <label for="oFirstName">$lang[First_name]</label>
+            <label for="oFirstName">$lang[First_name]&nbsp;<span style="color:#ED1C24">*</span></label>
             <input type="text" name="sFirstName" value="$aUser[sFirstName]" maxlength="30" class="input" onblur="saveUserData( this.name, this.value )" id="oFirstName" alt="simple" />
           </div>
           <div id="lastName">
-            <label for="oLastName">$lang[Last_name]</label>
+            <label for="oLastName">$lang[Last_name]&nbsp;<span style="color:#ED1C24">*</span></label>
             <input type="text" name="sLastName" value="$aUser[sLastName]" maxlength="40" class="input" onblur="saveUserData( this.name, this.value )" id="oLastName" alt="simple" />
           </div>
           <div id="company">
             <label for="oCompany">$lang[Company]</label>
             <input type="text" name="sCompanyName" value="$aUser[sCompanyName]" maxlength="100" class="input" onblur="saveUserData( this.name, this.value )" id="oCompany" />
           </div>
-          <div id="nip">
+<!--          <div id="nip">
             <label for="oNip">$lang[Nip]</label>
             <input type="text" name="sNip" value="$aUser[sNip]" maxlength="20" class="input" onblur="saveUserData( this.name, this.value )" id="oNip" />
           </div>
           <div id="invoice">
             <input type="checkbox" name="iInvoice" value="1" id="oInvoice" />
             <label for="oInvoice">$lang[Invoice_info]</label>
-          </div>
+          </div>-->
         </fieldset>
         <fieldset id="setBasic">
           <div id="street">
-            <label for="oStreet">$lang[Street]</label>
+            <label for="oStreet">$lang[Street]&nbsp;<span style="color:#ED1C24">*</span></label>
             <input type="text" name="sStreet" value="$aUser[sStreet]" maxlength="40" class="input" onblur="saveUserData( this.name, this.value )" id="oStreet" alt="simple" />
           </div>
           <div id="zipCode">
-            <label for="oZipCode">$lang[Zip_code]</label>
+            <label for="oZipCode">$lang[Zip_code]&nbsp;<span style="color:#ED1C24">*</span></label>
             <input type="text" name="sZipCode" value="$aUser[sZipCode]" maxlength="20" class="input" onblur="saveUserData( this.name, this.value )" id="oZipCode" alt="simple" />
           </div>
           <div id="city">
-            <label for="oCity">$lang[City]</label>
+            <label for="oCity">$lang[City]&nbsp;<span style="color:#ED1C24">*</span></label>
             <input type="text" name="sCity" value="$aUser[sCity]" maxlength="40" class="input" onblur="saveUserData( this.name, this.value )" id="oCity" alt="simple" />
           </div>
           <div id="country">
-            <label for="oCountry">$lang[Country]</label>
+            <label for="oCountry">$lang[Country]&nbsp;<span style="color:#ED1C24">*</span></label>
             <select name="sCountry" class="input" onblur="saveUserData( this.name, this.value )" id="oCountry" alt="simple" />
     	    $countriesList
     	    </select>
@@ -70,11 +70,11 @@
         </fieldset>
         <fieldset id="setExtend">
           <div id="phone">
-            <label for="oPhone">$lang[Telephone]</label>
+            <label for="oPhone">$lang[Telephone]&nbsp;<span style="color:#ED1C24">*</span></label>
             <input type="text" name="sPhone" value="$aUser[sPhone]" maxlength="40" class="input" onblur="saveUserData( this.name, this.value )" id="oPhone" alt="simple" />
           </div>
           <div id="email">
-            <label for="oEmail">$lang[Email]</label>
+            <label for="oEmail">$lang[Email]&nbsp;<span style="color:#ED1C24">*</span></label>
             <input type="text" name="sEmail" value="$aUser[sEmail]" maxlength="40" class="input" onblur="saveUserData( this.name, this.value )" id="oEmail" alt="email" />
           </div>
           <div id="promotionCode">
@@ -90,7 +90,7 @@
     </fieldset>
     $sNewAccount
     <fieldset id="shippingDataBlock">
-      <legend>$lang[Different_shipping_address] <input type="checkbox" onChange="if(this.checked)Element.show('shipping_address_block'); else Element.hide('shipping_address_block');" /></legend>
+      <legend>$lang[Different_shipping_address] <input type="checkbox" onChange="if(this.checked)Element.show('shipping_address_block'); else Element.hide('shipping_address_block');" name="bShippingAddress" id="shipping_address_checkbox" /></legend>
       <span id="shipping_address_block" style="display:none">
       <fieldset id="shippingData">
         <fieldset id="setBasic">
@@ -136,12 +136,17 @@
       </fieldset>
       </span>
     </fieldset>
-    <input type="hidden" value="1" name="sOrderSend" />
-    <input style="margin-top:10px" type="submit" value="$lang[Page_next]" class="submit" />
+    <div style="border-bottom:2px solid #C0D4EB;text-align:right;padding-bottom:5px;padding-right:10px;">
+        <input type="hidden" value="1" name="sOrderSend" />
+	<input style="margin-top:10px" type="submit" value="$lang[Page_next]" class="submit" />
+    </div>
   </form>
 </div>
 <script type="text/javascript">
 <!--
+if($aUser[bShippingAddress]) {
+    document.getElementById('shipping_address_checkbox').checked=1;
+}
 AddOnload( checkSavedUserData );
 //-->
 </script>
@@ -151,18 +156,18 @@ AddOnload( checkSavedUserData );
 <div id="order">
   <form action="$aData[sLinkName]" method="post" onsubmit="return checkForm( this )" id="orderForm">
     <fieldset id="personalDataBlock">
-      <legend>$lang[Your_personal_information]</legend>
+      <legend style="width:100%"><span style="float:right;color:#ED1C24">*&nbsp;Required fields</span>$lang[Your_personal_information]</legend>
       <fieldset id="personalData">
         <div id="addressesList">
         $addressesList
         </div>
         <fieldset id="setBasic">
           <div id="firstName">
-            <label for="oFirstName">$lang[First_name]</label>
+            <label for="oFirstName">$lang[First_name]&nbsp;<span style="color:#ED1C24">*</span></label>
             <input type="text" name="sFirstName" value="$aUser[sFirstName]" maxlength="30" class="input" onblur="saveUserData( this.name, this.value )" id="oFirstName" alt="simple" />
           </div>
           <div id="lastName">
-            <label for="oLastName">$lang[Last_name]</label>
+            <label for="oLastName">$lang[Last_name]&nbsp;<span style="color:#ED1C24">*</span></label>
             <input type="text" name="sLastName" value="$aUser[sLastName]" maxlength="40" class="input" onblur="saveUserData( this.name, this.value )" id="oLastName" alt="simple" />
           </div>
           <div id="company">
@@ -178,27 +183,27 @@ AddOnload( checkSavedUserData );
             <label for="oInvoice">$lang[Invoice_info]</label>
           </div>
           <div id="street">
-            <label for="oStreet">$lang[Street]</label>
+            <label for="oStreet">$lang[Street]&nbsp;<span style="color:#ED1C24">*</span></label>
             <input type="text" name="sStreet" value="$aUser[sStreet]" maxlength="40" class="input" onblur="saveUserData( this.name, this.value )" id="oStreet" alt="simple" />
           </div>
           <div id="zipCode">
-            <label for="oZipCode">$lang[Zip_code]</label>
+            <label for="oZipCode">$lang[Zip_code]&nbsp;<span style="color:#ED1C24">*</span></label>
             <input type="text" name="sZipCode" value="$aUser[sZipCode]" maxlength="20" class="input" onblur="saveUserData( this.name, this.value )" id="oZipCode" alt="simple" />
           </div>
           <div id="city">
-            <label for="oCity">$lang[City]</label>
+            <label for="oCity">$lang[City]&nbsp;<span style="color:#ED1C24">*</span></label>
             <input type="text" name="sCity" value="$aUser[sCity]" maxlength="40" class="input" onblur="saveUserData( this.name, this.value )" id="oCity" alt="simple" />
           </div>
         </fieldset>
         <fieldset id="setExtend">
           <div id="country">
-            <label for="oCountry">$lang[Country]</label>
+            <label for="oCountry">$lang[Country]&nbsp;<span style="color:#ED1C24">*</span></label>
             <select name="sCountry" class="input" onblur="saveUserData( this.name, this.value )" id="oCountry" alt="simple" />
     	    $countriesList
     	    </select>
           </div>
           <div id="phone">
-            <label for="oPhone">$lang[Telephone]</label>
+            <label for="oPhone">$lang[Telephone]&nbsp;<span style="color:#ED1C24">*</span></label>
             <input type="text" name="sPhone" value="$aUser[sPhone]" maxlength="40" class="input" onblur="saveUserData( this.name, this.value )" id="oPhone" alt="simple" />
           </div>
           <input type="hidden" name="sEmail" value="$aUser[sEmail]" maxlength="40" class="input" onblur="saveUserData( this.name, this.value )" id="oEmail" alt="email" />
@@ -215,7 +220,7 @@ AddOnload( checkSavedUserData );
     </fieldset>
     $sNewAccount
     <fieldset id="shippingDataBlock">
-      <legend>$lang[Different_shipping_address] <input type="checkbox" onChange="if(this.checked)Element.show('shipping_address_block'); else Element.hide('shipping_address_block');" /></legend>
+      <legend>$lang[Different_shipping_address] <input type="checkbox" onChange="if(this.checked)Element.show('shipping_address_block'); else Element.hide('shipping_address_block');" name="bShippingAddress" /></legend>
       <span id="shipping_address_block" style="display:none">
       <fieldset id="shippingData">
         <fieldset id="setBasic">
@@ -261,8 +266,10 @@ AddOnload( checkSavedUserData );
       </fieldset>
       </span>
     </fieldset>
-    <input type="hidden" value="1" name="sOrderSend" />
-    <input style="margin-top:10px" type="submit" value="$lang[Page_next]" class="submit" />
+    <div style="border-bottom:2px solid #C0D4EB;text-align:right;padding-bottom:5px;padding-right:10px;">
+	<input type="hidden" value="1" name="sOrderSend" />
+        <input style="margin-top:10px" type="submit" value="$lang[Page_next]" class="submit" />
+    </div>
   </form>
 </div>
 <!-- END ORDER_FORM_LOGGED -->
