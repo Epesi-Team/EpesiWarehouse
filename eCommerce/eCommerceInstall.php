@@ -520,6 +520,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Variable::set('ecommerce_rules','You can edit this page in Administration - eCommerce settings.');
 		Variable::set('ecommerce_contactus','You can edit this page in Administration - eCommerce settings.');
 		Variable::set('ecommerce_order_email','');
+		Variable::set('ecommerce_home', 'Welcome on your new ecommerce site. Have a nice day with Epesi!');
 
 		Variable::set('ecommerce_autoprice',false);
 		Variable::set('ecommerce_minimal_profit','');
@@ -614,10 +615,12 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 	
 		$langs = Utils_CommonDataCommon::get_array('Premium/Warehouse/eCommerce/Languages');
 		foreach($langs as $k=>$name) {
+			Variable::delete('ecommerce_home_'.$k,false);
 			Variable::delete('ecommerce_rules_'.$k,false);
 			Variable::delete('ecommerce_contactus_'.$k,false);
 			Variable::delete('ecommerce_order_email_'.$k,false);
 		}
+		Variable::delete('ecommerce_home');
 		Variable::delete('ecommerce_order_email');
 		Variable::delete('ecommerce_rules');
 		Variable::delete('ecommerce_contactus');
