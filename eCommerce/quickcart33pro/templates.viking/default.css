@@ -97,6 +97,7 @@ a:hover {
   float: right;
   padding-left: 60px;
   width: 180px;
+  display: block;
 }
 
 #head1 .banner {
@@ -158,7 +159,13 @@ a:hover {
   color: #1d64b8;
 }
   
-#menu_basket li#basketMenu span{display:block;font-size:0.833em;font-family:sans-serif; padding-top: 5px;}
+#menu_basket li#basketMenu span{
+    display:block;
+    font-size:0.833em;
+    font-family:sans-serif; 
+    padding-top: 5px;
+    color: black;
+}
 
 #menu_basket li#basketMenu span strong {
   background-color: inherit;
