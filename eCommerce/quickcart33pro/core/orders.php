@@ -723,7 +723,11 @@ class Orders
         if($iCarrier==0) $this->is_pickup = true; //pickup
         elseif($iCarrier == 2) {
             require_once('libraries/upsRate.php');
-            $addon = ups_rate($_SESSION['order_step_1']['sCountry'],$_SESSION['order_step_1']['sZipCode'], $weight);
+            if(isset($_SESSION['order_step_1']['sShippingCountry']) && isset($_SESSION['order_step_1']['sShippingZipCode']) &&
+        	!empty($_SESSION['order_step_1']['sShippingCountry']) && !empty($_SESSION['order_step_1']['sShippingZipCode']))
+	        $addon = ups_rate($_SESSION['order_step_1']['sCountry'],$_SESSION['order_step_1']['sZipCode'], $weight);
+	    else
+	        $addon = ups_rate($_SESSION['order_step_1']['sCountry'],$_SESSION['order_step_1']['sZipCode'], $weight);
             if(!is_numeric($addon)){
                 $_SESSION['ups_addon'] = 0;
                 $aData['sPayments'].='<script type="text/javascript">alert("'.$addon.'");</script>';
