@@ -825,6 +825,7 @@ float:left;
   color: #555555;
 }
 
+
 #order #personalData #setBasic, #order #personalData #setExtend{float:left;width:33%;}
 #order #personalData #setBasic div, #order #personalData #setExtend div{clear:both;}
 #order #personalData #setBasic #invoice {clear:none}
@@ -835,6 +836,8 @@ float:left;
 #order #personalData #invoice label {width:140px;text-align:left;}
 #order #personalData #addressesList{width:95%; text-align:center;padding:20px 0px;}
 #order #personalData #addressesList select {width:100%;}
+#order #personalData #comment {clear:both;}
+#order #personalData #comment textarea {width:730px;}
 
 #order #shippingData {
   padding: 12px 3%;

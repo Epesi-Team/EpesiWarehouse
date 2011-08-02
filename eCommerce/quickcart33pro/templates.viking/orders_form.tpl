@@ -47,12 +47,12 @@
             <input type="checkbox" name="iInvoice" value="1" id="oInvoice" />
             <label for="oInvoice">$lang[Invoice_info]</label>
           </div>-->
-        </fieldset>
-        <fieldset id="setBasic">
           <div id="street">
             <label for="oStreet">$lang[Street]&nbsp;<span style="color:#ED1C24">*</span></label>
             <input type="text" name="sStreet" value="$aUser[sStreet]" maxlength="40" class="input" onblur="saveUserData( this.name, this.value )" id="oStreet" alt="simple" />
           </div>
+        </fieldset>
+        <fieldset id="setBasic">
           <div id="zipCode">
             <label for="oZipCode">$lang[Zip_code]&nbsp;<span style="color:#ED1C24">*</span></label>
             <input type="text" name="sZipCode" value="$aUser[sZipCode]" maxlength="20" class="input" onblur="saveUserData( this.name, this.value )" id="oZipCode" alt="simple" />
@@ -81,11 +81,11 @@
             <label for="oPromotionCode">$lang[Promotion_code]</label>
             <input type="text" name="sPromotionCode" value="$aUser[sPromotionCode]" maxlength="100" class="input" onblur="saveUserData( this.name, this.value )" id="oPromotionCode" />
           </div>
+        </fieldset>
           <div id="comment">
             <label for="oComment">$lang[Order_comment]</label>
             <textarea name="sComment" cols="50" rows="9" id="oComment"></textarea>
           </div>
-        </fieldset>
       </fieldset>
     </fieldset>
     $sNewAccount
@@ -144,8 +144,9 @@
 </div>
 <script type="text/javascript">
 <!--
-if($aUser[bShippingAddress]) {
+if("$aUser[bShippingAddress]"!="") {
     document.getElementById('shipping_address_checkbox').checked=1;
+    Element.show('shipping_address_block');
 }
 AddOnload( checkSavedUserData );
 //-->
@@ -174,18 +175,20 @@ AddOnload( checkSavedUserData );
             <label for="oCompany">$lang[Company]</label>
             <input type="text" name="sCompanyName" value="$aUser[sCompanyName]" maxlength="100" class="input" onblur="saveUserData( this.name, this.value )" id="oCompany" />
           </div>
-          <div id="nip">
+<!--          <div id="nip">
             <label for="oNip">$lang[Nip]</label>
             <input type="text" name="sNip" value="$aUser[sNip]" maxlength="20" class="input" onblur="saveUserData( this.name, this.value )" id="oNip" />
           </div>
           <div id="invoice">
             <input type="checkbox" name="iInvoice" value="1" id="oInvoice" />
             <label for="oInvoice">$lang[Invoice_info]</label>
-          </div>
+          </div>-->
           <div id="street">
             <label for="oStreet">$lang[Street]&nbsp;<span style="color:#ED1C24">*</span></label>
             <input type="text" name="sStreet" value="$aUser[sStreet]" maxlength="40" class="input" onblur="saveUserData( this.name, this.value )" id="oStreet" alt="simple" />
           </div>
+        </fieldset>
+        <fieldset id="setBasic">
           <div id="zipCode">
             <label for="oZipCode">$lang[Zip_code]&nbsp;<span style="color:#ED1C24">*</span></label>
             <input type="text" name="sZipCode" value="$aUser[sZipCode]" maxlength="20" class="input" onblur="saveUserData( this.name, this.value )" id="oZipCode" alt="simple" />
@@ -194,14 +197,14 @@ AddOnload( checkSavedUserData );
             <label for="oCity">$lang[City]&nbsp;<span style="color:#ED1C24">*</span></label>
             <input type="text" name="sCity" value="$aUser[sCity]" maxlength="40" class="input" onblur="saveUserData( this.name, this.value )" id="oCity" alt="simple" />
           </div>
-        </fieldset>
-        <fieldset id="setExtend">
           <div id="country">
             <label for="oCountry">$lang[Country]&nbsp;<span style="color:#ED1C24">*</span></label>
             <select name="sCountry" class="input" onblur="saveUserData( this.name, this.value )" id="oCountry" alt="simple" />
     	    $countriesList
     	    </select>
           </div>
+        </fieldset>
+        <fieldset id="setExtend">
           <div id="phone">
             <label for="oPhone">$lang[Telephone]&nbsp;<span style="color:#ED1C24">*</span></label>
             <input type="text" name="sPhone" value="$aUser[sPhone]" maxlength="40" class="input" onblur="saveUserData( this.name, this.value )" id="oPhone" alt="simple" />
@@ -211,16 +214,16 @@ AddOnload( checkSavedUserData );
             <label for="oPromotionCode">$lang[Promotion_code]</label>
             <input type="text" name="sPromotionCode" value="$aUser[sPromotionCode]" maxlength="100" class="input" onblur="saveUserData( this.name, this.value )" id="oPromotionCode" />
           </div>
+        </fieldset>
           <div id="comment">
             <label for="oComment">$lang[Order_comment]</label>
             <textarea name="sComment" cols="50" rows="9" id="oComment" style="height:155px"></textarea>
           </div>
-        </fieldset>
       </fieldset>
     </fieldset>
     $sNewAccount
     <fieldset id="shippingDataBlock">
-      <legend>$lang[Different_shipping_address] <input type="checkbox" onChange="if(this.checked)Element.show('shipping_address_block'); else Element.hide('shipping_address_block');" name="bShippingAddress" /></legend>
+      <legend>$lang[Different_shipping_address] <input type="checkbox" onChange="if(this.checked)Element.show('shipping_address_block'); else Element.hide('shipping_address_block');" name="bShippingAddress" id="shipping_address_checkbox" /></legend>
       <span id="shipping_address_block" style="display:none">
       <fieldset id="shippingData">
         <fieldset id="setBasic">
@@ -272,6 +275,14 @@ AddOnload( checkSavedUserData );
     </div>
   </form>
 </div>
+<script type="text/javascript">
+<!--
+if("$aUser[bShippingAddress]"!="") {
+    document.getElementById('shipping_address_checkbox').checked=1;
+    Element.show('shipping_address_block');
+}
+//-->
+</script>
 <!-- END ORDER_FORM_LOGGED -->
 <!-- BEGIN ORDER_FORM_SHIPPING -->
 <script type="text/javascript" src="$config[dir_core]checkForm.js"></script>
@@ -423,7 +434,7 @@ function pickupShopCheck(e) {
 <tr><td><input type="radio" name="iPickupShop" value="$aData[iShop]" onChange="saveUserData( this.name, this.value )" />$aData[sName]</td></tr>
 <!-- END ORDER_PICKUP_SHOP_LIST -->
 <!-- BEGIN ORDER_PAYMENT_CARRIERS_LIST -->
-<td><input type="radio" name="sPaymentCarrier" value="$aData[iCarrier];$aData[iPayment];$aData[fPaymentCarrierPrice]" alt="radio;$lang['Select_delivery_and_payment']" onChange="countCarrierPrice( this );saveUserData( this.name, this.value );if(typeof pickupShopCheck != 'undefined')pickupShopCheck(this)" />$aData[sPaymentCarrierPrice]</td>
+<td><input type="radio" name="sPaymentCarrier" value="$aData[iCarrier];$aData[iPayment];$aData[fPaymentCarrierPrice]" alt="radio;$lang['Select_delivery_and_payment']" onChange="countCarrierPrice( this );saveUserData( this.name, this.value );if(typeof pickupShopCheck != 'undefined')pickupShopCheck(this)" checked />$aData[sPaymentCarrierPrice]</td>
 <!-- END ORDER_PAYMENT_CARRIERS_LIST -->
 <!-- BEGIN ORDER_PAYMENT_CARRIERS_EMPTY -->
 <td>&nbsp;</td>
