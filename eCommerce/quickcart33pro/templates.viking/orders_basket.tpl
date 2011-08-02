@@ -61,6 +61,7 @@
           <tr class="buttons">
             <td id="save">
               <input type="submit" name="sSave" value="$lang[Save_basket]" class="submit" />
+              <button onClick="history.back(1);return false;" class="submit">Back to Shopping</button>
             </td>
             <td colspan="4" class="nextStep">
               $aData[sZagielInfo]
