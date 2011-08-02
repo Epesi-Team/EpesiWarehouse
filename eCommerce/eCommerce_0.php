@@ -45,6 +45,8 @@ class Premium_Warehouse_eCommerce extends Module {
 						'icon'=>null);
 		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'features')).'>'.$this->t('Features').'</a>',
 						'icon'=>null);
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'home_page')).'>'.$this->t('Home Page').'</a>',
+						'icon'=>null);
 		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'compare_services')).'>'.$this->t('Links for compare services').'</a>',
 						'icon'=>null);
 		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'order_email_page')).'>'.$this->t('New order e-mail header').'</a>',
@@ -425,6 +427,10 @@ class Premium_Warehouse_eCommerce extends Module {
 	
 	public function rules_page() {
 		return $this->edit_variable_with_lang('Rules and policies','ecommerce_rules');
+	}
+
+	public function home_page() {
+		return $this->edit_variable_with_lang('Home','ecommerce_home');
 	}
 
 	private function edit_variable_with_lang($header,$v) {

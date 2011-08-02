@@ -389,7 +389,10 @@ class Pages
 
 	//recommended //other pages - id mod 4 == 3
 	$id = 11;
-	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => $lang['Recommended'], 'sNameTitle' => '', 'sDescriptionShort' => '', 'iPosition' => 1, 
+	$home_page = getVariable('ecommerce_home_'.LANGUAGE);
+	if(!$home_page)
+		$home_page = getVariable('ecommerce_home');
+	$this->aPages[$id] = array ( 'iPage' => $id, 'iPageParent' => 0, 'sName' => $lang['Recommended'], 'sNameTitle' => '', 'sDescriptionShort' => $home_page, 'iPosition' => 1, 
 			'iType' => 2, 'iSubpagesShow' => 4, 'iProducts' => 1, 'sDescriptionFull'=>'', 'sMetaDescription' => '', 'sMetaKeywords' =>'');
 	$this->aPages[$id]['sLinkName'] = '?'.change2Url( $this->aPages[$id]['sName'] ).','.$id;
 	$this->aPagesParentsTypes[2][] = $id;
