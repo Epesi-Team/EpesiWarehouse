@@ -14,7 +14,7 @@ class Users
   	global $aUser;
 	$aUser = array();
 	if(self::logged()) {
-		$aUser = DB::GetRow('SELECT f_email as sEmail, f_last_name as sLastName, f_first_name as sFirstName, f_address_1 as sStreet, f_postal_code as sZipCode, f_city as sCity, f_country as sCountry, f_work_phone as sPhone, f_company_name FROM contact_data_1 WHERE id=%d',array($_SESSION['contact']));
+		$aUser = DB::GetRow('SELECT f_email as sEmail, f_last_name as sLastName, f_first_name as sFirstName, f_address_1 as sStreet, f_postal_code as sZipCode, f_city as sCity, f_country as sCountry, f_work_phone as sPhone, f_company_name, f_zone as sState FROM contact_data_1 WHERE id=%d',array($_SESSION['contact']));
 		if(isset($_SESSION['company']) && $_SESSION['company']) {
 			$aUser += DB::GetRow('SELECT f_company_name as sCompanyName, f_tax_id as sNip FROM company_data_1 WHERE id=%d',array($_SESSION['company']));
 		}

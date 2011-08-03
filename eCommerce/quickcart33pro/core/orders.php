@@ -381,6 +381,8 @@ class Orders
     }
     $aForm['iPaymentRealized']  = 0;
 
+    if(!isset($aForm['sState'])) $aForm['sState'] = '';
+
     $t = time();
     
     $contact = null;
@@ -389,9 +391,9 @@ class Orders
     	$contact = $_SESSION['contact'];
     	$company = $_SESSION['company'];
     	global $aUser;
-    	$colst = array('contact'=>array('email'=>'sEmail', 'last_name'=>'sLastName', 'first_name'=>'sFirstName', 'address_1'=>'sStreet', 'postal_code'=>'sZipCode', 'city'=>'sCity', 'country'=>'sCountry', 'work_phone'=>'sPhone'));
+    	$colst = array('contact'=>array('email'=>'sEmail', 'last_name'=>'sLastName', 'first_name'=>'sFirstName', 'address_1'=>'sStreet', 'postal_code'=>'sZipCode', 'city'=>'sCity', 'country'=>'sCountry', 'zone'=>'sState', 'work_phone'=>'sPhone'));
     	if($company!==null)
-    		$colst['company']=array('email'=>'sEmail', 'company_name'=>'sCompanyName', 'tax_id'=>'sNip', 'address_1'=>'sStreet', 'postal_code'=>'sZipCode', 'city'=>'sCity', 'country'=>'sCountry', 'phone'=>'sPhone');
+    		$colst['company']=array('email'=>'sEmail', 'company_name'=>'sCompanyName', 'tax_id'=>'sNip', 'address_1'=>'sStreet', 'postal_code'=>'sZipCode', 'city'=>'sCity', 'country'=>'sCountry', 'zone'=>'sState', 'phone'=>'sPhone');
     	$insert_multipleaddress=false;
 	    foreach($colst as $tab=>$cols) {    			
 	    	$modified = false;
@@ -413,9 +415,9 @@ class Orders
     		}
     	}
    		if($insert_multipleaddress) {
-   		    $ex = DB::GetOne('select 1 from premium_multiple_addresses_data_1 where f_last_name=%s AND f_first_name=%s AND f_company_name=%s AND f_address_1=%s AND f_city=%s AND f_country=%s AND f_postal_code=%s AND f_record_id=%d AND f_record_type="contact"',array($aUser['sLastName'],$aUser['sFirstName'],$aUser['sCompanyName'],$aUser['sStreet'],$aUser['sCity'],$aUser['sCountry'],$aUser['sZipCode'],$contact));
+   		    $ex = DB::GetOne('select 1 from premium_multiple_addresses_data_1 where f_last_name=%s AND f_first_name=%s AND f_company_name=%s AND f_address_1=%s AND f_city=%s AND f_country=%s AND f_zone=%s AND f_postal_code=%s AND f_record_id=%d AND f_record_type="contact"',array($aUser['sLastName'],$aUser['sFirstName'],$aUser['sCompanyName'],$aUser['sStreet'],$aUser['sCity'],$aUser['sCountry'],$aUser['sState'],$aUser['sZipCode'],$contact));
    		    if(!$ex) {
-   		        DB::Execute('insert into premium_multiple_addresses_data_1 (f_last_name,f_first_name,f_company_name,f_address_1,f_city,f_country,f_postal_code,created_on,f_record_id,f_record_type) VALUES(%s,%s,%s,%s,%s,%s,%s,%T,%d,"contact")',array($aUser['sLastName'],$aUser['sFirstName'],$aUser['sCompanyName'],$aUser['sStreet'],$aUser['sCity'],$aUser['sCountry'],$aUser['sZipCode'],$t,$contact));
+   		        DB::Execute('insert into premium_multiple_addresses_data_1 (f_last_name,f_first_name,f_company_name,f_address_1,f_city,f_country,f_zone,f_postal_code,created_on,f_record_id,f_record_type) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%T,%d,"contact")',array($aUser['sLastName'],$aUser['sFirstName'],$aUser['sCompanyName'],$aUser['sStreet'],$aUser['sCity'],$aUser['sCountry'],$aUser['sState'],$aUser['sZipCode'],$t,$contact));
    		        $mcid = DB::Insert_ID('premium_multiple_addresses_data_1','id');
    		        DB::Execute('update premium_multiple_addresses_data_1 SET f_nickname=%s where id=%d',array($this->t('Address').' #'.str_pad($mcid,6,'0',STR_PAD_LEFT),$mcid));
    		    }
@@ -442,8 +444,8 @@ class Orders
 		if(!$contact || !$company) { // jezeli nie ma kontaktu, lub jest kontakt ale nie ma firmy, to dodaj firme
 	    		if($aForm['sCompanyName'] && !$company) {
 	    			$new_company = true;
-			    	DB::Execute('INSERT INTO company_data_1(created_on,f_company_name,f_tax_id,f_address_1,f_postal_code,f_city,f_country,f_phone,f_email,f_group,f_permission) VALUES (%T,%s,%s,%s,%s,%s,%s,%s,%s,\'__customer__\',0)',
-    					array($t,$aForm['sCompanyName'],$aForm['sNip'],$aForm['sStreet'],$aForm['sZipCode'],$aForm['sCity'],$aForm['sCountry'],$aForm['sPhone'],$aForm['sEmail']));
+			    	DB::Execute('INSERT INTO company_data_1(created_on,f_company_name,f_tax_id,f_address_1,f_postal_code,f_city,f_country,f_zone,f_phone,f_email,f_group,f_permission) VALUES (%T,%s,%s,%s,%s,%s,%s,%s,%s,%s,\'__customer__\',0)',
+    					array($t,$aForm['sCompanyName'],$aForm['sNip'],$aForm['sStreet'],$aForm['sZipCode'],$aForm['sCity'],$aForm['sCountry'],$aForm['sState'],$aForm['sPhone'],$aForm['sEmail']));
 				$company = DB::Insert_ID('company_data_1','id');
 			}
 		}
@@ -452,8 +454,8 @@ class Orders
 				$company2 = $company;
 			else
 				$company2 = null;
-		    	DB::Execute('INSERT INTO contact_data_1(created_on,f_first_name,f_last_name,f_address_1,f_postal_code,f_city,f_country,f_work_phone,f_email,f_company_name,f_group,f_permission) VALUES (%T,%s,%s,%s,%s,%s,%s,%s,%s,%s,\'__custm__\',0)',
-    				array($t,$aForm['sFirstName'],$aForm['sLastName'],$aForm['sStreet'],$aForm['sZipCode'],$aForm['sCity'],$aForm['sCountry'],$aForm['sPhone'],$aForm['sEmail'],$company2));
+		    	DB::Execute('INSERT INTO contact_data_1(created_on,f_first_name,f_last_name,f_address_1,f_postal_code,f_city,f_country,f_zone,f_work_phone,f_email,f_company_name,f_group,f_permission) VALUES (%T,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,\'__custm__\',0)',
+    				array($t,$aForm['sFirstName'],$aForm['sLastName'],$aForm['sStreet'],$aForm['sZipCode'],$aForm['sCity'],$aForm['sCountry'],$aForm['sState'],$aForm['sPhone'],$aForm['sEmail'],$company2));
 			$contact = DB::Insert_ID('contact_data_1','id');
 		} elseif($new_company) { //a jezeli jest kontakt o tym mailu, ale nie bylo firmy i zostala stworzona to dodaj ta firme do kontaktu
 		    	$companies = DB::GetRow('SELECT f_company_name as main,f_related_companies as related FROM contact_data_1 WHERE id=%d',array($contact));
@@ -508,9 +510,9 @@ class Orders
 						f_company_name,f_last_name,f_first_name,f_address_1,f_city,f_postal_code,f_phone,f_country,f_zone,f_memo,created_on,
 						f_shipment_type,f_shipment_cost,f_payment,f_payment_type,f_tax_id,f_warehouse,f_online_order,f_contact,f_company,f_terms,f_receipt,f_handling_cost,
 						f_shipping_company_name,f_shipping_last_name,f_shipping_first_name,f_shipping_address_1,f_shipping_city,f_shipping_postal_code,f_shipping_phone,f_shipping_country,f_shipping_contact,f_shipping_company) VALUES 
-						(1,%D,"-1",%s,%s,%s,%s,%s,%s,%s,%s,"",%s,%T,%s,%s,1,%s,%s,%d,1,%d,%d,%s,%b,%s,%s,%s,%s,%s,%s,%s,%s,%s,%d,%d)',
+						(1,%D,"-1",%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%T,%s,%s,1,%s,%s,%d,1,%d,%d,%s,%b,%s,%s,%s,%s,%s,%s,%s,%s,%s,%d,%d)',
 					array($t,$aForm['sCompanyName'],$aForm['sLastName'],$aForm['sFirstName'],$aForm['sStreet'],$aForm['sCity'],
-					$aForm['sZipCode'],$aForm['sPhone'],$aForm['sCountry'],$memo,$t,$carrier,$price.'__'.$currency,$payment,$aForm['sNip'],$carrier==0?$aForm['iPickupShop']:null,$contact,$company,$order_terms,$aForm['iInvoice']?false:true,$handling.'__'.$currency,
+					$aForm['sZipCode'],$aForm['sPhone'],$aForm['sCountry'],$aForm['sState'],$memo,$t,$carrier,$price.'__'.$currency,$payment,$aForm['sNip'],$carrier==0?$aForm['iPickupShop']:null,$contact,$company,$order_terms,$aForm['iInvoice']?false:true,$handling.'__'.$currency,
 					$aForm['sShippingCompanyName'],$aForm['sShippingLastName'],$aForm['sShippingFirstName'],$aForm['sShippingStreet'],$aForm['sShippingCity'],
 					$aForm['sShippingZipCode'],$aForm['sShippingPhone'],$aForm['sShippingCountry'],$contact,$company));
     $id = DB::Insert_ID('premium_warehouse_items_orders_data_1','id');
