@@ -463,7 +463,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		}
 		if ($mode!='view') {
 			if ($mode=='add') $form->addFormRule(array('Premium_Warehouse_Items_OrdersCommon','check_if_no_duplicate_company_contact'));
-			$form->addFormRule(array('Premium_Warehouse_Items_OrdersCommon','check_no_empty_invoice'));
+			if ($field=='company_name')$form->addFormRule(array('Premium_Warehouse_Items_OrdersCommon','check_no_empty_invoice'));
 			$form->addElement('text', $field, $label, array('id'=>$field));
 			$form->setDefaults(array($field=>$default));
 		} else {
