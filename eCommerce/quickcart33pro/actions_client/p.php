@@ -316,10 +316,23 @@ if( isset( $iContent ) && is_numeric( $iContent ) ){
 
 	  if(!$oUser->logged())
 	          $sNewAccount = $oTpl->tbHtml( 'orders_form.tpl', 'ORDER_NEW_ACCOUNT');
-	  
+	          
 	  $countries_id = DB::GetOne('SELECT id FROM utils_commondata_tree WHERE akey="Countries"');
 	  if($countries_id===false)
 		die('Common data key "Countries" not defined.');
+
+	  $countries_with_states = DB::GetAssoc('SELECT p.id,p.akey FROM utils_commondata_tree p WHERE p.parent_id=%d ORDER BY value',array($countries_id));
+	  $states = array();
+	  $states_ret = DB::Execute('SELECT p.akey, p.value, p.parent_id FROM utils_commondata_tree p where p.parent_id in ('.implode(',',array_keys($countries_with_states)).') ORDER BY value');
+	  while($row = $states_ret->FetchRow()) {
+		if(!isset($states[$countries_with_states[$row['parent_id']]])) $states[$countries_with_states[$row['parent_id']]] = array();
+		if(isset($translations['Utils_CommonData'][$row['value']]) && $translations['Utils_CommonData'][$row['value']])
+			$states[$countries_with_states[$row['parent_id']]][$row['akey']] = $translations['Utils_CommonData'][$row['value']];
+		else
+			$states[$countries_with_states[$row['parent_id']]][$row['akey']] = $row['value'];
+	  }
+	  $statesJS = json_encode($states);
+	  
 	  $countries = DB::GetAssoc('SELECT p.akey, p.value FROM utils_commondata_tree p WHERE p.parent_id=%d ORDER BY value',array($countries_id));
 	  global $translations;
 	  foreach($countries as $k=>$v) {
@@ -331,13 +344,19 @@ if( isset( $iContent ) && is_numeric( $iContent ) ){
 	  foreach($countries as $k=>$v) {
 		$default = !$was_default && (strtolower($k)==LANGUAGE || $k==$aUser['sCountry'] || ($k=='US' && LANGUAGE=='en' && (!isset($aUser['sCountry']) || !$aUser['sCountry'])));
 		$countriesList .= '<option name="sAddress" value="'.$k.'" '.($default?'selected="1"':'').'>'.$v.'</option>';
-		if($default) $was_default = 1;
+		if($default) {
+		    $defaultCountry = $k;
+		    $was_default = 1;
+		}
 	  }
 	  $was_default = 0;
 	  foreach($countries as $k=>$v) {
 		$default = !$was_default && (strtolower($k)==LANGUAGE || $k==$aUser['sShippingCountry'] || ($k=='US' && LANGUAGE=='en' && (!isset($aUser['sShippingCountry']) || !$aUser['sCountry'])));
 		$shippingCountriesList .= '<option name="sShippingAddress" value="'.$k.'" '.($default?'selected="1"':'').'>'.$v.'</option>';
-		if($default) $was_default = 1;
+		if($default) {
+		    $defaultShippingCountry = $k;
+		    $was_default = 1;
+		}
 	  }
 	  
 	  $oTpl->setVariables('countriesList',$countriesList);
