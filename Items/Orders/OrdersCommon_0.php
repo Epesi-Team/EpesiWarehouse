@@ -916,6 +916,21 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 								$ret['zone'] = false;
 								$ret['postal_code'] = false;
 								$ret['phone'] = false;
+
+								$ret['shipping_company'] = false;
+								$ret['shipping_contact'] = false;
+								$ret['shipping_tax_id'] = false;
+								$ret['shipping_company_name'] = false;
+								$ret['shipping_first_name'] = false;
+								$ret['shipping_last_name'] = false;
+								$ret['shipping_address_1'] = false;
+								$ret['shipping_address_2'] = false;
+								$ret['shipping_city'] = false;
+								$ret['shipping_country'] = false;
+								$ret['shipping_zone'] = false;
+								$ret['shipping_postal_code'] = false;
+								$ret['shipping_phone'] = false;
+
 								$ret['payment_type'] = false;
 								$ret['payment_no'] = false;
 								$ret['terms'] = false;
