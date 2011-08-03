@@ -113,15 +113,17 @@ class Premium_Warehouse_InvoiceCommon extends ModuleCommon {
 	public static function QFfield_invoice_number(&$form, $field, $label, $mode, $default, $desc, $rb_obj) {
 		if ($mode!='view') {
 			eval_js('update_invoice_fields_label = function(){'.
-				'if($("receipt").checked){'.
-					'print_s="'.Base_LangCommon::ts('Premium_Warehouse_Invoice', 'Receipt Print Date').'";'.
-					'print_n="'.Base_LangCommon::ts('Premium_Warehouse_Invoice', 'Receipt Number').'";'.
-				'}else{'.
-					'print_s="'.Base_LangCommon::ts('Premium_Warehouse_Invoice', 'Invoice Print Date').'";'.
-					'print_n="'.Base_LangCommon::ts('Premium_Warehouse_Invoice', 'Invoice Number').'";'.
+				'if($("receipt")) {'.
+					'if ($("receipt").checked){'.
+						'print_s="'.Base_LangCommon::ts('Premium_Warehouse_Invoice', 'Receipt Print Date').'";'.
+						'print_n="'.Base_LangCommon::ts('Premium_Warehouse_Invoice', 'Receipt Number').'";'.
+					'}else{'.
+						'print_s="'.Base_LangCommon::ts('Premium_Warehouse_Invoice', 'Invoice Print Date').'";'.
+						'print_n="'.Base_LangCommon::ts('Premium_Warehouse_Invoice', 'Invoice Number').'";'.
+					'}'.
+					'if($("_invoice_print_date__label"))$("_invoice_print_date__label").innerHTML=print_s;'.
+					'if($("_invoice_number__label"))$("_invoice_number__label").innerHTML=print_n;'.
 				'}'.
-				'if($("_invoice_print_date__label"))$("_invoice_print_date__label").innerHTML=print_s;'.
-				'if($("_invoice_number__label"))$("_invoice_number__label").innerHTML=print_n;'.
 			'}');
 			eval_js('update_invoice_fields_label();');
 			eval_js('setTimeout(\'Event.observe("receipt", "change", update_invoice_fields_label)\', 1000);');
