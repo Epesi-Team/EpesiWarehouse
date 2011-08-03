@@ -114,6 +114,7 @@ class Premium_Warehouse_Wholesale__Plugin_besier implements Premium_Warehouse_Wh
 	    $time = time();
 	    $filename = ModuleManager::get_data_dir('Premium_Warehouse_Wholesale').'/besier_'.$time.'.tmp';
 	    rename($dir.'/'.$ret,$filename);
+	    @unlink(ModuleManager::get_data_dir('Premium_Warehouse_Wholesale').'/besier.xls'); //backup
 	    @copy($filename,ModuleManager::get_data_dir('Premium_Warehouse_Wholesale').'/besier.xls'); //backup
 	    recursive_rmdir($dir);
 

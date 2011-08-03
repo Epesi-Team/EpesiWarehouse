@@ -29,10 +29,11 @@ class Premium_Warehouse_Wholesale__Plugin_abdata implements Premium_Warehouse_Wh
 	 * @return array parameters list 
 	 */
 	public function get_parameters() {
-		return array(
+		return array('POP3 server'=>'text','User'=>'text','Password'=>'password');
+/*		return array(
 			'ID'=>'text',
 			'Password'=>'password'
-		);
+		);*/
 	}
 
 	/**
@@ -54,46 +55,100 @@ class Premium_Warehouse_Wholesale__Plugin_abdata implements Premium_Warehouse_Wh
 	 * @return string filename with its location
 	 */
 	public function download_file($parameters, $distributor) {
-		$dir = ModuleManager::get_data_dir('Premium_Warehouse_Wholesale');
+        //setup
+        $host = $parameters['POP3 server'];
+        $user = $parameters['User'];
+        $pass = $parameters['Password'];
+        $pop3 = true;//if not then imap
+        $ssl = true;
+        $port = null;
 
-/*	    $c = curl_init();
-	    $url = 'http://dealer.ab.pl/main.php';
+        //rest
+        if(!is_numeric($port)) {
+            if($pop3) {
+                if($ssl)
+                    $port = 995;
+                else
+                    $port = 110;    
+            } else {
+                if($ssl)
+                    $port = 993;
+                else
+                    $port = 143;
+            }
+        }
+        $ref = '{'.$host.':'.$port.'/'.($pop3?'pop3':'imap').'/novalidate-cert'.($ssl?'/ssl':'').'}';
+        $in = @imap_open($ref, $user,$pass);
+        if(!$in) {
+			Premium_Warehouse_WholesaleCommon::file_download_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Connection failed: '.implode(', ',imap_errors())), 2, true);
+			return false;
+        }
 
-	    curl_setopt($c, CURLOPT_URL, $url);
-		curl_setopt($c, CURLOPT_SSL_VERIFYPEER, false);
-		curl_setopt($c, CURLOPT_HEADER, false);
-		curl_setopt($c, CURLOPT_POST, true);
-		curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($c, CURLOPT_USERAGENT, "Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)");
-		curl_setopt($c, CURLOPT_FOLLOWLOCATION, true);
-		curl_setopt($c, CURLOPT_COOKIEFILE, $dir.'cookiefile.cf');
-		curl_setopt($c, CURLOPT_COOKIEJAR, $dir.'cookiefile.cf'); 
+        $new_name = "Inbox";
+        $iname = $ref.$new_name;
+        $iname = mb_convert_encoding( $iname, "UTF7-IMAP", "UTF-8" );
+        
+        $err = imap_errors();
+        $st = imap_status($in,$iname,SA_UIDNEXT);
+        $last_uid = $st->uidnext;
+        $l=imap_fetch_overview($in,'1:'.$last_uid,FT_UID); //list of new messages
 
-	    curl_setopt($c, CURLOPT_POSTFIELDS, http_build_query(array(
-			'lname'=>$parameters['ID'],'passwd'=>$parameters['Password'])));
+		$dir = ModuleManager::get_data_dir('Premium_Warehouse_Wholesale').'/ab';
+		@mkdir($dir);
 
-	    $output = curl_exec($c);
+        $ret = false;
+        foreach($l as $msgl) {
+            $headers = imap_fetchheader($in,$msgl->uid,FT_UID | FT_PREFETCHTEXT);
+            $body = imap_body($in,$msgl->uid,FT_UID | FT_PEEK);
+            file_put_contents($dir.'/tmp.mime',$headers.$body);
+            file_put_contents('/tmp/dupa.txt',$headers.$body);
+            ob_start();
+            passthru('cd "'.$dir.'" && munpack -q tmp.mime');
+            ob_end_clean();
+            @unlink($dir.'/tmp.mime');
+            foreach(scandir($dir) as $f) {
+                if($f=='.' || $f=='..') continue;
+                if(!$ret && preg_match('/^cennik_AB.zip$/i',$f)) {
+                    $ret = $f;
+                    continue;
+                }
+                @unlink($dir.'/'.$f);
+            }
+            imap_delete($in,$msgl->uid,FT_UID);
+            if($ret) break;
+        }
+        imap_expunge($in);
 
-		$url = 'http://dealer.ab.pl/cennik_gen3.php';
-		curl_setopt($c, CURLOPT_FOLLOWLOCATION, false);
-		curl_setopt($c, CURLOPT_URL, $url);
-	    curl_setopt($c, CURLOPT_POSTFIELDS, http_build_query(array(
-			'ctype'=>'csv','filtr_brak'=>1)));
-		$output = curl_exec($c);
-
-		if (!$output) {
-			Premium_Warehouse_WholesaleCommon::file_download_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Authentication failure, aborting.'), 2, true);
+        imap_close($in);
+        
+		if (!$ret) {
+			Premium_Warehouse_WholesaleCommon::file_download_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','No new file on mailbox.'), 2, true);
 			return false;
 		}
 
-	    curl_close($c);
-		*/
-		$output = '';//cenniki wysyłane na maila, nawet nie pytaj!
+		$zip = new ZipArchive;
+		if ($zip->open($dir.'/'.$ret) == 1) {
+			$zip->extractTo($dir);
+		} else {
+			return false;
+		}
+		
+		$zip->close();
+
+		@unlink($ret);
+		
+		if(!file_exists($dir.'/cennik_AB.csv')) {
+			Premium_Warehouse_WholesaleCommon::file_download_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','No CSV file in ZIP.'), 2, true);
+			return false;
+		}
+
 	    $time = time();
-
-		$filename = $dir.'ab_data_'.$time.'.tmp';
+	    $filename = ModuleManager::get_data_dir('Premium_Warehouse_Wholesale').'/ab_'.$time.'.tmp';
+	    $output = file_get_contents($dir.'/cennik_AB.csv');
 		file_put_contents($filename, iconv("cp1250","UTF-8",$output));
-
+	    @unlink(ModuleManager::get_data_dir('Premium_Warehouse_Wholesale').'/ab.csv');
+	    @copy($filename,ModuleManager::get_data_dir('Premium_Warehouse_Wholesale').'/ab.csv'); //backup
+	    recursive_rmdir($dir);
 
 		Premium_Warehouse_WholesaleCommon::file_download_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','File downloaded.'), 1, true);
 	    
@@ -143,6 +198,7 @@ class Premium_Warehouse_Wholesale__Plugin_abdata implements Premium_Warehouse_Wh
 		}
 
 		DB::Execute('UPDATE premium_warehouse_wholesale_items SET quantity=%d, quantity_info=%s WHERE distributor_id=%d', array(0, '', $distributor['id']));
+//		DB::Execute('DELETE FROM premium_warehouse_wholesale_items WHERE distributor_id=%d', array($distributor['id']));
 
 		$categories = DB::GetAssoc('SELECT f_foreign_category_name,id FROM premium_warehouse_distr_categories_data_1 WHERE active=1 AND f_distributor=%d',array($distributor['id']));
 		$categories_to_del = $categories;
