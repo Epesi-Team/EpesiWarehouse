@@ -126,8 +126,7 @@ class Premium_Warehouse_InvoiceCommon extends ModuleCommon {
 				'}'.
 			'}');
 			eval_js('update_invoice_fields_label();');
-			eval_js('setTimeout(\'Event.observe("receipt", "change", update_invoice_fields_label)\', 1000);');
-//			eval_js('alert("!");');
+			eval_js('if($("receipt"))setTimeout(\'Event.observe("receipt", "change", update_invoice_fields_label)\', 1000);');
 			self::$rb_obj = $rb_obj; 
 			$form->addElement('text', $field, $label, array('id'=>$field));
 			$form->addFormRule(array('Premium_Warehouse_InvoiceCommon', 'check_number'));
