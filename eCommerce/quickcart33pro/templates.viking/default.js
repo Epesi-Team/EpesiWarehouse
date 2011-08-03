@@ -49,3 +49,19 @@ function emptyProdDesc() {
 		}
 	}
 }
+
+var states = {};
+function loadStates(l,pre) {
+	var elSel = document.getElementById('o'+pre+'State');
+	if(typeof elSel == "undefined") return;
+	elSel.options.length = 0;
+	if(typeof states[l] == "undefined") {
+	    elSel.disabled=1;
+	    return;
+	}
+	elSel.disabled=0;
+	var i = 0;
+	for(k in states[l]) {
+	    elSel.options[i++] = new Option(states[l][k],k);
+	}
+}

@@ -63,8 +63,13 @@
           </div>
           <div id="country">
             <label for="oCountry">$lang[Country]&nbsp;<span style="color:#ED1C24">*</span></label>
-            <select name="sCountry" class="input" onblur="saveUserData( this.name, this.value )" id="oCountry" alt="simple" />
+            <select name="sCountry" class="input" onblur="saveUserData( this.name, this.value )" id="oCountry" alt="simple" onChange="loadStates(this.value,'')" />
     	    $countriesList
+    	    </select>
+          </div>
+          <div id="state">
+            <label for="oState">$lang[State]</label>
+            <select name="sState" class="input" onblur="saveUserData( this.name, this.value )" id="oState" alt="simple" />
     	    </select>
           </div>
         </fieldset>
@@ -124,8 +129,13 @@
         <fieldset id="setExtend">
           <div id="country">
             <label for="oShippingCountry">$lang[Country]</label>
-            <select name="sShippingCountry" class="input" onblur="saveUserData( this.name, this.value )" id="oShippingCountry" />
+            <select name="sShippingCountry" class="input" onblur="saveUserData( this.name, this.value )" id="oShippingCountry" onChange="loadStates(this.value,'Shipping')" />
     	    $shippingCountriesList
+    	    </select>
+          </div>
+          <div id="state">
+            <label for="oShippingState">$lang[State]</label>
+            <select name="sShippingState" class="input" onblur="saveUserData( this.name, this.value )" id="oShippingState" alt="simple" />
     	    </select>
           </div>
           <div id="phone">
@@ -144,11 +154,24 @@
 </div>
 <script type="text/javascript">
 <!--
-if("$aUser[bShippingAddress]"!="") {
-    document.getElementById('shipping_address_checkbox').checked=1;
-    Element.show('shipping_address_block');
+
+function initOrderForm() {
+    if("$aUser[bShippingAddress]"!="") {
+	document.getElementById('shipping_address_checkbox').checked=1;
+        Element.show('shipping_address_block');
+    }
+    states = $statesJS;
+    loadStates(document.getElementById('oCountry').value,'');
+    loadStates(document.getElementById('oShippingCountry').value,'Shipping');
+    var old = aUserDataNames;
+    aUserDataNames = new Array('sState','sShippingState');
+    checkSavedUserData();
+    aUserDataNames = old;
 }
+
 AddOnload( checkSavedUserData );
+AddOnload( initOrderForm );
+
 //-->
 </script>
 <!-- END ORDER_FORM -->
@@ -199,8 +222,13 @@ AddOnload( checkSavedUserData );
           </div>
           <div id="country">
             <label for="oCountry">$lang[Country]&nbsp;<span style="color:#ED1C24">*</span></label>
-            <select name="sCountry" class="input" onblur="saveUserData( this.name, this.value )" id="oCountry" alt="simple" />
+            <select name="sCountry" class="input" onblur="saveUserData( this.name, this.value )" id="oCountry" alt="simple" onChange="loadStates(this.value,'')" />
     	    $countriesList
+    	    </select>
+          </div>
+          <div id="state">
+            <label for="oState">$lang[State]</label>
+            <select name="sState" class="input" onblur="saveUserData( this.name, this.value )" id="oState" alt="simple" />
     	    </select>
           </div>
         </fieldset>
@@ -257,8 +285,13 @@ AddOnload( checkSavedUserData );
         <fieldset id="setExtend">
           <div id="country">
             <label for="oShippingCountry">$lang[Country]</label>
-            <select name="sShippingCountry" class="input" onblur="saveUserData( this.name, this.value )" id="oShippingCountry" />
+            <select name="sShippingCountry" class="input" onblur="saveUserData( this.name, this.value )" id="oShippingCountry" onChange="loadStates(this.value,'Shipping')" />
     	    $shippingCountriesList
+    	    </select>
+          </div>
+          <div id="state">
+            <label for="oShippingState">$lang[State]</label>
+            <select name="sShippingState" class="input" onblur="saveUserData( this.name, this.value )" id="oShippingState" alt="simple" />
     	    </select>
           </div>
           <div id="phone">
@@ -277,10 +310,18 @@ AddOnload( checkSavedUserData );
 </div>
 <script type="text/javascript">
 <!--
-if("$aUser[bShippingAddress]"!="") {
-    document.getElementById('shipping_address_checkbox').checked=1;
-    Element.show('shipping_address_block');
+
+function initOrderForm() {
+    if("$aUser[bShippingAddress]"!="") {
+	document.getElementById('shipping_address_checkbox').checked=1;
+        Element.show('shipping_address_block');
+    }
+    states = $statesJS;
+    loadStates(document.getElementById('oCountry').value,'');
+    loadStates(document.getElementById('oShippingCountry').value,'Shipping');
 }
+
+AddOnload( initOrderForm );
 //-->
 </script>
 <!-- END ORDER_FORM_LOGGED -->

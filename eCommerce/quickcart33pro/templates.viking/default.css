@@ -830,7 +830,7 @@ float:left;
 #order #personalData #setBasic div, #order #personalData #setExtend div{clear:both;}
 #order #personalData #setBasic #invoice {clear:none}
 #order #personalData label{display:block;font-weight:bold;float:left;width:100px;text-align:right;margin-right:7px;}
-#order #personalData #company label, #order #personalData #comment label, #order #personalData #promotionCode label{font-weight:normal;}
+#order #personalData #state label, #order #personalData #company label, #order #personalData #comment label, #order #personalData #promotionCode label{font-weight:normal;}
 #order #personalData .input, #order #personalData #oComment{width:160px;margin:0 0 5px;}
 #order #personalData #oComment{height:35px;}
 #order #personalData #invoice label {width:140px;text-align:left;}
