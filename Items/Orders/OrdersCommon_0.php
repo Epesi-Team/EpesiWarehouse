@@ -617,7 +617,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		}
 		$form->addElement('text',$field,$label,$attrs);
 		$form->setDefaults(array($field=>$default));
-		eval_js('if(!$("credit").value)$("credit").style.display="none";');
+		eval_js('if($("debit").value)$("credit").style.display="none";');
 	}
 
 	public static function QFfield_debit(&$form, $field, $label, $mode, $default) {
@@ -631,7 +631,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		}
 		$form->addElement('text',$field,$label,$attrs);
 		$form->setDefaults(array($field=>$default));
-		eval_js('if(!$("debit").value)$("debit").style.display="none";');
+		eval_js('if($("credit").value)$("debit").style.display="none";');
 	}
 	
 	public static function QFfield_item_name(&$form, $field, $label, $mode, $default){
@@ -689,7 +689,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			}
 		} elseif (isset($data['quantity']))
 			$ord_qty = $data['quantity'];
-	    else 
+	    elseif (self::$trans['transaction_type']!=2)
 	        return array('item_name'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders', 'Field required'));
 		if (!isset($data['item_name'])) {
 			$data['item_name'] = Utils_RecordBrowser::$last_record['item_name'];
@@ -1529,6 +1529,14 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 				self::add_transaction($trans, $values);
 				self::add_serials($trans, $values);
 				return;
+			case 'add':
+				if ($trans['transaction_type']==2) {
+					if ($values['debit']) $values['quantity']=-$values['debit'];
+					else $values['quantity']=$values['credit'];
+					unset($values['credit']);
+					unset($values['debit']);
+				}
+				break;
 			case 'clone':
 			case 'added':
 				$net = Utils_CurrencyFieldCommon::get_values($values['net_price']);
@@ -1542,12 +1550,6 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 						$tax_rate,
 						Utils_CurrencyFieldCommon::format($new_gross[0], $new_gross[1]),
 						));
-				}
-				if ($trans['transaction_type']==2) {
-					if ($values['debit']) $values['quantity']=-$values['debit'];
-					else $values['quantity']=$values['credit'];
-					unset($values['credit']);
-					unset($values['debit']);
 				}
 				if ($trans['transaction_type']<2) {
 					Utils_RecordBrowserCommon::update_record('premium_warehouse_items', $values['item_name'], array($trans['transaction_type']==0?'last_purchase_price':'last_sale_price'=>$values['net_price']));
