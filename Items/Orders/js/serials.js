@@ -1,4 +1,4 @@
-set_serials_fields = function(qty, order_details) {
+set_serials_fields = function(qty, order_details, debit) {
 	var serial_el = $("_serial__data");
 	if (serial_el) {
 		serial_el.parentNode.style.display = "none";
@@ -28,6 +28,7 @@ set_serials_fields = function(qty, order_details) {
 			parameters:{
 				order_details: order_details,
 				serial: x-1,
+				debit: debit,
 				cid: Epesi.client_id
 			},
 			onSuccess:function(t) {
@@ -39,9 +40,15 @@ set_serials_fields = function(qty, order_details) {
 }
 
 set_serials_based_on_quantity = function(order_details) {
-	var el = $("quantity");
+	var debit = 0;
+	if ($("quantity"))
+        	var el = $("quantity");
+	else if ($("debit") && $("debit").value>0) {
+		var el = $("debit");
+		debit = 1;
+	} else var el = $("credit");
 	var val = parseInt(el.value);
-	if (val>0) set_serials_fields(val, order_details);
+	if (val>0) set_serials_fields(val, order_details, debit);
 }
 
 allowed_empty_serials = new Array();

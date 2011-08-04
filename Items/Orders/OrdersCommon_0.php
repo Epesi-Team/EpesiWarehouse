@@ -627,7 +627,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		if (isset(Utils_RecordBrowser::$last_record['quantity'])) {
 			$qty = Utils_RecordBrowser::$last_record['quantity'];
 			if ($qty<0)
-				$default = $qty;
+				$default = -$qty;
 		}
 		$form->addElement('text',$field,$label,$attrs);
 		$form->setDefaults(array($field=>$default));
@@ -665,6 +665,8 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	}
 
 	public static function QFfield_quantity(&$form, $field, $label, $mode, $default){
+		self::get_trans();
+		if (self::$trans['transaction_type']==2) return;
 		if ($mode=='add' || $mode=='edit') {
 			$form->addElement('text', $field, $label, array('id'=>$field));
 			if ($mode=='edit') $form->setDefaults(array($field=>$default));
@@ -727,16 +729,16 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		if (self::$trans['transaction_type']==2) {
 			if (!isset($data['debit'])) return true;
 			if ($data['debit']<0 ||
-				$data['credit']<0) return array('item_name'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders', 'Invallid amount'));
-			if (!$data['debit']>0 &&
-				!$data['credit']>0) return array('item_name'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders', 'Non-zero amount must be entered'));
+				$data['credit']<0) return array('debit'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders', 'Invallid amount'));
+//			if (!$data['debit']>0 &&
+//				!$data['credit']>0) return array('debit'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders', 'Non-zero amount must be entered'));
 			if ($data['debit']>0) {
 				$location_id = Utils_RecordBrowserCommon::get_records('premium_warehouse_location',array('item_sku'=>$data['item_name'],'warehouse'=>self::$trans['warehouse']));
 				$location_id = array_shift($location_id);
 				if (!isset($location_id) || !$location_id) {
-					return array('item_name'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders', 'Amount not available'));
+					return array('debit'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders', 'Amount not available'));
 				}
-				if ($data['debit']>$location_id['quantity']) return array('item_name'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders', 'Amount not available'));
+				if ($data['debit']>$location_id['quantity']) return array('debit'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders', 'Amount not available'));
 			}
 		}
 		return true;
@@ -802,7 +804,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 								$ret['tax_value'] = false;
 								$ret['gross_price'] = false;
 								$ret['gross_total'] = false;
-								$ret['quantity'] = false;
+//								$ret['quantity'] = false;
 							}
 							return $ret;
 			case 'clone':
@@ -1574,7 +1576,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			case 'edit':
 				if ($trans['transaction_type']==2) {
 					if ($values['debit']) $values['quantity']=-$values['debit'];
-					else $values['quantity']=$values['credit'];
+					elseif ($values['credit']) $values['quantity']=$values['credit'];
 					unset($values['credit']);
 					unset($values['debit']);
 				}
@@ -1653,13 +1655,14 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	
 	public static function display_serials(&$form, $field, $label, $mode, $default, $desc, $rb_obj) {
 		if ($mode=='view') {
-			eval_js('$("Utils_TabbedBrowser_div").style.display = "none"');
 			return;
 		}
 		if (isset($rb_obj->record)) $record = $rb_obj->record;
 		else $record = $rb_obj;
 		if(!isset($record['id'])) return;
 		self::$order_details_id = $record['id'];
+		$item = Utils_RecordBrowserCommon::get_record('premium_warehouse_items', $record['item_name']);
+		if ($item['item_type']!=1) return;
 
 		$trans = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $record['transaction_id']);
 		switch (true) {
@@ -1676,8 +1679,13 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			$form->addFormRule(array('Premium_Warehouse_Items_OrdersCommon','check_if_no_sold_serial_is_removed'));
 		}
 		load_js('modules/Premium/Warehouse/Items/Orders/js/serials.js');
-		eval_js('set_serials_fields(parseInt($("quantity").value),'.$record['id'].');');
-		eval_js('Event.observe("quantity","keyup",function(){set_serials_based_on_quantity('.$record['id'].')});');
+		eval_js('set_serials_based_on_quantity('.$record['id'].');');
+		if ($trans['transaction_type']!=2)
+			eval_js('Event.observe("quantity","keyup",function(){set_serials_based_on_quantity('.$record['id'].')});');
+		else {
+			eval_js('Event.observe("debit","keyup",function(){set_serials_based_on_quantity('.$record['id'].')});');
+			eval_js('Event.observe("credit","keyup",function(){set_serials_based_on_quantity('.$record['id'].')});');
+		}
 	}
 	
 	public static function autoselect_item_name_suggestbox($str, $crits, $trans) {

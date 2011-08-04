@@ -23,11 +23,12 @@ ModuleManager::load_modules();
 
 $det = json_decode($_POST['order_details']);
 $serial = json_decode($_POST['serial']);
+$debit = json_decode($_POST['debit']);
 
 $v = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders_details', $det);
 $trans = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $v['transaction_id']);
 
-if ($trans['transaction_type']==0) {
+if ($trans['transaction_type']==0 || ($trans['transaction_type']==2 && !$debit)) {
 	$serial_html = '<input type="text" name="serial_'.$serial.'" ';
 	$note_html = '<input type="text" name="note_'.$serial.'" ';
 	$shelf_html = '<input type="text" name="shelf_'.$serial.'" ';
@@ -46,7 +47,7 @@ if ($trans['transaction_type']==0) {
 }
 
 
-if ($trans['transaction_type']==1 || $trans['transaction_type']==4) {
+if ($trans['transaction_type']==1 || $trans['transaction_type']==4 || ($trans['transaction_type']==2 && $debit)) {
 	$loc_id = Utils_RecordBrowserCommon::get_id('premium_warehouse_location', array('item_sku', 'warehouse'), array($v['item_name'], $trans['warehouse']));
 	if (!$loc_id) return;
 	$selected_serials = DB::GetAssoc('SELECT s.id, s.serial FROM premium_warehouse_location_orders_serial os LEFT JOIN premium_warehouse_location_serial s ON s.id=os.serial_id WHERE os.order_details_id=%d ORDER BY s.location_id ASC, s.id ASC', array($det));
