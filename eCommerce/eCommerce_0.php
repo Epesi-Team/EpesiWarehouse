@@ -1273,7 +1273,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 										array('field'=>'warehouse', 'width'=>10)
 									),
 									$crits,
-									array('transaction_date'=>'DESC','id'=>'DESC'),
+									array('transaction_date'=>'DESC'),
 									array('Premium_Warehouse_eCommerceCommon','applet_info_format'),
 									15,
 									$conf,
