@@ -249,6 +249,8 @@ if( isset( $iContent ) && is_numeric( $iContent ) ){
             $sOrderError = $oTpl->tbHtml( 'messages.tpl', 'PROMOTION_INVALID' );          
           } elseif( $checkFieldsRet1 === 'password_mismatch' ){
             $sOrderError = $oTpl->tbHtml( 'messages.tpl', 'PASSWORD_MISMATCH' );          
+          } elseif( $checkFieldsRet1 === 'password_invalid' ){
+            $sOrderError = $oTpl->tbHtml( 'messages.tpl', 'PASSWORD_INVALID_ORDER' );          
           } elseif( $checkFieldsRet1 === 'basket_empty' ){
             $ppid = $config['basket_page'];
             if(isset($_REQUEST['ajax']))
@@ -289,6 +291,8 @@ if( isset( $iContent ) && is_numeric( $iContent ) ){
             $sOrderError = $oTpl->tbHtml( 'messages.tpl', 'PROMOTION_INVALID' );          
           } elseif( $checkFieldsRet1 === 'password_mismatch' ){
             $sOrderError = $oTpl->tbHtml( 'messages.tpl', 'PASSWORD_MISMATCH' );          
+          } elseif( $checkFieldsRet1 === 'password_invalid' ){
+            $sOrderError = $oTpl->tbHtml( 'messages.tpl', 'PASSWORD_INVALID_ORDER' );          
           } elseif( $checkFieldsRet1 === 'basket_empty' ){
             $ppid = $config['basket_page'];
             if(isset($_REQUEST['ajax']))
@@ -369,8 +373,8 @@ if( isset( $iContent ) && is_numeric( $iContent ) ){
     	    $addressesList .= '<option value="'.$id.'" '.($id=='default'?'selected':'').'>'.$addr['sFirstName'].' '.$addr['sLastName'].($addr['sCompanyName']?', '.$addr['sCompanyName']:'').($addr['sStreet']?', '.$addr['sStreet']:'').($addr['sCity']?', '.$addr['sCity']:'').($addr['sZipCode']?', '.$addr['sZipCode']:'').'</option>';
     	  }
    	      $addressesList .= '<option value="new">-- '.$GLOBALS['lang']['New_address'].' --</option>';
-   	      $addresses['new'] = array('sFirstName'=>'','sLastName'=>'','sCompanyName'=>'','sStreet'=>'','sCity'=>'','sCountry'=>'','sZipCode'=>'');
-	      $addressesList .= '</select><script type="text/javascript">var addressesList='.json_encode($addresses).';function changeAddr(val){var a=addressesList[val];for(p in a){document.forms["orderForm"].elements[p].value=a[p]}}</script>';
+   	      $addresses['new'] = array('sFirstName'=>'','sLastName'=>'','sCompanyName'=>'','sStreet'=>'','sCity'=>'','sCountry'=>'','sZipCode'=>'','sPhone'=>'');
+	      $addressesList .= '</select><script type="text/javascript">addressesList='.json_encode($addresses).';</script>';
 	      $oTpl->setVariables('addressesList',$addressesList);
 	  }
 	  
