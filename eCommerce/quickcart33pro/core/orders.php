@@ -410,15 +410,38 @@ class Orders
     	$company = $_SESSION['company'];
     	global $aUser;
     	$colst = array('contact'=>array('email'=>'sEmail', 'last_name'=>'sLastName', 'first_name'=>'sFirstName', 'address_1'=>'sStreet', 'postal_code'=>'sZipCode', 'city'=>'sCity', 'country'=>'sCountry', 'zone'=>'sState', 'work_phone'=>'sPhone'));
-    	if($company!==null)
-    		$colst['company']=array('email'=>'sEmail', 'company_name'=>'sCompanyName', 'tax_id'=>'sNip', 'address_1'=>'sStreet', 'postal_code'=>'sZipCode', 'city'=>'sCity', 'country'=>'sCountry', 'zone'=>'sState', 'phone'=>'sPhone');
+	$colst['company']=array('email'=>'sEmail', 'company_name'=>'sCompanyName', 'tax_id'=>'sNip', 'address_1'=>'sStreet', 'postal_code'=>'sZipCode', 'city'=>'sCity', 'country'=>'sCountry', 'zone'=>'sState', 'phone'=>'sPhone');
+    	if($company==null && $aForm['sCompanyName']) {
+		$company = DB::GetOne('SELECT id FROM company_data_1 WHERE f_email=%s AND active=1',array($aForm['sEmail']));
+    		if(!$company) {
+		    	DB::Execute('INSERT INTO company_data_1(created_on,f_company_name,f_tax_id,f_address_1,f_postal_code,f_city,f_country,f_zone,f_phone,f_email,f_group,f_permission) VALUES (%T,%s,%s,%s,%s,%s,%s,%s,%s,%s,\'__customer__\',0)',
+					array($t,$aForm['sCompanyName'],$aForm['sNip'],$aForm['sStreet'],$aForm['sZipCode'],$aForm['sCity'],$aForm['sCountry'],$aForm['sState'],$aForm['sPhone'],$aForm['sEmail']));
+			$company = DB::Insert_ID('company_data_1','id');
+		}
+    	}
+
+	if($company) {
+	    	$companies = DB::GetRow('SELECT f_company_name as main,f_related_companies as related FROM contact_data_1 WHERE id=%d',array($contact));
+	    	if(strstr($companies['related'],'__'.$company.'__')===false && $companies['main']!=$company) {
+	    		if($companies['main']) {
+		    		if($companies['related']) $related = $companies['related'].$company.'__';
+		    		else $related = '__'.$company.'__';
+	    			DB::Execute('UPDATE contact_data_1 SET f_related_companies=%s WHERE id=%d',array($related,$contact));
+    				DB::Execute('INSERT INTO contact_edit_history_data(edit_id, field, old_value) VALUES (%d,%s,%s)', array($contact, 'related_companies', $companies['related']));
+	    		} else {
+	    			DB::Execute('UPDATE contact_data_1 SET f_company_name=%s WHERE id=%d',array($company,$contact));
+    				DB::Execute('INSERT INTO contact_edit_history_data(edit_id, field, old_value) VALUES (%d,%s,%s)', array($contact, 'company_name', $companies['main']));
+    			}
+	    	}
+	}
+    	
     	$insert_multipleaddress=false;
 	    foreach($colst as $tab=>$cols) {    			
 	    	$modified = false;
     		foreach($cols as $epesi=>$local)
     			if($aUser[$local]!=$aForm[$local]) {
     				$modified = true;
-    				if(in_array($epesi,array('last_name','first_name','address_1','postal_code','city','country','company_name')))
+    				if(in_array($epesi,array('last_name','first_name','address_1','postal_code','city','country','company_name')) && $tab=='contact')
         				$insert_multipleaddress = true;
 	    			break;
     			}
@@ -450,11 +473,14 @@ class Orders
 	    	$companies = DB::GetRow('SELECT f_company_name as main,f_related_companies as related FROM contact_data_1 WHERE id=%d',array($contact));
 	    	if(strstr($companies['related'],'__'.$company.'__')===false && $companies['main']!=$company) {
 	    		if($companies['main']) {
-		    		if($companies['related']) $companies['related'] .= $company.'__';
-		    		else $companies['related'] = '__'.$company.'__';
-	    			DB::Execute('UPDATE contact_data_1 SET f_related_companies=%s WHERE id=%d',array($companies['related'],$contact));
-	    		} else
-	    			DB::Execute('UPDATE contact_data_1 SET f_company_name=%s WHERE id=%d',array($companies['main'],$contact));
+		    		if($companies['related']) $related = $companies['related'].$company.'__';
+		    		else $related = '__'.$company.'__';
+	    			DB::Execute('UPDATE contact_data_1 SET f_related_companies=%s WHERE id=%d',array($related,$contact));
+    				DB::Execute('INSERT INTO contact_edit_history_data(edit_id, field, old_value) VALUES (%d,%s,%s)', array($contact, 'related_companies', $companies['related']));
+	    		} else{
+	    			DB::Execute('UPDATE contact_data_1 SET f_company_name=%s WHERE id=%d',array($company,$contact));
+    				DB::Execute('INSERT INTO contact_edit_history_data(edit_id, field, old_value) VALUES (%d,%s,%s)', array($contact, 'company_name', $companies['main']));
+	    		}
 	    	}
     	}
         //add user
