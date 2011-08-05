@@ -23,13 +23,15 @@ class Premium_Warehouse_InvoiceCommon extends ModuleCommon {
 			if (!$record['invoice_number'] && $record['transaction_type']==1) {
 				$href .= ' '.Utils_TooltipCommon::open_tag_attrs(Base_LangCommon::ts('Premium_Warehouse_Invoice','Number is not defined<br>It will be assigned automatically upon print'), false);
 			}
-			Base_ActionBarCommon::add('print', 'Print Invoice', $href);
+			if (!$record['receipt']) Base_ActionBarCommon::add('print', 'Print Invoice', $href);
 
 			if(isset($_GET['receipt_printed']) && $_GET['receipt_printed']==$record['id']) {
 				Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $record['id'], array('invoice_print_date'=>date('Y-m-d')));
 			} elseif(defined('ENABLE_RECEIPT_PRINTING') && ENABLE_RECEIPT_PRINTING) {
 				load_js('modules/Premium/Warehouse/Invoice/receipt.js');
 				Base_ActionBarCommon::add('print', 'Print Receipt', 'onClick="print_receipt('.$record['id'].')" href="javascript:void(0)"');
+			} elseif ($record['receipt']) {
+				Base_ActionBarCommon::add('print', 'Print Receipt', $href);
 			}
 		}
 		return array('show'=>false);
