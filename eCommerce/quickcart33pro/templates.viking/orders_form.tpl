@@ -54,6 +54,7 @@
             <input type="checkbox" name="iInvoice" value="1" id="oInvoice" />
             <label for="oInvoice">$lang[Invoice_info]</label>
           </div>-->
+	  <input type="hidden" name="iInvoice" value="1" id="oInvoice" />
           <div id="street">
             <label for="oStreet">$lang[Street]&nbsp;<span style="color:#ED1C24">*</span></label>
             <input type="text" name="sStreet" value="$aUser[sStreet]" maxlength="40" class="input" onblur="saveUserData( this.name, this.value )" id="oStreet" alt="simple" />
@@ -213,6 +214,7 @@ AddOnload( initOrderForm );
             <input type="checkbox" name="iInvoice" value="1" id="oInvoice" />
             <label for="oInvoice">$lang[Invoice_info]</label>
           </div>-->
+	  <input type="hidden" name="iInvoice" value="1" id="oInvoice" />
           <div id="street">
             <label for="oStreet">$lang[Street]&nbsp;<span style="color:#ED1C24">*</span></label>
             <input type="text" name="sStreet" value="$aUser[sStreet]" maxlength="40" class="input" onblur="saveUserData( this.name, this.value )" id="oStreet" alt="simple" />
