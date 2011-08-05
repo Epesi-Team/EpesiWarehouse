@@ -67,6 +67,7 @@ a:hover {
 
 #container{position:relative;width:100%;margin:0 auto;padding:0;}
 #head1, #head2, #head3, #body, #foot{float:left;width:100%;margin:0 auto;padding:0;}
+#head1 {height: 100px;}
 
 .container {
   width: 980px;

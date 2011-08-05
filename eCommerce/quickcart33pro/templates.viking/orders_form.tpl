@@ -1,6 +1,6 @@
 <!-- BEGIN ORDER_NEW_ACCOUNT -->
     <fieldset id="personalDataBlock">
-      <legend>$lang[Create_account] <input type="checkbox" onChange="if(this.checked)Element.show('new_account_block'); else Element.hide('new_account_block');" id="new_account_checkbox" /></legend>
+      <legend>$lang[Create_account] <input type="checkbox" onChange="if(this.checked)Element.show('new_account_block'); else{Element.hide('new_account_block');$('oPassword').value='';$('oPassword2').value='';}" id="new_account_checkbox" /></legend>
       <span id="new_account_block" style="display:none">
       <fieldset id="personalData">
         <fieldset id="setBasic">
@@ -28,6 +28,7 @@
 <!-- BEGIN ORDER_FORM -->
 <script type="text/javascript" src="$config[dir_core]checkForm.js"></script>
 <div id="order">
+  <a name="orderFormAnchor"></a>
   <form action="$aData[sLinkName]" method="post" onsubmit="return checkForm( this )" id="orderForm">
     <fieldset id="personalDataBlock">
       <legend style="width:100%"><span style="float:right;color:#ED1C24">*&nbsp;Required fields</span>$lang[Your_personal_information]</legend>
