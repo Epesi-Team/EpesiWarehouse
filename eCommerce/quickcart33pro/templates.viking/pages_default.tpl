@@ -332,16 +332,19 @@
 </ul>
 <!-- END PRODUCTS_FOOT -->
 <!-- BEGIN PRODUCTS_GALLERY_LIST -->
-<!-- Old version --><!-- <td style="width:$aData[iWidth]%;">$aData[sImage]<h4><a href="$aData[sLinkName]">$aData[sName]</a></h4>$aData[sBasket]$aData[sPrice]</td> -->
-<td class="gallery">$aData[sImage]<h4><a href="$aData[sLinkName]">$aData[sName]</a></h4>$aData[sBasket]$aData[sPrice]<small><i>SKU:</i> $aData[sSku]</small></td>
+<li class="l$aData[sStyle] i$aData[iStyle]"><h2><a href="$aData[sLinkName]">$aData[sRecommended]$aData[sName]</a></h2>$aData[sImage]$aData[sDescriptionShort]$aData[sPrice]<div style="float:right;color:#555;"><b>SKU:</b> $aData[sSku]</div>$aData[sBasket]<h3>$aData[sPages]</h3></li>
 <!-- END PRODUCTS_GALLERY_LIST -->
-<!-- BEGIN PRODUCTS_GALLERY_BREAK --></tr><tr><!-- END PRODUCTS_GALLERY_BREAK -->
-<!-- BEGIN PRODUCTS_GALLERY_BLANK --><td>&nbsp;</td><!-- END PRODUCTS_GALLERY_BLANK -->
+<!-- BEGIN PRODUCTS_GALLERY_BREAK --><!-- END PRODUCTS_GALLERY_BREAK -->
+<!-- BEGIN PRODUCTS_GALLERY_BLANK --><!-- END PRODUCTS_GALLERY_BLANK -->
 <!-- BEGIN PRODUCTS_GALLERY_HEAD -->
 $aData['manufacturers']
-<table id="subpagesGallery" cellspacing="0"><tr>
+<ul id="products" class="productsList1">
+<li class="pages$aData[sHidePages]" id="pagesBefore"><a href="$_SERVER[REQUEST_URI]$config[search_amp]bViewAll=true">$lang['View_all']</a> | $lang[Pages]: $aData[sPages]</li>
 <!-- END PRODUCTS_GALLERY_HEAD -->
-<!-- BEGIN PRODUCTS_GALLERY_FOOT --></tr></table><!-- END PRODUCTS_GALLERY_FOOT -->
+<!-- BEGIN PRODUCTS_GALLERY_FOOT -->
+<li class="pages$aData[sHidePages]" id="pagesAfter"><a href="$_SERVER[REQUEST_URI]$config[search_amp]bViewAll=true">$lang['View_all']</a> | $lang[Pages]: $aData[sPages]</li>
+</ul>
+<!-- END PRODUCTS_GALLERY_FOOT -->
 
 <!-- BEGIN PRODUCTS_MANUFACTURERS -->
   <form action="$sLinkName" method="post">

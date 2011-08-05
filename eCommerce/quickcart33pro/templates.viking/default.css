@@ -516,7 +516,8 @@ float:left;
 
 #products li .price, #products li .noPrice {
   float: right;
-  margin: 14px 0 5px 0;
+  clear:right;
+  margin: 10px 0 5px 0;
   background-color: inherit;
   color: #ed1c24;
   text-decoration: none;
