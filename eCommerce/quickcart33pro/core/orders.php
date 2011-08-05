@@ -237,6 +237,24 @@ class Orders
     if($aForm['sPassword']) {
     	if($aForm['sPassword']!=$aForm['sPassword2'])
 	    	return 'password_mismatch';
+    	$contact = DB::GetOne('SELECT id FROM contact_data_1 WHERE f_email=%s AND active=1',array($aForm['sEmail']));
+    	if($contact) {
+		$mdpass = md5($aForm['sPassword']);
+	    	$oldpass = DB::GetOne('SELECT f_password FROM premium_ecommerce_users_data_1 WHERE f_contact=%d',array($contact));
+		if($oldpass) {
+			if(strlen($oldpass)==35) { //OS Commerce
+    			    $stack = explode(':', $oldpass);
+	                    if (sizeof($stack) == 2) {
+        		        if (md5($stack[1] . $aForm['sPassword']) == $stack[0]) {
+                    		    $oldpass = $mdpass;
+	                        }
+        		    }
+    			}
+    			if($oldpass != $mdpass) {
+    				return 'password_invalid';
+    			}
+    		}
+    	}
     }
 
     $qty = DB::GetAssoc('SELECT product,quantity FROM premium_ecommerce_orders_temp WHERE customer=%s',array($_SESSION['iCustomer'.LANGUAGE]));

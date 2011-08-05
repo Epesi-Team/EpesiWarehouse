@@ -139,7 +139,7 @@ class Users
   function throwAddresses() {
     if(!self::logged()) return null;
     global $aUser;
-    $ret = array('default'=>array('sLastName'=>$aUser['sLastName'],'sFirstName'=>$aUser['sFirstName'],'sCompanyName'=>$aUser['sCompanyName'],'sStreet'=>$aUser['sStreet'],'sCity'=>$aUser['sCity'],'sCountry'=>$aUser['sCountry'],'sZipCode'=>$aUser['sZipCode']));
+    $ret = array('default'=>array('sLastName'=>$aUser['sLastName'],'sFirstName'=>$aUser['sFirstName'],'sCompanyName'=>$aUser['sCompanyName'],'sStreet'=>$aUser['sStreet'],'sCity'=>$aUser['sCity'],'sCountry'=>$aUser['sCountry'],'sState'=>$aUser['sState'],'sZipCode'=>$aUser['sZipCode'],'sPhone'=>$aUser['sPhone']));
     $a = DB::Execute('SELECT * from premium_multiple_addresses_data_1 WHERE f_record_type="contact" and f_record_id=%d ORDER BY id DESC',array($_SESSION['contact']));
     while($row = $a->FetchRow()) {
         $ret[$row['id']] = array('sLastName'=>$row['f_last_name'],'sFirstName'=>$row['f_first_name'],'sCompanyName'=>$row['f_company_name'],'sStreet'=>$row['f_address_1'],'sCity'=>$row['f_city'],'sCountry'=>$row['f_country'],'sZipCode'=>$row['f_postal_code']);
