@@ -65,3 +65,13 @@ function loadStates(l,pre) {
 	    elSel.options[i++] = new Option(states[l][k],k);
 	}
 }
+
+var addressesList={};
+function changeAddr(val){
+    var a=addressesList[val];
+    for(p in a){
+	document.forms["orderForm"].elements[p].value=a[p];
+    }
+    loadStates(a['sCountry'],'');
+    document.forms["orderForm"].elements['sState'].value=a['sState'];
+}

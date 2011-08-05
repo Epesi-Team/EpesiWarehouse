@@ -92,6 +92,15 @@
   </h3>
 </div>
 <!-- END PASSWORD_INVALID -->
+<!-- BEGIN PASSWORD_INVALID_ORDER -->
+<div class="message" id="error">
+  <h3>
+    $lang['Password_invalid']<br />
+  </h3>
+    <a href="index.php?forgot-password,59">$lang['Remind_password']</a><br />
+    <a href="javascript:void(0);" onClick="$('oPassword2').value='';$('oPassword').value='';$('new_account_checkbox').checked=0;var f=$('orderForm');if(checkForm(f))f.submit();">Order without loggin in</a>
+</div>
+<!-- END PASSWORD_INVALID_ORDER -->
 <!-- BEGIN EMAIL_INVALID -->
 <div class="message" id="error">
   <h3>

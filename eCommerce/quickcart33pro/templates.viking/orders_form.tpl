@@ -1,23 +1,29 @@
 <!-- BEGIN ORDER_NEW_ACCOUNT -->
     <fieldset id="personalDataBlock">
-      <legend>$lang[Create_account] <input type="checkbox" onChange="if(this.checked)Element.show('new_account_block'); else Element.hide('new_account_block');" /></legend>
+      <legend>$lang[Create_account] <input type="checkbox" onChange="if(this.checked)Element.show('new_account_block'); else Element.hide('new_account_block');" id="new_account_checkbox" /></legend>
       <span id="new_account_block" style="display:none">
       <fieldset id="personalData">
         <fieldset id="setBasic">
           <div id="password1">
             <label for="oPassword">$lang[Password_new_user]</label>
-            <input type="password" name="sPassword" value="" maxlength="100" class="input" onblur="saveUserData( this.name, this.value )" id="oPassword" alt="txt;4;$lang[Password_too_short];if"/>
+            <input type="password" name="sPassword" value="$aUser[sPassword]" maxlength="100" class="input" onblur="saveUserData( this.name, this.value )" id="oPassword" alt="txt;4;$lang[Password_too_short];if"/>
           </div>
         </fieldset>
         <fieldset id="setExtend">
           <div id="password2">
             <label for="oPassword2">$lang[Password_confirmation]</label>
-            <input type="password" name="sPassword2" value="" maxlength="100" class="input" onblur="saveUserData( this.name, this.value )" id="oPassword2" alt="txtValue;#oPassword;$lang[Password_mismatch]" />
+            <input type="password" name="sPassword2" value="$aUser[sPassword2]" maxlength="100" class="input" onblur="saveUserData( this.name, this.value )" id="oPassword2" alt="txtValue;#oPassword;$lang[Password_mismatch]" />
           </div>
         </fieldset>
       </fieldset>
       </span>
     </fieldset>
+    <script type="text/javascript">
+	if("$aUser[sPassword]" != "") {
+		Element.show('new_account_block');
+		$('new_account_checkbox').checked=1;
+	}
+    </script>
 <!-- END ORDER_NEW_ACCOUNT -->
 <!-- BEGIN ORDER_FORM -->
 <script type="text/javascript" src="$config[dir_core]checkForm.js"></script>
@@ -317,7 +323,11 @@ function initOrderForm() {
         Element.show('shipping_address_block');
     }
     states = $statesJS;
+    if("$aUser[sCountry]"!="")
+	document.getElementById('oCountry').value = "$aUser[sCountry]";
     loadStates(document.getElementById('oCountry').value,'');
+    if("$aUser[sState]"!="")
+	document.getElementById('oState').value = "$aUser[sState]";
     loadStates(document.getElementById('oShippingCountry').value,'Shipping');
 }
 
