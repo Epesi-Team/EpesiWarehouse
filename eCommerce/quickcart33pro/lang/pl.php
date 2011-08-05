@@ -373,4 +373,5 @@ $lang['Continue_shopping'] = 'Kontynuuj zakupy';
 $lang['Delivery_cost_starts_at'] = "Dostawa od";
 $lang['More_products'] = 'Pokaż więcej produktów...';
 $lang['Different_shipping_address'] = 'Podaj inny adres dostawy';
+$lang['State'] = 'Województwo';
 ?>
