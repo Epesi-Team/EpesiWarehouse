@@ -497,7 +497,7 @@ float:left;
   color: #ed1c24;
 }
 
-#products li h3{padding:2px 8px 7px;font-weight:normal;font-size:0.917em;}
+#products li h3{padding:2px 8px 7px;font-weight:normal;font-size:0.917em;clear:both;}
 
 #products li h3, #products li h3 a {
   background: inherit;
@@ -533,7 +533,7 @@ float:left;
 #products li .price strong{font:bold 1.333em Verdana, sans-serif;}
 #products li .noPrice strong{font:bold 1.083em Verdana, sans-serif;}
 #products li .price span{padding-left:4px;font:bold 1em sans-serif;}
-#products li .basket{clear:left;float:right;margin:12px 0 5px 20px;font-size:0.917em;font-weight:bold;}
+#products li .basket{float:right;margin:12px 0 5px 20px;font-size:0.917em;font-weight:bold;}
 
 #products li .basket a {
   display: block;
@@ -561,7 +561,7 @@ float:left;
 
 #products.productsList1 li {
   clear: none;
-  width: 49%;
+  width: 47%;
   padding: 0 0 15px;
   border-bottom: 0px;
   border-top: 1px solid #c0d4eb;
