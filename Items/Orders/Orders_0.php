@@ -979,15 +979,20 @@ class Premium_Warehouse_Items_Orders extends Module {
 						if ($v['login']==Acl::get_user()) $my_id = $v['id'];
 						$emps[$v['id']] = CRM_ContactsCommon::contact_format_no_company($v,true);
 					}
+					$ship_type = array(''=>'---')+Utils_CommonDataCommon::get_array('Premium_Items_Orders_Shipment_Types');
+					$ship_received->addElement('select', 'shipment_type', $this->t('Shipment - type'), $ship_type);
 					$ship_received->addElement('datepicker', 'shipment_date', $this->t('Shipment - send date'));
 					$ship_received->addElement('select', 'shipment_employee', $this->t('Shipment - sent by'), $emps);
 					$ship_received->addElement('datepicker', 'shipment_eta', $this->t('Shipment - ETA'));
 					$ship_received->addElement('text', 'shipment_no', $this->t('Shipment No.'));
 					$ship_received->addElement('text', 'tracking_info', $this->t('Tracking Info'));
-					if (!isset($trans['shipment_date']) || !$trans['shipment_date']) $trans['shipment_date'] = date('Y-m-d');
-					if (!isset($trans['shipment_employee']) || !$trans['shipment_employee']) $trans['shipment_employee'] = $my_id;
-					if (!isset($trans['shipment_eta']) || !$trans['shipment_eta']) $trans['shipment_eta'] = date('Y-m-d',time()+3600*36);
-					$ship_received->setDefaults(array('shipment_date'=>$trans['shipment_date'], 'shipment_employee'=>$trans['shipment_employee'], 'shipment_eta'=>$trans['shipment_eta'], 'shipment_no'=>$trans['shipment_no'], 'tracking_info'=>$trans['tracking_info']));
+					//if (!isset($trans['shipment_date']) || !$trans['shipment_date']) 
+						$trans['shipment_date'] = date('Y-m-d');
+					//if (!isset($trans['shipment_employee']) || !$trans['shipment_employee']) 
+						$trans['shipment_employee'] = $my_id;
+					//if (!isset($trans['shipment_eta']) || !$trans['shipment_eta']) 
+						$trans['shipment_eta'] = date('Y-m-d',time()+3600*36);
+					$ship_received->setDefaults(array('shipment_date'=>$trans['shipment_date'], 'shipment_employee'=>$trans['shipment_employee'], 'shipment_eta'=>$trans['shipment_eta'], 'shipment_no'=>$trans['shipment_no'], 'tracking_info'=>$trans['tracking_info'], 'shipment_type'=>$trans['shipment_type']));
 
 					$lp->add_option('pickup', $this->t('Pickup'), null, null);
 					$lp->add_option('ship', $this->t('Ship'), null, $ship_received);
