@@ -488,7 +488,7 @@ function pickupShopCheck(e) {
 <tr><td><input type="radio" name="iPickupShop" value="$aData[iShop]" onChange="saveUserData( this.name, this.value )" />$aData[sName]</td></tr>
 <!-- END ORDER_PICKUP_SHOP_LIST -->
 <!-- BEGIN ORDER_PAYMENT_CARRIERS_LIST -->
-<td><input type="radio" name="sPaymentCarrier" value="$aData[iCarrier];$aData[iPayment];$aData[fPaymentCarrierPrice]" alt="radio;$lang['Select_delivery_and_payment']" onChange="countCarrierPrice( this );saveUserData( this.name, this.value );if(typeof pickupShopCheck != 'undefined')pickupShopCheck(this)" checked />$aData[sPaymentCarrierPrice]</td>
+<td><input type="radio" name="sPaymentCarrier" value="$aData[iCarrier];$aData[iPayment];$aData[fPaymentCarrierPrice]" alt="radio;$lang['Select_delivery_and_payment']" onChange="countCarrierPrice( this );saveUserData( this.name, this.value );if(typeof pickupShopCheck != 'undefined')pickupShopCheck(this)" />$aData[sPaymentCarrierPrice]</td>
 <!-- END ORDER_PAYMENT_CARRIERS_LIST -->
 <!-- BEGIN ORDER_PAYMENT_CARRIERS_EMPTY -->
 <td>&nbsp;</td>
@@ -506,6 +506,19 @@ function pickupShopCheck(e) {
 <!-- BEGIN ORDER_PAYMENT_CARRIERS_FOOT -->
   </tbody>
 </table>
+<script type="text/javascript">
+  function setCarrier() {
+    var l = $('orderForm').elements['sPaymentCarrier'];
+    if(typeof l.length != "undefined" && l.length>0)
+	l = l[0];
+    if(typeof l != "undefined") {
+	l.checked = 1;
+	countCarrierPrice( l );
+	if(typeof pickupShopCheck != 'undefined')pickupShopCheck(l);
+    }
+  }
+  AddOnload(setCarrier);
+</script>
 <!-- END ORDER_PAYMENT_CARRIERS_FOOT -->
 <!-- BEGIN PAYMENT_CHANNEL -->
 <div id="paymentChannel">

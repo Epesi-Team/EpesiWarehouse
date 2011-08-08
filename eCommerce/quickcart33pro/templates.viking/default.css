@@ -857,6 +857,26 @@ div#payment {
     color: #ED1C24;
 }
 
+#payment .required_note {
+    position:absolute;
+    display:block;
+    top: 150px;
+    right: 60px;
+    color: #ED1C24;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+#payment .required_note_star {
+    position:absolute;
+    display:block;
+    top: 150px;
+    right: 230px;
+    color: #ED1C24;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
 
 #order #personalData #setBasic, #order #personalData #setExtend{float:left;width:33%;}
 #order #personalData #setBasic div, #order #personalData #setExtend div{clear:both;}
