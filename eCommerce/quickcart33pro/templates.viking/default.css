@@ -19,7 +19,7 @@ body {
   text-align:center;
 }
 
-.input, select, textarea {
+.input, select, textarea, #payment input {
   padding: 2px;
   border: 1px solid #8EB2DC;
   font: 1em Arial, sans-serif;
@@ -825,6 +825,36 @@ float:left;
   border-bottom: 2px solid #c0d4eb;
   background: #e9f0f8;
   color: #555555;
+}
+
+div#payment {
+  padding: 12px 3%;
+  border-top: 2px solid #c0d4eb;
+  border-bottom: 2px solid #c0d4eb;
+  background: #e9f0f8;
+  color: #555555;
+  text-align:Center;
+  font-size: 1.3em;
+}
+
+#payment table {
+  color: #555555;  
+  margin: 0px auto;
+}
+
+#payment input[type=submit],
+#payment input[type=button] {
+  background: none repeat scroll 0 0 #C0D4EB;
+  border: 1px solid #1D64B8;
+  color: #1D64B8;
+  font-size: 1.083em;
+  font-weight: bold;
+  padding: 1px 9px;
+}
+#payment input[type=submit]:hover, 
+#payment input[type=button]:hover {
+    border-color: #ED1C24;
+    color: #ED1C24;
 }
 
 
