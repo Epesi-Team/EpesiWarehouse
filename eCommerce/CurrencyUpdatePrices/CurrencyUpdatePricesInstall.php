@@ -13,10 +13,13 @@ defined("_VALID_ACCESS") || die('Direct access forbidden');
 class Premium_Warehouse_eCommerce_CurrencyUpdatePricesInstall extends ModuleInstall {
 
 	public function install() {
+		Utils_RecordBrowserCommon::new_record_field('premium_ecommerce_prices',array('name'=>'Auto update',	'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>true));
 		return true;
 	}
 	
 	public function uninstall() {
+		Utils_RecordBrowserCommon::delete_record_field('premium_ecommerce_prices','Autoupdate');
+	    Variable::delete('ecommerce_price_updater');
 		return true;
 	}
 	

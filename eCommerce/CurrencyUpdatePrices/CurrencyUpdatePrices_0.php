@@ -37,12 +37,12 @@ class Premium_Warehouse_eCommerce_CurrencyUpdatePrices extends Module {
 		$currencies = DB::GetAssoc('SELECT code, code FROM utils_currency WHERE active=1');
 		$form->addElement('multiselect','currencies',$this->t('Currencies'),$currencies);
 		$form->addRule('currencies',$this->t('Field required'),'required');
-		$form->addElement('select','tax',$this->t('Tax'),Data_TaxRatesCommon::get_tax_rates());
-		$form->addRule('tax',$this->t('Field required'),'required');
 		
-		
-		
-		$form->setDefaults(array('profit'=>5));
+		$def = Variable::get('ecommerce_price_updater',false);
+		if($def && $def = @unserialize($def)) 
+		    $form->setDefaults($def);
+		else 
+		    $form->setDefaults(array('profit'=>5));
 		
 		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
 		Base_ActionBarCommon::add('save', 'Update', $form->get_submit_form_href());
@@ -57,52 +57,14 @@ class Premium_Warehouse_eCommerce_CurrencyUpdatePrices extends Module {
     }
     
     public function submit_admin($data) {
-        set_time_limit(0);
-        $ret = @simplexml_load_file('http://www.ecb.int/stats/eurofxref/eurofxref-daily.xml');
-        if(!$ret) {
+        if(!Premium_Warehouse_eCommerce_CurrencyUpdatePricesCommon::update($data)) {
             Epesi::alert($this->t('Unable to get currency exchange rates'));
             return false;
         }
-		$currencies = DB::GetAssoc('SELECT code,id FROM utils_currency WHERE active=1');
-		$rates = array();
-		if(isset($currencies['EUR']))
-		    $rates[$currencies['EUR']]=1;
-		foreach($ret->Cube->Cube->Cube as $r) {
-		    if(isset($currencies[(String)$r['currency']])) {
-        		    $rates[$currencies[(String)$r['currency']]] = (String)$r['rate'];
-    		}
-		}
-		$currencies_to_conv = array();
-		foreach($data['currencies'] as $r) {
-		    if(isset($currencies[$r]))
-    		    $currencies_to_conv[] = $currencies[$r];
-		}
-		$recs = Utils_RecordBrowserCommon::get_records('premium_warehouse_items',array(),array('net_price'));
-		foreach($recs as $r) {
-		    list($value,$curr) = Utils_CurrencyFieldCommon::get_values($r['net_price']);
-		    if(is_numeric($value) && $value>0) {
-		        $euro = $value*(100+Data_TaxRatesCommon::get_tax_rate($data['tax']))/(100*$rates[$curr]);
-		        $euro += $euro*$data['profit']/100;
-		        foreach($currencies_to_conv as $curr) {
-		            $price = $euro*$rates[$curr];
-		            $to_up = Utils_RecordBrowserCommon::get_records('premium_ecommerce_prices',array('item_name'=>$r['id'],'currency'=>$curr),array());
-		            if($to_up) {
-		        	$to_up = array_shift($to_up);
-		                Utils_RecordBrowserCommon::update_record('premium_ecommerce_prices',$to_up['id'],array('gross_price'=>$price,'tax_rate'=>$data['tax']));
-		            } else {
-		                Utils_RecordBrowserCommon::new_record('premium_ecommerce_prices',array('currency'=>$curr,'item_name'=>$r['id'],'gross_price'=>$price,'tax_rate'=>$data['tax']));
-		            }
-		        }
-		    } else {
-		        $to_del = Utils_RecordBrowserCommon::get_records('premium_ecommerce_prices',array('item_name'=>$r['id']),array());
-		        foreach($to_del as $del)
-		            Utils_RecordBrowserCommon::delete_record('premium_ecommerce_prices',$del['id']);
-		    }
-		}
+	    Variable::set('ecommerce_price_updater',serialize($data));
 		Epesi::alert('Prices updated');
 	    return true;
 	}
-
 }
 
 ?>
