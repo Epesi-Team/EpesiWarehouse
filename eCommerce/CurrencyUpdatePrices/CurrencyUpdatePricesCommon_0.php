@@ -52,24 +52,27 @@ class Premium_Warehouse_eCommerce_CurrencyUpdatePricesCommon extends ModuleCommo
 		        (($location && Premium_Warehouse_Items_LocationCommon::get_item_quantity_in_warehouse($r['id'])==0) || 
 		        (!$location && $r['quantity_on_hand']==0))) {
 		        $ff = DB::GetRow('SELECT price,price_currency FROM premium_warehouse_wholesale_items WHERE item_id=%d AND quantity>0',array($r['id']));
+		        if($ff) {
 		        $value = $ff['price'];
 		        $curr = $ff['price_currency'];
 				$profit = $value*$autoprice_percentage/100;
-				if($profit<$autoprice_minimal) $profit = $minimal;
+				if($profit<$autoprice_minimal) $profit = $autoprice_minimal;
 				$value += $profit;
+			}
 		    }
 		    if(is_numeric($value) && $value>0) {
-		        $euro = $value*(100+Data_TaxRatesCommon::get_tax_rate($data['tax']))/(100*$rates[$curr]);
+		        $euro = $value*(100+Data_TaxRatesCommon::get_tax_rate($r['tax_rate']))/(100*$rates[$curr]);
 		        $euro += $euro*$data['profit']/100;
-		        foreach($currencies_to_conv as $curr) {
-		            $price = $euro*$rates[$curr];
-		            $to_up = Utils_RecordBrowserCommon::get_records('premium_ecommerce_prices',array('item_name'=>$r['id'],'currency'=>$curr),array('auto_update'));
+		        foreach($currencies_to_conv as $curr2) {
+		    	    if($curr==$curr2) continue;
+		            $price = $euro*$rates[$curr2];
+		            $to_up = Utils_RecordBrowserCommon::get_records('premium_ecommerce_prices',array('item_name'=>$r['id'],'currency'=>$curr2),array('auto_update'));
 		            if($to_up) {
     		        	$to_up = array_shift($to_up);
     		        	if($to_up['auto_update'])
     		                Utils_RecordBrowserCommon::update_record('premium_ecommerce_prices',$to_up['id'],array('gross_price'=>$price,'tax_rate'=>$r['tax_rate']));
 		            } else {
-		                Utils_RecordBrowserCommon::new_record('premium_ecommerce_prices',array('currency'=>$curr,'item_name'=>$r['id'],'gross_price'=>$price,'tax_rate'=>$r['tax_rate'],'auto_update'=>1));
+		                Utils_RecordBrowserCommon::new_record('premium_ecommerce_prices',array('currency'=>$curr2,'item_name'=>$r['id'],'gross_price'=>$price,'tax_rate'=>$r['tax_rate'],'auto_update'=>1));
 		            }
 		        }
 		    } else {
