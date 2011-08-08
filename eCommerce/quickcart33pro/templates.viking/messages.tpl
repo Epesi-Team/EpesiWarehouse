@@ -95,11 +95,11 @@
 <!-- BEGIN PASSWORD_INVALID_ORDER -->
 <div class="message" id="error">
   <h3>
-    Account with this e-mail address exists<br />
-    $lang['Password_invalid']
+    $lang['Password_invalid']<br />
+    An account with this e-mail address already exists
   </h3>
   <ul>
-    <li><a href="index.php?forgot-password,59">$lang['Remind_password']</a></li>
+    <li><form style="display:none" action="?forgot-password,59" method="post" id="reminder"><input type="hidden" name="sEmail" value="$_POST[sEmail]" /></form><a href="javascript:$('reminder').submit()">$lang['Forgot_password']</a></li>
     <li><a href="javascript:void(0);" onClick="$('oPassword2').value='';$('oPassword').value='';$('new_account_checkbox').checked=0;var f=$('orderForm');if(checkForm(f))f.submit();">Order without loggin in</a></li>
     <li><a href="#orderFormAnchor">Change e-mail/password below</a></li>
   </ul>
