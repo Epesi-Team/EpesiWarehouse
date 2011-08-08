@@ -155,7 +155,7 @@
   <script type="text/javascript">
   <!--
   if( document.getElementById( 'formPayment' ) )
-    setTimeout( "document.getElementById( 'formPayment' ).submit()", 15000 );
+    setTimeout( "document.getElementById( 'formPayment' ).submit()", 5000 );
   //-->
   </script>
   <div id="authWindow"><a href="#" onclick="document.getElementById( 'formPayment' ).submit();">&raquo; $lang[open_authorization_window] &laquo;</a></div>
