@@ -170,13 +170,19 @@
 	</tr>
 	<tr>
 		<td align="right" width="90px">
-			{$labels.bank}
+			{$labels.cc_info}
 		</td>
-		<td width="10px">
-		</td>
-		<td align="left" colspan="4">
-			{$warehouse.bank_account}
-		</td>
+		{foreach from=$payments item=payment}
+			<td width="10px">
+			</td>
+			<td align="left" colspan="4">
+				{$payment.card_number}, {$payment.expiration_date}, {$payment.cvc_cvv}, {$payment.amount_label}
+			</td>
+		</tr>
+		<tr>
+			<td width="90">
+			</td>
+		{/foreach}
 	</tr>
 </table>
 

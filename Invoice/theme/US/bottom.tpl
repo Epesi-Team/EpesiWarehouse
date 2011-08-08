@@ -17,7 +17,7 @@
 			<font size=11><b>{$labels.amount_paid}</b></font>
 		</td>
 		<td width="135" style="text-align:right;">
-			<font size=11><b>$ 0.00.</b></font>
+			<font size=11><b>{$paid}.</b></font>
 		</td>
 	</tr>
 	<tr>
@@ -27,7 +27,7 @@
 			<font size=11><b>{$labels.amount_due}</b></font>
 		</td>
 		<td width="135" style="text-align:right;">
-			<font size=11><b>{$total}.</b></font>
+			<font size=11><b>{$amount_due}.</b></font>
 		</td>
 	</tr>
 </table>

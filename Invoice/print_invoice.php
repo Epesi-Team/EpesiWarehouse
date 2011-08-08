@@ -88,6 +88,7 @@ $labels = array(
 	'payment_method' => 'Payment method:',
 	'due_date' => 'due date:',
 	'bank' => 'BANK:',
+	'cc_info' => 'Payment info:',
 	'no' => 'Item No.',
 	'item_name' => 'Item/service name',
 	'classification' => 'NAPCS',
@@ -107,6 +108,20 @@ $theme->assign('labels', $labels);
 $file = Libs_TCPDFCommon::get_logo_filename();
 if (file_exists($file))
     $theme->assign('logo', '<img src="'.$file.'" />');
+
+$paid = array();
+$amount_due = array();
+
+if (ModuleManager::is_installed('Premium_Payments')>=0) {
+	$payments = Utils_RecordBrowserCommon::get_records('premium_payments', array('record_type'=>'premium_warehouse_items_orders', 'record_id'=>$order['id'], 'status'=>2));
+	foreach ($payments as $k=>$v) {
+		$payments[$k]['amount_label'] = Utils_CurrencyFieldCommon::format($v['amount']);
+		$p = Utils_CurrencyFieldCommon::get_values($v['amount']);
+		if (!isset($paid[$p[1]])) $paid[$p[1]] = 0;
+		$paid[$p[1]] += $p[0];
+	}
+	$theme->assign('payments', $payments);
+}
 
 ob_start();
 Base_ThemeCommon::display_smarty($theme,'Premium_Warehouse_Invoice',$style.'/top');
@@ -251,6 +266,8 @@ foreach ($gross_total_sum as $k=>$v) {
 	$net_total_sum[$k]['x'] = $sum['net'];
 	$tax_total_sum[$k]['x'] = $sum['tax'];
 	$gross_total_sum_f[$k]['x'] = Utils_CurrencyFieldCommon::format($sum['gross'], $k);
+	if (!isset($amount_due[$k])) $amount_due[$k]=0;
+	$amount_due[$k] += $sum['gross'];
 	$net_total_sum_f[$k]['x'] = Utils_CurrencyFieldCommon::format($sum['net'], $k);
 	$tax_total_sum_f[$k]['x'] = Utils_CurrencyFieldCommon::format($sum['tax'], $k);
 }
@@ -325,7 +342,15 @@ $theme = Base_ThemeCommon::init_smarty();
 $theme->assign('order', $order);
 $total = array();
 foreach($gross_total_sum_f as $gr) $total[] = $gr['x'];
+foreach($amount_due as $k=>$v) {
+	if (!isset($paid[$k])) $paid[$k] = 0;
+	$v -= $paid[$k];
+	$amount_due[$k] = Utils_CurrencyFieldCommon::format($v, $k);
+}
+foreach($paid as $k=>$v) $paid[$k] = Utils_CurrencyFieldCommon::format($v, $k);
 $theme->assign('total', implode(', ',$total));
+$theme->assign('paid', implode(', ',$paid));
+$theme->assign('amount_due', implode(', ',$amount_due));
 $PLN = DB::GetOne('SELECT id FROM utils_currency WHERE code=%s', array('PLN'));
 if (is_numeric($PLN) && isset($gross_total_sum[$PLN]['x'])) $wording = cash2word($gross_total_sum[$PLN]['x']);
 else $wording = '';
