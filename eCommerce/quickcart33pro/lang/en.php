@@ -203,7 +203,7 @@ $lang['Skapiec_shop_id'] = 'Shop id in skapiec.pl';
 
 $lang['open_authorization_window'] =  'open authorization window';
 $lang['There_are_money_to_pay'] =     'Thank you, your order has been received.';
-$lang['There_are_no_money_to_pay'] =  'There are no money to pay on your account, contact you bank and try again later.';
+$lang['There_are_no_money_to_pay'] =  'There are no money to pay on your account or your payment was cancelled.';
 $lang['Authorization_error'] =        'There was an error during authorization.';
 $lang['Pay_realized'] =               'Payment realized';
 $lang['Payments_config'] =            'Payments';
