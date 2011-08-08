@@ -30,6 +30,11 @@
 				{$details.net_price}&nbsp;
 			</font>
 		</td>
+		<td width="45px" align="right">
+			<font size="7">
+				{$details.net_total}&nbsp;
+			</font>
+		</td>
 		<td width="32px" align="center">
 			<font size="7">
 				{$details.tax_name}
@@ -37,17 +42,12 @@
 		</td>
 		<td width="45px" align="right">
 			<font size="7">
-				{$details.gross_total}&nbsp;
-			</font>
-		</td>
-		<td width="45px" align="right">
-			<font size="7">
-				{$details.net_total}&nbsp;
-			</font>
-		</td>
-		<td width="45px" align="right">
-			<font size="7">
 				{$details.tax_total}&nbsp;
+			</font>
+		</td>
+		<td width="45px" align="right">
+			<font size="7">
+				{$details.gross_total}&nbsp;
 			</font>
 		</td>
 	</tr>

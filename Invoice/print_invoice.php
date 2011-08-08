@@ -19,7 +19,7 @@ define('READ_ONLY_SESSION',true);
 require_once('../../../../include.php');
 ModuleManager::load_modules();
 
-//Base_ThemeCommon::install_default_theme('Premium_Warehouse_Invoice');
+Base_ThemeCommon::install_default_theme('Premium_Warehouse_Invoice');
 
 $order = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $order_id);
 $style = Variable::get('premium_warehouse_invoice_style', false);
@@ -80,9 +80,11 @@ $labels = array(
 	'seller' => 'Sold to:',
 	'seller_address' => 'Address:',
 	'seller_id_number' => 'TIN:',
-	'buyer' => 'Buyer:',
+	'buyer' => 'Sold to:',
 	'buyer_address' => 'Address:',
 	'buyer_id_number' => 'SSN:',
+	'shipping_to' => 'Shipping to:',
+	'shipping_address' => 'Address:',
 	'payment_method' => 'Payment method:',
 	'due_date' => 'due date:',
 	'bank' => 'BANK:',
@@ -101,6 +103,10 @@ $labels = array(
 foreach ($labels as $k=>$v)
 	$labels[$k] = Base_LangCommon::ts('Premium_Warehouse_Invoice', $v);
 $theme->assign('labels', $labels);
+
+$file = Libs_TCPDFCommon::get_logo_filename();
+if (file_exists($file))
+    $theme->assign('logo', '<img src="'.$file.'" />');
 
 ob_start();
 Base_ThemeCommon::display_smarty($theme,'Premium_Warehouse_Invoice',$style.'/top');
@@ -174,8 +180,13 @@ foreach (array('shipment'=>Base_LangCommon::ts('Premium_Warehouse_Invoice','Ship
 		$theme = Base_ThemeCommon::init_smarty();
 
 		$gross_val = $additional_cost[$k][0]; 
-		$vat = 22;
-		if ($order['transaction_date']>='2011-01-01') $vat = 23;
+		
+		if ($company['country']=='US')
+			$vat = 0;
+		else {
+			$vat = 22;
+			if ($order['transaction_date']>='2011-01-01') $vat = 23;
+		}
 		$net_val = round($additional_cost[$k][0]/(1+$vat/100),2);
 		$tax_val = $gross_val-$net_val;
 		$tax = Utils_CurrencyFieldCommon::format($tax_val, $additional_cost[$k][1]);

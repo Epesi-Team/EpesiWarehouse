@@ -1,8 +1,13 @@
 <table>
 	<tr>
-		<td>
+		{if isset($logo)}
+			<td width="65">
+				{$logo}
+			</td>
+		{/if}
+		<td width="230">
 			<font size=8>
-				{if isset($warehouse.invoice_display_name)}{$warehouse.invoice_display_name}{else}{$company.company_name}{/if}<br/>
+				{if isset($warehouse.invoice_display_name) && $warehouse.invoice_display_name}{$warehouse.invoice_display_name}{else}{$company.company_name}{/if}<br/>
 				{$warehouse.address_1}<br/>
 				{$warehouse.postal_code} {$warehouse.city}<br/>
 				{if $warehouse.phone}{$labels.tel} {$warehouse.phone}<br/>{/if}
@@ -10,7 +15,7 @@
 				{$company.web_address}
 			</font>
 		</td>
-		<td align="right">
+		<td align="right" width="230">
 			{$warehouse.city}, {$date}<br/>
 		</td>
 	</tr>
@@ -42,7 +47,15 @@
 		<td width="10px">
 		</td>
 		<td align="left" width="400">
-			{$order.company_name}
+			{if $order.first_name}
+				{$order.last_name} {$order.first_name}
+				{if $order.company_name}
+					, 
+				{/if}
+			{/if}
+			{if $order.company_name}
+				{$order.company_name}
+			{/if}
 		</td>
 	</tr>
 	<tr>
@@ -52,9 +65,85 @@
 		<td width="10px">
 		</td>
 		<td align="left" width="400">
-			{$order.postal_code} {$order.city}, {$order.address_1}
+			{$order.address_1}
 		</td>
 	</tr>
+	{if $order.address_2}
+	<tr>
+		<td align="right" width="90px">
+		</td>
+		<td width="10px">
+		</td>
+		<td align="left" width="400">
+			{$order.address_2}
+		</td>
+	</tr>
+	{/if}
+	<tr>
+		<td align="right" width="90px">
+		</td>
+		<td width="10px">
+		</td>
+		<td align="left" width="400">
+			{$order.postal_code} {$order.city}
+		</td>
+	</tr>
+	{if $order.shipping_address_1}
+		<tr>
+			<td>
+			</td>
+		</tr>
+		<tr>
+			<td align="right" width="90px">
+				<font size=10><b>
+					{$labels.shipping_to}
+				</b></font>
+			</td>
+			<td width="10px">
+			</td>
+			<td align="left" width="400">
+				{if $order.shipping_first_name}
+					{$order.shipping_last_name} {$order.shipping_first_name}
+					{if $order.shipping_company_name}
+						, 
+					{/if}
+				{/if}
+				{if $order.shipping_company_name}
+					{$order.shipping_company_name}
+				{/if}
+			</td>
+		</tr>
+		<tr>
+			<td align="right" width="90px">
+				{$labels.shipping_address}
+			</td>
+			<td width="10px">
+			</td>
+			<td align="left" width="400">
+				{$order.shipping_address_1}
+			</td>
+		</tr>
+		{if $order.shipping_address_2}
+			<tr>
+				<td align="right" width="90px">
+				</td>
+				<td width="10px">
+				</td>
+				<td align="left" width="400">
+					{$order.shipping_address_2}
+				</td>
+		</tr>
+		{/if}
+		<tr>
+			<td align="right" width="90px">
+			</td>
+			<td width="10px">
+			</td>
+			<td align="left" width="400">
+				{$order.shipping_postal_code} {$order.shipping_city}
+			</td>
+		</tr>
+	{/if}
 </table>
 <br>
 {/if}
@@ -68,14 +157,16 @@
 		<td width="90px" align="left">
 			{$order.payment_type_label}
 		</td>
-		<td width="90px" align="right">
-			{$labels.due_date}
-		</td>
-		<td width="5px">
-		</td>
-		<td align="left" width="160px">
-			{$order.terms_label}
-		</td>
+		{if $order.terms_label}
+			<td width="90px" align="right">
+				{$labels.due_date}
+			</td>
+			<td width="5px">
+			</td>
+			<td align="left" width="160px">
+				{$order.terms_label}
+			</td>
+		{/if}
 	</tr>
 	<tr>
 		<td align="right" width="90px">
@@ -123,6 +214,11 @@
 					{$labels.net_price}
 				</b></font>
 			</td>
+			<td width="45px">
+				<font size="7"><b>
+					{$labels.net_value}
+				</b></font>
+			</td>
 			<td width="32px">
 				<font size="7"><b>
 					{$labels.tax_rate}
@@ -130,17 +226,12 @@
 			</td>
 			<td width="45px">
 				<font size="7"><b>
-					{$labels.gorss_value}
-				</b></font>
-			</td>
-			<td width="45px">
-				<font size="7"><b>
-					{$labels.net_value}
-				</b></font>
-			</td>
-			<td width="45px">
-				<font size="7"><b>
 					{$labels.tax_value}
+				</b></font>
+			</td>
+			<td width="45px">
+				<font size="7"><b>
+					{$labels.gorss_value}
 				</b></font>
 			</td>
 		</tr>
