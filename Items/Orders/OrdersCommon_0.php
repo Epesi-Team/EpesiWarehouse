@@ -1092,7 +1092,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			'Transaction ID'=>$r['transaction_id'],
 			'Status'=>self::display_status($r,true)
 		);
-		$ret = array('notes'=>Utils_TooltipCommon::format_info_tooltip($arr,'Premium_Warehouse_Items_Orders'));
+		$ret = array('notes'=>Utils_TooltipCommon::format_info_tooltip($arr,'Utils_RecordBrowser:premium_warehouse_items_orders'));
 		return $ret;
 	}
 

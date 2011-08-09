@@ -283,7 +283,7 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 			'Item Name'=>$r['item_name'],
 			'Description'=>htmlspecialchars($r['description'])
 		);
-		$ret = array('notes'=>Utils_TooltipCommon::format_info_tooltip($arr,'Premium_Warehouse_Items'));
+		$ret = array('notes'=>Utils_TooltipCommon::format_info_tooltip($arr,'Utils_RecordBrowser:premium_warehouse_items'));
 		return $ret;
 	}
 
