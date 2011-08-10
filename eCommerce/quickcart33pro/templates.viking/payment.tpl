@@ -135,6 +135,7 @@
     <input type="hidden" name="description" value="Order ID $iOrder" />
     <input type="hidden" name="url_ok" value="$aUrl[scheme]://$aUrl[host]$aUrl[path]?,return,payment&amp;status=OK" />
     <input type="hidden" name="url_error" value="$aUrl[scheme]://$aUrl[host]$aUrl[path]?,return,payment&amp;status=FAIL" />
+    <input type="hidden" name="url_cancel" value="$aUrl[scheme]://$aUrl[host]$aUrl[path]?,return,payment&amp;status=CANCEL" />
 
     <input type="hidden" name="first_name" value="$aOrder[sFirstName]" />
     <input type="hidden" name="last_name" value="$aOrder[sLastName]" />
@@ -162,6 +163,14 @@
 </div>
 <!-- END PAYMENT_OUTER -->
 
+<!-- BEGIN PAYMENT_OUTER_MAIL -->
+<div id="paymentOuter">
+  $sPaymentOuterForm
+
+  <div id="authWindow"><a href="#" onclick="document.getElementById( 'formPayment' ).submit();">&raquo; $lang[open_authorization_window] &laquo;</a></div>
+</div>
+<!-- END PAYMENT_OUTER_MAIL -->
+
 <!-- BEGIN ACCEPT -->
 <div class="message" id="ok">
   <h3>$lang[There_are_money_to_pay]</h3>
@@ -179,6 +188,35 @@
   <h3>$lang[Authorization_error]</h3>
 </div>
 <!-- END ERROR -->
+
+<!-- BEGIN CANCEL -->
+<div class="message" id="error">
+  <h3>Your payment was canceled</h3>
+<form action="$config[epesi_payments_url]" method="post" id="formPayment">
+  <fieldset>
+    <input type="hidden" name="record_id" value="$_REQUEST[record_id]" />
+    <input type="hidden" name="record_type" value="premium_warehouse_items_orders" />
+    <input type="hidden" name="amount" value="$_REQUEST[amount]" />
+    <input type="hidden" name="currency" value="$_REQUEST[currency]" />
+    <input type="hidden" name="description" value="Order ID $_REQUEST[record_id]" />
+    <input type="hidden" name="url_ok" value="$aUrl[scheme]://$aUrl[host]$aUrl[path]?,return,payment&amp;status=OK" />
+    <input type="hidden" name="url_error" value="$aUrl[scheme]://$aUrl[host]$aUrl[path]?,return,payment&amp;status=FAIL" />
+    <input type="hidden" name="url_cancel" value="$aUrl[scheme]://$aUrl[host]$aUrl[path]?,return,payment&amp;status=CANCEL" />
+
+    <input type="hidden" name="first_name" value="$_REQUEST[first_name]" />
+    <input type="hidden" name="last_name" value="$_REQUEST[last_name]" />
+    <input type="hidden" name="address_1" value="$_REQUEST[address_1]" />
+    <input type="hidden" name="city" value="$_REQUEST[city]" />
+    <input type="hidden" name="postal_code" value="$_REQUEST[postal_code]" />
+    <input type="hidden" name="country" value="$_REQUEST[country]" />
+    <input type="hidden" name="email" value="$_REQUEST[email]" />
+    <input type="hidden" name="phone" value="$_REQUEST[phone]" />
+  </fieldset>
+</form>
+  Your order was received, however the payment for this order was not received.  <br/>
+  Please make a <a onClick="$('formPayment').submit()" href="javascript:void(0)">payment now</a>, or <a href="?contact-us,31">Contact us</a> arrange another payment method.
+</div>
+<!-- END CANCEL -->
 
 <!-- BEGIN RETURN_INFO -->
 <div class="message" id="error">
