@@ -931,6 +931,7 @@ class Orders
   * @param int    $iOrder
   */
   function sendEmailWithOrderDetails( $sFile, $iOrder ){
+    global $aOuterPaymentOption, $sPaymentOuterForm;
     $oTpl     =& TplParser::getInstance( );
     $content  = null;
     $aData    = $this->throwOrder( $iOrder );
@@ -938,8 +939,22 @@ class Orders
     $aData['sProducts'] = $this->listProducts( $sFile, $iOrder, 'ORDER_EMAIL_' );
     $aData['sOrderSummary'] = $this->aOrders[$iOrder]['sOrderSummary'];
     $aPayment = $this->throwPaymentCarrier( $aData['iCarrier'], $aData['iPayment'] );
+    $aData['sPaymentDescription'] = '';
     if( !empty( $aPayment['sDescription'] ) )
-      $aData['sPaymentDescription'] = $aPayment['sDescription'];
+      $aData['sPaymentDescription'] .= $aPayment['sDescription'];
+
+    if( !empty( $aData['iPaymentSystem'] ) && isset( $aOuterPaymentOption[$aData['iPaymentSystem']] ) ){
+      $aUrl = parse_url( 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'] );
+      if( !empty( $aUrl['path'] ) )
+        $aUrl['path'] = rtrim(dirname( $aUrl['path'] ),'/').'/';
+      $aStreet = throwStreetDetails( $aData['sStreet'] );
+      if( isset( $aData['fOrderSummary'] ) )
+        $iAmount =  sprintf( '%01.2f', $aData['fOrderSummary'] ) * 100;
+      if( $aData['iPaymentSystem'] == 5 )
+        $sProductsZagielList = $oOrder->listProducts( 'payment.tpl', $iOrder, 'ZAGIEL_' );
+      $sPaymentOuterForm = $oTpl->tbHtml( 'payment.tpl', 'PAYMENT_FORM_'.$aData['iPaymentSystem'] );
+      $aData['sPaymentDescription'] .= $oTpl->tbHtml( 'payment.tpl', 'PAYMENT_OUTER_MAIL' );
+    }
 
     $aData['contactus'] = getVariable('ecommerce_contactus_'.LANGUAGE);
     if(!$aData['contactus'])
