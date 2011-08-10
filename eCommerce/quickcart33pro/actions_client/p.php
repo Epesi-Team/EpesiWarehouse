@@ -230,7 +230,7 @@ if( isset( $iContent ) && is_numeric( $iContent ) ){
             if( !empty( $aOrder['iPaymentSystem'] ) && isset( $aOuterPaymentOption[$aOrder['iPaymentSystem']] ) ){
               $aUrl = parse_url( 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'] );
               if( !empty( $aUrl['path'] ) )
-                $aUrl['path'] = dirname( $aUrl['path'] ).'/';
+                $aUrl['path'] = rtrim(dirname( $aUrl['path'] ),'/').'/';
               $aStreet = throwStreetDetails( $aOrder['sStreet'] );
               if( isset( $oOrder->aOrders[$iOrder]['fOrderSummary'] ) )
                 $iAmount =  sprintf( '%01.2f', $oOrder->aOrders[$iOrder]['fOrderSummary'] ) * 100;
