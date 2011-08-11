@@ -611,6 +611,14 @@ class Orders
 				    w.f_city as sCity,
 				    w.f_country as sCountryCode,
 				    w.f_phone as sPhone,
+				    w.f_shipping_first_name as sShippingFirstName,
+				    w.f_shipping_last_name as sShippingLastName,
+				    w.f_shipping_company_name as sShippingCompanyName,
+				    w.f_shipping_address_1 as sShippingStreet,
+				    w.f_shipping_postal_code as sShippingZipCode,
+				    w.f_shipping_city as sShippingCity,
+				    w.f_shipping_country as sShippingCountryCode,
+				    w.f_shipping_phone as sShippingPhone,
 				    w.f_tax_id as sNip,
 				    o.f_comment as sComment,
 				    o.f_ip as sIp,
@@ -968,6 +976,14 @@ class Orders
 	
     if($aData['sCompanyName']!='-' || $aData['sNip']!='-')
 	    $aData['sCompanyInfo'] = $oTpl->tbHtml( $sFile, 'ORDER_EMAIL_COMPANY' );
+    $aData['sBillingAddress'] = $oTpl->tbHtml( $sFile, 'ORDER_EMAIL_BILLING' );
+    if($aData['sShippingFirstName'] || $aData['sShippingLastName']  || $aData['sShippingCity'] 
+	|| $aData['sShippingStreet'] || $aData['sShippingState']  || $aData['sShippingCountry'] 
+	|| $aData['sShippingZipCode'] || $aData['sShippingCompanyName'] || $aData['sShippingPhone']) {
+        if($aData['sShippingCompanyName'])
+	    $aData['sShippingCompanyInfo'] = $oTpl->tbHtml( $sFile, 'ORDER_EMAIL_SHIPPING_COMPANY' );
+	$aData['sShippingAddress'] = $oTpl->tbHtml( $sFile, 'ORDER_EMAIL_SHIPPING' );
+    }
     if($aData['sShipmentDiscount']!='-')
 	    $aData['sShipmentDiscountInfo'] = $oTpl->tbHtml( $sFile, 'ORDER_EMAIL_SHIPMENT_DISCOUNT' );
     if($aData['sPaymentChannel']!='-')
