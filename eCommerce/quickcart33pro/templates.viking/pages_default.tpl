@@ -308,7 +308,7 @@
 <!-- BEGIN RSS_META --><link rel="alternate" type="application/rss+xml" title="$lang[Rss]" href="$sRssUrl" /><!-- END RSS_META -->
 
 <!-- BEGIN PRODUCTS_LIST -->
-<li class="l$aData[sStyle] i$aData[iStyle]"><h2><a href="$aData[sLinkName]">$aData[sRecommended]$aData[sName]</a></h2>$aData[sImage]$aData[sDescriptionShort]$aData[sPrice]<div style="float:right;color:#555;"><b>SKU:</b> $aData[sSku]</div>$aData[sBasket]<h3>$aData[sPages]</h3></li>
+<li class="l$aData[sStyle] i$aData[iStyle]"><h2><a href="$aData[sLinkName]">$aData[sRecommended]$aData[sName]</a></h2>$aData[sImage]$aData[sPrice]<div style="float:right;color:#555;"><b>SKU:</b> $aData[sSku]</div>$aData[sBasket]<div style="clear:both;text-align:justify">$aData[sDescriptionShort]</div><h3>$aData[sPages]</h3></li>
 <!-- END PRODUCTS_LIST -->
 <!-- BEGIN PRODUCTS_PRICE --><div class="price"><em>$lang[Price]:</em><strong>$aData[sPrice]</strong><span>$config[currency_symbol]</span></div><!-- END PRODUCTS_PRICE -->
 <!-- BEGIN PRODUCTS_NO_PRICE --><div class="noPrice"><strong>$aData[sPrice]</strong></div><!-- END PRODUCTS_NO_PRICE -->
@@ -332,7 +332,7 @@
 </ul>
 <!-- END PRODUCTS_FOOT -->
 <!-- BEGIN PRODUCTS_GALLERY_LIST -->
-<li class="l$aData[sStyle] i$aData[iStyle]"><h2><a href="$aData[sLinkName]">$aData[sRecommended]$aData[sName]</a></h2>$aData[sImage]$aData[sDescriptionShort]$aData[sPrice]<div style="float:right;color:#555;"><b>SKU:</b> $aData[sSku]</div>$aData[sBasket]<h3>$aData[sPages]</h3></li>
+<li class="l$aData[sStyle] i$aData[iStyle]"><h2><a href="$aData[sLinkName]">$aData[sRecommended]$aData[sName]</a></h2>$aData[sImage]$aData[sPrice]<div style="float:right;color:#555;"><b>SKU:</b> $aData[sSku]</div>$aData[sBasket]<div style="clear:both;text-align:justify">$aData[sDescriptionShort]</div><h3>$aData[sPages]</h3></li>
 <!-- END PRODUCTS_GALLERY_LIST -->
 <!-- BEGIN PRODUCTS_GALLERY_BREAK --><!-- END PRODUCTS_GALLERY_BREAK -->
 <!-- BEGIN PRODUCTS_GALLERY_BLANK --><!-- END PRODUCTS_GALLERY_BLANK -->
