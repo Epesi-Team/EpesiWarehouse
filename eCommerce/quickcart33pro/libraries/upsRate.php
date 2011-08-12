@@ -117,7 +117,7 @@ class upsRate {
     }
 
 
-function ups_rate($country,$zip,$weight) {
+function ups_rate($country,$zip,$weight,$service) {
 global $config;
 if(!isset($config['ups_accesskey']) || !$config['ups_accesskey'] || 
     !isset($config['ups_username']) || !$config['ups_username'] || 
@@ -125,12 +125,11 @@ if(!isset($config['ups_accesskey']) || !$config['ups_accesskey'] ||
     !isset($config['ups_shipper_number']) || !$config['ups_shipper_number'] || 
     !isset($config['ups_src_country']) || !$config['ups_src_country'] || 
     !isset($config['ups_src_zip']) || !$config['ups_src_zip'] || 
-    !isset($config['ups_service_id']) || !$config['ups_service_id'] || 
     !isset($config['ups_weight_unit']) || !$config['ups_weight_unit'])
     return 0;
 $ups = new upsRate($config['ups_accesskey'],$config['ups_username'], $config['ups_password'],$config['ups_shipper_number']);
 try {
-    $ok=$ups->getRate($config['ups_src_country'],$config['ups_src_zip'],$country,$zip,$config['ups_service_id'],$weight,$config['ups_weight_unit']);
+    $ok=$ups->getRate($config['ups_src_country'],$config['ups_src_zip'],$country,$zip,substr($service,strpos($service,',')+1),$weight,$config['ups_weight_unit']);
 } catch(Exception $e) {
     return 'Error: '.$e->getMessage();
 }
@@ -140,25 +139,27 @@ if(!isset($ok[1]))
 
 if($ok[1]==$config['currency_symbol'])
     return $ok[0];
-    
-$ret = @simplexml_load_file('http://www.ecb.int/stats/eurofxref/eurofxref-daily.xml');
-if(!$ret) {
-    return 'Error: cannot get ECB currencies table';
+
+static $rates;
+if(!isset($rates)) {    
+    $ret = @simplexml_load_file('http://www.ecb.int/stats/eurofxref/eurofxref-daily.xml');
+    if(!$ret) {
+	return 'Error: cannot get ECB currencies table';
+    }
+
+    $currencies = array($ok[1]=>$ok[1], $config['currency_symbol']=>$config['currency_symbol']);
+
+    $rates = array();
+    if(isset($currencies['EUR']))
+	$rates[$currencies['EUR']]=1;
+    foreach($ret->Cube->Cube->Cube as $r) {
+	if(isset($currencies[(String)$r['currency']])) {
+	        $rates[$currencies[(String)$r['currency']]] = (String)$r['rate'];
+    	}
+    }
+
+    if(count($rates)!=2) return 'Error: invalid currencies - '.implode(', ',$currencies);
 }
-
-$currencies = array($ok[1]=>$ok[1], $config['currency_symbol']=>$config['currency_symbol']);
-
-$rates = array();
-if(isset($currencies['EUR']))
-    $rates[$currencies['EUR']]=1;
-foreach($ret->Cube->Cube->Cube as $r) {
-    if(isset($currencies[(String)$r['currency']])) {
-	    $rates[$currencies[(String)$r['currency']]] = (String)$r['rate'];
-	}
-}
-
-if(count($rates)!=2) return 'Error: invalid currencies - '.implode(', ',$currencies);
-
 return $ok[0]/$rates[$ok[1]]*$rates[$config['currency_symbol']];
 }
 ?>
