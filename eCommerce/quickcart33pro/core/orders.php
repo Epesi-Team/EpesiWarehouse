@@ -785,6 +785,7 @@ class Orders
 	if(isset(self::$payments_to_qcpayments[$aExp['f_payment']]))
 		$aOuterPayments[$aExp['f_payment']] = self::$payments_to_qcpayments[$aExp['f_payment']];
       }
+      $_SESSION['ups_addon'] = array();
       foreach( $aShipments as $iCarrier => $carrier_name ) {
         if(!isset($aPaymentsCarriers[$iCarrier])) continue;
         $shipment_types = DB::GetAssoc('SELECT akey,value FROM utils_commondata_tree WHERE parent_id=%d',array(self::$shipments_ids[$iCarrier]));
@@ -804,10 +805,7 @@ class Orders
 	    	    } else
 	    		$addon = ups_rate($_SESSION['order_step_1']['sCountry'],$_SESSION['order_step_1']['sZipCode'], $weight, $service_type);
             	    if(!is_numeric($addon)){
-	        	$_SESSION['ups_addon'] = 0;
-		        $aData['sPayments'].='<script type="text/javascript">alert("'.$addon.'");</script>';
-    	        	$oTpl->setVariables( 'aData', $aData );
-            		$content .= $oTpl->tbHtml( $sFile, 'ORDER_CARRIERS' );
+//            		$_SESSION['ups_addon'][$service_type] = 0;
             		continue; // skip UPS
         	    }
         	    $aData['iCarrier'] = $iCarrier.'#'.$service_type;
