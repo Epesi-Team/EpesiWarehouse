@@ -490,6 +490,15 @@ function pickupShopCheck(e) {
 <!-- BEGIN ORDER_PAYMENT_CARRIERS_LIST -->
 <td><input type="radio" name="sPaymentCarrier" value="$aData[iCarrier];$aData[iPayment];$aData[fPaymentCarrierPrice]" alt="radio;$lang['Select_delivery_and_payment']" onChange="countCarrierPrice( this );saveUserData( this.name, this.value );if(typeof pickupShopCheck != 'undefined')pickupShopCheck(this)" />$aData[sPaymentCarrierPrice]</td>
 <!-- END ORDER_PAYMENT_CARRIERS_LIST -->
+<!-- BEGIN ORDER_PAYMENT_CARRIERS_MULTI_BEGIN -->
+<td>
+<!-- END ORDER_PAYMENT_CARRIERS_MULTI_BEGIN -->
+<!-- BEGIN ORDER_PAYMENT_CARRIERS_MULTI_LIST -->
+<input type="radio" name="sPaymentCarrier" value="$aData[iCarrier];$aData[iPayment];$aData[fPaymentCarrierPrice]" alt="radio;$lang['Select_delivery_and_payment']" onChange="countCarrierPrice( this );saveUserData( this.name, this.value );if(typeof pickupShopCheck != 'undefined')pickupShopCheck(this)" />$aData[sPaymentCarrierPrice]<br />
+<!-- END ORDER_PAYMENT_CARRIERS_MULTI_LIST -->
+<!-- BEGIN ORDER_PAYMENT_CARRIERS_MULTI_END -->
+</td>
+<!-- END ORDER_PAYMENT_CARRIERS_MULTI_END -->
 <!-- BEGIN ORDER_PAYMENT_CARRIERS_EMPTY -->
 <td>&nbsp;</td>
 <!-- END ORDER_PAYMENT_CARRIERS_EMPTY -->
