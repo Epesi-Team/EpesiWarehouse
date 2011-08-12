@@ -84,6 +84,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		$fields = array(
 			array('name'=>'Payment', 	'type'=>'commondata', 'required'=>true, 'extra'=>false, 'visible'=>true, 'param'=>array('order_by_key'=>true,'Premium_Items_Orders_Payment_Types')),
 			array('name'=>'Shipment', 	'type'=>'commondata', 'required'=>true, 'extra'=>false, 'visible'=>true, 'param'=>array('order_by_key'=>true,'Premium_Items_Orders_Shipment_Types')),
+			array('name'=>'Shipment Service Type', 	'type'=>'commondata', 'required'=>false, 'extra'=>false, 'visible'=>true, 'param'=>array('order_by_key'=>true,'Premium_Items_Orders_Shipment_Types','Shipment'), 'QFfield_callback'=>array('Premium_Warehouse_eCommerceCommon','QFfield_shipment_service_type')),
 			array('name'=>'Currency', 	'type'=>'float', 'required'=>true, 'extra'=>false,'visible'=>true, 'display_callback'=>array($this->get_type().'Common', 'display_currency'),'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_currency')),
 			array('name'=>'Price', 		'type'=>'integer', 'required'=>true, 'extra'=>false,'visible'=>true),
 			array('name'=>'Percentage Of Amount', 		'type'=>'float', 'required'=>true, 'extra'=>false,'visible'=>true),
@@ -537,54 +538,41 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Base_ThemeCommon::install_default_theme('Premium/Warehouse/eCommerce');
 		
 		$areas = array(
-				"EU"=>'Europe',
-				"US"=>'USA',
-				"CA"=>'Canada');
-		Utils_CommonDataCommon::new_array('UPS_Area',$areas);
-
-		$eu_services = array(
-			'07' => 'UPS Express',
-        	'08' => 'UPS Expedited',
-        	'11' => 'UPS Standard',
-        	'54' => 'UPS Worldwide Express Plus',
-        	'64' => 'UPS Express NA1',
-        	'65' => 'UPS Express Saver');
-		Utils_CommonDataCommon::new_array('UPS_Area/EU',$eu_services,false,true);
-
-		$ca_services = array(
-        	'01' => 'UPS Express',
-           	'02' => 'UPS Expedited',
-        	'07' => 'UPS Worldwide Express',
-        	'08' => 'UPS Worldwide Expedited',
-        	'11' => 'UPS Standard',
-        	'12' => 'UPS 3 Day Select',
-        	'13' => 'UPS Express Saver',
-        	'14' => 'UPS Express Early A.M.',
-        	'54' => 'UPS Worldwide Express Plus');
-		Utils_CommonDataCommon::new_array('UPS_Area/CA',$ca_services,false,true);
-
-		$us_services = array(
-        	'01' => 'UPS Next Day Air',
-            '02' => 'UPS 2nd Day Air',
-        	'03' => 'UPS Ground',
-        	'07' => 'UPS Worldwide Express',
-        	'08' => 'UPS Worldwide Expedited',
-        	'11' => 'UPS Standard',
-        	'12' => 'UPS 3 Day Select',
-        	'13' => 'UPS Next Day Air Saver',
-        	'14' => 'UPS Next Day Air Early A.M.',
-        	'54' => 'UPS Worldwide Express Plus',
-        	'59' => 'UPS 2nd Day Air A.M.',
-        	'65' => 'UPS Express Saver');
-		Utils_CommonDataCommon::new_array('UPS_Area/US',$us_services,false,true);
+				"EU,07"=>'EU, UPS Express',
+				"EU,08"=>'EU, UPS Expedited',
+				"EU,11"=>'EU, UPS Standard',
+				"EU,54"=>'EU, UPS Worldwide Express Plus',
+				"EU,64"=>'EU, UPS Express NA1',
+				"EU,65"=>'EU, UPS Express Saver',
+				"US,01"=>'USA, UPS Next Day Air',
+				"US,02"=>'USA, UPS 2nd Day Air',
+				"US,03"=>'USA, UPS Ground',
+				"US,07"=>'USA, UPS Worldwide Express',
+				"US,08"=>'USA, UPS Worldwide Expedited',
+				"US,11"=>'USA, UPS Standard',
+				"US,12"=>'USA, UPS 3 Day Select',
+				"US,13"=>'USA, UPS Next Day Air Saver',
+				"US,14"=>'USA, UPS Next Day Early A.M.',
+				"US,54"=>'USA, UPS Worldwide Express Plus',
+				"US,59"=>'USA, UPS 2nd Day Air A.M.',
+				"US,65"=>'USA, UPS Express Saver',
+				"CA,01"=>'Canada, UPS Express',
+				"CA,02"=>'Canada, UPS Expedited',
+				"CA,07"=>'Canada, UPS Worldwide Express',
+				"CA,08"=>'Canada, UPS Worldwide Expedited',
+				"CA,11"=>'Canada, UPS Standard',
+				"CA,12"=>'Canada, UPS 3 Day Select',
+				"CA,13"=>'Canada, UPS Express Saver',
+				"CA,14"=>'Canada, UPS Express Early A.M.',
+				"CA,54"=>'Canada, UPS Worldwide Express Plus'
+				);
+		Utils_CommonDataCommon::new_array('Premium_Items_Orders_Shipment_Types/2',$areas,false,true);
 
 		return true;
 	}
 	
 	public function uninstall() {
 		Base_ThemeCommon::uninstall_default_theme('Premium/Warehouse/eCommerce');
-
-		Utils_CommonDataCommon::remove('UPS_Area');
 
 		Utils_RecordBrowserCommon::unregister_processing_callback('premium_ecommerce_products', array('Premium_Warehouse_eCommerceCommon', 'submit_products_position'));
 		Utils_RecordBrowserCommon::unregister_processing_callback('premium_ecommerce_parameters', array('Premium_Warehouse_eCommerceCommon', 'submit_parameters_position'));

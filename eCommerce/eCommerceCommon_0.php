@@ -1051,6 +1051,31 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 		return array('item_name'=>$ids);
 	}
 	
+	public static function QFfield_shipment_service_type(&$form, $field, $label, $mode, $default, $desc) {
+		$param = explode('::',$desc['param']['array_id']);
+		foreach ($param as $k=>$v) if ($k!==0) $param[$k] = strtolower(str_replace(' ','_',$v));
+		$form->addElement('commondata', $field, $label, $param, array('empty_option'=>false), array('id'=>$field));
+		if ($mode!=='add') $form->setDefaults(array($field=>$default));
+	}
+	
+	public static function QFfield_shipment_type(&$form, $field, $label, $mode, $default, $args,$rb) {
+	    if(($mode=='edit' || $mode=='add') && strpos($default,'#')===false) {
+		$param = explode('::',$args['param']['array_id']);
+                foreach ($param as $k=>$v) if ($k!=0) $param[$k] = preg_replace('/[^a-z0-9]/','_',strtolower($v));
+			$label = Utils_RecordBrowserCommon::get_field_tooltip($label, $args['type'], $args['param']['array_id']);
+                $form->addElement('commondata', $field, $label, $param, array('empty_option'=>true, 'id'=>$args['id'], 'order_by_key'=>$args['param']['order_by_key']));
+                if ($mode!=='add') $form->setDefaults(array($args['id']=>$default));
+            } else {
+        	$form->addElement('static',$args['id'],$label,self::display_shipment_type($rb->record));
+            }
+	}
+
+	public static function display_shipment_type($r,$nolink=false) {
+		$shi = explode('#',$r['shipment_type']);
+		if(count($shi)==1)
+			return Utils_CommonDataCommon::get_value('Premium_Items_Orders_Shipment_Types/'.$shi[0]);
+		return Utils_CommonDataCommon::get_value('Premium_Items_Orders_Shipment_Types/'.$shi[0]).' ('.Utils_CommonDataCommon::get_value('Premium_Items_Orders_Shipment_Types/'.$shi[0].'/'.$shi[1]).')';
+	}
 }
 
 ?>

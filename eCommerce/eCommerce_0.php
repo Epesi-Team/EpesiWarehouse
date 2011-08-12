@@ -629,8 +629,6 @@ class Premium_Warehouse_eCommerce extends Module {
 		$form->addElement('text', 'ups_shipper_number', $this->t('UPS Shipper Number'));
 		$form->addElement('commondata', 'ups_src_country', $this->t('Your Country'), 'Countries', array('empty_option'=>true));
 		$form->addElement('text', 'ups_src_zip', $this->t('Your ZIP'));
-		$form->addElement('commondata', 'ups_service_area', $this->t('Service Area'), 'UPS_Area');
-		$form->addElement('commondata', 'ups_service_id', $this->t('Service Type'), array('UPS_Area','ups_service_area'),array('order_by_key'=>true));
 		$form->addElement('select', 'ups_weight_unit', $this->t('Weight Unit'), array('KGS'=>'KGS','LBS'=>'LBS'));
 
 		$config = array();
@@ -696,8 +694,6 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 \$config['ups_shipper_number'] = '".str_replace('\'','\\\'',$vals['ups_shipper_number'])."';
 \$config['ups_src_country'] = '".str_replace('\'','\\\'',$vals['ups_src_country'])."';
 \$config['ups_src_zip'] = '".str_replace('\'','\\\'',$vals['ups_src_zip'])."';
-\$config['ups_service_area'] = '".str_replace('\'','\\\'',$vals['ups_service_area'])."';
-\$config['ups_service_id'] = '".str_replace('\'','\\\'',$vals['ups_service_id'])."';
 \$config['ups_weight_unit'] = '".str_replace('\'','\\\'',$vals['ups_weight_unit'])."';
 ?>";
 			file_put_contents($path.'/config/epesi.php',$ccc);
