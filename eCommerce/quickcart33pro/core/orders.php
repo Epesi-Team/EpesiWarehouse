@@ -645,7 +645,13 @@ class Orders
       if(isset($translations['Utils_CommonData'][$aData['sCountry']]) && $translations['Utils_CommonData'][$aData['sCountry']])
 	$aData['sCountry'] = $translations['Utils_CommonData'][$aData['sCountry']];
       
-      $aData['sCarrierName'] = $aShipments[$aData['f_shipment_type']];
+      $shipment = explode('#',$aData['f_shipment_type']);
+      $aData['sCarrierName'] = $aShipments[$shipment[0]];
+      if(isset($shipment[1])) {
+          $shipment_type = DB::GetOne('SELECT value FROM utils_commondata_tree WHERE parent_id=%d AND akey=%s',array(self::$shipments_ids[$shipment[0]],$shipment[1]));
+          if($shipment_type)
+              $aData['sCarrierName'] .= ' ('.$shipment_type.')';
+      }
       $aData['sPaymentName'] = $aPayments[$aData['iPayment']];
       list($aData['sPaymentPrice']) = explode('_',$aData['sPaymentPrice']);
       list($aData['sHandlingPrice']) = explode('_',$aData['sHandlingPrice']);
@@ -727,10 +733,17 @@ class Orders
     }
     $currency = $this->getCurrencyId();
     $weight = $this->getWeight();
-    $row = DB::GetRow('SELECT f_price,f_description,f_percentage_of_amount,f_order_terms FROM premium_ecommerce_payments_carriers_data_1 WHERE active=1 AND f_payment=%s AND f_shipment=%d AND f_currency=%d
+    $carrier = explode('#',$iCarrier);
+    if(count($carrier)==1) {
+        $row = DB::GetRow('SELECT f_price,f_description,f_percentage_of_amount,f_order_terms FROM premium_ecommerce_payments_carriers_data_1 WHERE active=1 AND f_payment=%s AND f_shipment=%d AND f_currency=%d
     			AND (f_max_weight>=%f OR f_max_weight is null) ORDER BY (f_price+%f*f_percentage_of_amount/100)',array($iPayment,$iCarrier,$currency,$weight,$_SESSION['fOrderSummary'.LANGUAGE]));
-    if($row) {
-	    return array('fPrice'=>$row['f_price']+$_SESSION['fOrderSummary'.LANGUAGE]*$row['f_percentage_of_amount']/100+($iCarrier==2 && isset($_SESSION['ups_addon'])?$_SESSION['ups_addon']:0),'sDescription'=>str_replace("\n",'<br>',$row['f_description']), 'iPayment'=>$iPayment, 'iCarrier'=>$iCarrier, 'sTerms'=>$row['f_order_terms'],'shipment'=>$row['f_price']+($iCarrier==2 && isset($_SESSION['ups_addon'])?$_SESSION['ups_addon']:0),'handling'=>$_SESSION['fOrderSummary'.LANGUAGE]*$row['f_percentage_of_amount']/100);
+        if($row)
+    	    return array('fPrice'=>$row['f_price']+$_SESSION['fOrderSummary'.LANGUAGE]*$row['f_percentage_of_amount']/100,'sDescription'=>str_replace("\n",'<br>',$row['f_description']), 'iPayment'=>$iPayment, 'iCarrier'=>$iCarrier, 'sTerms'=>$row['f_order_terms'],'shipment'=>$row['f_price'],'handling'=>$_SESSION['fOrderSummary'.LANGUAGE]*$row['f_percentage_of_amount']/100);
+    } else {
+        $row = DB::GetRow('SELECT f_price,f_description,f_percentage_of_amount,f_order_terms FROM premium_ecommerce_payments_carriers_data_1 WHERE active=1 AND f_payment=%s AND f_shipment=%d AND f_shipment_service_type=%s AND f_currency=%d
+    			AND (f_max_weight>=%f OR f_max_weight is null) ORDER BY (f_price+%f*f_percentage_of_amount/100)',array($iPayment,$carrier[0],$carrier[1],$currency,$weight,$_SESSION['fOrderSummary'.LANGUAGE]));
+        if($row)
+    	    return array('fPrice'=>$row['f_price']+$_SESSION['fOrderSummary'.LANGUAGE]*$row['f_percentage_of_amount']/100+($carrier==2 && isset($_SESSION['ups_addon'][$carrier[1]])?$_SESSION['ups_addon'][$carrier[1]]:0),'sDescription'=>str_replace("\n",'<br>',$row['f_description']), 'iPayment'=>$iPayment, 'iCarrier'=>$carrier[0], 'sTerms'=>$row['f_order_terms'],'shipment'=>$row['f_price']+($carrier[0]==2 && isset($_SESSION['ups_addon'][$carrier[1]])?$_SESSION['ups_addon'][$carrier[1]]:0),'handling'=>$_SESSION['fOrderSummary'.LANGUAGE]*$row['f_percentage_of_amount']/100);
     }
     return false;
   } // end function throwPaymentCarrier
@@ -759,47 +772,66 @@ class Orders
     if( $aPayments && $aShipments ){
       $currency = $this->getCurrencyId();
       //get possible configurations
-      $ret = DB::Execute('SELECT f_payment,f_shipment,MIN(f_price+%f*f_percentage_of_amount/100) as f_price FROM premium_ecommerce_payments_carriers_data_1 
-    			WHERE active=1 AND f_currency=%s AND (f_max_weight>=%f OR f_max_weight is null) GROUP BY f_payment,f_shipment',array($_SESSION['fOrderSummary'.LANGUAGE],$currency,$weight));
+      $ret = DB::Execute('SELECT f_payment,f_shipment,f_shipment_service_type,MIN(f_price+%f*f_percentage_of_amount/100) as f_price FROM premium_ecommerce_payments_carriers_data_1 
+    			WHERE active=1 AND f_currency=%s AND (f_max_weight>=%f OR f_max_weight is null) GROUP BY f_payment,f_shipment,f_shipment_service_type',array($_SESSION['fOrderSummary'.LANGUAGE],$currency,$weight));
       $aOuterPayments = array();
       while($aExp = $ret->FetchRow()) {
         if($freeDelivery)
     	    $aPaymentsCarriers[$aExp['f_shipment']][$aExp['f_payment']] = 0;
+	elseif($aExp['f_shipment_service_type'])
+	    $aPaymentsCarriers[$aExp['f_shipment']][$aExp['f_payment']][$aExp['f_shipment_service_type']] = $aExp['f_price'];
 	else
-    	    $aPaymentsCarriers[$aExp['f_shipment']][$aExp['f_payment']] = $aExp['f_price'];
+	    $aPaymentsCarriers[$aExp['f_shipment']][$aExp['f_payment']] = $aExp['f_price'];
 	if(isset(self::$payments_to_qcpayments[$aExp['f_payment']]))
 		$aOuterPayments[$aExp['f_payment']] = self::$payments_to_qcpayments[$aExp['f_payment']];
       }
       foreach( $aShipments as $iCarrier => $carrier_name ) {
         if(!isset($aPaymentsCarriers[$iCarrier])) continue;
+        $shipment_types = DB::GetAssoc('SELECT akey,value FROM utils_commondata_tree WHERE parent_id=%d',array(self::$shipments_ids[$iCarrier]));
         $aData = array('sName'=>$carrier_name, 'iCarrier'=>$iCarrier, 'sPayments'=>null, 'fPrice'=>0);
-        $addon = 0;
         if($iCarrier==0) $this->is_pickup = true; //pickup
-        elseif($iCarrier == 2) {
-            require_once('libraries/upsRate.php');
-            if(isset($_SESSION['order_step_1']['sShippingCountry']) && isset($_SESSION['order_step_1']['sShippingZipCode']) &&
-        	!empty($_SESSION['order_step_1']['sShippingCountry']) && !empty($_SESSION['order_step_1']['sShippingZipCode'])) {
-	        $addon = ups_rate($_SESSION['order_step_1']['sShippingCountry'],$_SESSION['order_step_1']['sShippingZipCode'], $weight);
-	    } else
-	        $addon = ups_rate($_SESSION['order_step_1']['sCountry'],$_SESSION['order_step_1']['sZipCode'], $weight);
-            if(!is_numeric($addon)){
-                $_SESSION['ups_addon'] = 0;
-                $aData['sPayments'].='<script type="text/javascript">alert("'.$addon.'");</script>';
-                $oTpl->setVariables( 'aData', $aData );
-                $content .= $oTpl->tbHtml( $sFile, 'ORDER_CARRIERS' );
-                continue; // skip UPS
-            }
-            $_SESSION['ups_addon'] = $addon;
-        }
         foreach( $aPayments as $iPayment => $sName ){
           if( isset( $aPaymentsCarriers[$iCarrier][$iPayment] ) ){
-            $aData['fPaymentCarrierPrice'] = normalizePrice( $aPaymentsCarriers[$iCarrier][$iPayment]+$addon );
-            $aData['sPaymentCarrierPrice'] = displayPrice( $aData['fPaymentCarrierPrice'] );
-            $aData['iPayment'] = $iPayment;
-            $oTpl->setVariables( 'aData', $aData );
-            $aData['sPayments'] .= $oTpl->tbHtml( $sFile, 'ORDER_PAYMENT_CARRIERS_LIST' );
-          }
-          else{
+            if(is_array($aPaymentsCarriers[$iCarrier][$iPayment])) {
+              $aData['sPayments'] .= $oTpl->tbHtml( $sFile, 'ORDER_PAYMENT_CARRIERS_MULTI_BEGIN' );
+              foreach($aPaymentsCarriers[$iCarrier][$iPayment] as $service_type=>$price) {
+        	$addon = 0;
+		if($iCarrier == 2) {
+    	    	    require_once('libraries/upsRate.php');
+        	    if(isset($_SESSION['order_step_1']['sShippingCountry']) && isset($_SESSION['order_step_1']['sShippingZipCode']) &&
+        		!empty($_SESSION['order_step_1']['sShippingCountry']) && !empty($_SESSION['order_step_1']['sShippingZipCode'])) {
+			$addon = ups_rate($_SESSION['order_step_1']['sShippingCountry'],$_SESSION['order_step_1']['sShippingZipCode'], $weight, $service_type);
+	    	    } else
+	    		$addon = ups_rate($_SESSION['order_step_1']['sCountry'],$_SESSION['order_step_1']['sZipCode'], $weight, $service_type);
+            	    if(!is_numeric($addon)){
+	        	$_SESSION['ups_addon'] = 0;
+		        $aData['sPayments'].='<script type="text/javascript">alert("'.$addon.'");</script>';
+    	        	$oTpl->setVariables( 'aData', $aData );
+            		$content .= $oTpl->tbHtml( $sFile, 'ORDER_CARRIERS' );
+            		continue; // skip UPS
+        	    }
+        	    $aData['iCarrier'] = $iCarrier.'#'.$service_type;
+        	    $_SESSION['ups_addon'][$service_type] = $addon;
+    		} else {
+        	    $aData['iCarrier'] = $iCarrier;
+    		}
+                $aData['fPaymentCarrierPrice'] = normalizePrice( $price+$addon );
+	        $aData['sPaymentCarrierPrice'] = displayPrice( $aData['fPaymentCarrierPrice'] ).' ('.$shipment_types[$service_type].')';
+    	        $aData['iPayment'] = $iPayment;
+        	$oTpl->setVariables( 'aData', $aData );
+                $aData['sPayments'] .= $oTpl->tbHtml( $sFile, 'ORDER_PAYMENT_CARRIERS_MULTI_LIST' );
+              }
+              $aData['sPayments'] .= $oTpl->tbHtml( $sFile, 'ORDER_PAYMENT_CARRIERS_MULTI_END' );
+            } else {
+        	$aData['sName'] = $carrier_name;
+        	$aData['iCarrier'] = $iCarrier;
+                $aData['fPaymentCarrierPrice'] = normalizePrice( $aPaymentsCarriers[$iCarrier][$iPayment]+$addon );
+	        $aData['sPaymentCarrierPrice'] = displayPrice( $aData['fPaymentCarrierPrice'] );
+    	        $aData['iPayment'] = $iPayment;
+        	$oTpl->setVariables( 'aData', $aData );
+                $aData['sPayments'] .= $oTpl->tbHtml( $sFile, 'ORDER_PAYMENT_CARRIERS_LIST' );
+	    }
+	  } else {
             $aData['sPayments'] .= $oTpl->tbHtml( $sFile, 'ORDER_PAYMENT_CARRIERS_EMPTY' );
           }
         } // end foreach
@@ -883,6 +915,7 @@ class Orders
     return $payments;
   }
 
+  static $shipments_ids;
   function getShipments(){
     //get possible shipments
      static $shipments = null;
@@ -890,11 +923,17 @@ class Orders
         $shipments_id = DB::GetOne('SELECT id FROM utils_commondata_tree WHERE akey="Premium_Items_Orders_Shipment_Types"');
 	if($shipments_id===false)
 	    die('Common data key "Premium_Items_Orders_Shipment_Types" not defined.');
-	$shipments = DB::GetAssoc('SELECT akey, value FROM utils_commondata_tree WHERE parent_id=%d ORDER BY akey',array($shipments_id));
+	$shipments_ret = DB::Execute('SELECT akey, value, id FROM utils_commondata_tree WHERE parent_id=%d ORDER BY akey',array($shipments_id));
+	$shipments = array();
 	global $translations;
-	foreach($shipments as $k=>$v) {
+	while($row = $shipments_ret->FetchRow()) {
+		$k = $row['akey'];
+		$v = $row['value'];
+		self::$shipments_ids[$k] = $row['id'];
 		if(isset($translations['Utils_CommonData'][$v]) && $translations['Utils_CommonData'][$v])
 			$shipments[$k] = $translations['Utils_CommonData'][$v];
+		else
+			$shipments[$k] = $v;
 	}
     }
     return $shipments;
