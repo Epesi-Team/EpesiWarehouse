@@ -1,4 +1,5 @@
 <!-- BEGIN ORDER_PRINT -->
+<h2>Step 3/3: Order Sent</h2>
 <div id="orderPrint">
   <div class="message" id="ok">
     <h3>$lang[Order_sent]</h3>

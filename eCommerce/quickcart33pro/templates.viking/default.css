@@ -906,6 +906,11 @@ div#payment {
 #order #shippingData #addressesList{width:95%; text-align:center;padding:20px 0px;}
 #order #shippingData #addressesList select {width:100%;}
 
+#order #deliveryAndPayment legend {
+    float:right;
+    width:340px;
+    text-align:center;
+}
 #order #deliveryAndPayment table {
   margin-top: 10px;
   border-top: 2px solid #c0d4eb;
@@ -913,6 +918,17 @@ div#payment {
   background: #e9f0f8;
   color: #555555;
   font-size: 1em;
+  clear:both;
+  float:right;
+}
+
+#order #deliveryAndPayment table.multi_payment_carrier {
+    border: 0px;
+    margin-top: 0px;
+}
+
+#order #deliveryAndPayment table.multi_payment_carrier td:first-child {
+    border-left: 0px;
 }
 
 #order #deliveryAndPayment table tbody td {

@@ -26,6 +26,7 @@
     </script>
 <!-- END ORDER_NEW_ACCOUNT -->
 <!-- BEGIN ORDER_FORM -->
+    <h2>Step 1/3: Address Details</h2>
 <script type="text/javascript" src="$config[dir_core]checkForm.js"></script>
 <div id="order">
   <a name="orderFormAnchor"></a>
@@ -184,6 +185,7 @@ AddOnload( initOrderForm );
 </script>
 <!-- END ORDER_FORM -->
 <!-- BEGIN ORDER_FORM_LOGGED -->
+<h2>Step 1/3: Address Details</h2>
 <script type="text/javascript" src="$config[dir_core]checkForm.js"></script>
 <div id="order">
   <form action="$aData[sLinkName]" method="post" onsubmit="return checkForm( this )" id="orderForm">
@@ -339,9 +341,14 @@ AddOnload( initOrderForm );
 </script>
 <!-- END ORDER_FORM_LOGGED -->
 <!-- BEGIN ORDER_FORM_SHIPPING -->
+<h2>Step 2/3: Shipment Type</h2>
 <script type="text/javascript" src="$config[dir_core]checkForm.js"></script>
 <div id="order">
   <form action="$aData[sLinkName]" method="post" onsubmit="return checkForm( this )" id="orderForm">
+    <fieldset id="orderedProducts">
+      <legend>$lang[Ordered_products]</legend>
+      $sOrderProducts
+    </fieldset>
     <fieldset id="deliveryAndPayment">
       <legend>$lang[Delivery_and_payment]</legend>
       $sPaymentCarriers
@@ -351,8 +358,21 @@ AddOnload( initOrderForm );
       $sPickupShops
     </fieldset>
     <fieldset id="orderedProducts">
-      <legend>$lang[Ordered_products]</legend>
-      $sOrderProducts
+    <table cellspacing="0" style="border-top:0px">
+    <tfoot>
+      <tr id="rulesAccept">
+        <th colspan="4">
+          $sRules
+        </th>
+      </tr>
+      <tr id="nextStep">
+        <th colspan="4" class="nextStep">
+          <input type="hidden" value="2" name="sOrderSend" />
+          <input type="submit" value="$lang[order_send] &raquo;" class="submit" />
+        </th>
+      </tr>
+    </tfoot>
+    </table>
     </fieldset>
   </form>
 </div>
@@ -428,17 +448,6 @@ var fOrderSummary = "$aData[fProductsSummary]";
           $aData[sProductsSummary]
         </td>
       </tr>
-      <tr id="rulesAccept">
-        <th colspan="4">
-          $sRules
-        </th>
-      </tr>
-      <tr id="nextStep">
-        <th colspan="4" class="nextStep">
-          <input type="hidden" value="2" name="sOrderSend" />
-          <input type="submit" value="$lang[order_send] &raquo;" class="submit" />
-        </th>
-      </tr>
     </tfoot>
     <tbody>
 <!-- END ORDER_PRODUCTS_HEAD -->
@@ -492,11 +501,13 @@ function pickupShopCheck(e) {
 <!-- END ORDER_PAYMENT_CARRIERS_LIST -->
 <!-- BEGIN ORDER_PAYMENT_CARRIERS_MULTI_BEGIN -->
 <td>
+<table class="multi_payment_carrier">
 <!-- END ORDER_PAYMENT_CARRIERS_MULTI_BEGIN -->
 <!-- BEGIN ORDER_PAYMENT_CARRIERS_MULTI_LIST -->
-<input type="radio" name="sPaymentCarrier" value="$aData[iCarrier];$aData[iPayment];$aData[fPaymentCarrierPrice]" alt="radio;$lang['Select_delivery_and_payment']" onChange="countCarrierPrice( this );saveUserData( this.name, this.value );if(typeof pickupShopCheck != 'undefined')pickupShopCheck(this)" />$aData[sPaymentCarrierPrice]<br />
+<tr><td>$aData[sPaymentCarrierDescription]</td><td><input type="radio" name="sPaymentCarrier" value="$aData[iCarrier];$aData[iPayment];$aData[fPaymentCarrierPrice]" alt="radio;$lang['Select_delivery_and_payment']" onChange="countCarrierPrice( this );saveUserData( this.name, this.value );if(typeof pickupShopCheck != 'undefined')pickupShopCheck(this)" />$aData[sPaymentCarrierPrice]</td></tr>
 <!-- END ORDER_PAYMENT_CARRIERS_MULTI_LIST -->
 <!-- BEGIN ORDER_PAYMENT_CARRIERS_MULTI_END -->
+</table>
 </td>
 <!-- END ORDER_PAYMENT_CARRIERS_MULTI_END -->
 <!-- BEGIN ORDER_PAYMENT_CARRIERS_EMPTY -->
