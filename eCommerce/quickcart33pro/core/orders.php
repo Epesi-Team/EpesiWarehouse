@@ -815,7 +815,8 @@ class Orders
         	    $aData['iCarrier'] = $iCarrier;
     		}
                 $aData['fPaymentCarrierPrice'] = normalizePrice( $price+$addon );
-	        $aData['sPaymentCarrierPrice'] = displayPrice( $aData['fPaymentCarrierPrice'] ).' ('.$shipment_types[$service_type].')';
+	        $aData['sPaymentCarrierPrice'] = displayPrice( $aData['fPaymentCarrierPrice']);
+	        $aData['sPaymentCarrierDescription'] = $shipment_types[$service_type];
     	        $aData['iPayment'] = $iPayment;
     	        $payments[$addon.count($payments)] = $aData;
               }
