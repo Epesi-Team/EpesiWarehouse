@@ -795,6 +795,7 @@ class Orders
           if( isset( $aPaymentsCarriers[$iCarrier][$iPayment] ) ){
             if(is_array($aPaymentsCarriers[$iCarrier][$iPayment])) {
               $aData['sPayments'] .= $oTpl->tbHtml( $sFile, 'ORDER_PAYMENT_CARRIERS_MULTI_BEGIN' );
+              $payments = array();
               foreach($aPaymentsCarriers[$iCarrier][$iPayment] as $service_type=>$price) {
         	$addon = 0;
 		if($iCarrier == 2) {
@@ -816,7 +817,11 @@ class Orders
                 $aData['fPaymentCarrierPrice'] = normalizePrice( $price+$addon );
 	        $aData['sPaymentCarrierPrice'] = displayPrice( $aData['fPaymentCarrierPrice'] ).' ('.$shipment_types[$service_type].')';
     	        $aData['iPayment'] = $iPayment;
-        	$oTpl->setVariables( 'aData', $aData );
+    	        $payments[$addon.count($payments)] = $aData;
+              }
+              ksort($payments);
+              foreach($payments as $p) {
+        	$oTpl->setVariables( 'aData', $p );
                 $aData['sPayments'] .= $oTpl->tbHtml( $sFile, 'ORDER_PAYMENT_CARRIERS_MULTI_LIST' );
               }
               $aData['sPayments'] .= $oTpl->tbHtml( $sFile, 'ORDER_PAYMENT_CARRIERS_MULTI_END' );
