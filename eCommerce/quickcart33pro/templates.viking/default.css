@@ -937,6 +937,10 @@ div#payment {
   border-bottom: 1px solid #c0d4eb;
 }
 
+#carrierCost::before, #orderSummary::before {
+    content: "$ ";
+}
+
 #deliveryAndPayment table th{padding:5px 13px;border-bottom:1px solid #c0d4eb;}
 #deliveryAndPayment table thead th{text-align:center;border-left:1px solid #c0d4eb;}
 #deliveryAndPayment table thead th em{padding:0 4px 0 0;font-style:normal;}
