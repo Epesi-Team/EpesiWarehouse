@@ -49,9 +49,9 @@ $lang[Click_on_order_to_see_details]
 <!-- BEGIN ORDER_PRINT_LIST -->
 <tr class="l$aData[sStyle]">
   <th>$aData[sName]</th>
-  <td class="price">$aData[sPrice]</td>
+  <td class="price">&#36;&nbsp;$aData[sPrice]</td>
   <td class="quantity">$aData[iQuantity]</td>
-  <td class="summary">$aData[sSummary]</td>
+  <td class="summary">&#36;&nbsp;$aData[sSummary]</td>
 </tr>
 <!-- END ORDER_PRINT_LIST -->
 <!-- BEGIN ORDER_PRINT_HEAD -->
@@ -60,9 +60,9 @@ $lang[Click_on_order_to_see_details]
     <thead>
       <tr>
         <td class="name">$lang[Name]</td>
-        <td class="price"><em>$lang[Price]</em><span>[$config[currency_symbol]]</span></td>
+        <td class="price"><em>$lang[Price]</em></td>
         <td class="quantity">$lang[Quantity]</td>
-        <td class="summary"><em>$lang[Summary]</em><span>[$config[currency_symbol]]</span></td>
+        <td class="summary"><em>$lang[Summary]</em></td>
       </tr>
     </thead>
     <tfoot>

@@ -39,9 +39,9 @@
 <!-- BEGIN ORDER_PRINT_LIST -->
 <tr class="l$aData[sStyle]">
   <th>$aData[sName]</th>
-  <td class="price">$aData[sPrice]</td>
+  <td class="price">&#36;&nbsp;$aData[sPrice]</td>
   <td class="quantity">$aData[iQuantity]</td>
-  <td class="summary">$aData[sSummary]</td>
+  <td class="summary">&#36;&nbsp;$aData[sSummary]</td>
 </tr>
 <!-- END ORDER_PRINT_LIST -->
 <!-- BEGIN ORDER_PRINT_HEAD -->
@@ -50,9 +50,9 @@
     <thead>
       <tr>
         <td class="name">$lang[Name]</td>
-        <td class="price"><em>$lang[Price]</em><span>[$config[currency_symbol]]</span></td>
+        <td class="price"><em>$lang[Price]</em></td>
         <td class="quantity">$lang[Quantity]</td>
-        <td class="summary"><em>$lang[Summary]</em><span>[$config[currency_symbol]]</span></td>
+        <td class="summary"><em>$lang[Summary]</em></td>
       </tr>
     </thead>
     <tfoot>
@@ -147,12 +147,12 @@
                                     <h4>$lang[Order_summary]</h4>
                                     $aData[sProducts]
                                     <ul>
-                                    <li>$aData[sCarrierName] ($aData[sPaymentName]) = $aData[sPaymentCarrierPrice] $config[currency_symbol]</li>
+                                    <li>$aData[sCarrierName] ($aData[sPaymentName]) = &#36;&nbsp;$aData[sPaymentCarrierPrice]</li>
                                     $aData[sPaymentChannelInfo]
                                     $aData[sShipmentDiscountInfo]
                                     </ul>
                                     
-                                    <b>$lang[Summary_cost]: $aData[sOrderSummary] $config[currency_symbol]</b>
+                                    <b>$lang[Summary_cost]: &#36;&nbsp;$aData[sOrderSummary]</b>
                                 </font>
                             </td>
                             <td width="20"></td>
@@ -191,6 +191,6 @@
 <!-- END ORDER_EMAIL_SHIPPING -->
 <!-- BEGIN ORDER_EMAIL_PAYMENT_CHANNEL --><li>$lang[Payment_channel]: $aData[sPaymentChannel]</li><!-- END ORDER_EMAIL_PAYMENT_CHANNEL -->
 <!-- BEGIN_ORDER_SHIPMENT_DISCOUNT --><li>$lang[Shipment_discount]: $aOrder[sShipmentDiscount]</li><!-- END ORDER_EMAIL_SHIPMENT_DISCOUNT -->
-<!-- BEGIN ORDER_EMAIL_LIST --><tr><td>$aData[sName]</td><td>$aData[sPrice] $config[currency_symbol]</td><td>$aData[iQuantity]</td><td>$aData[sSummary] $config[currency_symbol]</li></td></tr><!-- END ORDER_EMAIL_LIST -->
+<!-- BEGIN ORDER_EMAIL_LIST --><tr><td>$aData[sName]</td><td>&#36;&nbsp;$aData[sPrice]</td><td>$aData[iQuantity]</td><td>&#36;&nbsp;$aData[sSummary]</li></td></tr><!-- END ORDER_EMAIL_LIST -->
 <!-- BEGIN ORDER_EMAIL_HEAD --><table border="1" cellspacing="0" style="text-align:center" width="100%"><tr><th>Name</th><th>Unit Price</th><th>Qty</th><th>Price</th></tr><!-- END ORDER_EMAIL_HEAD -->
 <!-- BEGIN ORDER_EMAIL_FOOT --></table><!-- END ORDER_EMAIL_FOOT -->

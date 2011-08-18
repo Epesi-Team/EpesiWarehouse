@@ -4,13 +4,13 @@
     <a href="$aData[sLinkName]">$aData[sName]</a>
   </th>
   <td class="price">
-    $aData[sPrice]
+    &#36;&nbsp;$aData[sPrice]
   </td>
   <td class="quantity">
     <label for="quantity$aData[iProduct]">$lang[Quantity]</label><input type="text" name="aProducts[$aData[iProduct]]" value="$aData[iQuantity]" size="3" maxlength="4" class="input" id="quantity$aData[iProduct]" alt="int" />
   </td>
   <td class="summary">
-    $aData[sSummary]
+    &#36;&nbsp;$aData[sSummary]
   </td>
   <td class="del">
     <a href="$aData[sLinkDelete]">$lang[Basket_delete]</a>
@@ -30,13 +30,13 @@
               $lang[Name]
             </td>
             <td class="price">
-              <em>$lang[Price]</em><span>[$config[currency_symbol]]</span>
+              <em>$lang[Price]</em>
             </td>
             <td class="quantity">
               $lang[Quantity]
             </td>
             <td class="summary">
-              <em>$lang[Summary]</em><span>[$config[currency_symbol]]</span>
+              <em>$lang[Summary]</em>
             </td>
             <td class="options">&nbsp;</td>
           </tr>
@@ -54,7 +54,7 @@
               $lang[Summary]
             </th>
             <td id="summary">
-              $aData[sProductsSummary]
+              &#36;&nbsp;$aData[sProductsSummary]
             </td>
             <td>&nbsp;</td>
           </tr>

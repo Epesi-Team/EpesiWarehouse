@@ -1,5 +1,5 @@
 <!-- BEGIN LIST --><li class="l$aData[sStyle]">$aData[sName]$aData[sSubContent]</li><!-- END LIST -->
-<!-- BEGIN LIST_BASKET --><li class="l$aData[sStyle]" id="basketMenu">$aData[sName]<span>$lang[Basket_products]:&nbsp;<strong>$iOrderProducts</strong><br />$lang[Summary]:&nbsp;<strong>$fOrderSummary $config[currency_symbol]</strong></span>$aData[sSubContent]</li><!-- END LIST_BASKET -->
+<!-- BEGIN LIST_BASKET --><li class="l$aData[sStyle]" id="basketMenu">$aData[sName]<span>$lang[Basket_products]:&nbsp;<strong>$iOrderProducts</strong><br />$lang[Summary]:&nbsp;<strong>&#36;&nbsp;$fOrderSummary</strong></span>$aData[sSubContent]</li><!-- END LIST_BASKET -->
 
 <!-- BEGIN HEAD --><a href="$aData[sLinkName]" class="cart"><ul id="menu_basket"><!-- END HEAD -->
 

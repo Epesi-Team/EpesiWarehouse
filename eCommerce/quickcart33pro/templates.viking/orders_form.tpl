@@ -389,13 +389,13 @@ AddOnload( initOrderForm );
     <a href="$aData[sLinkName]">$aData[sName]</a>
   </th>
   <td class="price">
-    $aData[sPrice]
+    &#36;&nbsp;$aData[sPrice]
   </td>
   <td class="quantity">
     $aData[iQuantity]
   </td>
   <td class="summary">
-    $aData[sSummary]
+    &#36;&nbsp;$aData[sSummary]
   </td>
 </tr>
 <!-- END ORDER_PRODUCTS_LIST -->
@@ -413,13 +413,13 @@ var fOrderSummary = "$aData[fProductsSummary]";
           $lang[Name]
         </td>
         <td class="price">
-          <em>$lang[Price]</em><span>[$config[currency_symbol]]</span>
+          <em>$lang[Price]</em>
         </td>
         <td class="quantity">
           $lang[Quantity]
         </td>
         <td class="summary">
-          <em>$lang[Summary]</em><span>[$config[currency_symbol]]</span>
+          <em>$lang[Summary]</em>
         </td>
       </tr>
     </thead>
@@ -429,7 +429,7 @@ var fOrderSummary = "$aData[fProductsSummary]";
           $lang[Order_summary]
         </th>
         <td>
-          $aData[sProductsSummary]
+          &#36;&nbsp;$aData[sProductsSummary]
         </td>
       </tr>
       <tr class="summaryDelivery">
@@ -445,7 +445,7 @@ var fOrderSummary = "$aData[fProductsSummary]";
           $lang[Summary_cost]
         </th>
         <td id="orderSummary">
-          $aData[sProductsSummary]
+          &#36;&nbsp;$aData[sProductsSummary]
         </td>
       </tr>
     </tfoot>
@@ -459,7 +459,7 @@ var fOrderSummary = "$aData[fProductsSummary]";
 
 <!-- BEGIN ORDER_PAYMENTS -->
 <th>
-  <em>$aData[sName]</em><span>[$config[currency_symbol]]</span>
+  <em>$aData[sName]</em>
   $aData[sPaymentChannel]
 </th>
 <!-- END ORDER_PAYMENTS -->
@@ -497,14 +497,14 @@ function pickupShopCheck(e) {
 <tr><td><input type="radio" name="iPickupShop" value="$aData[iShop]" onChange="saveUserData( this.name, this.value )" />$aData[sName]</td></tr>
 <!-- END ORDER_PICKUP_SHOP_LIST -->
 <!-- BEGIN ORDER_PAYMENT_CARRIERS_LIST -->
-<td><input type="radio" name="sPaymentCarrier" value="$aData[iCarrier];$aData[iPayment];$aData[fPaymentCarrierPrice]" alt="radio;$lang['Select_delivery_and_payment']" onChange="countCarrierPrice( this );saveUserData( this.name, this.value );if(typeof pickupShopCheck != 'undefined')pickupShopCheck(this)" />$aData[sPaymentCarrierPrice]</td>
+<td><input type="radio" name="sPaymentCarrier" value="$aData[iCarrier];$aData[iPayment];$aData[fPaymentCarrierPrice]" alt="radio;$lang['Select_delivery_and_payment']" onChange="countCarrierPrice( this );saveUserData( this.name, this.value );if(typeof pickupShopCheck != 'undefined')pickupShopCheck(this)" />&#36;&nbsp;$aData[sPaymentCarrierPrice]</td>
 <!-- END ORDER_PAYMENT_CARRIERS_LIST -->
 <!-- BEGIN ORDER_PAYMENT_CARRIERS_MULTI_BEGIN -->
 <td>
 <table class="multi_payment_carrier">
 <!-- END ORDER_PAYMENT_CARRIERS_MULTI_BEGIN -->
 <!-- BEGIN ORDER_PAYMENT_CARRIERS_MULTI_LIST -->
-<tr><td>$aData[sPaymentCarrierDescription]</td><td><input type="radio" name="sPaymentCarrier" value="$aData[iCarrier];$aData[iPayment];$aData[fPaymentCarrierPrice]" alt="radio;$lang['Select_delivery_and_payment']" onChange="countCarrierPrice( this );saveUserData( this.name, this.value );if(typeof pickupShopCheck != 'undefined')pickupShopCheck(this)" />$aData[sPaymentCarrierPrice]</td></tr>
+<tr><td>$aData[sPaymentCarrierDescription]</td><td><input type="radio" name="sPaymentCarrier" value="$aData[iCarrier];$aData[iPayment];$aData[fPaymentCarrierPrice]" alt="radio;$lang['Select_delivery_and_payment']" onChange="countCarrierPrice( this );saveUserData( this.name, this.value );if(typeof pickupShopCheck != 'undefined')pickupShopCheck(this)" />&#36;&nbsp;$aData[sPaymentCarrierPrice]</td></tr>
 <!-- END ORDER_PAYMENT_CARRIERS_MULTI_LIST -->
 <!-- BEGIN ORDER_PAYMENT_CARRIERS_MULTI_END -->
 </table>
