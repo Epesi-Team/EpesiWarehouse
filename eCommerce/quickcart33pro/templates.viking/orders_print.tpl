@@ -167,14 +167,14 @@
 <!-- BEGIN ORDER_EMAIL_COMPANY -->$lang[Company]: <i>$aData[sCompanyName]</i><br><!-- END ORDER_EMAIL_COMPANY -->
 <!-- BEGIN ORDER_EMAIL_BILLING -->
                                     <h4>$lang[Your_personal_information]</h4>
-                                    $lang[First_and_last_name]: <i>$aData[sFirstName] $aData[sLastName]</i><br>
+                                    $aData[sFirstName] $aData[sLastName]<br>
                                     $aData[sCompanyInfo]
-                                    $lang[Street]: <i>$aData[sStreet]</i><br>
-                                    $lang[Zip_code]: <i>$aData[sZipCode]</i><br>
-                                    $lang[City]: <i>$aData[sCity]</i><br>
-                                    $lang[Country]: <i>$aData[sCountry]</i><br>
-                                    $lang[Telephone]: <i>$aData[sPhone]</i><br>
-                                    $lang[Email]: <i>$aData[sEmail]</i><br>
+                                    $aData[sStreet]<br>
+                                    $aData[sCity], $aData[sState]
+ $aData[sZipCode]<br>
+                                    $aData[sCountry]<br>
+                                    $lang[Telephone]: $aData[sPhone]<br>
+                                    $lang[Email]: $aData[sEmail]<br>
                                     <br>
 <!-- END ORDER_EMAIL_BILLING -->
 <!-- BEGIN ORDER_EMAIL_SHIPPING_COMPANY -->$lang[Company]: <i>$aData[sShippingCompanyName]</i><br><!-- END ORDER_EMAIL_SHIPPING_COMPANY -->
