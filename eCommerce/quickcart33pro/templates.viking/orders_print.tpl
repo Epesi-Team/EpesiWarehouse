@@ -180,13 +180,12 @@
 <!-- BEGIN ORDER_EMAIL_SHIPPING_COMPANY -->$lang[Company]: <i>$aData[sShippingCompanyName]</i><br><!-- END ORDER_EMAIL_SHIPPING_COMPANY -->
 <!-- BEGIN ORDER_EMAIL_SHIPPING -->
                                     <h4>$lang[Different_shipping_address]</h4>
-                                    $lang[First_and_last_name]: <i>$aData[sShippingFirstName] $aData[sShippingLastName]</i><br>
+                                    $aData[sShippingFirstName] $aData[sShippingLastName]<br>
                                     $aData[sShippingCompanyInfo]
-                                    $lang[Street]: <i>$aData[sShippingStreet]</i><br>
-                                    $lang[Zip_code]: <i>$aData[sShippingZipCode]</i><br>
-                                    $lang[City]: <i>$aData[sShippingCity]</i><br>
-                                    $lang[Country]: <i>$aData[sShippingCountry]</i><br>
-                                    $lang[Telephone]: <i>$aData[sShippingPhone]</i><br>
+                                    $aData[sShippingStreet]<br>
+                                    $aData[sShippingCity], $aData[sShippingZipCode]<br>
+                                    $aData[sShippingCountry]<br>
+                                    $lang[Telephone]: $aData[sShippingPhone]<br>
                                     <br>
 <!-- END ORDER_EMAIL_SHIPPING -->
 <!-- BEGIN ORDER_EMAIL_PAYMENT_CHANNEL --><li>$lang[Payment_channel]: $aData[sPaymentChannel]</li><!-- END ORDER_EMAIL_PAYMENT_CHANNEL -->
