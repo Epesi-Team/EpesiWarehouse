@@ -31,7 +31,6 @@ class Premium_Warehouse_Items extends Module {
 		}
 		$this->rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items');
 		$this->rb->set_default_order(array('item_name'=>'ASC'));
-		$this->rb->set_cut_lengths(array('item_name'=>50,'vendor'=>35));
 		$defaults = array('quantity_on_hand'=>'0','reorder_point'=>'0','weight'=>1);
 		$this->rb->set_defaults(array(
 			$this->t('Inv. Item')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'inv_item.png'), 'defaults'=>array_merge($defaults,array('item_type'=>0))),
@@ -56,16 +55,16 @@ class Premium_Warehouse_Items extends Module {
 		}
 			
 		$this->rb->set_header_properties(array(
-						'quantity_on_hand'=>array('name'=>'On Hand', 'width'=>1, 'wrapmode'=>'nowrap'),
-						'quantity_en_route'=>array('name'=>'En Route', 'width'=>1, 'wrapmode'=>'nowrap'),
-						'available_qty'=>array('name'=>'Avail. Qty', 'width'=>1, 'wrapmode'=>'nowrap'),
-						'dist_qty'=>array('name'=>'Dist. Qty', 'width'=>1, 'wrapmode'=>'nowrap'),
-						'reserved_qty'=>array('name'=>'Res. Qty', 'width'=>1, 'wrapmode'=>'nowrap'),
-						'manufacturer_part_number'=>array('name'=>'Part Number', 'width'=>1, 'wrapmode'=>'nowrap'),
-						'item_type'=>array('width'=>1, 'wrapmode'=>'nowrap'),
-						'gross_price'=>array('name'=>'Price','width'=>1, 'wrapmode'=>'nowrap'),
+						'quantity_on_hand'=>array('name'=>'On Hand', 'width'=>10, 'wrapmode'=>'nowrap'),
+						'quantity_en_route'=>array('name'=>'En Route', 'width'=>10, 'wrapmode'=>'nowrap'),
+						'available_qty'=>array('name'=>'Avail. Qty', 'width'=>10, 'wrapmode'=>'nowrap'),
+						'dist_qty'=>array('name'=>'Dist. Qty', 'width'=>10, 'wrapmode'=>'nowrap'),
+						'reserved_qty'=>array('name'=>'Res. Qty', 'width'=>10, 'wrapmode'=>'nowrap'),
+						'manufacturer_part_number'=>array('name'=>'Part Number', 'width'=>10, 'wrapmode'=>'nowrap'),
+						'item_type'=>array('width'=>10, 'wrapmode'=>'nowrap'),
+						'gross_price'=>array('name'=>'Price','width'=>10, 'wrapmode'=>'nowrap'),
 						'item_name'=>array('wrapmode'=>'nowrap'),
-						'sku'=>array('width'=>1, 'wrapmode'=>'nowrap')
+						'sku'=>array('width'=>10, 'wrapmode'=>'nowrap')
 						));
 
 		if(ModuleManager::is_installed('Premium_Warehouse_eCommerce')>=0)
@@ -209,7 +208,7 @@ class Premium_Warehouse_Items extends Module {
 		$rb->set_defaults(array('parent_category'=>$arg['id']));
 		$rb->force_order(array('position'=>'ASC','category_name'=>'ASC'));
 //		$rb->set_header_properties(array(
-//			'language'=>array('width'=>1, 'wrapmode'=>'nowrap'),
+//			'language'=>array('width'=>10, 'wrapmode'=>'nowrap'),
 //			'description'=>array('width'=>50, 'wrapmode'=>'nowrap')
 //									));
 		$rb->set_additional_actions_method(array($this, 'actions_for_position'));
@@ -236,7 +235,7 @@ class Premium_Warehouse_Items extends Module {
 		
 		$sorting = array('item_name'=>'ASC');
 		$cols = array(
-							array('field'=>'item_name', 'width'=>10, 'cut'=>18),
+							array('field'=>'item_name', 'width'=>10),
 							array('field'=>'quantity_on_hand', 'width'=>10)
 										);
 

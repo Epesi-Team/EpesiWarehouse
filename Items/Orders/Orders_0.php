@@ -73,12 +73,12 @@ class Premium_Warehouse_Items_Orders extends Module {
 		$this->rb->set_additional_actions_method(array($this,'orders_actions'));
 
 		$this->rb->set_header_properties(array(
-			'terms'=>array('width'=>1, 'wrapmode'=>'nowrap'),
-			'status'=>array('width'=>1, 'wrapmode'=>'nowrap'),
-			'transaction_id'=>array('width'=>1, 'wrapmode'=>'nowrap', 'name'=>'Trans. ID'),
-			'transaction_type'=>array('width'=>1, 'wrapmode'=>'nowrap', 'name'=>'Type'),
-			'invoice_number'=>array('width'=>1, 'wrapmode'=>'nowrap', 'name'=>'Invoice'),
-			'transaction_date'=>array('width'=>1, 'wrapmode'=>'nowrap', 'name'=>'Date')
+			'terms'=>array('width'=>10, 'wrapmode'=>'nowrap'),
+			'status'=>array('width'=>10, 'wrapmode'=>'nowrap'),
+			'transaction_id'=>array('width'=>10, 'wrapmode'=>'nowrap', 'name'=>'Trans. ID'),
+			'transaction_type'=>array('width'=>10, 'wrapmode'=>'nowrap', 'name'=>'Type'),
+			'invoice_number'=>array('width'=>10, 'wrapmode'=>'nowrap', 'name'=>'Invoice'),
+			'transaction_date'=>array('width'=>10, 'wrapmode'=>'nowrap', 'name'=>'Date')
 		));
 		
 		$this->display_module($this->rb);
@@ -141,7 +141,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 		
 		$sorting = array();
 		$cols = array(
-							array('field'=>'transaction_id', 'width'=>1, 'label'=>$this->t('Trans. ID')),
+							array('field'=>'transaction_id', 'width'=>10, 'label'=>$this->t('Trans. ID')),
 							array('field'=>'transaction_type', 'width'=>10, 'label'=>$this->t('Trans. Type')),
 							array('field'=>'status', 'width'=>10),
 //							array('field'=>'operation', 'width'=>10),
@@ -198,10 +198,10 @@ class Premium_Warehouse_Items_Orders extends Module {
 		$rb->set_button(false);
 		$rb->set_defaults(array('item_name'=>$arg['id']));
 		$rb->set_header_properties(array(
-			'transaction_id'=>array('name'=>'Trans. ID', 'width'=>1, 'wrapmode'=>'nowrap'),
-			'transaction_date'=>array('name'=>'Trans. Date', 'width'=>1, 'wrapmode'=>'nowrap'),
-			'transaction_type'=>array('name'=>'Trans. Type', 'width'=>1, 'wrapmode'=>'nowrap'),
-			'transaction_status'=>array('name'=>'Trans. Status', 'width'=>1, 'wrapmode'=>'nowrap')
+			'transaction_id'=>array('name'=>'Trans. ID', 'width'=>10, 'wrapmode'=>'nowrap'),
+			'transaction_date'=>array('name'=>'Trans. Date', 'width'=>10, 'wrapmode'=>'nowrap'),
+			'transaction_type'=>array('name'=>'Trans. Type', 'width'=>10, 'wrapmode'=>'nowrap'),
+			'transaction_status'=>array('name'=>'Trans. Status', 'width'=>10, 'wrapmode'=>'nowrap')
 									));
 		$this->display_module($rb,$order,'show_data');
 	}
@@ -216,11 +216,11 @@ class Premium_Warehouse_Items_Orders extends Module {
 		$header_prop = array(
 			'item_name'=>array('width'=>25, 'wrapmode'=>'nowrap'),
 			'description'=>array('width'=>70, 'wrapmode'=>'nowrap'),
-			'gross_total'=>array('width'=>1, 'wrapmode'=>'nowrap'),
-			'tax_value'=>array('width'=>1, 'wrapmode'=>'nowrap'),
-			'tax_rate'=>array('width'=>1, 'wrapmode'=>'nowrap'),
+			'gross_total'=>array('width'=>10, 'wrapmode'=>'nowrap'),
+			'tax_value'=>array('width'=>10, 'wrapmode'=>'nowrap'),
+			'tax_rate'=>array('width'=>10, 'wrapmode'=>'nowrap'),
 			'sww'=>array('width'=>15, 'wrapmode'=>'nowrap'),
-			'net_total'=>array('width'=>1, 'wrapmode'=>'nowrap'),
+			'net_total'=>array('width'=>10, 'wrapmode'=>'nowrap'),
 			'net_price'=>array('width'=>28, 'wrapmode'=>'nowrap'),
 			'gross_price'=>array('width'=>28, 'wrapmode'=>'nowrap'),
 			'debit'=>array('width'=>20, 'wrapmode'=>'nowrap'),
@@ -299,7 +299,6 @@ class Premium_Warehouse_Items_Orders extends Module {
 		else
 			$rb->enable_quick_new_records();
 		$rb->set_defaults(array('transaction_id'=>$arg['id']));
-		$rb->set_cut_lengths(array('description'=>50));
 		$rb->set_header_properties($header_prop);
 		$this->display_module($rb,$order,'show_data');
 	}

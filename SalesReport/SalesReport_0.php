@@ -674,7 +674,7 @@ class Premium_Warehouse_SalesReport extends Module {
 		$cols='';
 		// sales status can be 7 or 20
 		$orders = array(array('warehouse'=>$warehouse_id,'transaction_type'=>'1','status'=>array(20,7),'>='.$order_date=>$start, '<='.$order_date=>$end), $cols, array($order_date=>'DESC'));
-		$rb->set_header_properties(array('terms'=>array('width'=>1, 'wrapmode'=>'nowrap'),'status'=>array('width'=>1, 'wrapmode'=>'nowrap')));
+		$rb->set_header_properties(array('terms'=>array('wrapmode'=>'nowrap'),'status'=>array('wrapmode'=>'nowrap')));
 		$this->display_module($rb,$orders,'show_data');
 		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
 		return true;
@@ -687,7 +687,7 @@ class Premium_Warehouse_SalesReport extends Module {
 		$order_date='transaction_date';
 		$cols='';
 		$orders = array(array('warehouse'=>$warehouse_id,'transaction_type'=>'0','status'=>'20', '>='.$order_date=>$start, '<='.$order_date=>$end), $cols, array($order_date=>'DESC'));
-		$rb->set_header_properties(array('terms'=>array('width'=>1, 'wrapmode'=>'nowrap'),'status'=>array('width'=>1, 'wrapmode'=>'nowrap')));
+		$rb->set_header_properties(array('terms'=>array('wrapmode'=>'nowrap'),'status'=>array('wrapmode'=>'nowrap')));
 		$this->display_module($rb,$orders,'show_data');
 		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
 		return true;

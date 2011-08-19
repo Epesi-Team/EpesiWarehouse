@@ -211,7 +211,7 @@ class Premium_Warehouse_eCommerce extends Module {
 		$rb->set_defaults(array('poll'=>$arg['id'],'votes'=>0));
 		$rb->set_header_properties(array(
 			'answer'=>array('width'=>50, 'wrapmode'=>'nowrap'),
-			'votes'=>array('width'=>1, 'wrapmode'=>'nowrap')
+			'votes'=>array('width'=>10, 'wrapmode'=>'nowrap')
 									));
 		$this->display_module($rb,$order,'show_data');
 	}
@@ -287,7 +287,7 @@ class Premium_Warehouse_eCommerce extends Module {
 		$order = array(array('parameter'=>$arg['id']), array('parameter'=>false,'language'=>true,'label'=>true), array('language'=>'ASC'));
 		$rb->set_defaults(array('parameter'=>$arg['id'],'language'=>Base_LangCommon::get_lang_code()));
 		$rb->set_header_properties(array(
-			'language'=>array('width'=>1, 'wrapmode'=>'nowrap'),
+			'language'=>array('width'=>10, 'wrapmode'=>'nowrap'),
 			'label'=>array('width'=>50, 'wrapmode'=>'nowrap')
 									));
 		$this->display_module($rb,$order,'show_data');
@@ -298,7 +298,7 @@ class Premium_Warehouse_eCommerce extends Module {
 		$order = array(array('group'=>$arg['id']), array('group'=>false,'language'=>true,'label'=>true), array('language'=>'ASC'));
 		$rb->set_defaults(array('group'=>$arg['id'],'language'=>Base_LangCommon::get_lang_code()));
 		$rb->set_header_properties(array(
-			'language'=>array('width'=>1, 'wrapmode'=>'nowrap'),
+			'language'=>array('width'=>10, 'wrapmode'=>'nowrap'),
 			'label'=>array('width'=>50, 'wrapmode'=>'nowrap')
 									));
 		$this->display_module($rb,$order,'show_data');
@@ -309,7 +309,7 @@ class Premium_Warehouse_eCommerce extends Module {
 		$order = array(array('availability'=>$arg['id']), array('availability'=>false,'language'=>true,'label'=>true), array('language'=>'ASC'));
 		$rb->set_defaults(array('availability'=>$arg['id'],'language'=>Base_LangCommon::get_lang_code()));
 		$rb->set_header_properties(array(
-			'language'=>array('width'=>1, 'wrapmode'=>'nowrap'),
+			'language'=>array('width'=>10, 'wrapmode'=>'nowrap'),
 			'label'=>array('width'=>50, 'wrapmode'=>'nowrap')
 									));
 		$this->display_module($rb,$order,'show_data');
@@ -320,7 +320,7 @@ class Premium_Warehouse_eCommerce extends Module {
 		$order = array(array('item_name'=>$arg['item_name']), array('item_name'=>false), array('language'=>'ASC'));
 		$rb->set_defaults(array('item_name'=>$arg['item_name'],'language'=>Base_LangCommon::get_lang_code()));
 		$rb->set_header_properties(array(
-			'language'=>array('width'=>1, 'wrapmode'=>'nowrap'),
+			'language'=>array('width'=>10, 'wrapmode'=>'nowrap'),
 			'description'=>array('width'=>50, 'wrapmode'=>'nowrap')
 									));
 		$this->display_module($rb,$order,'show_data');
@@ -331,7 +331,7 @@ class Premium_Warehouse_eCommerce extends Module {
 		$order = array(array('item_name'=>$arg['item_name']), array('item_name'=>false), array('language'=>'ASC'));
 		$rb->set_defaults(array('item_name'=>$arg['item_name'],'language'=>Base_LangCommon::get_lang_code()));
 		$rb->set_header_properties(array(
-			'language'=>array('width'=>1, 'wrapmode'=>'nowrap'),
+			'language'=>array('width'=>10, 'wrapmode'=>'nowrap'),
 			'description'=>array('width'=>50, 'wrapmode'=>'nowrap')
 									));
 		$this->display_module($rb,$order,'show_data');
@@ -342,7 +342,7 @@ class Premium_Warehouse_eCommerce extends Module {
 		$order = array(array('category'=>$arg['id']), array('category'=>false), array('language'=>'ASC'));
 		$rb->set_defaults(array('category'=>$arg['id'],'language'=>Base_LangCommon::get_lang_code()));
 		$rb->set_header_properties(array(
-			'language'=>array('width'=>1, 'wrapmode'=>'nowrap'),
+			'language'=>array('width'=>10, 'wrapmode'=>'nowrap'),
 			'description'=>array('width'=>50, 'wrapmode'=>'nowrap')
 									));
 		$this->display_module($rb,$order,'show_data');
@@ -364,7 +364,7 @@ class Premium_Warehouse_eCommerce extends Module {
 		$order = array(array('parent_page'=>$arg['id']), array(), array('page_name'=>'ASC'));
 		$rb->set_defaults(array('parent_page'=>$arg['id'],'publish'=>1,'type'=>2));
 //		$rb->set_header_properties(array(
-//			'language'=>array('width'=>1, 'wrapmode'=>'nowrap'),
+//			'language'=>array('width'=>10, 'wrapmode'=>'nowrap'),
 //			'description'=>array('width'=>50, 'wrapmode'=>'nowrap')
 //									));
 		$this->display_module($rb,$order,'show_data');
@@ -375,7 +375,7 @@ class Premium_Warehouse_eCommerce extends Module {
 		$order = array(array('page'=>$arg['id']), array('page'=>false), array('language'=>'ASC'));
 		$rb->set_defaults(array('page'=>$arg['id'],'language'=>Base_LangCommon::get_lang_code()));
 		$rb->set_header_properties(array(
-			'language'=>array('width'=>1, 'wrapmode'=>'nowrap'),
+			'language'=>array('width'=>10, 'wrapmode'=>'nowrap'),
 			'name'=>array('wrapmode'=>'nowrap')
 									));
 		$this->display_module($rb,$order,'show_data');
@@ -386,7 +386,7 @@ class Premium_Warehouse_eCommerce extends Module {
 		$order = array(array('item_name'=>$arg['item_name']), array('item_name'=>false), array('currency'=>'ASC'));
 		$rb->set_defaults(array('item_name'=>$arg['item_name']));
 		$rb->set_header_properties(array(
-			'currency'=>array('width'=>1, 'wrapmode'=>'nowrap'),
+			'currency'=>array('width'=>10, 'wrapmode'=>'nowrap'),
 			'price'=>array('wrapmode'=>'nowrap')
 									));
 		$this->display_module($rb,$order,'show_data');
@@ -792,7 +792,6 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 
 		$this->rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items');
 		$this->rb->set_default_order(array('item_name'=>'ASC'));
-		$this->rb->set_cut_lengths(array('item_name'=>50));
 		
 		$this->rb->set_button(false);
 		$this->rb->disable_watchdog();
@@ -807,9 +806,9 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 						'product_code'=>array('width'=>15, 'wrapmode'=>'nowrap'),
 						'upc'=>array('width'=>20, 'wrapmode'=>'nowrap'),
 						'item_type'=>array('width'=>5, 'wrapmode'=>'nowrap'),
-//						'gross_price'=>array('name'=>'Price','width'=>1, 'wrapmode'=>'nowrap'),
+//						'gross_price'=>array('name'=>'Price','width'=>10, 'wrapmode'=>'nowrap'),
 						'item_name'=>array('wrapmode'=>'nowrap'),
-						'sku'=>array('width'=>1, 'wrapmode'=>'nowrap')
+						'sku'=>array('width'=>10, 'wrapmode'=>'nowrap')
 						));
 
   		$this->rb->set_additional_actions_method(array($this,'fast_fill_actions'));
@@ -1200,7 +1199,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 		$order = array(array('item_name'=>$arg['item_name']), array('item_name'=>false), array('time'=>'DESC'));
 		$rb->set_defaults(array('item_name'=>$arg['item_name'],'language'=>Base_LangCommon::get_lang_code()));
 		$rb->set_header_properties(array(
-			'language'=>array('width'=>1, 'wrapmode'=>'nowrap'),
+			'language'=>array('width'=>10, 'wrapmode'=>'nowrap'),
 			'content'=>array('width'=>50, 'wrapmode'=>'nowrap')
 									));
 		$this->display_module($rb,$order,'show_data');
@@ -1225,7 +1224,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 		$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_product_comments');
 		$args = array(array('publish'=>0), array('product'=>true,'publish'=>false), array('time'=>'DESC'));
 		$this->rb->set_header_properties(array(
-			'language'=>array('width'=>1, 'wrapmode'=>'nowrap'),
+			'language'=>array('width'=>10, 'wrapmode'=>'nowrap'),
 			'content'=>array('width'=>50, 'wrapmode'=>'nowrap')
 									));
 		$this->rb->set_additional_actions_method(array($this, 'comments_publish_action'));
