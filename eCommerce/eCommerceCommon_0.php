@@ -916,12 +916,12 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
             $orec['shipment_type'] = self::display_shipment_type($values);
             $orec['payment_type'] = Utils_CommonDataCommon::get_value('Premium_Items_Orders_Payment_Types/'.$values['payment_type']);
             $h_cost = Utils_CurrencyFieldCommon::get_values($values['handling_cost']);
-            $sh_cost = Utils_CurrencyFieldCommon::get_values($values['shipping_cost']);
+            $sh_cost = Utils_CurrencyFieldCommon::get_values($values['shipment_cost']);
             if($h_cost[1]==$sh_cost[1])
                 $orec['shipment_handling_cost'] = Utils_CurrencyFieldCommon::format($h_cost[0]+$sh_cost[0],$h_cost[1]);
             else
-                $orec['shipment_handling_cost'] = Utils_CurrencyFieldCommon::format($values['handling_cost']).' + '.Utils_CurrencyFieldCommon::format($values['shipping_cost']);
-            $orec['total_value'] = Utils_CurrencyFieldCommon::format($values['total_value']);
+                $orec['shipment_handling_cost'] = Utils_CurrencyFieldCommon::format($values['handling_cost']).' + '.Utils_CurrencyFieldCommon::format($values['shipment_cost']);
+            $orec['total_value'] = Premium_Warehouse_Items_OrdersCommon::display_total_value($values,true);
 
             $erec = Utils_RecordBrowserCommon::get_records('premium_ecommerce_orders',array('transaction_id'=>$values['id']));
             if($erec && is_array($erec) && count($erec)==1) {
@@ -945,9 +945,10 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
                 $it_tmp = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details',array('transaction_id'=>$values['id']));
                 $items = '<ul>';
                 foreach($it_tmp as & $it) {
-	            $it['gross_total'] = Premium_Warehouse_Items_OrdersCommon::display_order_details_gross_price($it);
-	            $it['gross_price'] = Utils_CurrencyFieldCommon::format($it['gross_price']);
+	            $it['gross_total'] = Premium_Warehouse_Items_OrdersCommon::display_order_details_gross_price($it,true);
+	            $it['gross_price'] = Premium_Warehouse_Items_OrdersCommon::display_gross_price($it,true);
                     $itt = Utils_RecordBrowserCommon::get_record('premium_warehouse_items',$it['item_name']);
+                    $it['item_name'] = $itt['item_name'];
                     $items .= '<li>'.$itt['item_name'].'</li>';
                 }
                 $items .= '</ul>';
