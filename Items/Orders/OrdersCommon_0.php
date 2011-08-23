@@ -1512,6 +1512,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	}
 
 	public static function submit_order_details($values, $mode) {
+		if ($mode=='edit_changes') return $values;
 		static $notice='';
    		if($mode!='adding') unset($_SESSION['client']['warehouse_transaction_new_item_id']);
 		if ($notice!=='') print($notice);

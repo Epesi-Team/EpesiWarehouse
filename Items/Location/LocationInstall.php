@@ -23,12 +23,14 @@ class Premium_Warehouse_Items_LocationInstall extends ModuleInstall {
 
 		$fields = array(
 			array('name'=>'Item SKU', 	'type'=>'select', 'required'=>true, 'param'=>'premium_warehouse_items::SKU;Premium_Warehouse_Items_OrdersCommon::items_crits', 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_item_sku')),
-			array('name'=>'Item Name', 	'type'=>'calculated', 'required'=>false, 'param'=>'premium_warehouse_items::Item Name/Item SKU', 'extra'=>false, 'visible'=>false, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_item_name')),
+			array('name'=>'Item Name', 	'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>false, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_item_name')),
 			array('name'=>'Quantity',	'type'=>'integer', 'required'=>true, 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_LocationCommon', 'display_quantity')),
 			array('name'=>'Warehouse', 	'type'=>'select', 'required'=>true, 'param'=>'premium_warehouse::Warehouse;::', 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_LocationCommon', 'display_warehouse'))
 		);
 
 		Utils_RecordBrowserCommon::install_new_recordset('premium_warehouse_location', $fields);
+
+		DB::Execute('UPDATE premium_warehouse_location_field SET param=%s WHERE field=%s', array('premium_warehouse_items::Item Name/Item SKU', 'Item Name'));
 
 //		Utils_RecordBrowserCommon::set_quickjump('premium_warehouse_location', 'Item');
 //		Utils_RecordBrowserCommon::set_favorites('premium_warehouse_location', true);

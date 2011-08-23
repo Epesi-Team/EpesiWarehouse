@@ -100,7 +100,7 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 
 			array('name'=>'Transaction Type', 	'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_transaction_type')),
 			array('name'=>'Transaction Status', 'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_transaction_status')),
-			array('name'=>'Transaction Date', 	'type'=>'calculated', 'param'=>'premium_warehouse_items_orders::Transaction Date/Transaction ID', 'required'=>false, 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_transaction_date')),
+			array('name'=>'Transaction Date', 	'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_transaction_date')),
 			array('name'=>'Warehouse', 			'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_transaction_warehouse')),
 
 			array('name'=>'Item Name', 			'type'=>'select', 'required'=>true, 'param'=>'premium_warehouse_items::SKU|Item Name;Premium_Warehouse_Items_OrdersCommon::items_crits', 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_item_name'), 'QFfield_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'QFfield_item_name')),
@@ -133,6 +133,8 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::set_access_callback('premium_warehouse_items_orders_details', array('Premium_Warehouse_Items_OrdersCommon', 'access_order_details'));
 //		Utils_RecordBrowserCommon::enable_watchdog('premium_warehouse_items_orders_details', array('Premium_Warehouse_Items_OrdersCommon','watchdog_label'));
 		Utils_RecordBrowserCommon::register_processing_callback('premium_warehouse_items_orders_details', array('Premium_Warehouse_Items_OrdersCommon', 'submit_order_details'));
+		
+		DB::Execute('UPDATE premium_warehouse_items_orders_details_field SET param=%s WHERE field=%s', array('premium_warehouse_items_orders::Transaction Date/Transaction ID', 'Transaction Date'));
 
 		DB::CreateIndex('premium_warehouse_items_ord_det__it_name__idx','premium_warehouse_items_orders_details_data_1',array('f_item_name'));
 

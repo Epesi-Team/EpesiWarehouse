@@ -778,7 +778,10 @@ class Premium_Warehouse_Items_Orders extends Module {
 					$warehouses = array(''=>'---');
 					$records = Utils_RecordBrowserCommon::get_records('premium_warehouse');
 					foreach ($records as $v) $warehouses[$v['id']] = $v['warehouse'];
-					$new_form->addElement('select', 'warehouse', $this->t('Warehouse'), $warehouses);
+					if (count($records)!=1)
+						$new_form->addElement('select', 'warehouse', $this->t('Warehouse'), $warehouses);
+					else
+						$the_one_warehouse = $v['id'];
 					$new_form->setDefaults(array('warehouse'=>!$trans['warehouse']?Base_User_SettingsCommon::get('Premium_Warehouse', 'my_warehouse'):$trans['warehouse']));
 					$new_form->setDefaults(array('employee'=>$me['id']));
 					$lp->add_option('new', $this->t('Order received'), null, $new_form);
@@ -787,6 +790,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 					$this->href = $lp->get_href();
 					$vals = $lp->export_values();
 					if ($vals!==null) {
+						if (isset($the_one_warehouse)) $vals['form']['warehouse'] = $the_one_warehouse;
 						if (!isset($vals['form']) || !is_array($vals['form'])) $vals['form'] = array();
 						else $vals['form']['status'] = 2;
 						if (is_numeric($vals['form']['employee']) && (!isset($vals['form']['warehouse']) || is_numeric($vals['form']['warehouse']))) 
@@ -901,9 +905,10 @@ class Premium_Warehouse_Items_Orders extends Module {
 
 					if ($trans['payment_type']==0 && $trans['shipment_type']==0) $lp->add_option('quick_delivery', $this->t($p?'Paid & Delivered':'Delivered'), null, ($items_unavailable===null)?($any_item?$serials:null):$items_unavailable);
 
-					$lp->add_option('accepted', $this->t('Accepted'), null, null);
-					$lp->add_option('onhold', $this->t('Put On Hold'), null, null);
-					$this->display_module($lp, array($this->t($p?'Funds available?':'Check out accepted?')));
+					$lp->add_option('accepted', $this->t('Payment Accepted'), null, null);
+					$lp->add_option('onhold', $this->t('Payment Declined - Put On Hold'), null, null);
+
+					$this->display_module($lp, array($this->t($p?'Payment processing':'Check out accepted?')));
 					$this->href = $lp->get_href();
 					$vals = $lp->export_values();
 					if ($vals!==null) {
@@ -927,16 +932,54 @@ class Premium_Warehouse_Items_Orders extends Module {
 				case 3:
 					$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$trans['id']));
 					$items_unavailable = $this->check_if_items_available($trans, $items);
-					$lp->add_option('available', $this->t('Items Available'), null, $items_unavailable);
+					$lp->add_option('available', $this->t('Items Ready for Packing'), null, $items_unavailable);
 					// check items qty
+
+					$any_item = false;
+					$ship_received = $this->get_select_serials_form($trans, $items, $any_item);
+
+					if (!$any_item) $ship_received = $this->init_module('Libs/QuickForm');
+					$emps_ids = CRM_ContactsCommon::get_contacts(Premium_Warehouse_ItemsCommon::employee_crits(), array(), array('last_name'=>'ASC','first_name'=>'ASC'));
+					$emps = array(''=>'---');
+					$my_id = '';
+					foreach ($emps_ids as $v) {
+						if ($v['login']==Acl::get_user()) $my_id = $v['id'];
+						$emps[$v['id']] = CRM_ContactsCommon::contact_format_no_company($v,true);
+					}
+					$ship_type = array(''=>'---')+Utils_CommonDataCommon::get_array('Premium_Items_Orders_Shipment_Types');
+					$ship_received->addElement('select', 'shipment_type', $this->t('Shipment - type'), $ship_type);
+					$ship_received->addElement('datepicker', 'shipment_date', $this->t('Shipment - send date'));
+					$ship_received->addElement('select', 'shipment_employee', $this->t('Shipment - sent by'), $emps);
+					$ship_received->addElement('datepicker', 'shipment_eta', $this->t('Shipment - ETA'));
+					$ship_received->addElement('text', 'shipment_no', $this->t('Shipment No.'));
+					$ship_received->addElement('text', 'tracking_info', $this->t('Tracking Info'));
+					$trans['shipment_date'] = date('Y-m-d');
+					$trans['shipment_employee'] = $my_id;
+					$trans['shipment_eta'] = date('Y-m-d',time()+3600*36);
+					$ship_received->setDefaults(array('shipment_date'=>$trans['shipment_date'], 'shipment_employee'=>$trans['shipment_employee'], 'shipment_eta'=>$trans['shipment_eta'], 'shipment_no'=>$trans['shipment_no'], 'tracking_info'=>$trans['tracking_info'], 'shipment_type'=>$trans['shipment_type']));
+					$lp->add_option('ship', $this->t('Packed & Ship'), null, $ship_received);
+
 					$lp->add_option('onhold', $this->t('Put On Hold'), null, null);
+
 					$this->display_module($lp, array($this->t('Items available?')));
 					$this->href = $lp->get_href();
 					$vals = $lp->export_values();
 					if ($vals!==null) {
-						$vals['form']['status'] = ($vals['option']=='available')?4:5;
-						// TODO: reduce the amount of items
-						if ($items_unavailable!==null && $vals['form']['status']==4) break;
+						switch ($vals['option']) {
+							case 'available': $vals['form']['status'] = 4; break; 
+							case 'onhold': $vals['form']['status'] = 5; break; 
+							case 'ship': $vals['form']['status'] = 7; break; 
+						}
+						if ($items_unavailable!==null && $vals['form']['status']!=5) break;
+
+						if ($vals['form']['status']==7) {
+							foreach ($items as $v) {
+								$serials = array();
+								for ($i=0;$i<$v['quantity'];$i++)
+									if (isset($vals['form']['serial__'.$v['id'].'__'.$i])) $serials[] = $vals['form']['serial__'.$v['id'].'__'.$i];
+								Premium_Warehouse_Items_OrdersCommon::selected_serials($v, $trans, $serials);
+							}
+						}
 						Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $trans['id'], $vals['form']);
 						location(array());
 					}
@@ -948,10 +991,10 @@ class Premium_Warehouse_Items_Orders extends Module {
 					$any_item = false;
 					$serials = $this->get_select_serials_form($trans, $items, $any_item);
 
-					$lp->add_option('available', $this->t('Items Available'), null, ($items_unavailable===null)?($any_item?$serials:null):$items_unavailable);
+					$lp->add_option('available', $this->t('Package ready'), null, ($items_unavailable===null)?($any_item?$serials:null):$items_unavailable);
 					// check items qty
 					$lp->add_option('onhold', $this->t('Put On Hold'), null, null);
-					$this->display_module($lp, array($this->t('Final Inspection: All items available?')));
+					$this->display_module($lp, array($this->t('Final Inspection: All items ready and packed?')));
 					$this->href = $lp->get_href();
 					$vals = $lp->export_values();
 					if ($vals!==null) {
@@ -985,12 +1028,9 @@ class Premium_Warehouse_Items_Orders extends Module {
 					$ship_received->addElement('datepicker', 'shipment_eta', $this->t('Shipment - ETA'));
 					$ship_received->addElement('text', 'shipment_no', $this->t('Shipment No.'));
 					$ship_received->addElement('text', 'tracking_info', $this->t('Tracking Info'));
-					//if (!isset($trans['shipment_date']) || !$trans['shipment_date']) 
-						$trans['shipment_date'] = date('Y-m-d');
-					//if (!isset($trans['shipment_employee']) || !$trans['shipment_employee']) 
-						$trans['shipment_employee'] = $my_id;
-					//if (!isset($trans['shipment_eta']) || !$trans['shipment_eta']) 
-						$trans['shipment_eta'] = date('Y-m-d',time()+3600*36);
+					$trans['shipment_date'] = date('Y-m-d');
+					$trans['shipment_employee'] = $my_id;
+					$trans['shipment_eta'] = date('Y-m-d',time()+3600*36);
 					$ship_received->setDefaults(array('shipment_date'=>$trans['shipment_date'], 'shipment_employee'=>$trans['shipment_employee'], 'shipment_eta'=>$trans['shipment_eta'], 'shipment_no'=>$trans['shipment_no'], 'tracking_info'=>$trans['tracking_info'], 'shipment_type'=>$trans['shipment_type']));
 
 					$lp->add_option('pickup', $this->t('Pickup'), null, null);
