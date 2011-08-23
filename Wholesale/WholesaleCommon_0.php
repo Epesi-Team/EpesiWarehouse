@@ -433,8 +433,13 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 	}
 	
 	public static function item_suggestbox($str) {
-		$str = DB::Concat(DB::qstr('%'), DB::qstr($str), DB::qstr('%'));
-		$rec = Utils_RecordBrowserCommon::get_records('premium_warehouse_items', array('(~"item_name'=>$str, '|~"sku'=>$str));
+		$ss = explode(' ',$str);
+		$crits = array();
+		foreach($ss as $word) {
+		    $crit = DB::Concat(DB::qstr('%'), DB::qstr($word), DB::qstr('%'));
+		    $crits = Utils_RecordBrowserCommon::merge_crits($crits,array('(~"item_name'=>$crit, '|~"sku'=>$crit));
+		}
+		$rec = Utils_RecordBrowserCommon::get_records('premium_warehouse_items', $crits);
 		$result = '<ul>';
     	if (empty($rec)) {
 			$result .= '<li><span style="text-align:center;font-weight:bold;" class="informal">'.Base_LangCommon::ts('Libs/QuickForm','No records founds').'</span></li>';
