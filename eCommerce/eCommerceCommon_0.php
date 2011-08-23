@@ -911,6 +911,18 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
     public static function submit_warehouse_order($values, $mode) {
         if ($mode=='edit' && $values['transaction_type']==1 && $values['online_order']) {
             $txt = '';
+
+            $orec = $values;
+            $orec['shipment_type'] = self::display_shipment_type($values);
+            $orec['payment_type'] = Utils_CommonDataCommon::get_value('Premium_Items_Orders_Payment_Types/'.$values['payment_type']);
+            $h_cost = Utils_CurrencyFieldCommon::get_values($values['handling_cost']);
+            $sh_cost = Utils_CurrencyFieldCommon::get_values($values['shipping_cost']);
+            if($h_cost[1]==$sh_cost[1])
+                $orec['shipment_handling_cost'] = Utils_CurrencyFieldCommon::format($h_cost[0]+$sh_cost[0],$h_cost[1]);
+            else
+                $orec['shipment_handling_cost'] = Utils_CurrencyFieldCommon::format($values['handling_cost']).' + '.Utils_CurrencyFieldCommon::format($values['shipping_cost']);
+            $orec['total_value'] = Utils_CurrencyFieldCommon::format($values['total_value']);
+
             $erec = Utils_RecordBrowserCommon::get_records('premium_ecommerce_orders',array('transaction_id'=>$values['id']));
             if($erec && is_array($erec) && count($erec)==1) {
                 $erec = array_shift($erec);
@@ -921,7 +933,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
                     $email = array_shift($emails);
                     $txt = $email['content'];
                     $title = $email['subject'];
-                    foreach($values as $name=>$val) {
+                    foreach($orec as $name=>$val) {
                         $txt = str_replace('__'.strtoupper($name).'__',$val,$txt);
                     }
                     foreach($erec as $name=>$val) {
@@ -930,9 +942,11 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
                 }
             }
             if($txt) {
-                $it_tmp = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details',array('transaction_id'=>$values['id']),array('item_name'));
+                $it_tmp = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details',array('transaction_id'=>$values['id']));
                 $items = '<ul>';
-                foreach($it_tmp as $it) {
+                foreach($it_tmp as & $it) {
+	            $it['gross_total'] = Premium_Warehouse_Items_OrdersCommon::display_order_details_gross_price($it);
+	            $it['gross_price'] = Utils_CurrencyFieldCommon::format($it['gross_price']);
                     $itt = Utils_RecordBrowserCommon::get_record('premium_warehouse_items',$it['item_name']);
                     $items .= '<li>'.$itt['item_name'].'</li>';
                 }
@@ -941,6 +955,10 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 
                 $sm = Base_ThemeCommon::init_smarty();
                 $sm->assign('txt',$txt);
+                $sm->assign('order',$orec);
+                $sm->assign('ecommerce',$erec);
+                $sm->assign('items',$it_tmp);
+
                 $sm->assign('contact_us_title',Base_LangCommon::ts('Premium_Warehouse_eCommerce','Contact us'));
                 if($erec) {
                     $contactus = Variable::get('ecommerce_contactus_'.$erec['language'],false);
