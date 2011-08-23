@@ -924,6 +924,9 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
                     foreach($values as $name=>$val) {
                         $txt = str_replace('__'.strtoupper($name).'__',$val,$txt);
                     }
+                    foreach($erec as $name=>$val) {
+                        $txt = str_replace('__'.strtoupper($name).'__',$val,$txt);
+                    }
                 }
             }
             if($txt) {
