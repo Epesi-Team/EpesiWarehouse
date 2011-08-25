@@ -270,7 +270,8 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 
 		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_orders', 'eCommerce - Orders');
 		Utils_RecordBrowserCommon::new_addon('premium_warehouse_items_orders', 'Premium/Warehouse/eCommerce', 'orders_addon', 'Premium_Warehouse_eCommerceCommon::orders_addon_parameters');
-
+		Utils_RecordBrowserCommon::register_processing_callback('premium_ecommerce_orders', array('Premium_Warehouse_eCommerceCommon', 'submit_ecommerce_order'));
+		
 
 		//quickcarts
 		$ret = DB::CreateTable('premium_ecommerce_quickcart','
@@ -520,7 +521,6 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 
 		Variable::set('ecommerce_rules','You can edit this page in Administration - eCommerce settings.');
 		Variable::set('ecommerce_contactus','You can edit this page in Administration - eCommerce settings.');
-		Variable::set('ecommerce_order_email','');
 		Variable::set('ecommerce_home', 'Welcome on your new ecommerce site. Have a nice day with Epesi!');
 
 		Variable::set('ecommerce_autoprice',false);
@@ -532,6 +532,8 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Variable::set('ecommerce_item_parameters',true);
 		
 		Premium_PaymentsCommon::new_addon('premium_warehouse_items_orders');
+		
+		Utils_RecordBrowserCommon::register_processing_callback('premium_payments', array('Premium_Warehouse_eCommerceCommon', 'submit_payment'));
 
 		$this->create_data_dir();
 		@mkdir($this->get_data_dir().'banners');
@@ -576,7 +578,8 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 
 		Utils_RecordBrowserCommon::unregister_processing_callback('premium_ecommerce_products', array('Premium_Warehouse_eCommerceCommon', 'submit_products_position'));
 		Utils_RecordBrowserCommon::unregister_processing_callback('premium_ecommerce_parameters', array('Premium_Warehouse_eCommerceCommon', 'submit_parameters_position'));
-		//Utils_RecordBrowserCommon::unregister_processing_callback('premium_ecommerce_parameter_labels', array('Premium_Warehouse_eCommerceCommon', 'submit_parameter_labels'));
+		Utils_RecordBrowserCommon::unregister_processing_callback('premium_ecommerce_orders', array('Premium_Warehouse_eCommerceCommon', 'submit_ecommerce_order'));
+		Utils_RecordBrowserCommon::unregister_processing_callback('premium_payments', array('Premium_Warehouse_eCommerceCommon', 'submit_payment'));
 		Utils_RecordBrowserCommon::unregister_processing_callback('premium_ecommerce_parameter_groups', array('Premium_Warehouse_eCommerceCommon', 'submit_parameter_groups_position'));
 		//Utils_RecordBrowserCommon::unregister_processing_callback('premium_ecommerce_param_group_labels', array('Premium_Warehouse_eCommerceCommon', 'submit_parameter_labels'));
 		Utils_RecordBrowserCommon::unregister_processing_callback('premium_ecommerce_pages', array('Premium_Warehouse_eCommerceCommon', 'submit_pages_position'));
@@ -606,10 +609,8 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 			Variable::delete('ecommerce_home_'.$k,false);
 			Variable::delete('ecommerce_rules_'.$k,false);
 			Variable::delete('ecommerce_contactus_'.$k,false);
-			Variable::delete('ecommerce_order_email_'.$k,false);
 		}
 		Variable::delete('ecommerce_home');
-		Variable::delete('ecommerce_order_email');
 		Variable::delete('ecommerce_rules');
 		Variable::delete('ecommerce_contactus');
 		Variable::delete('ecommerce_autoprice');

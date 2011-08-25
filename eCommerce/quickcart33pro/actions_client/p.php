@@ -219,10 +219,10 @@ if( isset( $iContent ) && is_numeric( $iContent ) ){
             // save and print order
             $iOrder = $oOrder->addOrder( $_POST+$_SESSION['order_step_1'] );
             unset($_SESSION['order_step_1']);
-            if( !empty( $config['email'] ) ){
+/*             if( !empty( $config['email'] ) ){
               $oOrder->sendEmailWithOrderDetails( 'orders_print.tpl', $iOrder );
             }
-
+ */
             $aOrder = $oOrder->throwOrder( $iOrder );
             $aOrder['sComment'] = preg_replace( '/\|n\|/', '<br />' , $aOrder['sComment'] );
             $sOrderProducts = $oOrder->listProducts( 'orders_print.tpl', $iOrder, 'ORDER_PRINT_' );

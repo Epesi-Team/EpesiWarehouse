@@ -64,7 +64,7 @@ if(ModuleManager::is_installed('Premium/Warehouse/Items/Location')<0)
 	$crits['>quantity_on_hand']=0;
 $prods = Utils_RecordBrowserCommon::get_records('premium_warehouse_items',$crits);
 
-$reserved = DB::GetAssoc('SELECT d.f_item_name, SUM(d.f_quantity) FROM premium_warehouse_items_orders_details_data_1 d INNER JOIN premium_warehouse_items_orders_data_1 o ON (o.id=d.f_transaction_id) WHERE ((o.f_transaction_type=1 AND o.f_status in (-1,2,3,4,5)) OR (o.f_transaction_type=4 AND o.f_status in (2,3))) AND d.active=1 AND o.active=1 GROUP BY d.f_item_name');
+$reserved = DB::GetAssoc('SELECT d.f_item_name, SUM(d.f_quantity) FROM premium_warehouse_items_orders_details_data_1 d INNER JOIN premium_warehouse_items_orders_data_1 o ON (o.id=d.f_transaction_id) WHERE ((o.f_transaction_type=1 AND o.f_status in (-2,-1,2,3,4,5)) OR (o.f_transaction_type=4 AND o.f_status in (2,3))) AND d.active=1 AND o.active=1 GROUP BY d.f_item_name');
 
 foreach($prods as $p) {
 	$quantity = $p['quantity_on_hand'] - (isset($reserved[$p['id']])?$reserved[$p['id']]:0);

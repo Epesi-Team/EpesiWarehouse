@@ -770,6 +770,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 		} elseif ($trans['transaction_type']==1) {
 			if (!$p && $status<2) $status = 2;
 			switch ($status) {			
+				case -2:
 				case -1:
 					$new_form = $this->init_module('Libs_QuickForm');
 					$me = CRM_ContactsCommon::get_my_record();

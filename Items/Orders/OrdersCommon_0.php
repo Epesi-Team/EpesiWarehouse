@@ -298,7 +298,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	}
 	
 	public static function get_reserved_qty($item_id) {
-		$trans = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders', array('status'=>array(-1,2,3,4,5), 'transaction_type'=>1), array('id', 'warehouse'));
+		$trans = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders', array('status'=>array(-2,-1,2,3,4,5), 'transaction_type'=>1), array('id', 'warehouse'));
 		$trans = $trans+Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders', array('status'=>array(2,3), 'transaction_type'=>4), array('id', 'warehouse', 'target_warehouse'));
 		$qty = 0;
 		$ids = array();
@@ -385,7 +385,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 					else {
 						$payment_ack = 'Payment Confirmed';
 						if (isset($trans['terms']) && $trans['terms']>0) $payment_ack = 'Payment Approved';
-						$opts = array(''=>'New', -1=>'New Online Order', 1=>'Sales Quote', 2=>'Order Received', 3=>$payment_ack, 4=>'Order Confirmed', 5=>'On Hold', 6=>'Order Ready to Ship', 7=>'Shipped', 20=>'Delivered', 21=>'Canceled', 22=>'Missing');
+						$opts = array(''=>'New', -1=>'New Online Order',-2=>'New Online Order (with payment)', 1=>'Sales Quote', 2=>'Order Received', 3=>$payment_ack, 4=>'Order Confirmed', 5=>'On Hold', 6=>'Order Ready to Ship', 7=>'Shipped', 20=>'Delivered', 21=>'Canceled', 22=>'Missing');
 					}
 					break;
 			// INV. ADJUSTMENT

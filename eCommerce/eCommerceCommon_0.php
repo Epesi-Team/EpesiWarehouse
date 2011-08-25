@@ -195,7 +195,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
         return $values;
     }
 
-    private static $order_statuses = array( 2=>'Order Received', 3=>'Payment Confirmed', 4=>'Order Confirmed', 5=>'On Hold', 6=>'Order Ready to Ship', 7=>'Shipped', 20=>'Delivered', 21=>'Canceled', 22=>'Missing');
+    private static $order_statuses = array(-1=>'New Online Order', -2=>'New Online Order (with payment)', 2=>'Order Received', 3=>'Payment Confirmed', 4=>'Order Confirmed', 5=>'On Hold', 6=>'Order Ready to Ship', 7=>'Shipped', 20=>'Delivered', 21=>'Canceled', 22=>'Missing');
 
     public static function QFfield_order_status(&$form, $field, $label, $mode, $default) {
         if ($mode=='add' || $mode=='edit') {
@@ -894,7 +894,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
     }
 
     public static function applet_settings() {
-        $opts = array(-1=>'New Online Order', 2=>'Order Received', 3=>'Payment Confirmed', 4=>'Order Confirmed', 5=>'On Hold', 6=>'Order Ready to Ship', 7=>'Shipped', 20=>'Delivered', 21=>'Canceled', 22=>'Missing','active'=>'[Active]');
+        $opts = array(-1=>'New Online Order', -2=>'New Online Order (with payment)', 2=>'Order Received', 3=>'Payment Confirmed', 4=>'Order Confirmed', 5=>'On Hold', 6=>'Order Ready to Ship', 7=>'Shipped', 20=>'Delivered', 21=>'Canceled', 22=>'Missing','active'=>'[Active]');
         return array_merge(Utils_RecordBrowserCommon::applet_settings(),
             array(
                 array('name'=>'settings_header','label'=>'Settings','type'=>'header'),
@@ -907,11 +907,28 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
         return Utils_TooltipCommon::format_info_tooltip(array('Contact'=>$r['first_name'].' '.$r['last_name'],
                     'Company'=>$r['company_name'],'Phone'=>$r['phone']),'Premium_Warehouse_eCommerce');
     }
+    
+    public static function submit_ecommerce_order($values,$mode) {
+    	if($mode=='add') {
+    		self::submit_warehouse_order(Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $values['transaction_id']),'edit',$values);
+    	}
+    	return null;
+    }
 
-    public static function submit_warehouse_order($values, $mode) {
-        if ($mode=='edit' && $values['transaction_type']==1 && $values['online_order']) {
+    public static function submit_payment($values,$mode) {
+    	if($mode=='add' && $values['record_type']=='premium_warehouse_items_orders') {
+    		$ord = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $values['record_id']);
+    		if($ord && $ord['status']==-1)
+    			Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $values['record_id'], array('status'=>-2));
+    	}
+    	return null;
+    }
+    
+    public static function submit_warehouse_order($values, $mode,$erec = null) {
+        if ($mode=='edit' && $values['transaction_type']==1 && $values['online_order'] && 
+        	(isset($erec) || $values['status']!=DB::GetOne('SELECT f_status FROM premium_warehouse_items_orders_data_1 WHERE id=%d',array($values['id'])))) {
             $txt = '';
-
+            
             $orec = $values;
             $orec['shipment_type'] = self::display_shipment_type($values);
             $orec['payment_type'] = Utils_CommonDataCommon::get_value('Premium_Items_Orders_Payment_Types/'.$values['payment_type']);
@@ -923,9 +940,13 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
                 $orec['shipment_handling_cost'] = Utils_CurrencyFieldCommon::format($values['handling_cost']).' + '.Utils_CurrencyFieldCommon::format($values['shipment_cost']);
             $orec['total_value'] = Premium_Warehouse_Items_OrdersCommon::display_total_value($values,true);
 
-            $erec = Utils_RecordBrowserCommon::get_records('premium_ecommerce_orders',array('transaction_id'=>$values['id']));
-            if($erec && is_array($erec) && count($erec)==1) {
-                $erec = array_shift($erec);
+            if(!isset($erec)) {
+            	$erec = Utils_RecordBrowserCommon::get_records('premium_ecommerce_orders',array('transaction_id'=>$values['id']));
+            	if($erec && is_array($erec) && count($erec)==1) {
+	                $erec = array_shift($erec);
+            	}
+            }
+            if(isset($erec) && is_array($erec)) {
                 $emails = Utils_RecordBrowserCommon::get_records('premium_ecommerce_emails',array('send_on_status'=>$values['status'],'language'=>$erec['language']));
                 if(!$emails)
                     $emails = Utils_RecordBrowserCommon::get_records('premium_ecommerce_emails',array('send_on_status'=>$values['status']));
@@ -987,7 +1008,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
                 $mail = ob_get_clean();
 
                 $title .= ' - id '.$values['id'];
-
+				
                 Base_MailCommon::send($email,$title,$mail,null,null,true);
             }
         }

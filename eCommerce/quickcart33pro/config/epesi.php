@@ -1,5 +1,5 @@
 <?php
-define('EPESI_DATA_DIR','/var/www/viking/live/data');
+define('EPESI_DATA_DIR','/home/shacky/Projects/epesi-trunk/data');
 if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi, log in as administrator, go to Menu->Adminitration->eCommerce->QuickCart settings and add \''.dirname(dirname(__FILE__)).'\' directory to setup quickcart');
 $config['default_lang'] = 'us';
 $config['available_lang'] = array('us');
@@ -16,9 +16,16 @@ $config['platnosci_id']	= 1001;
 $config['platnosci_pos_auth_key'] = 1111;
 $config['platnosci_key1'] = 'asdf786sdf65asdf78sd785fs7d6f57s';
 $config['platnosci_key2'] = 'zkjxcv87sd989zxcv79sd6ds98fs7df9';
-$config['epesi_payments_url'] = 'http://viking.epesibim.com/live/modules/Premium/Payments/';
+$config['epesi_payments_url'] = 'http://localhost/epesi-trunk/modules/Premium/Payments/';
 $config['zagiel_id'] = null;
 $config['zagiel_min_price'] = null;
 $config['paypal_email'] = 'test@test.com';
 $config['default_image_size'] = 0;
+$config['ups_accesskey'] = '';
+$config['ups_username'] = '';
+$config['ups_password'] = '';
+$config['ups_shipper_number'] = '';
+$config['ups_src_country'] = '';
+$config['ups_src_zip'] = '';
+$config['ups_weight_unit'] = 'KGS';
 ?>

@@ -549,8 +549,48 @@ class Orders
     	}
     }
     
+    $d = getcwd();
+    chdir(EPESI_DATA_DIR.'/../');
     //$memo = "Language: ".LANGUAGE."\ne-mail: ".$aForm['sEmail']."\nIp: ".$_SERVER['REMOTE_ADDR']."\nComment:\n".$aForm['sComment'];
-    DB::Execute('INSERT INTO premium_warehouse_items_orders_data_1(f_transaction_type,f_transaction_date,f_status,
+    $id = Utils_RecordBrowserCommon::new_record('premium_warehouse_items_orders',array(
+	    'transaction_type'=>1,
+	    'transaction_date'=>$t,
+	    'status'=>"-1",
+	    'company_name'=>$aForm['sCompanyName'],
+	    'last_name'=>$aForm['sLastName'],
+	    'first_name'=>$aForm['sFirstName'],
+	    'address_1'=>$aForm['sStreet'],
+	    'city'=>$aForm['sCity'],					
+	    'postal_code'=>$aForm['sZipCode'],
+	    'phone'=>$aForm['sPhone'],
+	    'country'=>$aForm['sCountry'],
+	    'zone'=>$aForm['sState'],
+	    'memo'=>$memo,
+	    'created_on'=>$t,
+	    'shipment_type'=>$carrier,
+	    'shipment_cost'=>$price.'__'.$currency,
+	    'payment'=>1,
+	    'payment_type'=>$payment,
+	    'tax_id'=>$aForm['sNip'],
+	    'warehouse'=>$carrier==0?$aForm['iPickupShop']:null,
+	    'online_order'=>1,
+	    'contact'=>$contact,
+	    'company'=>$company,
+	    'terms'=>$order_terms,
+	    'receipt'=>$aForm['iInvoice']?0:1,
+	    'handling_cost'=>$handling.'__'.$currency,					
+	    'shipping_company_name'=>$aForm['sShippingCompanyName'],
+	    'shipping_last_name'=>$aForm['sShippingLastName'],
+		'shipping_first_name'=>$aForm['sShippingFirstName'],
+		'shipping_address_1'=>$aForm['sShippingStreet'],
+		'shipping_city'=>$aForm['sShippingCity'],
+		'shipping_postal_code'=>$aForm['sShippingZipCode'],
+		'shipping_phone'=>$aForm['sShippingPhone'],
+		'shipping_country'=>$aForm['sShippingCountry'],
+		'shipping_contact'=>$contact,
+		'shipping_company'=>$company
+    	));
+    /* DB::Execute('INSERT INTO premium_warehouse_items_orders_data_1(f_transaction_type,f_transaction_date,f_status,
 						f_company_name,f_last_name,f_first_name,f_address_1,f_city,f_postal_code,f_phone,f_country,f_zone,f_memo,created_on,
 						f_shipment_type,f_shipment_cost,f_payment,f_payment_type,f_tax_id,f_warehouse,f_online_order,f_contact,f_company,f_terms,f_receipt,f_handling_cost,
 						f_shipping_company_name,f_shipping_last_name,f_shipping_first_name,f_shipping_address_1,f_shipping_city,f_shipping_postal_code,f_shipping_phone,f_shipping_country,f_shipping_contact,f_shipping_company) VALUES 
@@ -562,13 +602,28 @@ class Orders
     $id = DB::Insert_ID('premium_warehouse_items_orders_data_1','id');
     $trans_id = '#'.str_pad($id, 6, '0', STR_PAD_LEFT);
     DB::Execute('UPDATE premium_warehouse_items_orders_data_1 SET f_transaction_id=%s WHERE id=%d',array($trans_id,$id));
+ */
 
-	DB::Execute('INSERT INTO premium_ecommerce_orders_data_1(f_transaction_id, f_language, f_email, f_ip, f_comment, f_invoice, 
+    Utils_RecordBrowserCommon::new_record('premium_ecommerce_orders',array(
+    	'transaction_id'=>$id,
+    	'language'=>LANGUAGE,
+	    'email'=>$aForm['sEmail'],
+ 		'ip'=>$_SERVER['REMOTE_ADDR'],
+		'comment'=>$aForm['sComment'],
+		'invoice'=>$aForm['iInvoice']?1:0,
+		'payment_channel'=>$aForm['mPaymentChannel'],
+		'payment_realized'=>$aForm['iPaymentRealized'],
+		'created_on'=>$t,
+		'promotion_employee'=>$promo_employee,
+		'promotion_shipment_discount'=>$promo_discount
+	));    	
+    chdir($d);
+/* 	DB::Execute('INSERT INTO premium_ecommerce_orders_data_1(f_transaction_id, f_language, f_email, f_ip, f_comment, f_invoice, 
 						f_payment_channel,f_payment_realized,created_on,f_promotion_employee,f_promotion_shipment_discount) VALUES
 						(%d,%s,%s,%s,%s,%b,%s,%b,%T,%d,%d)',
 					array($id,LANGUAGE,$aForm['sEmail'],$_SERVER['REMOTE_ADDR'],$aForm['sComment'],$aForm['iInvoice']?true:false,
 					$aForm['mPaymentChannel'],$aForm['iPaymentRealized'],time(),$promo_employee,$promo_discount));
-
+ */
     $taxes = DB::GetAssoc('SELECT id, f_percentage FROM data_tax_rates_data_1 WHERE active=1');
 
     if( isset( $this->aProducts ) ){
@@ -981,7 +1036,7 @@ class Orders
   * @param string $sFile
   * @param int    $iOrder
   */
-  function sendEmailWithOrderDetails( $sFile, $iOrder ){
+/*   function sendEmailWithOrderDetails( $sFile, $iOrder ){
     global $aOuterPaymentOption, $sPaymentOuterForm;
     $oTpl     =& TplParser::getInstance( );
     $content  = null;
@@ -1039,6 +1094,6 @@ class Orders
     $aSend['sSender']= $GLOBALS['config']['email'];
 
     sendEmail( $aSend, null, $aData['sEmail'], true ); //send e-mail to client
-  } // end function sendEmailWithOrderDetails
+  } // end function sendEmailWithOrderDetails */
 };
 ?>

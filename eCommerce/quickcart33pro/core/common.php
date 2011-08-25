@@ -221,33 +221,18 @@ function sendEmail( $aForm, $sFile = 'messages.tpl', $sTargetEmail = null, $html
     if( !isset( $sTargetEmail ) )
       $sTargetEmail = $GLOBALS['config']['email'];
 
-    require_once(DIR_LIBRARIES.'class.phpmailer-lite.php');
+    //require_once(DIR_LIBRARIES.'class.phpmailer-lite.php');
 
-    global $mail;
-    $mail = new PHPMailerLite(); // defaults to using php "Sendmail" (or Qmail, depending on availability)
-
-    try {
-        $mail->IsMail(); // telling the class to use native PHP mail()
-  	$mail->SetFrom($sSender);
-  	$mail->AddAddress($sTargetEmail);
-        $mail->CharSet = 'UTF-8';
-  	$mail->Subject = $sTopic;
-  	$mail->MsgHTML($sMailContent);
-
-  	$mail->Send();
-        if( isset( $sFile ) )
-  	  return $oTpl->tbHtml( $sFile, 'MAIL_SEND_CORRECT' );
-    } catch (phpmailerException $e) {
-      if( isset( $sFile ) )
-        return $oTpl->tbHtml( $sFile, 'MAIL_SEND_ERROR' ).$e->errorMessage(); //Pretty error messages from PHPMailer
-      else
-        return $e->errorMessage(); //Pretty error messages from PHPMailer
-    } catch (Exception $e) {
-      if( isset( $sFile ) )
-        return $oTpl->tbHtml( $sFile, 'MAIL_SEND_ERROR' ).$e->getMessage(); //Boring error messages from anything else!
-      else
-        return $e->getMessage(); //Boring error messages from anything else!
+    ob_start();
+    $ret = Base_MailCommon::send($sTargetEmail,$sTopic,$sMailContent,$sSender);
+    $error = ob_get_clean();
+    if( isset( $sFile ) ) {
+    	if($ret)
+  	  		return $oTpl->tbHtml( $sFile, 'MAIL_SEND_CORRECT' );
+    	else
+    		return $oTpl->tbHtml( $sFile, 'MAIL_SEND_ERROR' ).$error; //Pretty error messages from PHPMailer
     }
+    return $error; //Pretty error messages from PHPMailer
   }
   else{
     if( isset( $sFile ) )
