@@ -946,7 +946,6 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 								$ret['shipment_employee'] = false;
 								$ret['shipment_eta'] = false;
 								$ret['shipment_cost'] = false;
-								$ret['tracking_info'] = false;
 								$ret['expiration_date'] = false;
 								$ret['handling_cost'] = false;
 							}
@@ -961,7 +960,6 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 								$ret['shipment_employee'] = false;
 								$ret['shipment_eta'] = false;
 								$ret['shipment_cost'] = false;
-								$ret['tracking_info'] = false;
 							}
 							if (isset($param['payment_type']) && $param['payment_type']===0) {
 								$ret['payment_no'] = false;
@@ -974,7 +972,6 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 									$ret['shipment_eta'] = false;
 									$ret['shipment_cost'] = false;
 									$ret['handling_cost'] = false;
-									$ret['tracking_info'] = false;
 								}
 								if ($param['status']<2) {
 									$ret['payment_no'] = false;
@@ -1011,7 +1008,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			case 'add':		if (!$i->acl_check('edit orders')) {
 			                    if($i->acl_check('checkout orders')) {
 			                        return array('status'=>false,'transaction_type'=>false,'contact'=>false,'company'=>false,'employee'=>false,
-			                        'shipment_employee'=>false, 'shipment_date'=>false,'transaction_date'=>false,'shipment_eta'=>false,'tracking_info'=>false,'shipment_no'=>false,'ref_no'=>false,'shipment_cost'=>false,'handling_cost'=>false);
+			                        'shipment_employee'=>false, 'shipment_date'=>false,'transaction_date'=>false,'shipment_eta'=>false,'shipment_no'=>false,'ref_no'=>false,'shipment_cost'=>false,'handling_cost'=>false);
                 			    }
 			                    return false;
 			                }

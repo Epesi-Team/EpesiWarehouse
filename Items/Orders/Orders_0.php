@@ -953,11 +953,10 @@ class Premium_Warehouse_Items_Orders extends Module {
 					$ship_received->addElement('select', 'shipment_employee', $this->t('Shipment - sent by'), $emps);
 					$ship_received->addElement('datepicker', 'shipment_eta', $this->t('Shipment - ETA'));
 					$ship_received->addElement('text', 'shipment_no', $this->t('Shipment No.'));
-					$ship_received->addElement('text', 'tracking_info', $this->t('Tracking Info'));
 					$trans['shipment_date'] = date('Y-m-d');
 					$trans['shipment_employee'] = $my_id;
 					$trans['shipment_eta'] = date('Y-m-d',time()+3600*36);
-					$ship_received->setDefaults(array('shipment_date'=>$trans['shipment_date'], 'shipment_employee'=>$trans['shipment_employee'], 'shipment_eta'=>$trans['shipment_eta'], 'shipment_no'=>$trans['shipment_no'], 'tracking_info'=>$trans['tracking_info'], 'shipment_type'=>$trans['shipment_type']));
+					$ship_received->setDefaults(array('shipment_date'=>$trans['shipment_date'], 'shipment_employee'=>$trans['shipment_employee'], 'shipment_eta'=>$trans['shipment_eta'], 'shipment_no'=>$trans['shipment_no'], 'shipment_type'=>$trans['shipment_type']));
 					$lp->add_option('ship', $this->t('Packed & Ship'), null, $ship_received);
 
 					$lp->add_option('onhold', $this->t('Put On Hold'), null, null);
@@ -1028,11 +1027,10 @@ class Premium_Warehouse_Items_Orders extends Module {
 					$ship_received->addElement('select', 'shipment_employee', $this->t('Shipment - sent by'), $emps);
 					$ship_received->addElement('datepicker', 'shipment_eta', $this->t('Shipment - ETA'));
 					$ship_received->addElement('text', 'shipment_no', $this->t('Shipment No.'));
-					$ship_received->addElement('text', 'tracking_info', $this->t('Tracking Info'));
 					$trans['shipment_date'] = date('Y-m-d');
 					$trans['shipment_employee'] = $my_id;
 					$trans['shipment_eta'] = date('Y-m-d',time()+3600*36);
-					$ship_received->setDefaults(array('shipment_date'=>$trans['shipment_date'], 'shipment_employee'=>$trans['shipment_employee'], 'shipment_eta'=>$trans['shipment_eta'], 'shipment_no'=>$trans['shipment_no'], 'tracking_info'=>$trans['tracking_info'], 'shipment_type'=>$trans['shipment_type']));
+					$ship_received->setDefaults(array('shipment_date'=>$trans['shipment_date'], 'shipment_employee'=>$trans['shipment_employee'], 'shipment_eta'=>$trans['shipment_eta'], 'shipment_no'=>$trans['shipment_no'], 'shipment_type'=>$trans['shipment_type']));
 
 					$lp->add_option('pickup', $this->t('Pickup'), null, null);
 					$lp->add_option('ship', $this->t('Ship'), null, $ship_received);
@@ -1189,7 +1187,6 @@ class Premium_Warehouse_Items_Orders extends Module {
 					$ship_received->addElement('select', 'shipment_employee', 'Shipment - sent by', $emps);
 					$ship_received->addElement('datepicker', 'shipment_eta', 'Shipment - ETA');
 					$ship_received->addElement('text', 'shipment_no', 'Shipment No.');
-					$ship_received->addElement('text', 'tracking_info', 'Tracking Info');
 					$ship_received->setDefaults(array('shipment_date'=>date('Y-m-d'), 'shipment_employee'=>$my_id));
 
 					$lp->add_option('pickup', $this->t('Pickup'), null, null);

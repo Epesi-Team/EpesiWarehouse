@@ -101,7 +101,6 @@ $translations['Utils_RecordBrowser:premium_warehouse_items_orders']['Shipment Em
 $translations['Utils_RecordBrowser:premium_warehouse_items_orders']['Shipment ETA']='';
 $translations['Utils_RecordBrowser:premium_warehouse_items_orders']['Shipment Cost']='';
 $translations['Utils_RecordBrowser:premium_warehouse_items_orders']['Handling Cost']='';
-$translations['Utils_RecordBrowser:premium_warehouse_items_orders']['Tracking Info']='';
 $translations['Utils_RecordBrowser:premium_warehouse_items_orders']['Weight']='';
 $translations['Utils_RecordBrowser:premium_warehouse_items_orders']['Volume']='';
 $translations['Utils_RecordBrowser:premium_warehouse_items_orders']['Memo']='';

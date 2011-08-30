@@ -40,7 +40,6 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 			array('name'=>'Shipment ETA',	'type'=>'date', 'required'=>false, 'extra'=>false, 'visible'=>false),
 			array('name'=>'Shipment Cost',	'type'=>'currency', 'required'=>false, 'extra'=>false, 'visible'=>false),
 			array('name'=>'Handling Cost',	'type'=>'currency', 'required'=>false, 'extra'=>false, 'visible'=>false),
-			array('name'=>'Tracking Info',	'type'=>'text', 'param'=>128, 'required'=>false, 'extra'=>false, 'visible'=>false),
 			array('name'=>'Weight', 		'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>false, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_weight')),
 			array('name'=>'Volume',	 		'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>false, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_volume')),
 			array('name'=>'Terms',			'type'=>'commondata', 'param'=>array('order_by_key'=>true,'Premium_Items_Orders_Terms'), 'required'=>false, 'extra'=>false, 'visible'=>true),

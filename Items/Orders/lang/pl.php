@@ -94,7 +94,6 @@ $translations['Utils_RecordBrowser:premium_warehouse_items_orders']['Payment Typ
 $translations['Utils_RecordBrowser:premium_warehouse_items_orders']['Payment No']='Numer Przekazu';
 $translations['Utils_RecordBrowser:premium_warehouse_items_orders']['Shipment Type']='Sposób Wysyłki';
 $translations['Utils_RecordBrowser:premium_warehouse_items_orders']['Shipment ETA']='Orientacyjna Data Dostawy';
-$translations['Utils_RecordBrowser:premium_warehouse_items_orders']['Tracking Info']='	Dodatkowe informacje o przesyłce';
 $translations['Utils_RecordBrowser:premium_warehouse_items_orders']['Tax Value']='Podatek';
 $translations['Utils_RecordBrowser:premium_warehouse_items_orders']['Weight']='Waga';
 $translations['Utils_RecordBrowser:premium_warehouse_items_orders']['Volume']='Objętość';
