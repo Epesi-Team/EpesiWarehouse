@@ -358,7 +358,6 @@ $lang['Click_on_order_to_see_details'] = 'Kliknij na zamówieniu aby zobaczyć s
 $lang['Shipment_discount'] = 'Rabat udzielony na koszty dostawy';
 $lang['Create_account'] = 'Utwórz użytkownika';
 $lang['Shipment_no'] = 'Numer przesyłki';
-$lang['Tracking_info'] = 'Dodatkowe informacje o przesyłce';
 $lang['Manufacturer_filter'] = 'Wybierz producenta';
 $lang['Forgot_password'] = 'Nie pamiętam hasła';
 $lang['Email_invalid'] = 'Nie istnieje konto o podanym adresie e-mail.';

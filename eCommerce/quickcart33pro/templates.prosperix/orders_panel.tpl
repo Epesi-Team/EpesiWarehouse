@@ -18,7 +18,6 @@ $lang[Click_on_order_to_see_details]
     <dt class="orderDate">$lang[Date]:</dt><dd class="orderDate">$aOrder[sDate]</dd>
     <dt class="orderDate">$lang[Status]:</dt><dd class="orderDate">$aOrder[sStatus]</dd>
     <dt class="orderDate">$lang[Shipment_no]:</dt><dd class="orderDate">$aOrder[sShipmentNo]</dd>
-    <dt class="orderDate">$lang[Tracking_info]:</dt><dd class="orderDate">$aOrder[sTrackingInfo]</dd>
   </dl>
   <div class="order_details" style="clear:both">
   <dl>

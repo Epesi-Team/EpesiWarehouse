@@ -357,7 +357,6 @@ $lang['Click_on_order_to_see_details'] = 'Click on order to see details.';
 $lang['Shipment_discount'] = 'Shipment discount';
 $lang['Create_account'] = 'Create account';
 $lang['Shipment_no'] = 'Shipment No.';
-$lang['Tracking_info'] = 'Tracking additional info';
 $lang['Manufacturer_filter'] = 'Choose manufacturer';
 $lang['Forgot_password'] = 'Password recovery';
 $lang['Email_invalid'] = 'E-mail invalid';
