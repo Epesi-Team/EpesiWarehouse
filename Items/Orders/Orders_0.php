@@ -315,7 +315,6 @@ class Premium_Warehouse_Items_Orders extends Module {
 			$box->pop_main();
 			return false;
 		}
-		Base_ThemeCommon::install_default_theme('Premium_Warehouse_Items_Orders');
 		
 		load_js('modules/Premium/Warehouse/Items/Orders/js/check_in_item.js');
 		
