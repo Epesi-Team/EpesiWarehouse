@@ -225,7 +225,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 			'gross_price'=>array('width'=>28, 'wrapmode'=>'nowrap'),
 			'debit'=>array('width'=>20, 'wrapmode'=>'nowrap'),
 			'credit'=>array('width'=>20, 'wrapmode'=>'nowrap'),
-			'quantity'=>array('name'=>'Qty', 'width'=>4, 'wrapmode'=>'nowrap'),
+			'quantity'=>array('name'=>'Qty', 'width'=>'50px', 'wrapmode'=>'nowrap'),
 			'serial'=>array('width'=>40, 'wrapmode'=>'nowrap')
 		);
 		if ($arg['transaction_type']==0) {
