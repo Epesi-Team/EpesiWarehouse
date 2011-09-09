@@ -1243,7 +1243,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 	public function applet($conf,$opts) {
 		//available applet options: toggle,href,title,go,go_function,go_arguments,go_contruct_arguments
 		$opts['go'] = false; // enable/disable full screen
-		$xxx = array(-1=>'New Online Order', 2=>'Order Received', 3=>'Payment Confirmed', 4=>'Order Confirmed', 5=>'On Hold', 6=>'Order Ready to Ship', 7=>'Shipped', 20=>'Delivered', 21=>'Canceled', 22=>'Missing','active'=>'Active');
+		$xxx = array(-2=>'New Online Order (with payment)', -1=>'New Online Order', 2=>'Order Received', 3=>'Payment Confirmed', 4=>'Order Confirmed', 5=>'On Hold', 6=>'Order Ready to Ship', 7=>'Shipped', 20=>'Delivered', 21=>'Canceled', 22=>'Missing','active'=>'Active');
 		$opts['title'] = $this->t('eCommerce - %s',array(Base_LangCommon::ts('Base_Dashboard',$xxx[$conf['status']])));
 		
 		$crits = array('online_order'=>1);
