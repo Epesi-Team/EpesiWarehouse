@@ -29,6 +29,18 @@ class Premium_Warehouse_eCommerce_CurrencyUpdatePrices extends Module {
 		
 		$form = & $this->init_module('Libs/QuickForm',null,'currency_setup');
 
+		$rates = Variable::get('ecommerce_price_updater_rates',false);
+		$dater = Variable::get('ecommerce_price_updater_last_upd',false);
+		if($rates && $dater && $rates = @unserialize($rates)) {
+		    $form->addElement('header','hu',$this->t('Last update'));
+		    $form->addElement('static','last_up',$this->t('Date'),Base_RegionalSettingsCommon::time2reg($dater));
+		    $r = array();
+		    foreach($rates as $k=>$v) {
+			$r[] = '<b>EUR/'.Utils_CurrencyFieldCommon::get_code($k).':</b> '.$v;
+		    }
+		    $form->addElement('static','last_rates',$this->t('Rates'),implode('<br />',$r));
+		}
+
 		$form->addElement('header','h',$this->t('eCommerce Prices Auto Updater'));
 		
 		$form->addElement('text','profit',$this->t('Profit margin (in percent)'));
@@ -57,9 +69,14 @@ class Premium_Warehouse_eCommerce_CurrencyUpdatePrices extends Module {
     }
     
     public function submit_admin($data) {
-        if(!Premium_Warehouse_eCommerce_CurrencyUpdatePricesCommon::update($data)) {
+	$ret = Premium_Warehouse_eCommerce_CurrencyUpdatePricesCommon::update($data);
+        if($ret===false) {
             Epesi::alert($this->t('Unable to get currency exchange rates'));
             return false;
+        }
+        if($ret === null) {
+            Epesi::alert($this->t('Invalid return from update function'));
+            return false;        
         }
 	    Variable::set('ecommerce_price_updater',serialize($data));
 		Epesi::alert('Prices updated');

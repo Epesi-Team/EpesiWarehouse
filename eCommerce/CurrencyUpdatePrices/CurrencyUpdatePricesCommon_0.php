@@ -17,8 +17,13 @@ class Premium_Warehouse_eCommerce_CurrencyUpdatePricesCommon extends ModuleCommo
 	}
 	
 	public static function update($data = null) {
-	    if($data===null) $data = Variable::get('ecommerce_price_updater',false);
+        if($data===null && Variable::get('ecommerce_price_updater_last_upd')>time()-12*3600) return null;
+	if($data===null) $data = Variable::get('ecommerce_price_updater',false);
         if(!$data) return null;
+        if(!is_array($data)) {
+            $data = @unserialize($data);
+	    if(!$data) return null;
+	}
         
         set_time_limit(0);
         $ret = @simplexml_load_file('http://www.ecb.int/stats/eurofxref/eurofxref-daily.xml');
@@ -51,14 +56,18 @@ class Premium_Warehouse_eCommerce_CurrencyUpdatePricesCommon extends ModuleCommo
 		    if($wholesale && $autoprice && !$value && 
 		        (($location && Premium_Warehouse_Items_LocationCommon::get_item_quantity_in_warehouse($r['id'])==0) || 
 		        (!$location && $r['quantity_on_hand']==0))) {
-		        $ff = DB::GetRow('SELECT price,price_currency FROM premium_warehouse_wholesale_items WHERE item_id=%d AND quantity>0',array($r['id']));
-		        if($ff) {
-		        $value = $ff['price'];
-		        $curr = $ff['price_currency'];
-				$profit = $value*$autoprice_percentage/100;
-				if($profit<$autoprice_minimal) $profit = $autoprice_minimal;
+		        $fff = DB::GetAll('SELECT i.price,i.price_currency,dist.f_minimal_profit,dist.f_percentage_profit FROM premium_warehouse_wholesale_items i INNER JOIN premium_warehouse_distributor_data_1 dist ON dist.id=i.distributor_id WHERE i.item_id=%d AND i.quantity>0 AND dist.active=1',array($r['id']));
+		        $min_value = null;
+		        foreach($fff as $ff) {
+				$value = $ff['price'];
+				$curr = $ff['price_currency'];
+				$profit = $value*($ff['f_percentage_profit']?$ff['f_percentage_profit']:$autoprice_percentage)/100;
+				$minimal = ($ff['f_minimal_profit']?$ff['f_minimal_profit']:$autoprice_minimal);
+				if($profit<$minimal) $profit = $minimal;
 				$value += $profit;
+				if($min_value===null || $min_value>$value) $min_value = $value;
 			}
+			$value = $min_value;
 		    }
 		    if(is_numeric($value) && $value>0) {
 		        $euro = $value*(100+Data_TaxRatesCommon::get_tax_rate($r['tax_rate']))/(100*$rates[$curr]);
@@ -81,6 +90,8 @@ class Premium_Warehouse_eCommerce_CurrencyUpdatePricesCommon extends ModuleCommo
 		            Utils_RecordBrowserCommon::delete_record('premium_ecommerce_prices',$del['id']);
 		    }
 		}
+	    Variable::set('ecommerce_price_updater_rates',serialize($rates));
+	    Variable::set('ecommerce_price_updater_last_upd',time());
 	    return true;
 	}
 	
