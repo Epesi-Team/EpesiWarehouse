@@ -228,13 +228,15 @@ class Premium_Warehouse_Wholesale__Plugin_besier implements Premium_Warehouse_Wh
 
 			/*** check for exact match ***/
 			$internal_key = DB::GetOne('SELECT internal_key FROM premium_warehouse_wholesale_items WHERE internal_key=%s AND distributor_id=%d', array($row['Kod produktu'], $distributor['id']));
-			if (($internal_key===false || $internal_key===null) && $row['Kod producenta']) {
+			if ($internal_key===false || $internal_key===null) {
 				$w_item = null;
 				/*** exact match not found, looking for candidates ***/
-				$matches = Utils_RecordBrowserCommon::get_records('premium_warehouse_items', array(
-					'(~"item_name'=>DB::Concat(DB::qstr('%'),DB::qstr($row['Nazwa produktu']),DB::qstr('%')),
-					'|manufacturer_part_number'=>$row['Kod producenta']
-				));
+				$matches = array();
+				if($row['Kod producenta'])
+					$matches = Utils_RecordBrowserCommon::get_records('premium_warehouse_items', array(
+						'(~"item_name'=>DB::Concat(DB::qstr('%'),DB::qstr($row['Nazwa produktu']),DB::qstr('%')),
+						'|manufacturer_part_number'=>$row['Kod producenta']
+					));
 				if (!empty($matches))
 					if (count($matches)==1) {
 						/*** one candidate found, if product code is empty or matches, it's ok ***/

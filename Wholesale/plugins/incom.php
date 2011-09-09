@@ -154,13 +154,15 @@ class Premium_Warehouse_Wholesale__Plugin_incom implements Premium_Warehouse_Who
 
 				/*** check for exact match ***/
 				$internal_key = DB::GetOne('SELECT internal_key FROM premium_warehouse_wholesale_items WHERE internal_key=%s AND distributor_id=%d', array($row->Symbol, $distributor['id']));
-				if (($internal_key===false || $internal_key===null) && $row->SymbolProducenta) {
+				if (($internal_key===false || $internal_key===null)) {
 					$w_item = null;
+					$matches = array();
+					if($row->SymbolProducenta)
 					/*** exact match not found, looking for candidates ***/
-					$matches = Utils_RecordBrowserCommon::get_records('premium_warehouse_items', array(
-						'(~"item_name'=>DB::Concat(DB::qstr('%'),DB::qstr($row->Nazwa),DB::qstr('%')),
-						'|manufacturer_part_number'=>$row->SymbolProducenta
-					));
+						$matches = Utils_RecordBrowserCommon::get_records('premium_warehouse_items', array(
+							'(~"item_name'=>DB::Concat(DB::qstr('%'),DB::qstr($row->Nazwa),DB::qstr('%')),
+							'|manufacturer_part_number'=>$row->SymbolProducenta
+						));
 					if (!empty($matches))
 						if (count($matches)==1) {
 							/*** one candidate found, if product code is empty or matches, it's ok ***/

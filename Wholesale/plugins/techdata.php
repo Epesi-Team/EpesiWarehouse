@@ -220,13 +220,15 @@ class Premium_Warehouse_Wholesale__Plugin_techdata implements Premium_Warehouse_
 
 				/*** check for exact match ***/
 				$internal_key = DB::GetOne('SELECT internal_key FROM premium_warehouse_wholesale_items WHERE internal_key=%s AND distributor_id=%d', array($row_parts['KOD_TD'], $distributor['id']));
-				if (($internal_key===false || $internal_key===null) && $row_parts['SYMBOLPROD']) {
+				if (($internal_key===false || $internal_key===null)) {
 					$w_item = null;
 					/*** exact match not found, looking for candidates ***/
-					$matches = Utils_RecordBrowserCommon::get_records('premium_warehouse_items', array(
-						'(~"item_name'=>DB::Concat(DB::qstr('%'),DB::qstr($row_parts['NAZWA']),DB::qstr('%')),
-						'|manufacturer_part_number'=>$row_parts['SYMBOLPROD']
-					));
+					$matches = array();
+					if($row_parts['SYMBOLPROD'])
+						$matches = Utils_RecordBrowserCommon::get_records('premium_warehouse_items', array(
+							'(~"item_name'=>DB::Concat(DB::qstr('%'),DB::qstr($row_parts['NAZWA']),DB::qstr('%')),
+							'|manufacturer_part_number'=>$row_parts['SYMBOLPROD']
+						));
 					if (!empty($matches))
 						if (count($matches)==1) {
 							/*** one candidate found, if product code is empty or matches, it's ok ***/

@@ -221,27 +221,29 @@ class Premium_Warehouse_Wholesale__Plugin_action implements Premium_Warehouse_Wh
 
 			/*** check for exact match ***/
 			$internal_key = DB::GetOne('SELECT internal_key FROM premium_warehouse_wholesale_items WHERE internal_key=%s AND distributor_id=%d', array($row['Kod produktu'], $distributor['id']));
-			if (($internal_key===false || $internal_key===null) && $row['Kod producenta']) {
+			if ($internal_key===false || $internal_key===null) {
 				$w_item = null;
-				/*** exact match not found, looking for candidates ***/
-				$matches = Utils_RecordBrowserCommon::get_records('premium_warehouse_items', array(
-					'(~"item_name'=>DB::Concat(DB::qstr('%'),DB::qstr($row['Nazwa produktu']),DB::qstr('%')),
-					'|manufacturer_part_number'=>$row['Kod producenta']
-				));
-				if (!empty($matches))
-					if (count($matches)==1) {
-						/*** one candidate found, if product code is empty or matches, it's ok ***/
-						$v = array_pop($matches);
-						if ($v['manufacturer_part_number']==$row['Kod producenta'] || $v['manufacturer_part_number']=='')
-							$w_item = $v['id'];
-					} else {
-						/*** found more candidates, only product code is important now ***/
-						foreach ($matches as $v)
-							if ($v['manufacturer_part_number']==$row['Kod producenta']) {
+				if($row['Kod producenta']) {
+					/*** exact match not found, looking for candidates ***/
+					$matches = Utils_RecordBrowserCommon::get_records('premium_warehouse_items', array(
+						'(~"item_name'=>DB::Concat(DB::qstr('%'),DB::qstr($row['Nazwa produktu']),DB::qstr('%')),
+						'|manufacturer_part_number'=>$row['Kod producenta']
+					));
+					if (!empty($matches))
+						if (count($matches)==1) {
+							/*** one candidate found, if product code is empty or matches, it's ok ***/
+							$v = array_pop($matches);
+							if ($v['manufacturer_part_number']==$row['Kod producenta'] || $v['manufacturer_part_number']=='')
 								$w_item = $v['id'];
-								break;
-							}
-					}
+						} else {
+							/*** found more candidates, only product code is important now ***/
+							foreach ($matches as $v)
+								if ($v['manufacturer_part_number']==$row['Kod producenta']) {
+									$w_item = $v['id'];
+									break;
+								}
+						}
+				}
 				if ($w_item===null) {
 					/*** no item was found matching this entry ***/
 					$new_items++;
