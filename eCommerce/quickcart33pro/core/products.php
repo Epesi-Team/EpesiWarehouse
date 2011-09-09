@@ -165,8 +165,8 @@ class Products
 							$aExp2['fPrice'] = $user_price;
 						} else {
 							$netto = $dist['price'];
-							$profit = $netto*($dist['f_percentage_profit']?$dist['f_percentage_profit']:$percentage)/100;
-							$minimal2 = ($dist['f_minimal_profit']?$dist['f_minimal_profit']:$minimal);
+							$profit = $netto*(is_numeric($dist['f_percentage_profit'])?$dist['f_percentage_profit']:$percentage)/100;
+							$minimal2 = (is_numeric($dist['f_minimal_profit'])?$dist['f_minimal_profit']:$minimal);
 							if($profit<$minimal2) $profit = $minimal2;
 							$aExp2['fPrice'] = round((float)($netto+$profit)*(100+$taxes[$aExp['tax2']])/100,2);
 							$aExp2['tax'] = $aExp['tax2'];		
