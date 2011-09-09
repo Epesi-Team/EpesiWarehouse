@@ -61,8 +61,8 @@ class Premium_Warehouse_eCommerce_CurrencyUpdatePricesCommon extends ModuleCommo
 		        foreach($fff as $ff) {
 				$value = $ff['price'];
 				$curr = $ff['price_currency'];
-				$profit = $value*($ff['f_percentage_profit']?$ff['f_percentage_profit']:$autoprice_percentage)/100;
-				$minimal = ($ff['f_minimal_profit']?$ff['f_minimal_profit']:$autoprice_minimal);
+				$profit = $value*(is_numeric($ff['f_percentage_profit'])?$ff['f_percentage_profit']:$autoprice_percentage)/100;
+				$minimal = (is_numeric($ff['f_minimal_profit'])?$ff['f_minimal_profit']:$autoprice_minimal);
 				if($profit<$minimal) $profit = $minimal;
 				$value += $profit;
 				if($min_value===null || $min_value>$value) $min_value = $value;
