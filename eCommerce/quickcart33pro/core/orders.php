@@ -684,7 +684,7 @@ class Orders
 				    o.f_invoice as iInvoice,
 				    o.f_promotion_shipment_discount as iShipmentDiscount,
 				    w.f_status as iStatus,
-				    w.f_shipment_no as sShipmentNo,
+				    w.f_shipment_no as sShipmentNo
 				    FROM premium_warehouse_items_orders_data_1 w LEFT JOIN premium_ecommerce_orders_data_1 o ON o.f_transaction_id=w.id WHERE w.id=%d',array($iOrder));
 
     if( isset( $aData ) ){
