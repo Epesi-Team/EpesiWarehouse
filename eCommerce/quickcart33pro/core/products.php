@@ -142,40 +142,43 @@ class Products
 			$distributors = DB::GetAll('SELECT dist_item.quantity,
 					dist_item.quantity_info,
 					dist_item.price,
-					dist.f_items_availability as iAvailable
+					dist.f_items_availability as iAvailable,
+					dist.f_minimal_profit,
+					dist.f_percentage_profit
 					FROM premium_warehouse_wholesale_items dist_item
 					INNER JOIN premium_warehouse_distributor_data_1 dist ON dist.id=dist_item.distributor_id
-					WHERE dist_item.item_id=%d AND dist_item.quantity>0 AND dist_item.price_currency=%d ORDER BY dist_item.price',array($aExp['iProduct'],$currency));
+					WHERE dist_item.item_id=%d AND dist_item.quantity>0 AND dist_item.price_currency=%d AND dist.active=1',array($aExp['iProduct'],$currency));
+			$minimal_aExp = null;
 			foreach($distributors as $kkk=>$dist) {
 				if($dist['quantity']>$reserved[$aExp['iProduct']]) {
 					$dist['quantity'] -= $reserved[$aExp['iProduct']];
-					$reserved[$aExp['iProduct']] = 0;
 
-					$aExp['distributorQuantity'] = $dist['quantity'];
-					$aExp['iAvailable'] = $dist['iAvailable'];
-					$aExp['sAvailableInfo'] = $dist['quantity_info'];
+                                        $aExp2 = array();
+					$aExp2['distributorQuantity'] = $dist['quantity'];
+					$aExp2['iAvailable'] = $dist['iAvailable'];
+					$aExp2['sAvailableInfo'] = $dist['quantity_info'];
 
-					$user_price=0;
-					if($aExp['fPrice']) {
-						$user_price = $aExp['fPrice'];
-						$aExp['fPrice'] = null;
-					}
-					if($autoprice && !$aExp['fPrice']) {
+					if($autoprice) {
+					        $user_price = $aExp['fPrice'];
 						$dist_price = round((float)$dist['price']*(100+$taxes[$aExp['tax2']])/100,2);
 						if($user_price>=$dist_price) {
-							$aExp['fPrice'] = $user_price;
+							$aExp2['fPrice'] = $user_price;
 						} else {
 							$netto = $dist['price'];
-							$profit = $netto*$percentage/100;
-							if($profit<$minimal) $profit = $minimal;
-							$aExp['fPrice'] = round((float)($netto+$profit)*(100+$taxes[$aExp['tax2']])/100,2);
-							$aExp['tax'] = $aExp['tax2'];		
+							$profit = $netto*($dist['f_percentage_profit']?$dist['f_percentage_profit']:$percentage)/100;
+							$minimal2 = ($dist['f_minimal_profit']?$dist['f_minimal_profit']:$minimal);
+							if($profit<$minimal2) $profit = $minimal2;
+							$aExp2['fPrice'] = round((float)($netto+$profit)*(100+$taxes[$aExp['tax2']])/100,2);
+							$aExp2['tax'] = $aExp['tax2'];		
 						}
 					}
-					break;
-				} else {
-					$reserved[$aExp['iProduct']] -= $dist['quantity'];
+					if($minimal_aExp===null || $minimal_aExp['fPrice']>$aExp2['fPrice'])
+                                                $minimal_aExp = $aExp2;
 				}
+			}
+			if($minimal_aExp!==null) {
+			        $aExp = array_merge($aExp,$minimal_aExp);
+				$reserved[$aExp['iProduct']] = 0;
 			}
 			unset($distributors);
 		} else {
