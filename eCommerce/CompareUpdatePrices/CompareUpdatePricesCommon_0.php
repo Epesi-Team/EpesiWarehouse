@@ -57,7 +57,8 @@ class Premium_Warehouse_eCommerce_CompareUpdatePricesCommon extends ModuleCommon
 		
 			if($a->price && $a->currency) {
 				$item = Utils_RecordBrowserCommon::get_record('premium_warehouse_items',$row['item_name']);
-				if($item['quantity_on_hand']) {
+				$qty = DB::GetOne('SELECT SUM(f_quantity) FROM premium_warehouse_location_data_1 WHERE f_item_sku=%d AND active=1',array($row['item_name']));
+				if($qty) {
 					$value = Utils_CurrencyFieldCommon::get_values($item['last_purchase_price']);
 					if($value[1] != $a->currency || $a->price <= $value[0]) {
 						$a->price = null;
@@ -71,14 +72,17 @@ class Premium_Warehouse_eCommerce_CompareUpdatePricesCommon extends ModuleCommon
 					}
 				}
 			}
-				
-			Utils_RecordBrowserCommon::update_record('premium_ecommerce_compare_prices',$row['id'],array('gross_price'=>$a->price,$a->currency));
+			
+			Utils_RecordBrowserCommon::update_record('premium_ecommerce_compare_prices',$row['id'],array('gross_price'=>$a->price,'currency'=>$a->currency));
 		}
-	    return true;
+		Variable::set('premium_ecommerce_compare_servic',time());
+		return true;
 	}
 	
 	public static function cron() {
-	    if(self::update()===false) return 'Unable to update compare services prices';
+	    if(Variable::get('premium_ecommerce_compare_servic')<(time()-12*3600)) {
+		if(self::update()===false) return 'Unable to update compare services prices';
+	    }
 	    return '';
 	}
 

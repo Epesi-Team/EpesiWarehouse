@@ -40,11 +40,14 @@ class Premium_Warehouse_eCommerce_CompareUpdatePricesInstall extends ModuleInsta
 		$this->add_aco('delete',array('Employee'));
 		
 		$this->create_data_dir();
-				
+		
+		Variable::set('premium_ecommerce_compare_servic',0);
+		
 		return true;
 	}
 	
 	public function uninstall() {
+		Variable::delete('premium_ecommerce_compare_servic');
 		Utils_RecordBrowserCommon::delete_addon('premium_warehouse_items', 'Premium/Warehouse/eCommerce/CompareUpdatePrices', 'item_addon');
 		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_products', 'Premium/Warehouse/eCommerce/CompareUpdatePrices', 'product_addon');
 		
