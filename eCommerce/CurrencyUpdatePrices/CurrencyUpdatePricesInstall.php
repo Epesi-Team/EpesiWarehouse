@@ -18,7 +18,7 @@ class Premium_Warehouse_eCommerce_CurrencyUpdatePricesInstall extends ModuleInst
 	}
 	
 	public function uninstall() {
-		Utils_RecordBrowserCommon::delete_record_field('premium_ecommerce_prices','Autoupdate');
+		Utils_RecordBrowserCommon::delete_record_field('premium_ecommerce_prices','Auto update');
 	    Variable::delete('ecommerce_price_updater');
 	    Variable::delete('ecommerce_price_updater_last_upd');
 	    Variable::delete('ecommerce_price_updater_rates');

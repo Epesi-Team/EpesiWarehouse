@@ -153,13 +153,13 @@ class Products
 				if($dist['quantity']>$reserved[$aExp['iProduct']]) {
 					$dist['quantity'] -= $reserved[$aExp['iProduct']];
 
-                                        $aExp2 = array();
+                    $aExp2 = array();
 					$aExp2['distributorQuantity'] = $dist['quantity'];
 					$aExp2['iAvailable'] = $dist['iAvailable'];
 					$aExp2['sAvailableInfo'] = $dist['quantity_info'];
 
 					if($autoprice) {
-					        $user_price = $aExp['fPrice'];
+					    $user_price = $aExp['fPrice'];
 						$dist_price = round((float)$dist['price']*(100+$taxes[$aExp['tax2']])/100,2);
 						if($user_price>=$dist_price) {
 							$aExp2['fPrice'] = $user_price;

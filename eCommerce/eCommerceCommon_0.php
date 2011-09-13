@@ -283,13 +283,15 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
             if ($mode=='edit') $form->setDefaults(array($field=>$default));
         } else {
             $form->addElement('static', $field, $label);
-            $form->setDefaults(array($field=>self::$curr_opts[$default]));
+            $form->setDefaults(array($field=>isset(self::$curr_opts[$default])?self::$curr_opts[$default]:''));
         }
     }
 
     public static function display_currency($r, $nolink=false) {
         self::init_currency();
-        return self::$curr_opts[$r['currency']];
+        if(isset(self::$curr_opts[$r['currency']]))
+        	return self::$curr_opts[$r['currency']];
+       	return '';
     }
 
     public static function init_currency() {
