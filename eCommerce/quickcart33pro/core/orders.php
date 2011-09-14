@@ -589,6 +589,7 @@ class Orders
 		'shipping_contact'=>$contact,
 		'shipping_company'=>$company
     	));
+    	
     /* DB::Execute('INSERT INTO premium_warehouse_items_orders_data_1(f_transaction_type,f_transaction_date,f_status,
 						f_company_name,f_last_name,f_first_name,f_address_1,f_city,f_postal_code,f_phone,f_country,f_zone,f_memo,created_on,
 						f_shipment_type,f_shipment_cost,f_payment,f_payment_type,f_tax_id,f_warehouse,f_online_order,f_contact,f_company,f_terms,f_receipt,f_handling_cost,
@@ -603,6 +604,18 @@ class Orders
     DB::Execute('UPDATE premium_warehouse_items_orders_data_1 SET f_transaction_id=%s WHERE id=%d',array($trans_id,$id));
  */
 
+    $taxes = DB::GetAssoc('SELECT id, f_percentage FROM data_tax_rates_data_1 WHERE active=1');
+
+    if( isset( $this->aProducts ) ){
+      foreach( $this->aProducts as $aData ){
+	$net = $aData['fPrice']*100/(100+$taxes[$aData['tax']]);
+	Utils_RecordBrowserCommon::new_record('premium_warehouse_items_orders_details',array('transaction_id'=>$id,'item_name'=>$aData['iProduct'],'quantity'=>$aData['iQuantity'],'description'=>$aData['sName'],'tax_rate'=>$aData['tax'],'net_price'=>$net.'__'.$currency));
+//        DB::Execute('INSERT INTO premium_warehouse_items_orders_details_data_1(f_transaction_id,f_item_name,f_quantity,f_description,f_tax_rate,created_on,f_net_price) 
+//							VALUES (%s,%d,%d,%s,%s,%T,%s)', array($id,$aData['iProduct'],$aData['iQuantity'],$aData['sName'],$aData['tax'],$t,$net.'__'.$currency));
+      }
+    }
+    
+    ob_start();
     Utils_RecordBrowserCommon::new_record('premium_ecommerce_orders',array(
     	'transaction_id'=>$id,
     	'language'=>LANGUAGE,
@@ -622,18 +635,8 @@ class Orders
 					array($id,LANGUAGE,$aForm['sEmail'],$_SERVER['REMOTE_ADDR'],$aForm['sComment'],$aForm['iInvoice']?true:false,
 					$aForm['mPaymentChannel'],$aForm['iPaymentRealized'],time(),$promo_employee,$promo_discount));
  */
-    $taxes = DB::GetAssoc('SELECT id, f_percentage FROM data_tax_rates_data_1 WHERE active=1');
-
-    if( isset( $this->aProducts ) ){
-      foreach( $this->aProducts as $aData ){
-	$net = $aData['fPrice']*100/(100+$taxes[$aData['tax']]);
-	Utils_RecordBrowserCommon::new_record('premium_warehouse_items_orders_details',array('transaction_id'=>$id,'item_name'=>$aData['iProduct'],'quantity'=>$aData['iQuantity'],'description'=>$aData['sName'],'tax_rate'=>$aData['tax'],'net_price'=>$net.'__'.$currency));
-//        DB::Execute('INSERT INTO premium_warehouse_items_orders_details_data_1(f_transaction_id,f_item_name,f_quantity,f_description,f_tax_rate,created_on,f_net_price) 
-//							VALUES (%s,%d,%d,%s,%s,%T,%s)', array($id,$aData['iProduct'],$aData['iQuantity'],$aData['sName'],$aData['tax'],$t,$net.'__'.$currency));
-      }
-    }
-    
     Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders',$id,array('status'=>"-1"));
+    ob_end_clean();
 
     chdir($d);
 
