@@ -200,8 +200,7 @@ class Products
 				$reserved[$aExp['iProduct']] = 0;
 			}
 			unset($distributors);
-		} else {
-			if($autoprice && !$aExp['fPrice']) {
+		} elseif($autoprice && !$aExp['fPrice'] && (!isset($aExp['f_always_on_stock']) || !$aExp['f_always_on_stock'])) {
 			        $lpp = ($aExp['f_last_purchase_price']?explode('__',$aExp['f_last_purchase_price']):null);
                                 if($lpp && $lpp[1]==$currency) {
                                     $netto = $lpp[0];
@@ -217,7 +216,6 @@ class Products
 					$aExp['fPrice'] = round((float)($netto+$profit)*(100+$taxes[$aExp['tax2']])/100,2);
 					$aExp['tax'] = $aExp['tax2'];		
 				}
-			}
 		}
 		if(isset($availability_codes[$aExp['iAvailable']]))
 			$aExp['sAvailableCode'] = $availability_codes[$aExp['iAvailable']];
