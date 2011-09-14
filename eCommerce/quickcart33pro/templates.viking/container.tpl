@@ -99,7 +99,7 @@
     <div class="container">
       <div class="main">
         <a class="logo" href="?">&nbsp;</a>
-        <div class="banner">AS SEEN ON THE <a href="">MARTHA STEWART</a> SHOW</div>
+        <div class="banner">AS SEEN ON THE <a href="http://www.marthastewart.com/portal/site/mslo/menuitem.3a0656639de62ad593598e10d373a0a0/?vgnextoid=d498e608ce2b1110VgnVCM1000003d370a0aRCRD&autonomy_kw=viking%20importing&rsc=ns2006_m4">MARTHA STEWART</a> SHOW</div>
       </div>
     </div>
   </div>
@@ -129,7 +129,7 @@
     <div class="container">
       <div class="main">
         <a class="logo" href="?">&nbsp;</a>
-        <div class="banner">AS SEEN ON THE <a href="">MARTHA STEWART</a> SHOW</div>
+        <div class="banner">AS SEEN ON THE <a href="http://www.marthastewart.com/portal/site/mslo/menuitem.3a0656639de62ad593598e10d373a0a0/?vgnextoid=d498e608ce2b1110VgnVCM1000003d370a0aRCRD&autonomy_kw=viking%20importing&rsc=ns2006_m4">MARTHA STEWART</a> SHOW</div>
 
         $sBasket
       </div>

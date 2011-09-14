@@ -555,7 +555,6 @@ class Orders
     $id = Utils_RecordBrowserCommon::new_record('premium_warehouse_items_orders',array(
 	    'transaction_type'=>1,
 	    'transaction_date'=>$t,
-	    'status'=>"-1",
 	    'company_name'=>$aForm['sCompanyName'],
 	    'last_name'=>$aForm['sLastName'],
 	    'first_name'=>$aForm['sFirstName'],
@@ -617,7 +616,6 @@ class Orders
 		'promotion_employee'=>$promo_employee,
 		'promotion_shipment_discount'=>$promo_discount
 	));    	
-    chdir($d);
 /* 	DB::Execute('INSERT INTO premium_ecommerce_orders_data_1(f_transaction_id, f_language, f_email, f_ip, f_comment, f_invoice, 
 						f_payment_channel,f_payment_realized,created_on,f_promotion_employee,f_promotion_shipment_discount) VALUES
 						(%d,%s,%s,%s,%s,%b,%s,%b,%T,%d,%d)',
@@ -633,6 +631,11 @@ class Orders
 							VALUES (%s,%d,%d,%s,%s,%T,%s)', array($id,$aData['iProduct'],$aData['iQuantity'],$aData['sName'],$aData['tax'],$t,$net.'__'.$currency));
       }
     }
+    
+    Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders',$id,array('status'=>"-1"));
+
+    chdir($d);
+
 	
   	DB::Execute('DELETE FROM premium_ecommerce_orders_temp WHERE customer=%s',array($_SESSION['iCustomer'.LANGUAGE]));
 
