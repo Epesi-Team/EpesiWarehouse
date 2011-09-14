@@ -71,6 +71,7 @@ class Products
 								pr.f_position as iPosition, 
 								pr.f_recommended as sRecommended,
 								it.f_category,
+								it.f_last_purchase_price,
 								pr.f_available as iAvailable, 
 								d.f_display_name as sName,
 								d.f_short_description as sDescriptionShort,
@@ -183,10 +184,15 @@ class Products
 			unset($distributors);
 		} else {
 			if($autoprice && !$aExp['fPrice']) {
-				$netto = DB::GetOne('SELECT MIN(dist_item.price)
-					FROM premium_warehouse_wholesale_items dist_item
-					INNER JOIN premium_warehouse_distributor_data_1 dist ON dist.id=dist_item.distributor_id
-					WHERE dist_item.item_id=%d AND dist_item.quantity>0 AND dist_item.price_currency=%d ORDER BY dist_item.price',array($aExp['iProduct'],$currency));
+			        $lpp = ($aExp['f_last_purchase_price']?explode('__',$aExp['f_last_purchase_price']):null);
+                                if($lpp && $lpp[1]==$currency) {
+                                    $netto = $lpp[0];
+                                } else {
+        				$netto = DB::GetOne('SELECT MIN(dist_item.price)
+					    FROM premium_warehouse_wholesale_items dist_item
+					    INNER JOIN premium_warehouse_distributor_data_1 dist ON dist.id=dist_item.distributor_id
+					    WHERE dist_item.item_id=%d AND dist_item.quantity>0 AND dist_item.price_currency=%d ORDER BY dist_item.price',array($aExp['iProduct'],$currency));
+				}
 				if($netto) {
 					$profit = $netto*$percentage/100;
 					if($profit<$minimal) $profit = $minimal;
