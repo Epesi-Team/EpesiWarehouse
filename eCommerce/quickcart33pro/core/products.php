@@ -114,9 +114,26 @@ class Products
 	$autoprice = getVariable('ecommerce_autoprice');
 	$minimal = getVariable('ecommerce_minimal_profit');
 	$percentage = getVariable('ecommerce_percentage_profit');
+	$compare_service = array();
+        if(isset($_COOKIE['compare_service']))
+                $compare_service = explode(',',$_COOKIE['compare_service']);
+        if(preg_match('#ceneo.pl#is',$_SERVER['HTTP_REFERER']) || $_REQUEST['p']=='compare-ceneo')
+                $compare_service[] = 'ceneo';
+        if($compare_service)
+                setcookie('compare_service',implode(',',$compare_service),time()+3600*24);
 	foreach($ret as $aExp) {
 		if($aExp['sName']=='') 
 			$aExp['sName'] = $aExp['sName2'];
+		if($compare_service) {
+			$qry = 'SELECT f_gross_price,f_tax_rate FROM premium_ecommerce_compare_prices_data_1 WHERE f_currency
+			foreach($compare_service as $s)
+				$qry .= DB::qstr($s);
+			$compare_prices_ret = DB::Execute($qry.')',array($currency,$aExp['iProduct']));
+			while($compare_price = $compare_prices_ret->FetchRow()) {
+				if(!$aExp['fPrice'] || $aExp['fPrice']>$compare_price['f_gross_price'])
+					$aExp['fPrice']=$compare_price['f_gross_price'];
+			}
+		}
 		if(!$aExp['fPrice']) {
 			$rr = explode('__',$aExp['fPrice2']);
 			if($rr && $rr[0] && $rr[1]==$currency) {
