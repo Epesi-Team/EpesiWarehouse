@@ -128,11 +128,12 @@ class Products
 			$qry = 'SELECT f_gross_price,f_tax_rate FROM premium_ecommerce_compare_prices_data_1 WHERE f_currency
 			foreach($compare_service as $s)
 				$qry .= DB::qstr($s);
-			$compare_prices_ret = DB::Execute($qry.')',array($currency,$aExp['iProduct']));
-			while($compare_price = $compare_prices_ret->FetchRow()) {
-				if(!$aExp['fPrice'] || $aExp['fPrice']>$compare_price['f_gross_price'])
-					$aExp['fPrice']=$compare_price['f_gross_price'];
-			}
+			$compare_prices_ret = @DB::Execute($qry.')',array($currency,$aExp['iProduct']));
+			if($compare_prices_ret)
+        			while($compare_price = $compare_prices_ret->FetchRow()) {
+	        			if(!$aExp['fPrice'] || $aExp['fPrice']>$compare_price['f_gross_price'])
+		        			$aExp['fPrice']=$compare_price['f_gross_price'];
+			        }
 		}
 		if(!$aExp['fPrice']) {
 			$rr = explode('__',$aExp['fPrice2']);
