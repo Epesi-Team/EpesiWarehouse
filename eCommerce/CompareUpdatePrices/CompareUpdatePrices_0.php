@@ -20,7 +20,8 @@ class Premium_Warehouse_eCommerce_CompareUpdatePrices extends Module {
 		/* @var $rb Utils_RecordBrowser */
 		$rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_compare_prices');
 		$rb->set_defaults(array('item_name'=>$r['id']));
-		$this->display_module($rb,array(),'show_data');
+		$order = array(array('item_name'=>$r['id']), array('item_name'=>false), array('plugin'=>'ASC'));
+		$this->display_module($rb,$order,'show_data');
 	}
 	
 	public function product_addon($r) {
