@@ -125,7 +125,7 @@ class Products
 		if($aExp['sName']=='') 
 			$aExp['sName'] = $aExp['sName2'];
 		if($compare_service) {
-			$qry = 'SELECT f_gross_price,f_tax_rate FROM premium_ecommerce_compare_prices_data_1 WHERE f_currency
+			$qry = 'SELECT f_gross_price,f_tax_rate FROM premium_ecommerce_compare_prices_data_1 WHERE f_currency=%d AND f_item_name=%d AND f_plugin IN (';
 			foreach($compare_service as $s)
 				$qry .= DB::qstr($s);
 			$compare_prices_ret = @DB::Execute($qry.')',array($currency,$aExp['iProduct']));
