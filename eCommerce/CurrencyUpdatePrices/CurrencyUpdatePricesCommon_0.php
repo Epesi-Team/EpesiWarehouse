@@ -53,33 +53,36 @@ class Premium_Warehouse_eCommerce_CurrencyUpdatePricesCommon extends ModuleCommo
 
 		foreach($recs as $r) {
 		    list($value,$curr) = Utils_CurrencyFieldCommon::get_values($r['net_price']);
+		    if(is_numeric($value) && $value)
+			$value = $value*(100+Data_TaxRatesCommon::get_tax_rate($r['tax_rate']))/(100*$rates[$curr]);
 		    if($wholesale && $autoprice && !$value && 
 		        (($location && Premium_Warehouse_Items_LocationCommon::get_item_quantity_in_warehouse($r['id'])==0) || 
 		        (!$location && $r['quantity_on_hand']==0))) {
 		        $fff = DB::GetAll('SELECT i.price,i.price_currency,dist.f_minimal_profit,dist.f_percentage_profit FROM premium_warehouse_wholesale_items i INNER JOIN premium_warehouse_distributor_data_1 dist ON dist.id=i.distributor_id WHERE i.item_id=%d AND i.quantity>0 AND dist.active=1',array($r['id']));
 		        $min_value = null;
 		        foreach($fff as $ff) {
-				$value = $ff['price'];
-				$curr = $ff['price_currency'];
-				$profit = $value*(is_numeric($ff['f_percentage_profit'])?$ff['f_percentage_profit']:$autoprice_percentage)/100;
+				$dvalue = $ff['price'];
+				$dcurr = $ff['price_currency'];
+				$profit = $dvalue*(is_numeric($ff['f_percentage_profit'])?$ff['f_percentage_profit']:$autoprice_percentage)/100;
 				$minimal = (is_numeric($ff['f_minimal_profit'])?$ff['f_minimal_profit']:$autoprice_minimal);
 				if($profit<$minimal) $profit = $minimal;
-				$value += $profit;
-				if($min_value===null || $min_value>$value) $min_value = $value;
+				$dvalue += $profit;
+			        $euro = $dvalue*(100+Data_TaxRatesCommon::get_tax_rate($r['tax_rate']))/(100*$rates[$dcurr]);
+				if($min_value===null || $min_value>$euro) $min_value = $euro;
 			}
-			$value = $min_value;
+			if(!is_numeric($value) || !$value || $min_value<$value)
+				$value = $min_value;
 		    }
 		    if(is_numeric($value) && $value>0) {
-		        $euro = $value*(100+Data_TaxRatesCommon::get_tax_rate($r['tax_rate']))/(100*$rates[$curr]);
-		        $euro += $euro*$data['profit']/100;
+		        $euro = $value*(100+$data['profit'])/100;
 		        foreach($currencies_to_conv as $curr2) {
-		    	    if($curr==$curr2) continue;
+//		    	    if($curr==$curr2) continue;
 		            $price = $euro*$rates[$curr2];
 		            $to_up = Utils_RecordBrowserCommon::get_records('premium_ecommerce_prices',array('item_name'=>$r['id'],'currency'=>$curr2),array('auto_update'));
 		            if($to_up) {
-    		        	$to_up = array_shift($to_up);
-    		        	if($to_up['auto_update'])
-    		                Utils_RecordBrowserCommon::update_record('premium_ecommerce_prices',$to_up['id'],array('gross_price'=>$price,'tax_rate'=>$r['tax_rate']));
+		        	$to_up = array_shift($to_up);
+		        	if($to_up['auto_update'])
+		            	    Utils_RecordBrowserCommon::update_record('premium_ecommerce_prices',$to_up['id'],array('gross_price'=>$price,'tax_rate'=>$r['tax_rate']));
 		            } else {
 		                Utils_RecordBrowserCommon::new_record('premium_ecommerce_prices',array('currency'=>$curr2,'item_name'=>$r['id'],'gross_price'=>$price,'tax_rate'=>$r['tax_rate'],'auto_update'=>1));
 		            }
