@@ -114,26 +114,20 @@ class Products
 	$autoprice = getVariable('ecommerce_autoprice');
 	$minimal = getVariable('ecommerce_minimal_profit');
 	$percentage = getVariable('ecommerce_percentage_profit');
-	$compare_service = array();
-        if(isset($_COOKIE['compare_service']))
-                $compare_service = explode(',',$_COOKIE['compare_service']);
+	$compare_service = null;
         if(preg_match('#ceneo.pl#is',$_SERVER['HTTP_REFERER']) || $_REQUEST['p']=='compare-ceneo')
-                $compare_service[] = 'ceneo';
+                $compare_service = 'ceneo';
+        elseif(isset($_COOKIE['compare_service']))
+                $compare_service = $_COOKIE['compare_service'];
         if($compare_service)
-                setcookie('compare_service',implode(',',$compare_service),time()+3600*24);
+                setcookie('compare_service',$compare_service,time()+3600*24);
 	foreach($ret as $aExp) {
 		if($aExp['sName']=='') 
 			$aExp['sName'] = $aExp['sName2'];
 		if($compare_service) {
-			$qry = 'SELECT f_gross_price,f_tax_rate FROM premium_ecommerce_compare_prices_data_1 WHERE f_currency=%d AND f_item_name=%d AND f_plugin IN (';
-			foreach($compare_service as $s)
-				$qry .= DB::qstr($s);
-			$compare_prices_ret = @DB::Execute($qry.')',array($currency,$aExp['iProduct']));
-			if($compare_prices_ret)
-        			while($compare_price = $compare_prices_ret->FetchRow()) {
-	        			if(!$aExp['fPrice'] || $aExp['fPrice']>$compare_price['f_gross_price'])
-		        			$aExp['fPrice']=$compare_price['f_gross_price'];
-			        }
+			$compare_price = @DB::GetRow('SELECT f_gross_price,f_tax_rate FROM premium_ecommerce_compare_prices_data_1 WHERE f_currency=%d AND f_item_name=%d AND f_plugin=%s',array($currency,$aExp['iProduct'],$compare_service));
+    			if($compare_price)
+		        	$aExp['fPrice']=$compare_price['f_gross_price'];
 		}
 		if(!$aExp['fPrice']) {
 			$rr = explode('__',$aExp['fPrice2']);
@@ -163,21 +157,22 @@ class Products
 					dist_item.price,
 					dist.f_items_availability as iAvailable,
 					dist.f_minimal_profit,
-					dist.f_percentage_profit
+					dist.f_percentage_profit,
+					dist_item.price_currency
 					FROM premium_warehouse_wholesale_items dist_item
 					INNER JOIN premium_warehouse_distributor_data_1 dist ON dist.id=dist_item.distributor_id
-					WHERE dist_item.item_id=%d AND dist_item.quantity>0 AND dist_item.price_currency=%d AND dist.active=1',array($aExp['iProduct'],$currency));
+					WHERE dist_item.item_id=%d AND dist_item.quantity>0 AND dist.active=1',array($aExp['iProduct']));
 			$minimal_aExp = null;
 			foreach($distributors as $kkk=>$dist) {
 				if($dist['quantity']>$reserved[$aExp['iProduct']]) {
 					$dist['quantity'] -= $reserved[$aExp['iProduct']];
 
-                    $aExp2 = array();
+                                        $aExp2 = array();
 					$aExp2['distributorQuantity'] = $dist['quantity'];
 					$aExp2['iAvailable'] = $dist['iAvailable'];
 					$aExp2['sAvailableInfo'] = $dist['quantity_info'];
 
-					if($autoprice) {
+					if($autoprice && $aExp['price_currency']==$currency) {
 					    $user_price = $aExp['fPrice'];
 						$dist_price = round((float)$dist['price']*(100+$taxes[$aExp['tax2']])/100,2);
 						if($user_price>=$dist_price) {
@@ -191,7 +186,7 @@ class Products
 							$aExp2['tax'] = $aExp['tax2'];		
 						}
 					}
-					if($minimal_aExp===null || $minimal_aExp['fPrice']>$aExp2['fPrice'])
+					if($minimal_aExp===null || (!isset($minimal_aExp['fPrice']) && isset($aExp2['fPrice'])) || $minimal_aExp['fPrice']>$aExp2['fPrice'])
                                                 $minimal_aExp = $aExp2;
 				}
 			}
