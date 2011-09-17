@@ -60,6 +60,7 @@ class Premium_Warehouse_eCommerce_CurrencyUpdatePricesCommon extends ModuleCommo
 		        (!$location && $r['quantity_on_hand']==0))) {
 		        $fff = DB::GetAll('SELECT i.price,i.price_currency,dist.f_minimal_profit,dist.f_percentage_profit FROM premium_warehouse_wholesale_items i INNER JOIN premium_warehouse_distributor_data_1 dist ON dist.id=i.distributor_id WHERE i.item_id=%d AND i.quantity>0 AND dist.active=1',array($r['id']));
 		        $min_value = null;
+		        $min_curr = null;
 		        foreach($fff as $ff) {
 				$dvalue = $ff['price'];
 				$dcurr = $ff['price_currency'];
@@ -68,17 +69,30 @@ class Premium_Warehouse_eCommerce_CurrencyUpdatePricesCommon extends ModuleCommo
 				if($profit<$minimal) $profit = $minimal;
 				$dvalue += $profit;
 			        $euro = $dvalue*(100+Data_TaxRatesCommon::get_tax_rate($r['tax_rate']))/(100*$rates[$dcurr]);
-				if($min_value===null || $min_value>$euro) $min_value = $euro;
+				if($min_value===null || $min_value>$euro) {
+				    $min_value = $euro;
+				    $min_curr = $dcurr;
+				}
 			}
-			if(!is_numeric($value) || !$value || $min_value<$value)
+			if(!is_numeric($value) || !$value || $min_value<$value) {
 				$value = $min_value;
+				$curr = $min_curr;
+			}
 		    }
 		    if(is_numeric($value) && $value>0) {
 		        $euro = $value*(100+$data['profit'])/100;
 		        foreach($currencies_to_conv as $curr2) {
-//		    	    if($curr==$curr2) continue;
-		            $price = $euro*$rates[$curr2];
 		            $to_up = Utils_RecordBrowserCommon::get_records('premium_ecommerce_prices',array('item_name'=>$r['id'],'currency'=>$curr2),array('auto_update'));
+		    	    if($curr==$curr2) {
+		    		if($to_up) {
+			        	$to_up = array_shift($to_up);
+			        	if($to_up['auto_update'])
+			        		Utils_RecordBrowserCommon::delete_record('premium_ecommerce_prices',$to_up['id']);
+		    		
+		    		}
+		    		continue;
+		    	    }
+		            $price = $euro*$rates[$curr2];
 		            if($to_up) {
 		        	$to_up = array_shift($to_up);
 		        	if($to_up['auto_update'])
