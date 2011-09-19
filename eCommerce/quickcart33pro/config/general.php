@@ -1,7 +1,8 @@
 <?php
 unset( $config, $aMenuTypes, $aPay, $lang, $aBanners, $aBoxes, $aUser );
 
-require_once 'epesi.php';
+if(!include_once('epesi.php'))
+    die('Please configure ecommerce module in epesi');
 
 /*
 * Directories
