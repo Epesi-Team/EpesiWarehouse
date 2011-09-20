@@ -172,7 +172,7 @@ class Products
 					$aExp2['iAvailable'] = $dist['iAvailable'];
 					$aExp2['sAvailableInfo'] = $dist['quantity_info'];
 
-					if($autoprice && $aExp['price_currency']==$currency) {
+					if($autoprice && $dist['price_currency']==$currency) {
 					    $user_price = $aExp['fPrice'];
 						$dist_price = round((float)$dist['price']*(100+$taxes[$aExp['tax2']])/100,2);
 						if($user_price>=$dist_price) {
