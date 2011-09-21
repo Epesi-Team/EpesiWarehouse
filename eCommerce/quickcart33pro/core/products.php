@@ -271,7 +271,7 @@ class Products
 			if($keywords == $aExp['sMetaKeywords']) break;
 			$aExp['sMetaKeywords'] = $keywords;
 		}
-		unset($aExp['f_upc']);
+//		unset($aExp['f_upc']);
 
     		$products[$aExp['iProduct']] = $aExp;
 	        $products[$aExp['iProduct']]['sLinkName'] = '?'.$aExp['iProduct'].','.change2Url( $products[$aExp['iProduct']]['sName'] );

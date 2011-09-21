@@ -65,6 +65,10 @@ function listProductsCompare( $sFile, $sBlock ){
       if((!isset($_REQUEST['outOfStock']) || !$_REQUEST['outOfStock']) && (!$aData['iQuantity'] || $aData['f_exclude_compare_services']))
       	continue;
       $aData['sPages'] = preg_replace( '/&nbsp;&raquo;&nbsp;/', '/', strip_tags( $GLOBALS['oProduct']->throwProductsPagesTree( $aData['aCategories'] ) ) );
+      if( $sBlock == 'CENEO' ){
+        $pos = strpos($aData['sPages'],'|');
+        if($pos) $aData['sPages'] = substr($aData['sPages'],0, $pos);
+      }
       $aData['sPagesOnet'] = preg_replace( '/&nbsp;&raquo;&nbsp;/', ' &gt; ', strip_tags( $GLOBALS['oProduct']->throwProductsPagesTree( $aData['aCategories'] ) ) );
       $aData['sDescriptionShort'] = changeTxt( $aData['sDescriptionShort'], 'nlNds' );
 
