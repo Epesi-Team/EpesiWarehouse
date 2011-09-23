@@ -97,7 +97,8 @@ class Premium_Warehouse_eCommerce extends Module {
  		$m->set_table_columns(array(array('name'=>$this->t('Site'),'width'=>30),
 							  array('name'=>'Link','width'=>70)));
 		$site = $this->t('http://replace.with.quickcart.url/');
-		$a = array('Ceneo.pl'=>'ceneo',
+		$a = array('Old Ceneo.pl XML'=>'ceneo',
+		        'Ceneo.pl'=>'ceneo2',
 			'Nokaut.pl'=>'nokaut',
 			'Skapiec.pl'=>'skapiec',
 			'Handelo.pl'=>'handelo',
