@@ -659,6 +659,8 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 
         $tip .= '<tr><td>'.Base_LangCommon::ts('Premium_Warehouse_eCommerce','Assigned category').'</td><td>'.($r['category']?$on:$off).'</td></tr>';
         $tip .= '<tr><td>'.Base_LangCommon::ts('Premium_Warehouse_eCommerce','Available in warehouse').'</td><td>'.(empty($quantity)?$off:$on).'</td></tr>';
+        if(ModuleManager::is_installed('Premium_Warehouse_eCommerce_CompareUpdatePrices')>=0)
+            $tip .= '<tr><td>'.Base_LangCommon::ts('Premium_Warehouse_eCommerce','Compare Service').'</td><td>'.(DB::GetOne('SELECT 1 FROM premium_ecommerce_compare_prices_data_1 WHERE f_item_name=%d',array($r['id']))?$off:$on).'</td></tr>';
         $tip .= '</table>';
 
 
