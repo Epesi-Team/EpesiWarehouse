@@ -21,6 +21,40 @@
 </nokaut><!-- END NOKAUT_FOOT -->
 
 <!-- BEGIN CENEO_LIST -->
+      <offer>
+        <id>$aData[iProduct]</id>
+        <name><![CDATA[$aData[sName]]]></name>
+        <price>$aData[fPrice]</price>
+        <url>$aUrl[scheme]://$aUrl[host]$aUrl[path]$aData[sLinkName]</url>
+        <categoryId><![CDATA[$aData[sPages]]]></categoryId>
+        <description><![CDATA[$aData[sDescriptionShort]]]></description>
+        <image width="" height="" title="$aData[sNameEscaped]">$aData[sImage]</image>
+	<attributes>
+		<attribute>
+			<name>Producent</name>
+			<producer><![CDATA[$aData[sProducer]]]></producer>
+		</attribute>
+	</attributes>
+	<availability>$aData[iAvailableDays]</availability>
+      </offer>
+<!-- END CENEO_LIST -->
+<!-- BEGIN CENEO_FEATURES --><!-- END CENEO_FEATURES -->
+<!-- BEGIN CENEO_LIST_IMAGE -->$aUrl[scheme]://$aUrl[host]$aUrl[path]$config[dir_files]$aDataImage[sFileName]<!-- END CENEO_LIST_IMAGE -->
+<!-- BEGIN CENEO_HEAD --><?xml version="1.0" encoding="$config[charset]"?>
+<!DOCTYPE pasaz:Envelope SYSTEM "loadOffers.dtd">
+<pasaz:Envelope xmlns:pasaz="http://schemas.xmlsoap.org/soap/envelope/">
+  <pasaz:Body>
+    <loadOffers xmlns="urn:ExportB2B">
+      <offers>
+<!-- END CENEO_HEAD -->
+<!-- BEGIN CENEO_FOOT -->
+      </offers>
+    </loadOffers>
+  </pasaz:Body>
+</pasaz:Envelope>
+<!-- END CENEO_FOOT -->
+
+<!-- BEGIN CENEO2_LIST -->
       <o id="$aData[iProductEscaped]" url="$aUrl[scheme]://$aUrl[host]$aUrl[path]$aData[sLinkNameEscaped]" price="$aData[fPriceEscaped]" avail="$aData[iAvailableDaysEscaped]" set="0" weight="$aData[sWeightEscaped]">
         <name><![CDATA[$aData[sName]]]></name>
         <cat><![CDATA[$aData[sPages]]]></cat>
@@ -32,17 +66,17 @@
 		<a name="EAN"><![CDATA[$aData[f_upc]]]></a>
 	</attrs>
       </o>
-<!-- END CENEO_LIST -->
-<!-- BEGIN CENEO_FEATURES --><!-- END CENEO_FEATURES -->
-<!-- BEGIN CENEO_LIST_IMAGE -->$aUrl[scheme]://$aUrl[host]$aUrl[path]$config[dir_files]$aDataImage[sFileName]<!-- END CENEO_LIST_IMAGE -->
-<!-- BEGIN CENEO_HEAD --><?xml version="1.0" encoding="utf-8"?>
+<!-- END CENEO2_LIST -->
+<!-- BEGIN CENEO2_FEATURES --><!-- END CENEO2_FEATURES -->
+<!-- BEGIN CENEO2_LIST_IMAGE -->$aUrl[scheme]://$aUrl[host]$aUrl[path]$config[dir_files]$aDataImage[sFileName]<!-- END CENEO2_LIST_IMAGE -->
+<!-- BEGIN CENEO2_HEAD --><?xml version="1.0" encoding="utf-8"?>
 <offers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1">
 <group name="other">
-<!-- END CENEO_HEAD -->
-<!-- BEGIN CENEO_FOOT -->
+<!-- END CENEO2_HEAD -->
+<!-- BEGIN CENEO2_FOOT -->
       </group>
     </offers>
-<!-- END CENEO_FOOT -->
+<!-- END CENEO2_FOOT -->
 
 <!-- BEGIN SKAPIEC_LIST -->
 		<item>
