@@ -17,7 +17,7 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 	}
 	
 	private $photos;
-	public function collect_photos($id,$rev,$file,$original,$args) {
+	public function collect_photos($id,$rev,$file,$original,$args=null) {
 		if(count($this->photos)==8) break;
 	    $ext = strrchr($original,'.');
         if(preg_match('/^\.(jpg|jpeg|gif|png|bmp)$/i',$ext)) {
