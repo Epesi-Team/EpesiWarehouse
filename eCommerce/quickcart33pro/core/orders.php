@@ -460,7 +460,7 @@ class Orders
    		    if(!$ex) {
    		        DB::Execute('insert into premium_multiple_addresses_data_1 (f_last_name,f_first_name,f_company_name,f_address_1,f_city,f_country,f_zone,f_postal_code,created_on,f_record_id,f_record_type) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%T,%d,"contact")',array($aUser['sLastName'],$aUser['sFirstName'],$aUser['sCompanyName'],$aUser['sStreet'],$aUser['sCity'],$aUser['sCountry'],$aUser['sState'],$aUser['sZipCode'],$t,$contact));
    		        $mcid = DB::Insert_ID('premium_multiple_addresses_data_1','id');
-   		        DB::Execute('update premium_multiple_addresses_data_1 SET f_nickname=%s where id=%d',array($this->t('Address').' #'.str_pad($mcid,6,'0',STR_PAD_LEFT),$mcid));
+   		        DB::Execute('update premium_multiple_addresses_data_1 SET f_nickname=%s where id=%d',array('Address #'.str_pad($mcid,6,'0',STR_PAD_LEFT),$mcid));
    		    }
    		}
     } else {
