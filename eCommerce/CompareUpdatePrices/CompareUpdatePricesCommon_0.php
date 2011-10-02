@@ -50,7 +50,7 @@ class Premium_Warehouse_eCommerce_CompareUpdatePricesCommon extends ModuleCommon
 			$a = $services[$row['plugin']];
 			$tax = Data_TaxRatesCommon::get_tax_rate($row['tax_rate']);
 			
-			if(!$a->fetch($row['url'],$tax)) {
+			if(!$a->fetch($row['url'],$tax,$row['gross_price'],$row['currency'])) {
 				$a->price = null;
 				$a->currency = null;
 			}
@@ -92,7 +92,7 @@ abstract class Premium_Warehouse_eCommerce_CompareService {
 	public $price;
 	public $currency;
 	
-	abstract function fetch($url,$tax);
+	abstract function fetch($url,$tax,$price,$currency);
 }
 
 ?>

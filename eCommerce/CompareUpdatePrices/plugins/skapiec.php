@@ -1,6 +1,6 @@
 <?php
 class  Premium_Warehouse_eCommerce_CompareService_skapiec extends Premium_Warehouse_eCommerce_CompareService {
-	public function fetch($url,$tax) {
+	public function fetch($url,$tax,$price,$currency) {
 		$dir = ModuleManager::get_data_dir('Premium_Warehouse_eCommerce_CompareUpdatePrices');
 		
 		$c = curl_init();
@@ -20,10 +20,12 @@ class  Premium_Warehouse_eCommerce_CompareService_skapiec extends Premium_Wareho
 		
 		curl_close($c);
 		
-		if(preg_match('/w[\t\n\s]+cenie[\t\n\s]+<em>od[\t\n\s]+([0-9]+([,\.][0-9]+)?)[\t\n\s]+PLN[\t\n\s]+do/i',$output,$ret)) {
+		if(preg_match_all('/class="offer_price"(.+?)<strong>([0-9]+.[0-9]+)<\/strong>[\t\n\s]+zł<\/a>/i',$output,$ret)) {
+			sort($ret[1],SORT_NUMERIC);
+			$this->price = array_shift($ret[1]);
+			if($price && $this->price == $price)
+				$this->price = array_shift($ret[1]);
 			$this->currency = Utils_CurrencyFieldCommon::get_id_by_code('PLN');
-			$this->price = str_replace(',','.',$ret[1]);
-			return true;
 		}
 		
 		return false;
