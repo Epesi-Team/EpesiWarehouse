@@ -115,8 +115,10 @@ class Products
 	$minimal = getVariable('ecommerce_minimal_profit');
 	$percentage = getVariable('ecommerce_percentage_profit');
 	$compare_service = null;
-        if(preg_match('#ceneo.pl#is',$_SERVER['HTTP_REFERER']) || $_REQUEST['p']=='compare-ceneo')
+        if(preg_match('#ceneo.pl#is',$_SERVER['HTTP_REFERER']) || $_REQUEST['p']=='compare-ceneo' || $_REQUEST['p']=='compare-ceneo2')
                 $compare_service = 'ceneo';
+        elseif(preg_match('#skapiec.pl#is',$_SERVER['HTTP_REFERER']) || $_REQUEST['p']=='compare-skapiec')
+                $compare_service = 'skapiec';
         elseif(isset($_COOKIE['compare_service']))
                 $compare_service = $_COOKIE['compare_service'];
         if($compare_service)
