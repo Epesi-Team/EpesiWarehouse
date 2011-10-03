@@ -64,6 +64,11 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 
 		$qf->addElement('text','buy_price',$this->t('Cena Kup Teraz'));
 		$qf->addRule('buy_price',$this->t('Invalid price'),'regex','/^[1-9][0-9]*(\.[0-9]+)?$/');
+		if($r['net_price'] && $r['tax_rate']) {
+			$curr = Utils_CurrencyFieldCommon::get_values($r['net_price']);
+			if(Utils_CurrencyFieldCommon::get_code($curr[1])=='PLN')
+				$qf->setDefaults(array('buy_price'=>$r['net_price']*(100+Data_TaxRatesCommon::get_tax_rate($r['tax_rate']))/100));
+		}
 
 		$qf->addElement('select','transport',$this->t('Transport'),array('Sprzedający pokrywa koszty transportu','Kupujący pokrywa koszty transportu'));
 		$qf->addRule('transport',$this->t('Field required'),'required');
@@ -89,6 +94,8 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 		$qf->addElement('checkbox','pr_catpage',$this->t('Strona kategorii'));
 		$qf->addElement('checkbox','pr_mainpage',$this->t('Strona główna Allegro'));
 		$qf->addElement('checkbox','pr_watermark',$this->t('Znak wodny'));
+		
+		$qf->addElement('hidden','publish',0,array('id'=>'allegro_publish'));
 		
 		$qf->addElement('submit','submit','Wystaw');
 		
@@ -370,7 +377,7 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 		                'fvalue-range-date-max' => '')
 			);
 			$fields[] = array(
-		        'fid' => 15,   // Formy płatności
+		        'fid' => 15,   // promocja
 		        'fvalue-string' => '',
 		        'fvalue-int' => (isset($vals['pr_bold']) && $vals['pr_bold']?1:0)+(isset($vals['pr_thumbnail']) && $vals['pr_thumbnail']?2:0)
 		        	+(isset($vals['pr_light']) && $vals['pr_light']?4:0)+(isset($vals['pr_bigger']) && $vals['pr_bigger']?8:0)
@@ -490,16 +497,28 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 			                'fvalue-range-date-max' => '')
 				);
 			
-			$a->new_auction($fields);
+			if(isset($vals['publish']) && $vals['publish']) { 
+				$a->new_auction($fields);
+				eval_js('$("allegro_publish").value=0;');
+				$err = $a->error();
+				if($err)
+					Epesi::alert($err);
+				else 
+					Epesi::alert('Aukcja została dodana.');
+			} else {
+				$ret = $a->check_new_auction_price($fields);
+				$err = $a->error();
+				if($err)
+					Epesi::alert($err);
+				elseif(isset($ret['item-price']) && isset($ret['item-price-desc']))
+					eval_js('if(confirm("Opłata łączna: '.Epesi::escapeJS($ret['item-price'],true,false).'\n'.Epesi::escapeJS($ret['item-price-desc'],true,false).'")) {$("allegro_publish").value=1;'.$qf->get_submit_form_js(true,'publikuję aukcję',true).'}');
+				else
+					Epesi::alert('Nie można pobrać kosztu wystawienia aukcji');
+			}
 			
 			foreach($this->photos as $ph)
 				@unlink($ph);
 			
-			$err = $a->error();
-			if($err)
-				Epesi::alert($err);
-			else 
-				Epesi::alert('Aukcja została dodana.');
 		}
 		
 		$this->display_module($qf);

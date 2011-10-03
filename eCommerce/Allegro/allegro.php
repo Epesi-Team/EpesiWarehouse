@@ -37,6 +37,10 @@ class Allegro {
 	public function new_auction($fields) {
 	    return $this->call('doNewAuctionExt',$this->session_id,$fields);
 	}
+
+	public function check_new_auction_price($fields) {
+		return $this->call('doCheckNewAuctionExt',$this->session_id,$fields);
+	}
 	
 	public function get_sell_form_fields() {
 	    return $this->call('doGetSellFormFieldsExt',$this->country,0,$this->key);
