@@ -36,9 +36,14 @@ class Premium_WarehouseCommon extends ModuleCommon {
 		$warehouses = array(''=>'---');
 		foreach ($rec as $v)
 			$warehouses[$v['id']] = $v['warehouse'];
-		return array('Warehouse'=>array(
+		$ret = array('Warehouse'=>array(
 			array('name'=>'my_warehouse','label'=>'My main Warehouse','type'=>'select','values'=>$warehouses,'default'=>'','translate'=>false)
 			));
+		$ret['Subscriptions'] = array(
+                array('name'=>'new_online_order_header','label'=>'Other subscriptions','type'=>'header'),
+                array('name'=>'new_online_order_auto_subs','label'=>'New Online Orders','type'=>'select','values'=>array('Disabled', 'Enabled'),'default'=>0)
+			);
+		return $ret;
 	}
 	
 	public static function access_warehouse($action, $param=null){

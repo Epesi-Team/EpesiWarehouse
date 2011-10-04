@@ -1481,6 +1481,11 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 				}
 				break;
 			case 'added':
+				if ($values['status']==-1) {
+					$users = Base_User_SettingsCommon::get_users_settings('Premium_Warehouse', 'new_online_order_auto_subs');
+					foreach ($users as $u=>$v)
+						if ($v==1) Utils_WatchdogCommon::user_subscribe($u, 'premium_warehouse_items_orders', $values['id']);
+				}
 				Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders',$values['id'],array('transaction_id'=>self::generate_id($values['id'])), false, null, true);
 				Base_User_SettingsCommon::save('Premium_Warehouse_Items_Orders','my_transaction',$values['id']);
 		}
