@@ -67,7 +67,7 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 		if($r['net_price'] && $r['tax_rate']) {
 			$curr = Utils_CurrencyFieldCommon::get_values($r['net_price']);
 			if(Utils_CurrencyFieldCommon::get_code($curr[1])=='PLN')
-				$qf->setDefaults(array('buy_price'=>$r['net_price']*(100+Data_TaxRatesCommon::get_tax_rate($r['tax_rate']))/100));
+				$qf->setDefaults(array('buy_price'=>number_format($r['net_price']*(100+Data_TaxRatesCommon::get_tax_rate($r['tax_rate']))/100,2,'.','')));
 		}
 
 		$qf->addElement('select','transport',$this->t('Transport'),array('Sprzedający pokrywa koszty transportu','Kupujący pokrywa koszty transportu'));
