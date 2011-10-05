@@ -224,7 +224,7 @@ function sendEmail( $aForm, $sFile = 'messages.tpl', $sTargetEmail = null, $html
     //require_once(DIR_LIBRARIES.'class.phpmailer-lite.php');
 
     ob_start();
-    $ret = Base_MailCommon::send($sTargetEmail,$sTopic,$sMailContent,$sSender);
+    $ret = Base_MailCommon::send($sTargetEmail,$sTopic,$sMailContent,$sSender, null, true);
     $error = ob_get_clean();
     if( isset( $sFile ) ) {
     	if($ret)
