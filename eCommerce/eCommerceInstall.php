@@ -381,6 +381,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 			array('name'=>'Employee', 	'type'=>'crm_contact', 'param'=>array('field_type'=>'select','crits'=>array('Premium_Warehouse_ItemsCommon','employee_crits'), 'format'=>array('CRM_ContactsCommon','contact_format_no_company')), 'required'=>true, 'extra'=>false, 'visible'=>true),
 			array('name'=>'Expiration', 	'type'=>'date', 'required'=>true, 'extra'=>false, 'visible'=>true),
 			array('name'=>'Promotion Code', 	'type'=>'text', 'param'=>64, 'required'=>true, 'extra'=>false, 'visible'=>true),
+			array('name'=>'Discount', 	'type'=>'currency', 'required'=>true, 'extra'=>false, 'visible'=>true)
 		);
 		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_promotion_codes', $fields);
 
