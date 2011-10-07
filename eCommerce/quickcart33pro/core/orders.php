@@ -575,6 +575,7 @@ class Orders
 	    'tax_id'=>$aForm['sNip'],
 	    'warehouse'=>$carrier==0?$aForm['iPickupShop']:null,
 	    'online_order'=>1,
+	    'status'=>-1,
 	    'contact'=>$contact,
 	    'company'=>$company,
 	    'terms'=>$order_terms,
@@ -637,7 +638,7 @@ class Orders
 					array($id,LANGUAGE,$aForm['sEmail'],$_SERVER['REMOTE_ADDR'],$aForm['sComment'],$aForm['iInvoice']?true:false,
 					$aForm['mPaymentChannel'],$aForm['iPaymentRealized'],time(),$promo_employee,$promo_discount));
  */
-    Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders',$id,array('status'=>"-1"));
+//    Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders',$id,array('status'=>"-1"));
     ob_end_clean();
     Acl::set_user($user);
 
