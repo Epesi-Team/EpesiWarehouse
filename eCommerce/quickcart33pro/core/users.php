@@ -43,7 +43,7 @@ class Users
 
 	$oPage =& Pages::getInstance( );
       	
-      	$_SESSION['user'] = $uid['id'];
+      	$_SESSION['user'] = $_SESSION['e_user'] = $uid['id'];
       	$_SESSION['contact'] = $uid['cid'];
       	$company = explode('__',trim($uid['f_company_name'],'__'));
       	$_SESSION['company'] = array_shift($company);
@@ -95,10 +95,10 @@ class Users
 	if($v['sPassword']!=$v['sPassword2'])
 		return false;
 	
-	$ok = DB::GetOne('SELECT 1 FROM premium_ecommerce_users_data_1 WHERE f_password=%s AND id=%d',array(md5($v['sOldPassword']),$_SESSION['user']));
+	$ok = DB::GetOne('SELECT 1 FROM premium_ecommerce_users_data_1 WHERE f_password=%s AND id=%d',array(md5($v['sOldPassword']),$_SESSION['e_user']));
 	if(!$ok) return false;
 	
-	DB::Execute('UPDATE premium_ecommerce_users_data_1 SET f_password=%s WHERE id=%d',array(md5($v['sPassword']),$_SESSION['user']));
+	DB::Execute('UPDATE premium_ecommerce_users_data_1 SET f_password=%s WHERE id=%d',array(md5($v['sPassword']),$_SESSION['e_user']));
 
 	$oPage =& Pages::getInstance( );
 	print('<script type="text/javascript">alert(\''.addcslashes($GLOBALS['lang']['Password_changed'],'\\\'').'\');window.location=\''.addcslashes(REDIRECT.$oPage->aPages[43]['sLinkName'], '\\\'').'\';</script>');
@@ -107,6 +107,7 @@ class Users
 
   function logout( ){
          unset($_SESSION['user']);
+         unset($_SESSION['e_user']);
          unset($_SESSION['contact']);
          unset($_SESSION['company']);
          header( 'Location: '.REDIRECT);

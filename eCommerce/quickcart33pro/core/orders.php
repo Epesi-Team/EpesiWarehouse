@@ -532,7 +532,7 @@ class Orders
     	    }
     		if($oldpass==$mdpass) {
 	   	    	//mark logged in
-	    		$_SESSION['user'] = DB::Insert_ID('premium_ecomerce_users_data_1','id');
+	    		$_SESSION['user'] = $_SESSION['e_user'] = DB::Insert_ID('premium_ecomerce_users_data_1','id');
 	    		$_SESSION['contact'] = $contact;
 	    		$_SESSION['company'] = $company;
 		      	if(!$_SESSION['company'])
