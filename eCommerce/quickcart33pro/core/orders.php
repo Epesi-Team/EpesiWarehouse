@@ -532,7 +532,7 @@ class Orders
     	    }
     		if($oldpass==$mdpass) {
 	   	    	//mark logged in
-	    		$_SESSION['user'] = $_SESSION['e_user'] = DB::Insert_ID('premium_ecomerce_users_data_1','id');
+	    		$_SESSION['e_user'] = DB::Insert_ID('premium_ecomerce_users_data_1','id');
 	    		$_SESSION['contact'] = $contact;
 	    		$_SESSION['company'] = $company;
 		      	if(!$_SESSION['company'])
@@ -551,8 +551,6 @@ class Orders
     
     $d = getcwd();
     chdir(EPESI_DATA_DIR.'/../');
-    $user = Acl::get_user();
-    Acl::set_user(null);
     //$memo = "Language: ".LANGUAGE."\ne-mail: ".$aForm['sEmail']."\nIp: ".$_SERVER['REMOTE_ADDR']."\nComment:\n".$aForm['sComment'];
     $id = Utils_RecordBrowserCommon::new_record('premium_warehouse_items_orders',array(
 	    'transaction_type'=>1,
@@ -640,7 +638,6 @@ class Orders
  */
 //    Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders',$id,array('status'=>"-1"));
     ob_end_clean();
-    Acl::set_user($user);
 
     chdir($d);
 

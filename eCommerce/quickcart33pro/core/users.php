@@ -43,7 +43,7 @@ class Users
 
 	$oPage =& Pages::getInstance( );
       	
-      	$_SESSION['user'] = $_SESSION['e_user'] = $uid['id'];
+      	$_SESSION['e_user'] = $uid['id'];
       	$_SESSION['contact'] = $uid['cid'];
       	$company = explode('__',trim($uid['f_company_name'],'__'));
       	$_SESSION['company'] = array_shift($company);
@@ -106,7 +106,6 @@ class Users
   }
 
   function logout( ){
-         unset($_SESSION['user']);
          unset($_SESSION['e_user']);
          unset($_SESSION['contact']);
          unset($_SESSION['company']);
