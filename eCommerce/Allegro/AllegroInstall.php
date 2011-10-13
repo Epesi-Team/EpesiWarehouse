@@ -23,6 +23,19 @@ class Premium_Warehouse_eCommerce_AllegroInstall extends ModuleInstall {
 			print('Unable to create table premium_ecommerce_allegro_cats.<br>');
 			return false;
 		}
+
+		$ret = DB::CreateTable('premium_ecommerce_allegro_auctions','
+							auction_id I4 NOTNULL KEY,
+							item_id I4 NOTNULL,
+							active I1 DEFAULT 1,
+							created_by I4,
+							started_on T',
+				array('constraints'=>', FOREIGN KEY (item_id) REFERENCES premium_warehouse_items_data_1(id),
+										FOREIGN KEY (created_by) REFERENCES user_login(id)'));
+		if(!$ret){
+			print('Unable to create table premium_ecommerce_allegro_cats.<br>');
+			return false;
+		}
 		
 		$this->create_data_dir();
 		
@@ -33,6 +46,7 @@ class Premium_Warehouse_eCommerce_AllegroInstall extends ModuleInstall {
 	
 	public function uninstall() {
 		DB::DropTable('premium_ecommerce_allegro_cats');
+		DB::DropTable('premium_ecommerce_allegro_auctions');
 		Variable::delete('ecommerce_allegro_cats_up');
 		return true;
 	}

@@ -42,6 +42,24 @@ class Premium_Warehouse_eCommerce_AllegroCommon extends ModuleCommon {
     	return $cats;
     }
     
+    public static function update_statuses() {
+    	$a = self::get_lib();
+    	$ids = DB::GetCol('SELECT auction_id FROM premium_ecommerce_allegro_auctions WHERE active=1');
+    	$ret = $a->get_auctions_info($ids);
+    	$close = array();
+    	foreach($ret['array-item-list-info'] as $it) {
+    		if($it->{'item-info'}->{'it-ending-info'}>1)
+    			$close[] = $it->{'item-info'}->{'it-id'};
+    	}
+    	if($close)    	
+    		DB::Execute('UPDATE premium_ecommerce_allegro_auction SET active=0 WHERE auction_id IN ('.implode(',',$close).')');
+    	
+    	if($ret['array-items-not-found'])
+    		DB::GetCol('DELETE FROM premium_ecommerce_allegro_auctions WHERE active=0 AND auction_id IN ('.implode(',',$ret['array-items-not-found']).')');
+    	if($ret['array-items-admin-killed'])
+    		DB::GetCol('DELETE FROM premium_ecommerce_allegro_auctions WHERE active=0 AND auction_id IN ('.implode(',',$ret['array-items-admin-killed']).')');
+    }
+    
     public static function cron() {
     	$c = Variable::get('ecommerce_allegro_cats_up',0);
     	$t = time();
@@ -49,6 +67,7 @@ class Premium_Warehouse_eCommerce_AllegroCommon extends ModuleCommon {
     		self::update_cats();
     		Variable::set('ecommerce_allegro_cats_up',$t);
     	}
+    	self::update_statuses();
     }
     
     public static function get_lib() {

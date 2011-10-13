@@ -34,16 +34,31 @@ class Allegro {
 	        return $this->version;
 	}
 	
-	public function new_auction($fields) {
-	    return $this->call('doNewAuctionExt',$this->session_id,$fields);
+	public function new_auction($fields,$local_id = 9999999999999) {
+	    return $this->call('doNewAuctionExt',$this->session_id,$fields,0,$local_id);
 	}
 
 	public function check_new_auction_price($fields) {
 		return $this->call('doCheckNewAuctionExt',$this->session_id,$fields);
 	}
 	
+	public function verify_new_auction($local_id) {
+		return $this->call('doVerifyItem',$this->session_id,$local_id);
+	}
+	
 	public function get_sell_form_fields() {
 	    return $this->call('doGetSellFormFieldsExt',$this->country,0,$this->key);
+	}
+
+	public function get_auctions_info($ids) {
+		$ret = array('array-item-list-info'=>array(), 'array-items-not-found'=>array(),'array-items-admin-killed'=>array());
+		foreach(array_chunk($ids,25) as $a) {
+			$r2 = $this->call('doGetItemsInfo',$this->session_id,$a);
+			foreach($ret as $key=>$val) {
+				$ret[$key] = array_merge($ret[$key],$r2[$key]);
+			}
+		}
+		return $ret; 
 	}
 	
 	public function get_countries() {
