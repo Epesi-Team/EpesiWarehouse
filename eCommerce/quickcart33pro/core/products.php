@@ -127,7 +127,7 @@ class Products
 		if($aExp['sName']=='') 
 			$aExp['sName'] = $aExp['sName2'];
 		if($compare_service) {
-			$compare_price = @DB::GetRow('SELECT f_gross_price,f_tax_rate FROM premium_ecommerce_compare_prices_data_1 WHERE f_currency=%d AND f_item_name=%d AND f_plugin=%s',array($currency,$aExp['iProduct'],$compare_service));
+			$compare_price = @DB::GetRow('SELECT f_gross_price,f_tax_rate FROM premium_ecommerce_compare_prices_data_1 WHERE active=1 AND f_currency=%d AND f_item_name=%d AND f_plugin=%s',array($currency,$aExp['iProduct'],$compare_service));
     			if($compare_price)
 		        	$aExp['fPrice']=$compare_price['f_gross_price'];
 		}
