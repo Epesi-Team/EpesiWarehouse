@@ -111,13 +111,25 @@ class Premium_Warehouse_eCommerce_AllegroCommon extends ModuleCommon {
     		$settings[] = array('name'=>'city','label'=>'Miasto','type'=>'text','default'=>'','rule'=>$rule);
     		$settings[] = array('name'=>'postal_code','label'=>'Kod pocztowy','type'=>'text','default'=>'','rule'=>$rule);
     		$settings[] = array('name'=>'fvat','label'=>'Faktura VAT','type'=>'checkbox','default'=>1);
-    		$settings[] = array('name'=>'post_service_price','label'=>'Cena paczki','type'=>'text','default'=>'','rule'=>$rule_pr);
     		$settings[] = array('name'=>'transport_description','label'=>'Dodatkowe informacje o przesyłce i płatności','type'=>'textarea','default'=>'');
     		$settings[] = array('name'=>'template','label'=>'Szablon','type'=>'select','values'=>self::get_templates(),'default'=>'');
     		
     		return array('Allegro'=>$settings);
     	}
     	return array();
+    }
+    
+    public static function get_other_auctions($id) {
+	$result = array();
+	$items = Utils_RecordBrowserCommon::get_records('premium_ecommerce_products',array('item_name'=>$id));
+	foreach($items as $i) {
+		foreach(array_merge($i['popup_products'],$i['related_products']) as $p) {
+			$pp = Utils_RecordBrowserCommon::get_record('premium_ecommerce_products',$p,array('item_name'));
+			$x = DB::GetOne('SELECT auction_id FROM premium_ecommerce_allegro_auctions WHERE item_id=%d AND active=1',array($pp['item_name']));
+			if($x) $result[] = array('auction'=>$x,'item'=>$pp['item_name']);
+		}
+	}
+	return $result;
     }
 }
 

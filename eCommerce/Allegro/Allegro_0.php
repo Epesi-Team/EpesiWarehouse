@@ -38,11 +38,13 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 		$qf = $this->init_module('Libs_QuickForm',null, 'allegro_p');
 		
 		$qf->addElement('text','title',$this->t('Tytuł'));
-		$qf->addRule('title',$this->t('Field required'),'required');
+		$qf->addRule('title',$this->t('Field required'),'required',array('maxlength'=>50));
+		$title = '';
 		if(isset($desc['display_name']))
-		$qf->setDefaults(array('title'=>$desc['display_name']));
+			$title=$desc['display_name'];
 		else
-		$qf->setDefaults(array('title'=>$r['item_name']));
+			$title = $r['item_name'];
+		$qf->setDefaults(array('title'=>substr(html_entity_decode($r['item_name']),0,40)));
 		
 		$qf->addElement('select','category',$this->t('Kategoria'),$cats);
 		$qf->addRule('category',$this->t('Field required'),'required');
@@ -68,6 +70,8 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 			$curr = Utils_CurrencyFieldCommon::get_values($r['net_price']);
 			if(Utils_CurrencyFieldCommon::get_code($curr[1])=='PLN')
 				$qf->setDefaults(array('buy_price'=>number_format($r['net_price']*(100+Data_TaxRatesCommon::get_tax_rate($r['tax_rate']))/100,2,'.','')));
+		} elseif($price = DB::GetOne('SELECT f_gross_price FROM premium_warehouse_wholesale_items WHERE f_item_name=%d AND f_currency=%d',array($r['id'],Utils_CurrencyFieldCommon::get_id_by_code('PLN')))) {
+			$qf->setDefaults(array('buy_price'=>number_format($price)));
 		}
 		
 		$qf->addElement('select','transport',$this->t('Transport'),array('Sprzedający pokrywa koszty transportu','Kupujący pokrywa koszty transportu'));
@@ -78,11 +82,57 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 		
 		$qf->addElement('text','post_service_price',$this->t('Cena paczki'));
 		$qf->addRule('post_service_price',$this->t('Invalid price'),'regex','/^[1-9][0-9]*(\.[0-9]+)?$/');
-		$qf->setDefaults(array('post_service_price'=>Base_User_SettingsCommon::get('Premium_Warehouse_eCommerce_Allegro','post_service_price')));
+
+		$qf->addElement('text','post_service_price_p',$this->t('Cena paczki (pobranie)'));
+		$qf->addRule('post_service_price_p',$this->t('Invalid price'),'regex','/^[1-9][0-9]*(\.[0-9]+)?$/');
+
+		$qf->addElement('text','ups_price',$this->t('Cena kuriera'));
+		$qf->addRule('ups_price',$this->t('Invalid price'),'regex','/^[1-9][0-9]*(\.[0-9]+)?$/');
+
+		$qf->addElement('text','ups_price_p',$this->t('Cena kuriera (pobranie)'));
+		$qf->addRule('ups_price_p',$this->t('Invalid price'),'regex','/^[1-9][0-9]*(\.[0-9]+)?$/');
+
+		$ship_cost = Utils_RecordBrowserCommon::get_records('premium_ecommerce_payments_carriers',array('shipment'=>1,'payment'=>9,'currency'=>Utils_CurrencyFieldCommon::get_id_by_code('PLN'))); //poczta polska, pobranie
+		foreach($ship_cost as $sh) {
+		    if($sh['max_weight']<$r['weight']) continue;
+		    $ppp = $qf->exportValue('buy_price');
+		    if(!$ppp) $ppp=0;
+		    $qf->setDefaults(array('post_service_price_p'=>number_format($sh['price']+$sh['percentage_of_amount']*$ppp/100,2,'.','')));
+		    break;
+		}
+
+		$ship_cost = Utils_RecordBrowserCommon::get_records('premium_ecommerce_payments_carriers',array('shipment'=>array(2,3,4,5,7,8,9,10),'payment'=>9,'currency'=>Utils_CurrencyFieldCommon::get_id_by_code('PLN'))); //poczta polska, pobranie
+		foreach($ship_cost as $sh) {
+		    if($sh['max_weight']<$r['weight']) continue;
+		    $ppp = $qf->exportValue('buy_price');
+		    if(!$ppp) $ppp=0;
+		    $qf->setDefaults(array('ups_price_p'=>number_format($sh['price']+$sh['percentage_of_amount']*$ppp/100,2,'.','')));
+		    break;
+		}
+
+		$ship_cost = Utils_RecordBrowserCommon::get_records('premium_ecommerce_payments_carriers',array('shipment'=>1,'!payment'=>9,'currency'=>Utils_CurrencyFieldCommon::get_id_by_code('PLN'))); //poczta polska, pobranie
+		foreach($ship_cost as $sh) {
+		    if($sh['max_weight']<$r['weight']) continue;
+		    $ppp = $qf->exportValue('buy_price');
+		    if(!$ppp) $ppp=0;
+		    $qf->setDefaults(array('post_service_price'=>number_format($sh['price']+$sh['percentage_of_amount']*$ppp/100,2,'.','')));
+		    break;
+		}
+
+		$ship_cost = Utils_RecordBrowserCommon::get_records('premium_ecommerce_payments_carriers',array('shipment'=>array(2,3,4,5,7,8,9,10),'!payment'=>9,'currency'=>Utils_CurrencyFieldCommon::get_id_by_code('PLN'))); //poczta polska, pobranie
+		foreach($ship_cost as $sh) {
+		    if($sh['max_weight']<$r['weight']) continue;
+		    $ppp = $qf->exportValue('buy_price');
+		    if(!$ppp) $ppp=0;
+		    $qf->setDefaults(array('ups_price'=>number_format($sh['price']+$sh['percentage_of_amount']*$ppp/100,2,'.','')));
+		    break;
+		}
 		$qf->addElement('textarea','transport_description','Dodatkowe informacje o przesyłce i płatności');
 		$transport_description = trim(Base_User_SettingsCommon::get('Premium_Warehouse_eCommerce_Allegro','transport_description'));
 		if($transport_description)
 		$qf->setDefaults(array('transport_description'=>$transport_description));
+
+		$qf->addElement('checkbox','add_auction_cost',$this->t('Dodaj koszt aukcji'));
 		
 		$qf->addElement('header',null,'Wygląd aukcji');
 		$qf->addElement('select','template',$this->t('Szablon'),Premium_Warehouse_eCommerce_AllegroCommon::get_templates());
@@ -218,7 +268,7 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 				        'fid' => 7,   // Cena minimalna
 				        'fvalue-string' => '',
 				        'fvalue-int' => 0,
-				        'fvalue-float' => $vals['minimal_price'],
+				        'fvalue-float' => $vals['minimal_price']?$vals['minimal_price']+((isset($ret['add_auction_cost']) && $ret['add_auction_cost'] && $this->isset_module_variable('auction_cost'))?$this->get_module_variable('auction_cost'):0):'',
 				        'fvalue-image' => 0,
 				        'fvalue-datetime' => 0,
 				        'fvalue-date' => '',
@@ -232,11 +282,12 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 				                'fvalue-range-date-min' => '',
 				                'fvalue-range-date-max' => '')
 			);
+			
 			$fields[] = array(
 				        'fid' => 8,   // Cena kup teraz
 				        'fvalue-string' => '',
 				        'fvalue-int' => 0,
-				        'fvalue-float' => $vals['buy_price'],
+				        'fvalue-float' => $vals['buy_price']?$vals['buy_price']+((isset($ret['add_auction_cost']) && $ret['add_auction_cost'] && $this->isset_module_variable('auction_cost'))?$this->get_module_variable('auction_cost'):0):'',
 				        'fvalue-image' => 0,
 				        'fvalue-datetime' => 0,
 				        'fvalue-date' => '',
@@ -417,10 +468,103 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 								                'fvalue-range-date-max' => '')
 				);
 			}
+			$carriers = array();
+			if(isset($vals['post_service_price']) && $vals['post_service_price']) {
+				$fields[] = array(
+					        'fid' => 36,   // Paczka pocztowa ekonomiczna
+					        'fvalue-string' => '',
+					        'fvalue-int' => 0,
+					        'fvalue-float' => $vals['post_service_price'],
+					        'fvalue-image' => 0,
+					        'fvalue-datetime' => 0,
+					        'fvalue-date' => '',
+					        'fvalue-range-int' => array(
+					                'fvalue-range-int-min' => 0,
+					                'fvalue-range-int-max' => 0),
+					        'fvalue-range-float' => array(
+					                'fvalue-range-float-min' => 0,
+					                'fvalue-range-float-max' => 0),
+					        'fvalue-range-date' => array(
+					                'fvalue-range-date-min' => '',
+					                'fvalue-range-date-max' => '')
+				);
+				$carriers[] = 'Poczta Polska: '.$vals['post_service_price'].' zł';
+			}
+			if(isset($vals['post_service_price_p']) && $vals['post_service_price_p']) {
+				$fields[] = array(
+					        'fid' => 40,   // Paczka pocztowa ekonomiczna
+					        'fvalue-string' => '',
+					        'fvalue-int' => 0,
+					        'fvalue-float' => $vals['post_service_price_p'],
+					        'fvalue-image' => 0,
+					        'fvalue-datetime' => 0,
+					        'fvalue-date' => '',
+					        'fvalue-range-int' => array(
+					                'fvalue-range-int-min' => 0,
+					                'fvalue-range-int-max' => 0),
+					        'fvalue-range-float' => array(
+					                'fvalue-range-float-min' => 0,
+					                'fvalue-range-float-max' => 0),
+					        'fvalue-range-date' => array(
+					                'fvalue-range-date-min' => '',
+					                'fvalue-range-date-max' => '')
+				);
+				$carriers[] = 'Poczta Polska (pobranie): '.$vals['post_service_price_p'].' zł';
+			}
+			if(isset($vals['ups_price']) && $vals['ups_price']) {
+				$fields[] = array(
+					        'fid' => 44,   // Paczka pocztowa ekonomiczna
+					        'fvalue-string' => '',
+					        'fvalue-int' => 0,
+					        'fvalue-float' => $vals['ups_price'],
+					        'fvalue-image' => 0,
+					        'fvalue-datetime' => 0,
+					        'fvalue-date' => '',
+					        'fvalue-range-int' => array(
+					                'fvalue-range-int-min' => 0,
+					                'fvalue-range-int-max' => 0),
+					        'fvalue-range-float' => array(
+					                'fvalue-range-float-min' => 0,
+					                'fvalue-range-float-max' => 0),
+					        'fvalue-range-date' => array(
+					                'fvalue-range-date-min' => '',
+					                'fvalue-range-date-max' => '')
+				);
+				$carriers[] = 'Kurier: '.$vals['ups_price'].' zł';
+			}
+			if(isset($vals['ups_price_p']) && $vals['ups_price_p']) {
+				$fields[] = array(
+					        'fid' => 45,   // Paczka pocztowa ekonomiczna
+					        'fvalue-string' => '',
+					        'fvalue-int' => 0,
+					        'fvalue-float' => $vals['ups_price_p'],
+					        'fvalue-image' => 0,
+					        'fvalue-datetime' => 0,
+					        'fvalue-date' => '',
+					        'fvalue-range-int' => array(
+					                'fvalue-range-int-min' => 0,
+					                'fvalue-range-int-max' => 0),
+					        'fvalue-range-float' => array(
+					                'fvalue-range-float-min' => 0,
+					                'fvalue-range-float-max' => 0),
+					        'fvalue-range-date' => array(
+					                'fvalue-range-date-min' => '',
+					                'fvalue-range-date-max' => '')
+				);
+				$carriers[] = 'Kurier (pobranie): '.$vals['ups_price_p'].' zł';
+			}
 				
 			$description = (isset($desc['long_description']) && $desc['long_description']?$desc['long_description']:(isset($desc['short_description']) && $desc['short_description']?$desc['short_description']:$r['description']));
+			$other_auctions = '<table border=0>';
+			for($wiersz=0;$wiersz<3;$wiersz++) {
+			    $other_auctions .= '<tr>';
+			    for($kolumna=0; $kolumna<3; $kolumna++) 
+				$other_auctions .= '<td><a target="_blank" href="'.get_epesi_url().'/modules/Premium/Warehouse/eCommerce/Allegro/redirect.php?id='.$r['id'].'&i='.($kolumna+$wiersz*3).'"><img src="'.get_epesi_url().'/modules/Premium/Warehouse/eCommerce/Allegro/img.php?id='.$r['id'].'&i='.($kolumna+$wiersz*3).'" border=0 /></a></td>';
+			    $other_auctions .= '</tr>';
+			}
+			$other_auctions .= '</table>';
 			if($vals['template'])
-			$description = str_replace('{$description}',$description,file_get_contents($vals['template']));
+				$description = str_replace(array('{$description}','{$title}','{$shipping_cost}','{$other_auctions}'),array($description,$vals['title'],implode('<br />',$carriers),$other_auctions),file_get_contents($vals['template']));
 			$fields[] = array(
 				        'fid' => 24,   // Opis
 				        'fvalue-string' => $description,
@@ -477,28 +621,11 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 				                'fvalue-range-date-min' => '',
 				                'fvalue-range-date-max' => '')
 			);
-			if(isset($vals['post_service_price']) && $vals['post_service_price'])
-			$fields[] = array(
-					        'fid' => 36,   // Paczka pocztowa ekonomiczna
-					        'fvalue-string' => '',
-					        'fvalue-int' => 0,
-					        'fvalue-float' => $vals['post_service_price'],
-					        'fvalue-image' => 0,
-					        'fvalue-datetime' => 0,
-					        'fvalue-date' => '',
-					        'fvalue-range-int' => array(
-					                'fvalue-range-int-min' => 0,
-					                'fvalue-range-int-max' => 0),
-					        'fvalue-range-float' => array(
-					                'fvalue-range-float-min' => 0,
-					                'fvalue-range-float-max' => 0),
-					        'fvalue-range-date' => array(
-					                'fvalue-range-date-min' => '',
-					                'fvalue-range-date-max' => '')
-			);
 				
 			if(isset($vals['publish']) && $vals['publish']) {
 				$local_id = Acl::get_user()*1000000+mt_rand(0,999999);
+				if(isset($ret['add_auction_cost']) && $ret['add_auction_cost'] && $this->isset_module_variable('auction_cost'))
+					$this->get_module_variable('auction_cost');
 				$a->new_auction($fields,$local_id);
 				eval_js('$("allegro_publish").value=0;');
 				$err = $a->error();
@@ -511,14 +638,17 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 				}
 			} else {
 				$ret = $a->check_new_auction_price($fields);
-				Libs_LeightboxCommon::close('new_auction_leightbox');
 				$err = $a->error();
+				$this->set_module_variable('auction_cost',null);
 				if($err)
 				Epesi::alert($err);
-				elseif(isset($ret['item-price']) && isset($ret['item-price-desc']))
-				eval_js('if(confirm("Opłata łączna: '.Epesi::escapeJS($ret['item-price'],true,false).'\n'.Epesi::escapeJS($ret['item-price-desc'],true,false).'")) {$("allegro_publish").value=1;'.$qf->get_submit_form_js(true,'publikuję aukcję',true).'}');
-				else
-				Epesi::alert('Nie można pobrać kosztu wystawienia aukcji');
+				elseif(isset($ret['item-price']) && isset($ret['item-price-desc'])) {
+				    if(is_numeric($ret['item-price']))
+					    $this->set_module_variable('auction_cost',$ret['item-price']);
+				    eval_js('if(confirm("Opłata łączna: '.Epesi::escapeJS($ret['item-price'],true,false).'\n'.Epesi::escapeJS($ret['item-price-desc'],true,false).'")) {$("allegro_publish").value=1;'.$qf->get_submit_form_js(true,'publikuję aukcję',true).'}');
+				}else
+					Epesi::alert('Nie można pobrać kosztu wystawienia aukcji');
+				Libs_LeightboxCommon::close('new_auction_leightbox');
 			}
 				
 			foreach($this->photos as $ph)
