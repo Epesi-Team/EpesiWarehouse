@@ -129,6 +129,16 @@ class Premium_Warehouse_eCommerce_AllegroCommon extends ModuleCommon {
 			if($x) $result[] = array('auction'=>$x,'item'=>$pp['item_name']);
 		}
 	}
+        $products = DB::GetCol('SELECT or_det.f_item_name FROM premium_warehouse_items_orders_details_data_1 or_det 
+			    WHERE or_det.f_item_name!=%d AND or_det.f_transaction_id IN 
+			    (SELECT ord.f_transaction_id FROM premium_warehouse_items_orders_details_data_1 or_det2 
+			    INNER JOIN premium_ecommerce_orders_data_1 ord ON ord.f_transaction_id=or_det2.f_transaction_id
+			    WHERE ord.f_language="pl" AND or_det2.f_item_name=%d) GROUP BY or_det.f_item_name ORDER BY count(or_det.f_item_name) DESC LIMIT 9',array($id,$id));
+	foreach($products as $p) {
+		$pp = Utils_RecordBrowserCommon::get_record('premium_ecommerce_products',$p,array('item_name'));
+		$x = DB::GetOne('SELECT auction_id FROM premium_ecommerce_allegro_auctions WHERE item_id=%d AND active=1',array($pp['item_name']));
+		if($x) $result[] = array('auction'=>$x,'item'=>$pp['item_name']);
+	}
 	return $result;
     }
 }
