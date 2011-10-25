@@ -1656,6 +1656,11 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		return true;
 	}
 	
+	public static function display_shipment_no($r, $nolink=false) {
+		if ($nolink) return $r['shipment_no'];
+		return '<a target="_blank" href="http://www.packagetrackr.com/track/'.$r['shipment_no'].'">'.$r['shipment_no'].'</a>';
+	}
+	
 	public static function display_serials(&$form, $field, $label, $mode, $default, $desc, $rb_obj) {
 		if ($mode=='view') {
 			return;

@@ -34,7 +34,7 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 			array('name'=>'Payment Type', 	'type'=>'commondata', 'param'=>array('order_by_key'=>true,'Premium_Items_Orders_Payment_Types'), 'required'=>false, 'extra'=>false, 'visible'=>false),
 			array('name'=>'Payment No', 	'type'=>'text', 'param'=>'64', 'required'=>false, 'extra'=>false, 'visible'=>false),
 			array('name'=>'Shipment Type', 	'type'=>'commondata', 'param'=>array('order_by_key'=>true,'Premium_Items_Orders_Shipment_Types'), 'required'=>false, 'extra'=>false, 'visible'=>false),
-			array('name'=>'Shipment No',	'type'=>'text', 'param'=>'64', 'required'=>false, 'extra'=>false, 'visible'=>false),
+			array('name'=>'Shipment No',	'type'=>'text', 'param'=>'64', 'required'=>false, 'extra'=>false, 'visible'=>false, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon','display_shipment_no')),
 			array('name'=>'Shipment Date',	'type'=>'date', 'required'=>false, 'extra'=>false, 'visible'=>false),
 			array('name'=>'Shipment Employee','type'=>'crm_contact', 'param'=>array('field_type'=>'select','crits'=>array('Premium_Warehouse_ItemsCommon','employee_crits'), 'format'=>array('CRM_ContactsCommon','contact_format_no_company')), 'required'=>false, 'extra'=>false, 'visible'=>false),
 			array('name'=>'Shipment ETA',	'type'=>'date', 'required'=>false, 'extra'=>false, 'visible'=>false),
