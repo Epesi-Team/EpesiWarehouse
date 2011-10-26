@@ -663,6 +663,10 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
             $cs = DB::GetCol('SELECT f_plugin FROM premium_ecommerce_compare_prices_data_1 WHERE f_item_name=%d AND active=1',array($r['id']));
             $tip .= '<tr><td>'.Base_LangCommon::ts('Premium_Warehouse_eCommerce','Compare Service').'</td><td>'.($cs?implode(', ',$cs):$off).'</td></tr>';
         }
+	if(ModuleManager::is_installed('Premium_Warehouse_eCommerce_Allegro')>=0) {
+		$cs = DB::GetOne('SELECT count(*) FROM premium_ecommerce_allegro_auctions WHERE item_id=%d AND active=1',array($r['id']));
+	        $tip .= '<tr><td>'.Base_LangCommon::ts('Premium_Warehouse_eCommerce','Allegro').'</td><td>'.($cs?$cs:$off).'</td></tr>';
+	}
         $tip .= '</table>';
 
 
