@@ -1,4 +1,6 @@
 <?php
+header("Cache-Control: no-cache, must-revalidate");
+header("Expires: Mon, 26 Jul 1997 05:00:00 GMT"); // date in the past
 define('CID',false); //i know that i won't access $_SESSION['client']
 require_once('../../../../../include.php');
 ModuleManager::load_modules();

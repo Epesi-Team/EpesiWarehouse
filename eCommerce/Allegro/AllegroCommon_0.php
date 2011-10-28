@@ -52,7 +52,7 @@ class Premium_Warehouse_eCommerce_AllegroCommon extends ModuleCommon {
     			$close[] = $it->{'item-info'}->{'it-id'};
     	}
     	if($close)    	
-    		DB::Execute('UPDATE premium_ecommerce_allegro_auction SET active=0 WHERE auction_id IN ('.implode(',',$close).')');
+    		DB::Execute('UPDATE premium_ecommerce_allegro_auctions SET active=0 WHERE auction_id IN ('.implode(',',$close).')');
     	
     	if($ret['array-items-not-found'])
     		DB::GetCol('DELETE FROM premium_ecommerce_allegro_auctions WHERE active=0 AND auction_id IN ('.implode(',',$ret['array-items-not-found']).')');
@@ -68,6 +68,7 @@ class Premium_Warehouse_eCommerce_AllegroCommon extends ModuleCommon {
     		Variable::set('ecommerce_allegro_cats_up',$t);
     	}
     	self::update_statuses();
+	DB::Execute('DELETE FROM premium_ecommerce_allegro_cross WHERE created_on<%T',array(time()-3600*12));
     }
     
     public static function get_lib() {
@@ -120,13 +121,20 @@ class Premium_Warehouse_eCommerce_AllegroCommon extends ModuleCommon {
     }
     
     public static function get_other_auctions($id) {
+	$result = DB::GetAll('SELECT ret_item_id as item, ret_auction_id as auction FROM premium_ecommerce_allegro_cross WHERE item_id=%d AND ip=%s ORDER BY position',array($id,$_SERVER['REMOTE_ADDR']));
+	if($result) return $result;
+
 	$result = array();
+	$skip_item_ids = array($id);
 	$items = Utils_RecordBrowserCommon::get_records('premium_ecommerce_products',array('item_name'=>$id));
 	foreach($items as $i) {
 		foreach(array_merge($i['popup_products'],$i['related_products']) as $p) {
 			$pp = Utils_RecordBrowserCommon::get_record('premium_ecommerce_products',$p,array('item_name'));
 			$x = DB::GetOne('SELECT auction_id FROM premium_ecommerce_allegro_auctions WHERE item_id=%d AND active=1',array($pp['item_name']));
-			if($x) $result[] = array('auction'=>$x,'item'=>$pp['item_name']);
+			if($x) {
+			    $result[] = array('auction'=>$x,'item'=>$pp['item_name']);
+			    $skip_item_ids[] = $pp['item_name'];
+			}
 		}
 	}
         $products = DB::GetCol('SELECT or_det.f_item_name FROM premium_warehouse_items_orders_details_data_1 or_det 
@@ -137,7 +145,22 @@ class Premium_Warehouse_eCommerce_AllegroCommon extends ModuleCommon {
 	foreach($products as $p) {
 		$pp = Utils_RecordBrowserCommon::get_record('premium_ecommerce_products',$p,array('item_name'));
 		$x = DB::GetOne('SELECT auction_id FROM premium_ecommerce_allegro_auctions WHERE item_id=%d AND active=1',array($pp['item_name']));
-		if($x) $result[] = array('auction'=>$x,'item'=>$pp['item_name']);
+		if($x) {
+			$result[] = array('auction'=>$x,'item'=>$pp['item_name']);
+			$skip_item_ids[] = $pp['item_name'];
+		}
+	}
+	for($i=count($result); $i<9; $i++) {
+		$row = DB::GetRow('SELECT ret_item_id as item, ret_auction_id as auction FROM premium_ecommerce_allegro_cross WHERE item_id=%d AND position=%d AND ip=%s',array($id,$i,$_SERVER['REMOTE_ADDR']));
+		if(!$row) {
+			$row = DB::GetRow('SELECT auction_id as auction,item_id as item FROM premium_ecommerce_allegro_auctions WHERE active=1 AND item_id NOT IN ('.implode(',',$skip_item_ids).') ORDER BY RAND()');
+			if(!$row) break;
+		}
+		$skip_item_ids[] = $row['item'];
+		$result[] = $row;
+	}
+	foreach($result as $pos => $row) {
+		DB::Execute('INSERT INTO premium_ecommerce_allegro_cross(ret_item_id,ret_auction_id,item_id,position,ip) VALUES(%d,%d,%d,%d,%s)',array($row['item'],$row['auction'],$id,$pos,$_SERVER['REMOTE_ADDR']));
 	}
 	return $result;
     }

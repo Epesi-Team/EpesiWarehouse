@@ -18,7 +18,7 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 	
 	private $photos;
 	public function collect_photos($id,$rev,$file,$original,$args=null) {
-		if(count($this->photos)==8) break;
+		if(count($this->photos)==1) return;
 	    $ext = strrchr($original,'.');
         if(preg_match('/^\.(jpg|jpeg|gif|png|bmp)$/i',$ext)) {
             $th1 = Utils_ImageCommon::create_thumb($file,640,480);
@@ -70,7 +70,7 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 			$curr = Utils_CurrencyFieldCommon::get_values($r['net_price']);
 			if(Utils_CurrencyFieldCommon::get_code($curr[1])=='PLN')
 				$qf->setDefaults(array('buy_price'=>number_format($r['net_price']*(100+Data_TaxRatesCommon::get_tax_rate($r['tax_rate']))/100,2,'.','')));
-		} elseif($price = DB::GetOne('SELECT f_gross_price FROM premium_warehouse_wholesale_items WHERE f_item_name=%d AND f_currency=%d',array($r['id'],Utils_CurrencyFieldCommon::get_id_by_code('PLN')))) {
+		} elseif($price = DB::GetOne('SELECT f_gross_price FROM premium_ecommerce_prices_data_1 WHERE f_item_name=%d AND f_currency=%d',array($r['id'],Utils_CurrencyFieldCommon::get_id_by_code('PLN')))) {
 			$qf->setDefaults(array('buy_price'=>number_format($price)));
 		}
 		
@@ -133,6 +133,7 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 		$qf->setDefaults(array('transport_description'=>$transport_description));
 
 		$qf->addElement('checkbox','add_auction_cost',$this->t('Dodaj koszt aukcji'));
+		$qf->setDefaults(array('add_auction_cost'=>1));
 		
 		$qf->addElement('header',null,'Wygląd aukcji');
 		$qf->addElement('select','template',$this->t('Szablon'),Premium_Warehouse_eCommerce_AllegroCommon::get_templates());
@@ -268,7 +269,7 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 				        'fid' => 7,   // Cena minimalna
 				        'fvalue-string' => '',
 				        'fvalue-int' => 0,
-				        'fvalue-float' => $vals['minimal_price']?$vals['minimal_price']+((isset($ret['add_auction_cost']) && $ret['add_auction_cost'] && $this->isset_module_variable('auction_cost'))?$this->get_module_variable('auction_cost'):0):'',
+				        'fvalue-float' => $vals['minimal_price']?$vals['minimal_price']+((isset($vals['add_auction_cost']) && $vals['add_auction_cost'] && $this->isset_module_variable('auction_cost'))?$this->get_module_variable('auction_cost'):0):'',
 				        'fvalue-image' => 0,
 				        'fvalue-datetime' => 0,
 				        'fvalue-date' => '',
@@ -287,7 +288,7 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 				        'fid' => 8,   // Cena kup teraz
 				        'fvalue-string' => '',
 				        'fvalue-int' => 0,
-				        'fvalue-float' => $vals['buy_price']?$vals['buy_price']+((isset($ret['add_auction_cost']) && $ret['add_auction_cost'] && $this->isset_module_variable('auction_cost'))?$this->get_module_variable('auction_cost'):0):'',
+				        'fvalue-float' => $vals['buy_price']?$vals['buy_price']+((isset($vals['add_auction_cost']) && $vals['add_auction_cost'] && $this->isset_module_variable('auction_cost'))?$this->get_module_variable('auction_cost'):0):'',
 				        'fvalue-image' => 0,
 				        'fvalue-datetime' => 0,
 				        'fvalue-date' => '',
@@ -563,8 +564,45 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 			    $other_auctions .= '</tr>';
 			}
 			$other_auctions .= '</table>';
+			$image = '<img src="'.get_epesi_url().'/modules/Premium/Warehouse/eCommerce/Allegro/imgs.php?id='.$r['id'].'&pos=0&w=240" border=0 />';
+			$gallery = '';
+			for($i=1; $i<5; $i++)
+				$gallery .= '<img src="'.get_epesi_url().'/modules/Premium/Warehouse/eCommerce/Allegro/imgs.php?id='.$r['id'].'&pos='.$i.'&w=500" border=0 /><br />';
+			$features = '<table id="features" cellspacing="1"><thead><tr><td colspan="3">Cechy</td></tr></thead><tbody>';
+		        $parameters = array();
+			$ret2 = DB::Execute('SELECT pp.f_item_name, pp.f_value,
+									p.f_parameter_code as parameter_code,
+									pl.f_label as parameter_label,
+									g.f_group_code as group_code,
+									gl.f_label as group_label
+						FROM premium_ecommerce_products_parameters_data_1 pp
+						INNER JOIN (premium_ecommerce_parameters_data_1 p,premium_ecommerce_parameter_groups_data_1 g) ON (p.id=pp.f_parameter AND g.id=pp.f_group)
+						LEFT JOIN premium_ecommerce_parameter_labels_data_1 pl ON (pl.f_parameter=p.id AND pl.f_language="pl" AND pl.active=1)
+						LEFT JOIN premium_ecommerce_param_group_labels_data_1 gl ON (gl.f_group=g.id AND gl.f_language="pl" AND gl.active=1)
+						WHERE pp.active=1 AND pp.f_language="pl" AND pp.f_item_name=%d ORDER BY g.f_position,gl.f_label,g.f_group_code,p.f_position,pl.f_label,p.f_parameter_code',array($r['id']));
+			$last_group = null;
+			while($bExp = $ret2->FetchRow()) {
+				$parameters[] = array('sGroup'=>($last_group!=$bExp['group_code']?($bExp['group_label']?$bExp['group_label']:$bExp['group_code']):''), 'sName'=>($bExp['parameter_label']?$bExp['parameter_label']:$bExp['parameter_code']), 'sValue'=>($bExp['f_value']=='Y'?'<span class="yes">Yes</span>':($bExp['f_value']=='N'?'<span class="no">No</span>':$bExp['f_value'])));
+				if($last_group != $bExp['group_code']) {
+    					$last_group = $bExp['group_code'];
+				}
+			}
+			$row = DB::GetRow('SELECT it.f_sku,
+					it.f_upc,
+					it.f_product_code
+					FROM premium_warehouse_items_data_1 it WHERE id=%d',array($r['id']));
+			$parameters[] = array('sGroup'=>'Kody','sName'=>'SKU','sValue'=>$row['f_sku']);
+			$parameters[] = array('sGroup'=>'','sName'=>'UPC','sValue'=>$row['f_upc']);
+			$parameters[] = array('sGroup'=>'','sName'=>'Kod producenta','sValue'=>$row['f_product_code']);
+			$i2=0;
+			foreach($parameters as $aData) {
+				$aData['iStyle'] = ( $i2 % 2 ) ? 0: 1;
+				$features .= '<tr class="l'.$aData['iStyle'].'"><th>'.$aData['sGroup'].'</th><th>'.$aData['sName'].'</th><td>'.$aData['sValue'].'</td></tr>';
+				$i2++;
+			} // end for
+			$features .= '</tbody></table>';
 			if($vals['template'])
-				$description = str_replace(array('{$description}','{$title}','{$shipping_cost}','{$other_auctions}'),array($description,$vals['title'],implode('<br />',$carriers),$other_auctions),file_get_contents($vals['template']));
+				$description = str_replace(array('{$description}','{$title}','{$shipping_cost}','{$other_auctions}','{$image}','{$gallery}','{$features}'),array($description,$vals['title'],implode('<br />',$carriers),$other_auctions,$image,$gallery,$features),file_get_contents($vals['template']));
 			$fields[] = array(
 				        'fid' => 24,   // Opis
 				        'fvalue-string' => $description,
@@ -624,13 +662,11 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 				
 			if(isset($vals['publish']) && $vals['publish']) {
 				$local_id = Acl::get_user()*1000000+mt_rand(0,999999);
-				if(isset($ret['add_auction_cost']) && $ret['add_auction_cost'] && $this->isset_module_variable('auction_cost'))
-					$this->get_module_variable('auction_cost');
 				$a->new_auction($fields,$local_id);
 				eval_js('$("allegro_publish").value=0;');
 				$err = $a->error();
 				if($err)
-				Epesi::alert($err);
+				    Epesi::alert($err);
 				else {
 					Epesi::alert('Aukcja została dodana.');
 					$ret = $a->verify_new_auction($local_id);
@@ -641,10 +677,12 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 				$err = $a->error();
 				$this->set_module_variable('auction_cost',null);
 				if($err)
-				Epesi::alert($err);
+				    Epesi::alert($err);
 				elseif(isset($ret['item-price']) && isset($ret['item-price-desc'])) {
-				    if(is_numeric($ret['item-price']))
-					    $this->set_module_variable('auction_cost',$ret['item-price']);
+				    $ret['item-price'] = str_replace(',','.',$ret['item-price']);
+				    if(preg_match('/([\d]+(\.[\d]+)?)/', $ret['item-price'], $match)) {
+					    $this->set_module_variable('auction_cost',(float)$match[0]);
+				    }
 				    eval_js('if(confirm("Opłata łączna: '.Epesi::escapeJS($ret['item-price'],true,false).'\n'.Epesi::escapeJS($ret['item-price-desc'],true,false).'")) {$("allegro_publish").value=1;'.$qf->get_submit_form_js(true,'publikuję aukcję',true).'}');
 				}else
 					Epesi::alert('Nie można pobrać kosztu wystawienia aukcji');
@@ -652,7 +690,7 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 			}
 				
 			foreach($this->photos as $ph)
-			@unlink($ph);
+				@unlink($ph);
 				
 		}
 		
