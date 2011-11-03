@@ -46,6 +46,12 @@ class Premium_Warehouse_Items extends Module {
 			$opts[$v['id']] = $v['warehouse'];
 		$this->rb->set_custom_filter('sku',array('type'=>'select','label'=>$this->t('Warehouse'),'args'=>$opts,'trans_callback'=>array($this, 'trans_filter')));
 		if (Base_User_SettingsCommon::get('Premium_Warehouse_Items_Orders', 'filter_by_my_warehouse')) $this->rb->set_filters_defaults(array('sku'=>$my_warehouse));
+		if (ModuleManager::is_installed('Premium_Warehouse_eCommerce_Allegro')!=-1) {
+			$this->rb->set_custom_filter('allegro',array('type'=>'select','label'=>$this->t('Allegro'),'args'=>array('__NULL__'=>'---','1'=>$this->t('Yes'),'0'=>$this->t('No')),'trans_callback'=>array('Premium_Warehouse_eCommerce_AllegroCommon', 'allegro_filter')));
+		}
+		if (ModuleManager::is_installed('Premium_Warehouse_eCommerce_CompareUpdatePrices')!=-1) {
+			$this->rb->set_custom_filter('cs',array('type'=>'select','label'=>$this->t('Compare Services'),'args'=>array('__NULL__'=>'---','1'=>$this->t('Yes'),'0'=>$this->t('No')),'trans_callback'=>array('Premium_Warehouse_eCommerce_CompareUpdatePricesCommon', 'compare_filter')));
+		}
 		
 		$cols = array();
 		if (ModuleManager::is_installed('Premium_Warehouse_Items_Orders')!=-1) {
