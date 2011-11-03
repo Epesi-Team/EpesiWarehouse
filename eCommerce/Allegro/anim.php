@@ -8,33 +8,38 @@ $old_user = Acl::get_user();
 if(!$old_user) Acl::set_user(1);
 
 ModuleManager::load_modules();
-if(!isset($_GET['id']) || !is_numeric($_GET['id']) || !isset($_GET['pos']) || !is_numeric($_GET['pos']) || !isset($_GET['w']) || !is_numeric($_GET['w'])) {
+if(!isset($_GET['id']) || !is_numeric($_GET['id']) || !isset($_GET['w']) || !is_numeric($_GET['w'])) {
     blank_img();
     if(!$old_user) Acl::set_user();
     die();
 }
 
-$photo = null;
+$photos = array();
 Utils_AttachmentCommon::call_user_func_on_file('premium_ecommerce_products/'.$_GET['id'],'collect_photos');
 Utils_AttachmentCommon::call_user_func_on_file('premium_ecommerce_descriptions/pl/'.$_GET['id'],'collect_photos');
 
-if($photo == null) {
+if(!$photos) {
     blank_img();
 } else {
-    header("Content-type: image/jpeg");
-    print(file_get_contents($photo));
-    unlink($photo);
+    header("Content-Type: image/gif");
+    $cmd = 'convert -delay 0 -loop 0 +antialias -size '.$_GET['w'].'x'.$_GET['w'].' xc:Transparent -delay 300 '.implode(' ',$photos).' gif:-';
+    $fp = popen ( $cmd , 'r' );
+    fpassthru($fp);
+    fclose($fp);
+    foreach($photos as $ph) {
+	unlink($ph);
+    }
 }
 if(!$old_user) Acl::set_user();
 
 
 function collect_photos($id,$rev,$file,$original,$args=null) {
-	global $photo;
-	if($_GET['pos']--!=0) return;
+	global $photos;
+	if(count($photos)>=4) return;
 	$ext = strrchr($original,'.');
         if(preg_match('/^\.(jpg|jpeg)$/i',$ext)) {
-            $th1 = Utils_ImageCommon::create_thumb($file,$_GET['w'],$_GET['w']*2);
-            $photo = $th1['thumb'];
+            $th1 = Utils_ImageCommon::create_thumb($file,$_GET['w'],$_GET['w']);
+            $photos[] = $th1['thumb'];
         }
 }
 

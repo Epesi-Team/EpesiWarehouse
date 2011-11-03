@@ -140,6 +140,7 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 		$qf->setDefaults(array('template'=>Base_User_SettingsCommon::get('Premium_Warehouse_eCommerce_Allegro','template')));
 		$qf->addElement('checkbox','pr_bold',$this->t('Pogrubienie'));
 		$qf->addElement('checkbox','pr_thumbnail',$this->t('Miniaturka'));
+		$qf->setDefaults(array('pr_thumbnail'=>1));
 		$qf->addElement('checkbox','pr_light',$this->t('Podświetlenie'));
 		$qf->addElement('checkbox','pr_bigger',$this->t('Wyróżnienie'));
 		$qf->addElement('checkbox','pr_catpage',$this->t('Strona kategorii'));
@@ -564,9 +565,9 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 			    $other_auctions .= '</tr>';
 			}
 			$other_auctions .= '</table>';
-			$image = '<img src="'.get_epesi_url().'/modules/Premium/Warehouse/eCommerce/Allegro/imgs.php?id='.$r['id'].'&pos=0&w=240" border=0 />';
+			$image = '<img src="'.get_epesi_url().'/modules/Premium/Warehouse/eCommerce/Allegro/anim.php?id='.$r['id'].'&w=240" border=0 />';
 			$gallery = '';
-			for($i=1; $i<5; $i++)
+			for($i=0; $i<5; $i++)
 				$gallery .= '<img src="'.get_epesi_url().'/modules/Premium/Warehouse/eCommerce/Allegro/imgs.php?id='.$r['id'].'&pos='.$i.'&w=500" border=0 /><br />';
 			$features = '<table id="features" cellspacing="1"><thead><tr><td colspan="3">Cechy</td></tr></thead><tbody>';
 		        $parameters = array();

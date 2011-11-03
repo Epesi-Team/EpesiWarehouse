@@ -120,9 +120,17 @@ class Premium_Warehouse_eCommerce_AllegroCommon extends ModuleCommon {
     	return array();
     }
     
-    public static function get_other_auctions($id) {
-	$result = DB::GetAll('SELECT ret_item_id as item, ret_auction_id as auction FROM premium_ecommerce_allegro_cross WHERE item_id=%d AND ip=%s ORDER BY position',array($id,$_SERVER['REMOTE_ADDR']));
-	if($result) return $result;
+    public static function get_other_auctions($id,$force_cache = false) {
+	if($force_cache) {
+		for($i=0; $i<15; $i++) {
+		    $result = DB::GetAll('SELECT ret_item_id as item, ret_auction_id as auction FROM premium_ecommerce_allegro_cross WHERE item_id=%d AND ip=%s ORDER BY position',array($id,$_SERVER['REMOTE_ADDR']));
+		    if($result) return $result;
+		    sleep(1);
+		} 
+	} else {
+	        $result = DB::GetAll('SELECT ret_item_id as item, ret_auction_id as auction FROM premium_ecommerce_allegro_cross WHERE item_id=%d AND ip=%s ORDER BY position',array($id,$_SERVER['REMOTE_ADDR']));
+    		if($result) return $result;
+    	}
 
 	$result = array();
 	$skip_item_ids = array($id);
@@ -164,6 +172,13 @@ class Premium_Warehouse_eCommerce_AllegroCommon extends ModuleCommon {
 	}
 	return $result;
     }
+
+	public static function allegro_filter($choice) {
+		if ($choice=='__NULL__') return array();
+		$ids = DB::GetCol('SELECT item_id FROM premium_ecommerce_allegro_auctions WHERE active=1');
+		if($choice) return array('id'=>$ids);
+		return array('!id'=>$ids);
+	}
 }
 
 ?>

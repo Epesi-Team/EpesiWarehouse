@@ -2,6 +2,7 @@
 header("Cache-Control: no-cache, must-revalidate");
 header("Expires: Mon, 26 Jul 1997 05:00:00 GMT"); // date in the past
 define('CID',false); //i know that i won't access $_SESSION['client']
+define('SET_SESSION',false);
 require_once('../../../../../include.php');
 $old_user = Acl::get_user();
 if(!$old_user) Acl::set_user(1);
@@ -13,7 +14,7 @@ if(!isset($_GET['id']) || !is_numeric($_GET['id'])) {
     die();
 }
 
-$auctions = Premium_Warehouse_eCommerce_AllegroCommon::get_other_auctions($_GET['id']);
+$auctions = Premium_Warehouse_eCommerce_AllegroCommon::get_other_auctions($_GET['id'],$_GET['i']!=0);
 if(!isset($auctions[$_GET['i']]))  {
     blank_img();
     if(!$old_user) Acl::set_user();
@@ -24,21 +25,22 @@ $photo = null;
 Utils_AttachmentCommon::call_user_func_on_file('premium_ecommerce_products/'.$auctions[$_GET['i']]['item'],'collect_photos');
 Utils_AttachmentCommon::call_user_func_on_file('premium_ecommerce_descriptions/pl/'.$auctions[$_GET['i']]['item'],'collect_photos');
 
-header("Contet-type: image/jpeg");
-$im = imagecreate(240, 240);
-imagecolorallocate($im, 255, 255, 255);
+header("Content-type: image/jpeg");
+$im = imagecreatetruecolor(240, 240);
+$white = imagecolorallocate($im, 255, 255, 255);
+imagefill($im, 0, 0, $white); 
 $black = imagecolorallocate($im, 5, 5, 5);
+$gray = imagecolorallocate($im, 155, 155, 155);
+imagerectangle($im, 0, 0, 239, 239, $gray);
 $is_photo = false;
 if($photo!==null) {
     $ph = imagecreatefromjpeg($photo); 
     if($ph) {
 	list($width,$height,$type,$attr) = getimagesize($photo);
 	if($width>$height) {
-		$max_dim = 240;
-		$x=0;
+		$max_dim = 238;
 	}else {
-		$max_dim = 220;
-		$x=10;
+		$max_dim = 210;
 	}
 	if($height > $max_dim || $width > $max_dim) {
 	    if($height < $width) {
@@ -55,7 +57,7 @@ if($photo!==null) {
 	    $thumb_width = $width;
 	    $thumb_height = $height;
 	}
-	imagecopyresampled($im, $ph, $x, 0, 0, 0, $thumb_width, $thumb_height, $width, $height);
+	imagecopyresampled($im, $ph, (240-$thumb_width)/2, 216-$thumb_height, 0, 0, $thumb_width, $thumb_height, $width, $height);
 	$is_photo = true;
     }
 }
@@ -67,12 +69,14 @@ $desc = Utils_RecordBrowserCommon::get_records('premium_ecommerce_descriptions',
 if($desc) {
     $desc = array_shift($desc);
     $title = trim($desc['display_name']);
-} else {
+}
+if(!isset($title) || !$title) {
     $desc = Utils_RecordBrowserCommon::get_record('premium_warehouse_items',$auctions[$_GET['i']]['item']);
     $title = trim($desc['item_name']);
 }
 
-imagettftext($im, 12, 0, 5, 235, $black, '/usr/share/fonts/truetype/ttf-dejavu/DejaVuSans.ttf', (strlen($title)>25)?substr($title,0,22).'...':$title);
+$text = (strlen($title)>24)?substr($title,0,21).'...':$title;
+imagettftext($im, 12, 0, 5+(24-strlen($text))*5, 235, $black, '/usr/share/fonts/truetype/ttf-dejavu/DejaVuSansMono.ttf', $text);
 imagejpeg($im);
 imagedestroy($im);
 if(!$old_user) Acl::set_user();
@@ -88,7 +92,7 @@ function collect_photos($id,$rev,$file,$original,$args=null) {
 }
 
 function blank_img() {
-    header("Contet-type: image/jpeg");
+    header("Content-type: image/jpeg");
     $im = imagecreate(240, 240);
     imagecolorallocate($im, 255, 255, 255);
     imagejpeg($im);
