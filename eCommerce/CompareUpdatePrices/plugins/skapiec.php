@@ -1,6 +1,6 @@
 <?php
 class  Premium_Warehouse_eCommerce_CompareService_skapiec extends Premium_Warehouse_eCommerce_CompareService {
-	public function fetch($url,$tax,$price,$currency) {
+	public function fetch($url,$tax) {
 		$dir = ModuleManager::get_data_dir('Premium_Warehouse_eCommerce_CompareUpdatePrices');
 		
 		$c = curl_init();
@@ -16,16 +16,17 @@ class  Premium_Warehouse_eCommerce_CompareService_skapiec extends Premium_Wareho
 		curl_setopt($c, CURLOPT_COOKIEFILE, $dir.'cookiefile.cf');
 		curl_setopt($c, CURLOPT_COOKIEJAR, $dir.'cookiefile.cf');
 		
-		$output = curl_exec($c);
+		$output = iconv('iso-8859-2','utf-8',curl_exec($c));
 		
 		curl_close($c);
-		
-		if(preg_match_all('/class="offer_price"(.+?)<strong>([0-9]+.[0-9]+)<\/strong>[\t\n\s]+zł<\/a>/i',$output,$ret)) {
-			sort($ret[1],SORT_NUMERIC);
-			$this->price = array_shift($ret[1]);
-			if($price && $this->price == $price)
-				$this->price = array_shift($ret[1]);
+		if(preg_match_all('/<strong><span class="zl">([0-9]+)\.<\/span><span class="gr">([0-9]+)<\/span><\/strong>/i',$output,$ret)) {
+			$result = array();
+			foreach($ret[1] as $k=>$v)
+				$result[] = (float)$v+(float)$ret[2][$k]/100;
+			sort($result,SORT_NUMERIC);
+			$this->prices = $result;
 			$this->currency = Utils_CurrencyFieldCommon::get_id_by_code('PLN');
+			return true;
 		}
 		
 		return false;

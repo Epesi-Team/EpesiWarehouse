@@ -22,7 +22,8 @@ class Premium_Warehouse_eCommerce_CompareUpdatePricesInstall extends ModuleInsta
 			array('name'=>'URL', 	'type'=>'text', 'required'=>true, 'param'=>256, 'extra'=>false, 'visible'=>false),
 			array('name'=>'Currency', 	'type'=>'integer', 'required'=>false, 'extra'=>false,'visible'=>true, 'display_callback'=>array('Premium_Warehouse_eCommerceCommon', 'display_currency'),'QFfield_callback'=>array('Premium_Warehouse_eCommerceCommon', 'QFfield_currency')),
 			array('name'=>'Gross Price','type'=>'float', 'required'=>false, 'extra'=>false,'visible'=>true),
-			array('name'=>'Tax Rate', 	'type'=>'select', 'required'=>true, 'extra'=>false, 'visible'=>true, 'param'=>'data_tax_rates::Name', 'style'=>'integer')
+			array('name'=>'Tax Rate', 	'type'=>'select', 'required'=>true, 'extra'=>false, 'visible'=>true, 'param'=>'data_tax_rates::Name', 'style'=>'integer'),
+			array('name'=>'Position', 	'type'=>'integer', 'required'=>true, 'extra'=>false, 'visible'=>true, 'style'=>'integer')
 		);
 		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_compare_prices', $fields);
 		DB::CreateIndex('ecommerce_compare_prices_name_currency__idx','premium_ecommerce_compare_prices_data_1',array('f_item_name','f_currency','active'));
