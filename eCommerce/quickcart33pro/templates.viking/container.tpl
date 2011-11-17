@@ -36,6 +36,12 @@
 
   <style type="text/css">@import "$config[dir_templates]$config[template]";</style>
   $sBanner
+  <script language="javascript" type="text/javascript">
+    //<![CDATA[
+    var cot_loc0=(window.location.protocol == "https:")? "https://secure.comodo.net/trustlogo/javascript/cot.js":'http://www.trustlogo.com/trustlogo/javascript/cot.js';
+    document.write("<script language='javascript' type='text/javascript' src='"+cot_loc0+"'><\/sc" + "ript>");
+    //]]>
+  </script>
 <!-- END HEAD -->
 <!-- BEGIN MOBILE_HEAD -->
 <?xml version="1.0" encoding="$config[charset]"?>
@@ -63,6 +69,12 @@
   </script>
 
   <style type="text/css">@import "$config[dir_templates]$config[template]";</style>
+  <script language="javascript" type="text/javascript">
+    //<![CDATA[
+    var cot_loc0=(window.location.protocol == "https:")? "https://secure.comodo.net/trustlogo/javascript/cot.js":"http://www.trustlogo.com/trustlogo/javascript/cot.js";
+    document.write("<script language='javascript' type='text/javascript' src='"+cot_loc0+"'><\/sc" + "ript>");
+    //]]>
+  </script>
 <!-- END MOBILE_HEAD -->
 
 <!-- BEGIN BANNER_NORMAL --><div class="banner"><a href="$aData[sBannerLink]"><img src="$config[dir_files]$aData[sFile]" alt="$aData[sLink]" title="$aData[sLink]" style="width:$aData[iWidth]px;height:$aData[iHeight]px;" /></a></div><!-- END BANNER_NORMAL -->
@@ -100,6 +112,7 @@
       <div class="main">
         <a class="logo" href="?">&nbsp;</a>
         <div class="banner">AS SEEN ON THE <a href="http://www.marthastewart.com/portal/site/mslo/menuitem.3a0656639de62ad593598e10d373a0a0/?vgnextoid=d498e608ce2b1110VgnVCM1000003d370a0aRCRD&autonomy_kw=viking%20importing&rsc=ns2006_m4">MARTHA STEWART</a> SHOW</div>
+        <img alt="" title="" src="$config[dir_templates]img/credit_card_logos_11.gif" width="235" height="35" border="0" style="padding-top:35px;float:right" />
       </div>
     </div>
   </div>
@@ -160,6 +173,7 @@
         <div id="column">
           $sSearchForm
           $sMenu3
+        <img alt="" title="" src="$config[dir_templates]img/credit_card_logos_11.gif" width="235" height="35" border="0" style="padding-left:5px" />
         </div>
         <div id="content">
 <!-- END BODY -->
@@ -193,6 +207,10 @@
   <div class="clear">&nbsp;</div>
 </div>
 
+<a href="http://www.instantssl.com" id="comodoTL">Trusted SSL Certificate</a>
+<script language="JavaScript" type="text/javascript">
+COT("http://www.vikingimporting.com/templates/img/secure_site.gif", "SC2", "none");
+</script>
 </body>
 </html>
 <!-- END FOOT -->
