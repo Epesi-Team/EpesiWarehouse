@@ -16,7 +16,7 @@
 			</font>
 		</td>
 		<td align="right" width="230">
-			{$warehouse.city}, {$date}<br/>
+			{if $warehouse.city}{$warehouse.city}, {/if}{$date}<br/>
 		</td>
 	</tr>
 </table>
@@ -183,6 +183,19 @@
 			<td width="90">
 			</td>
 		{/foreach}
+	</tr>
+</table>
+<br>
+<table>
+	<tr>
+		<td align="right" width="90px">
+			<b>{$labels.shipment_type}</b>
+		</td>
+		<td width="10px">
+		</td>
+		<td width="250px" align="left">
+			{$order.shipment_type}
+		</td>
 	</tr>
 </table>
 

@@ -56,6 +56,7 @@ $order['employee_name'] = CRM_ContactsCommon::contact_format_no_company(CRM_Cont
 $order['payment_type_label'] = Utils_CommonDataCommon::get_value('Premium_Items_Orders_Payment_Types/'.$order['payment_type'],true);
 $order['terms_label'] = Utils_CommonDataCommon::get_value('Premium_Items_Orders_Terms/'.$order['terms'],true);
 if (!$order['company_name']) $order['company_name'] = $order['first_name'].' '.$order['last_name'];
+$order['shipment_type'] = Utils_RecordBrowserCommon::get_val('premium_warehouse_items_orders', 'shipment_type', $order, true);
 
 Libs_TCPDFCommon::prepare_header($tcpdf,null, '', false);
 Libs_TCPDFCommon::add_page($tcpdf);
@@ -83,6 +84,7 @@ $labels = array(
 	'buyer' => 'Sold to:',
 	'buyer_address' => 'Address:',
 	'buyer_id_number' => 'SSN:',
+	'shipment_type' => 'Shipment Type:',
 	'shipping_to' => 'Shipping to:',
 	'shipping_address' => 'Address:',
 	'payment_method' => 'Payment method:',
