@@ -22,7 +22,7 @@ if(!$photos) {
     blank_img();
 } else {
     header("Content-Type: image/gif");
-    $cmd = 'convert -delay 0 -loop 0 +antialias -size '.$_GET['w'].'x'.$_GET['w'].' xc:Transparent -delay 300 '.implode(' ',$photos).' gif:-';
+    $cmd = 'convert -loop 0 +antialias -delay 1 -size '.$_GET['w'].'x'.$_GET['w'].' xc:white -delay 300 '.implode(' -delay 1 -size '.$_GET['w'].'x'.$_GET['w'].' xc:white -delay 300 ',$photos).' gif:-';
     $fp = popen ( $cmd , 'r' );
     fpassthru($fp);
     fclose($fp);

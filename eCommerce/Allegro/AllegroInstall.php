@@ -28,6 +28,7 @@ class Premium_Warehouse_eCommerce_AllegroInstall extends ModuleInstall {
 							auction_id I4 NOTNULL KEY,
 							item_id I4 NOTNULL,
 							active I1 DEFAULT 1,
+							buy_price F,
 							created_by I4,
 							started_on T',
 				array('constraints'=>', FOREIGN KEY (item_id) REFERENCES premium_warehouse_items_data_1(id),
