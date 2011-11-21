@@ -50,6 +50,16 @@ class Premium_Warehouse_eCommerce_AllegroInstall extends ModuleInstall {
 			print('Unable to create table premium_ecommerce_allegro_cross.<br>');
 			return false;
 		}
+
+		$ret = DB::CreateTable('premium_ecommerce_allegro_stan','
+					cat_id I4 NOTNULL,
+					field_id I4 NOTNULL,
+					country I4 NOTNULL',
+				array('constraints'=>', KEY(cat_id,country)'));
+		if(!$ret){
+			print('Unable to create table premium_ecommerce_allegro_stan.<br>');
+			return false;
+		}
 		
 		$this->create_data_dir();
 		
@@ -59,6 +69,7 @@ class Premium_Warehouse_eCommerce_AllegroInstall extends ModuleInstall {
 	}
 	
 	public function uninstall() {
+		DB::DropTable('premium_ecommerce_allegro_stan');
 		DB::DropTable('premium_ecommerce_allegro_cats');
 		DB::DropTable('premium_ecommerce_allegro_auctions');
 		DB::DropTable('premium_ecommerce_allegro_cross');

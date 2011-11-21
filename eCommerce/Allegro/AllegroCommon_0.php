@@ -20,6 +20,13 @@ class Premium_Warehouse_eCommerce_AllegroCommon extends ModuleCommon {
     public static function update_cats() {
     	/* @var $a Allegro */
     	$a = self::get_lib();
+    	$fields = $a->get_sell_form_fields();
+    	$cats = array();
+    	foreach($fields['sell-form-fields'] as $f) {
+    	    if($f->{'sell-form-title'} == 'Stan')
+	    	DB::Replace('premium_ecommerce_allegro_stan', array('field_id'=>$f->{'sell-form-cat'},'cat_id'=>$f->{'sell-form-id'}), array('cat_id','field_id'));
+    	}
+    	
     	$ret = $a->get_categories();
     	$cats = array();
     	$cats_with_ch = array();
@@ -63,7 +70,7 @@ class Premium_Warehouse_eCommerce_AllegroCommon extends ModuleCommon {
     public static function cron() {
     	$c = Variable::get('ecommerce_allegro_cats_up',0);
     	$t = time();
-    	if($c+3600*48<$t) {
+    	if($c+3600*24*7<$t || true) {
     		self::update_cats();
     		Variable::set('ecommerce_allegro_cats_up',$t);
     	}

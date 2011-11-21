@@ -75,9 +75,9 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 			$qf->setDefaults(array('buy_price'=>number_format($price)));
 		}
 		
-/*		$qf->addElement('select','stan',$this->t('Stan'),array('---','Nowy','Używany'));
+		$qf->addElement('select','stan',$this->t('Stan'),array('---','Nowy','Używany'));
 		$qf->setDefaults(array('stan'=>1));
-*/		
+		
 		$qf->addElement('select','transport',$this->t('Transport'),array('Sprzedający pokrywa koszty transportu','Kupujący pokrywa koszty transportu'));
 		$qf->addRule('transport',$this->t('Field required'),'required');
 		$qf->setDefaults(array('transport'=>1));
@@ -401,9 +401,9 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 				                'fvalue-range-date-min' => '',
 				                'fvalue-range-date-max' => '')
 			);
-/*			if(isset($vals['stan']) && $vals['stan'] && Base_User_SettingsCommon::get('Premium_Warehouse_eCommerce_Allegro','country')==1)
+			if(isset($vals['stan']) && $vals['stan'] && $stan_id = DB::GetOne('SELECT field_id FROM premium_ecommerce_allegro_stan WHERE country=%d AND cat_id=%d',array($country,$vals['category'])))
 			$fields[] = array(
-				        'fid' => 341,   // Transport
+				        'fid' => $stan_id,   // Transport
 				        'fvalue-string' => '',
 				        'fvalue-int' => $vals['stan'],
 				        'fvalue-float' => 0,
@@ -419,7 +419,7 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 				        'fvalue-range-date' => array(
 				                'fvalue-range-date-min' => '',
 				                'fvalue-range-date-max' => '')
-			);*/
+			);
 			$fields[] = array(
 				        'fid' => 13,   // Za granicę
 				        'fvalue-string' => '',

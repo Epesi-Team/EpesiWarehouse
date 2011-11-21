@@ -27,7 +27,7 @@ if(!$photos) {
     fpassthru($fp);
     fclose($fp);
     foreach($photos as $ph) {
-	unlink($ph);
+	@unlink($ph);
     }
 }
 if(!$old_user) Acl::set_user();
