@@ -24,9 +24,13 @@ ini_set('include_path',ini_get('include_path').PATH_SEPARATOR.EPESI_DATA_DIR.'/.
 
 require_once(EPESI_DATA_DIR.'/config.php');
 @include_once(EPESI_DATA_DIR.'/Base_Lang/base/'.LANGUAGE.'.php');
+@include_once(EPESI_DATA_DIR.'/Base_Lang/custom/'.LANGUAGE.'.php');
 global $translations;
 if(!is_array($translations))
 	$translations=array();
+if(is_array($custom_translations))
+	foreach($custom_translations as $k=>$v)
+	    $translations[$k] = isset($translations[$k])?array_merge($translations[$k],$v):$v;
 
 error_reporting(E_ERROR | E_PARSE | E_CORE_ERROR | E_COMPILE_ERROR | E_USER_ERROR);
 
