@@ -610,7 +610,9 @@ class Orders
     if( isset( $this->aProducts ) ){
       foreach( $this->aProducts as $aData ){
 	$net = $aData['fPrice']*100/(100+$taxes[$aData['tax']]);
+	ob_start();
 	Utils_RecordBrowserCommon::new_record('premium_warehouse_items_orders_details',array('transaction_id'=>$id,'item_name'=>$aData['iProduct'],'quantity'=>$aData['iQuantity'],'description'=>$aData['sName'],'tax_rate'=>$aData['tax'],'net_price'=>$net.'__'.$currency));
+	ob_end_clean();
 //        DB::Execute('INSERT INTO premium_warehouse_items_orders_details_data_1(f_transaction_id,f_item_name,f_quantity,f_description,f_tax_rate,created_on,f_net_price) 
 //							VALUES (%s,%d,%d,%s,%s,%T,%s)', array($id,$aData['iProduct'],$aData['iQuantity'],$aData['sName'],$aData['tax'],$t,$net.'__'.$currency));
       }
