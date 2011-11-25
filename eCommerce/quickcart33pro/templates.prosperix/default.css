@@ -668,6 +668,21 @@ html, body, #container, #main, #body, #content {
 #order #personalData .input, #order #personalData #oComment{width:90%;margin:0 0 5px;}
 #order #personalData #oComment{height:113px;}
 
+#order #shippingData {
+  padding: 12px 3%;
+  border-top: 2px solid #c0d4eb;
+  border-bottom: 2px solid #c0d4eb;
+  background: #e9f0f8;
+  color: #555555;
+}
+
+#order #shippingData{padding:12px 3%;border-top:2px solid #e8dac6;border-bottom:2px solid #e8dac6;background:#f4f3dd;color:#764830;}
+#order #shippingData #setBasic, #order #shippingData #setExtend{float:left;width:50%;}
+#order #shippingData label{display:block;font-weight:bold;}
+#order #shippingData #company label, #order #shippingData #comment label, #order #shippingData #promotionCode label, #order #shippingData #password1 label, #order #shippingData #password2 label {font-weight:normal;}
+#order #shippingData .input, #order #shippingData #oComment{width:90%;margin:0 0 5px;}
+#order #shippingData #oComment{height:113px;}
+
 #order #deliveryAndPayment table{border-top:2px solid #e8dac6;border-bottom:1px solid #e8dac6;background:#f4f3dd;color:#764830;font-size:1em;}
 #order #deliveryAndPayment table tbody td{padding:3px 13px;border-left:1px solid #e8dac6;border-bottom:1px solid #e8dac6;}
 #deliveryAndPayment table th{padding:5px 13px;border-bottom:1px solid #e8dac6;}
@@ -930,7 +945,7 @@ html>/**/body #product .imagesList#imagesList2 li div{margin:0 auto;}
 	background: url('img/prev.gif') no-repeat left;
 }
 
-#orderedProducts {
+#orderedProducts, #deliveryAndPayment, #pickupShop {
 	padding: 0px 20px 0px 20px;
 }
 

@@ -30,6 +30,7 @@
     var cfTxtToShort      = "$lang[cf_txt_to_short]";
     AddOnload( initLightbox );
     AddOnload( targetBlank );
+    AddOnload( emptyProdDesc );
     //-->
   </script>
   <script type="text/javascript">
