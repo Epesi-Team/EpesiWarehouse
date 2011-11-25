@@ -55,7 +55,7 @@ foreach($s as $ss) {
 	$texts[$i] = $ss;
     }
 }
-$texts[] = 'Kup Teraz!';//.' '.$auctions[$_GET['i']]['buy_price'].' zł';
+$texts[] = 'Kup Teraz!'.($auctions[$_GET['i']]['buy_price']?' '.$auctions[$_GET['i']]['buy_price'].' zł':'');
 foreach($texts as $k=>$text) {
     //$text = (strlen($title)>24)?substr($title,0,21).'...':$title;
     imagettftext($im, 12, 0, 5+(24-strlen($text))*5, 243-(count($texts)-$k)*18, ($k==count($texts)-1)?$red:$black, '/usr/share/fonts/truetype/ttf-dejavu/DejaVuSansMono.ttf', $text);

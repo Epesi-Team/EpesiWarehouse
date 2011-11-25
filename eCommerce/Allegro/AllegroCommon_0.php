@@ -28,6 +28,7 @@ class Premium_Warehouse_eCommerce_AllegroCommon extends ModuleCommon {
     	}
     	
     	$ret = $a->get_categories();
+    	if(!is_array($ret['cats-list'])) return array();
     	$cats = array();
     	$cats_with_ch = array();
     	foreach($ret['cats-list'] as $c) {
@@ -70,9 +71,9 @@ class Premium_Warehouse_eCommerce_AllegroCommon extends ModuleCommon {
     public static function cron() {
     	$c = Variable::get('ecommerce_allegro_cats_up',0);
     	$t = time();
-    	if($c+3600*24*7<$t || true) {
-    		self::update_cats();
-    		Variable::set('ecommerce_allegro_cats_up',$t);
+    	if($c+3600*24<$t || true) {
+    		if(self::update_cats())
+    			Variable::set('ecommerce_allegro_cats_up',$t);
     	}
     	self::update_statuses();
 	DB::Execute('DELETE FROM premium_ecommerce_allegro_cross WHERE created_on<%T',array(time()-3600*12));

@@ -38,7 +38,9 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 		$qf = $this->init_module('Libs_QuickForm',null, 'allegro_p');
 		
 		$qf->addElement('text','title',$this->t('Tytuł'),array('style'=>'width:300px','maxlength'=>'50'));
-		$qf->addRule('title',$this->t('Field required'),'required',array('maxlength'=>50));
+		$qf->addRule('title',$this->t('Field required'),'required');
+		$qf->addRule('title','Maksymalna długość tytułu to 50 znaków','maxlength',50);
+		$qf->addRule('title','Maksymalna długość tytułu to 50 znaków','callback',array($this,'check_auction_title'));
 		$title = '';
 		if(isset($desc['display_name']))
 			$title=$desc['display_name'];
@@ -83,18 +85,20 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 		$qf->setDefaults(array('transport'=>1));
 
 		$qf->addElement('checkbox','abroad',$this->t('Zgadzam się na wysyłkę za granicę'));
+		$qf->addElement('checkbox','in_shop',$this->t('Odbiór osobisty'));
+		$qf->addElement('checkbox','in_shop_trans',$this->t('Odbiór osobisty po przedpłacie'));
 		
 		$qf->addElement('text','post_service_price',$this->t('Cena paczki'));
-		$qf->addRule('post_service_price',$this->t('Invalid price'),'regex','/^[1-9][0-9]*(\.[0-9]+)?$/');
+		$qf->addRule('post_service_price',$this->t('Invalid price'),'regex','/^[0-9][0-9]*(\.[0-9]+)?$/');
 
 		$qf->addElement('text','post_service_price_p',$this->t('Cena paczki (pobranie)'));
-		$qf->addRule('post_service_price_p',$this->t('Invalid price'),'regex','/^[1-9][0-9]*(\.[0-9]+)?$/');
+		$qf->addRule('post_service_price_p',$this->t('Invalid price'),'regex','/^[0-9][0-9]*(\.[0-9]+)?$/');
 
 		$qf->addElement('text','ups_price',$this->t('Cena kuriera'));
-		$qf->addRule('ups_price',$this->t('Invalid price'),'regex','/^[1-9][0-9]*(\.[0-9]+)?$/');
+		$qf->addRule('ups_price',$this->t('Invalid price'),'regex','/^[0-9][0-9]*(\.[0-9]+)?$/');
 
 		$qf->addElement('text','ups_price_p',$this->t('Cena kuriera (pobranie)'));
-		$qf->addRule('ups_price_p',$this->t('Invalid price'),'regex','/^[1-9][0-9]*(\.[0-9]+)?$/');
+		$qf->addRule('ups_price_p',$this->t('Invalid price'),'regex','/^[0-9][0-9]*(\.[0-9]+)?$/');
 
 		$ship_cost = Utils_RecordBrowserCommon::get_records('premium_ecommerce_payments_carriers',array('shipment'=>1,'payment'=>9,'currency'=>Utils_CurrencyFieldCommon::get_id_by_code('PLN'), '>=max_weight'=>$r['weight'])); //poczta polska, pobranie
 		$ship_cost = array_merge($ship_cost,Utils_RecordBrowserCommon::get_records('premium_ecommerce_payments_carriers',array('shipment'=>1,'payment'=>9,'currency'=>Utils_CurrencyFieldCommon::get_id_by_code('PLN'), 'max_weight'=>''))); //poczta polska, pobranie
@@ -387,6 +391,24 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 				        'fid' => 12,   // Transport
 				        'fvalue-string' => '',
 				        'fvalue-int' => $vals['transport'],
+				        'fvalue-float' => 0,
+				        'fvalue-image' => 0,
+				        'fvalue-datetime' => 0,
+				        'fvalue-date' => '',
+				        'fvalue-range-int' => array(
+				                'fvalue-range-int-min' => 0,
+				                'fvalue-range-int-max' => 0),
+				        'fvalue-range-float' => array(
+				                'fvalue-range-float-min' => 0,
+				                'fvalue-range-float-max' => 0),
+				        'fvalue-range-date' => array(
+				                'fvalue-range-date-min' => '',
+				                'fvalue-range-date-max' => '')
+			);
+			$fields[] = array(
+				        'fid' => 35,   // odbiór osobisty
+				        'fvalue-string' => '',
+				        'fvalue-int' => 0+(isset($vals['in_shop'])?1:0)+(isset($vals['in_shop_trans'])?4:0),
 				        'fvalue-float' => 0,
 				        'fvalue-image' => 0,
 				        'fvalue-datetime' => 0,
@@ -729,9 +751,10 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 						$sell_price = 22.1+($sell_price-1000)*0.50/100;
 					else
 						$sell_price = 42.1+($sell_price-5000)*0.20/100;
+					$sell_price = round($sell_price,2);
 					$auction_cost += $sell_price;
 				    }
-				    eval_js('if(confirm("Opłata łączna: '.Epesi::escapeJS($ret['item-price'],true,false).'\n'.Epesi::escapeJS($ret['item-price-desc'],true,false).'\nOpłata za sprzedaż: '.$sell_price.' zł")) {$("allegro_publish").value=1;'.$qf->get_submit_form_js(true,'publikuję aukcję',true).'}');
+				    eval_js('if(confirm("'.Epesi::escapeJS($ret['item-price-desc'],true,false).'\nOpłata łączna za wystawienie: '.Epesi::escapeJS($ret['item-price'],true,false).'\nOpłata za sprzedaż: '.$sell_price.' zł\n-------------------------------\nWystawienie + Sprzedaż: '.$auction_cost.' zł")) {$("allegro_publish").value=1;'.$qf->get_submit_form_js(true,'publikuję aukcję',true).'}');
 				}else
 					Epesi::alert('Nie można pobrać kosztu wystawienia aukcji');
 				Libs_LeightboxCommon::close('new_auction_leightbox');
@@ -768,6 +791,12 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 				$row['active']?$on:$off,$row['login'],$row['started_on']);			
 		}
 		$this->display_module($gb);		
+	}
+	
+	public function check_auction_title($a) {
+		if(strlen(htmlspecialchars($a))>50)
+			return false;
+		return true;
 	}
 
 }

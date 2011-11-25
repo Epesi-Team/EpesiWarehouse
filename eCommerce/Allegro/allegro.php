@@ -55,7 +55,8 @@ class Allegro {
 		foreach(array_chunk($ids,25) as $a) {
 			$r2 = $this->call('doGetItemsInfo',$this->session_id,$a);
 			foreach($ret as $key=>$val) {
-				$ret[$key] = array_merge($ret[$key],$r2[$key]);
+				if(isset($r2[$key]) && is_array($r2[$key]))
+					$ret[$key] = array_merge($ret[$key],$r2[$key]);
 			}
 		}
 		return $ret; 
