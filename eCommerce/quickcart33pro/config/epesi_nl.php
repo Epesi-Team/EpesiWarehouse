@@ -1,9 +1,9 @@
 <?php
-$config['currency_symbol'] = 'USD';
-$config['delivery_free'] = 10000;
-$config['title'] = 'Viking Importing';
+$config['currency_symbol'] = 'EUR';
+$config['delivery_free'] = 100000;
+$config['title'] = 'Shopping Portal - Prosperix Group';
 $config['description'] = '';
-$config['slogan'] = 'The Leading Importer of Doilies and Baking Cups in USA';
+$config['slogan'] = 'We try our best to make it easy on you';
 $config['keywords'] = '';
-$config['foot_info'] = 'Copyright &copy; 2011 <a href=\'?\'>vikingimporting.com</a>';
+$config['foot_info'] = 'Copyright &copy; 2010 <a href=\'?\'>ProsperixGroup.com</a>';
 ?>
