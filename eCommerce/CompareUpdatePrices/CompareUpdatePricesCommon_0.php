@@ -74,15 +74,17 @@ class Premium_Warehouse_eCommerce_CompareUpdatePricesCommon extends ModuleCommon
 				if(defined('TEST')) print($a->price."\n");
 				$item = Utils_RecordBrowserCommon::get_record('premium_warehouse_items',$row['item_name']);
 				$qty = DB::GetOne('SELECT SUM(f_quantity) FROM premium_warehouse_location_data_1 WHERE f_item_sku=%d AND active=1',array($row['item_name']));
-				if($qty) {
+				$res = Premium_Warehouse_Items_OrdersCommon::get_reserved_qty($row['item_name']);
+				$qty -= $res['total'];
+				if($qty>0) {
 					$value = Utils_CurrencyFieldCommon::get_values($item['last_purchase_price']);
 					if($value[1] != $a->currency || $a->price <= $value[0]) {
 						$a->price = '';
-						$a->currency = '';						
+						$a->currency = '';
 					}
 				} else {
-					$ff = DB::GetOne('SELECT price FROM premium_warehouse_wholesale_items WHERE item_id=%d AND quantity>0 AND price_currency=%d ORDER BY price',array($row['item_name'],$a->currency));
-					if($ff>($a->price*100/(100+$tax))) {
+					$ff = DB::GetOne('SELECT price FROM premium_warehouse_wholesale_items WHERE item_id=%d AND quantity>%d AND price_currency=%d ORDER BY price',array($row['item_name'],-$qty,$a->currency));
+					if(!$ff || $ff>($a->price*100/(100+$tax))) {
 						$a->price = '';
 						$a->currency = '';
 					}
