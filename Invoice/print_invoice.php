@@ -58,6 +58,14 @@ $order['terms_label'] = Utils_CommonDataCommon::get_value('Premium_Items_Orders_
 if (!$order['company_name']) $order['company_name'] = $order['first_name'].' '.$order['last_name'];
 $order['shipment_type'] = Utils_RecordBrowserCommon::get_val('premium_warehouse_items_orders', 'shipment_type', $order, true);
 
+if (ModuleManager::is_installed('Premium_Warehouse_eCommerce')>=0) {
+	$recs = Utils_RecordBrowserCommon::get_records('premium_ecommerce_orders', array('transaction_id'=>$order['id']));
+	$order['comments'] = array();
+	foreach ($recs as $k=>$v) {
+		$order['comments'][] = $v['comment'];
+	}
+}
+
 Libs_TCPDFCommon::prepare_header($tcpdf,null, '', false);
 Libs_TCPDFCommon::add_page($tcpdf);
 
@@ -101,7 +109,8 @@ $labels = array(
 	'gorss_value' => 'Gross value',
 	'net_value' => 'Net value',
 	'tax_value' => 'Tax value',
-	'sku' => 'SKU'
+	'sku' => 'SKU',
+	'comments' => 'Comments'
 );
 foreach ($labels as $k=>$v)
 	$labels[$k] = Base_LangCommon::ts('Premium_Warehouse_Invoice', $v);

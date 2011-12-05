@@ -199,6 +199,26 @@
 	</tr>
 </table>
 
+{if isset($order.comments)}
+<br>
+<table>
+	{assign var=label value=true}
+	{foreach item=com from=$order.comments}
+	<tr>
+		<td align="right" width="90px">
+			{if $label}<b>{$labels.comments}</b>{/if}
+		</td>
+		<td width="10px">
+		</td>
+		<td width="420px" align="left">
+			{$com}
+		</td>
+	</tr>
+	{assign var=label value=false}
+	{/foreach}
+</table>
+{/if}
+
 <br>
 <center>
 	<table border="1">
