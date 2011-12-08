@@ -119,7 +119,7 @@ class Premium_Warehouse_Items_LocationCommon extends ModuleCommon {
 	}
 	
 	public static function display_item_quantity_in_warehouse_and_total($r, $warehouse, $nolink=false, $enroute=null, $custom_label=null) {
-		if ($r['item_type']>=2 || !isset($r['id'])) return '---';
+		if ($r['item_type']==2 || $r['item_type']==3 || !isset($r['id'])) return '---';
 		if ($custom_label===null) $custom_label = array(
 			'main'=>'Quantity on hand',
 			'in_one'=>'%s',
@@ -218,8 +218,9 @@ class Premium_Warehouse_Items_LocationCommon extends ModuleCommon {
 	}
 	
 	public static function location_addon_parameters($record) {
-		if ($record['item_type']==2 || $record['item_type']==3) return array('show'=>false);
-		return array('show'=>true, 'label'=>'Items Locations');
+		if ($record['item_type']=='0' || $record['item_type']=='1')
+		    return array('show'=>true, 'label'=>'Items Locations');
+		 return array('show'=>false);
 	}
 
 	public static function location_serial_addon_parameters($record) {
