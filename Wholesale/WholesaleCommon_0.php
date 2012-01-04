@@ -66,8 +66,12 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 		return Utils_RecordBrowserCommon::create_linked_label_r('premium_warehouse_distributor', 'Name', $v, $nolink);
 	}
 	
+    public static function get_distributor_qty($v) {
+	return DB::GetRow('SELECT SUM(quantity) AS qty, MAX(quantity_info) AS qty_info FROM premium_warehouse_wholesale_items WHERE item_id=%d', array($v));
+    }
+	
     public static function display_distributor_qty($v, $nolink=false) {
-    	$row = DB::GetRow('SELECT SUM(quantity) AS qty, MAX(quantity_info) AS qty_info FROM premium_warehouse_wholesale_items WHERE item_id=%d', array($v['id']));
+    	$row = self::get_distributor_qty($v['id']);
     	if (!$row['qty'] && !$row['qty_info']) return 0;
 		return '<span '.Utils_TooltipCommon::ajax_open_tag_attrs(array('Premium_Warehouse_WholesaleCommon','dist_qty_tooltip'), array($v['id']),500).'>'.$row['qty'].($row['qty_info']?'*':'').'</span>';
 	}

@@ -720,7 +720,7 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 				else {
 					Epesi::alert('Aukcja została dodana.');
 					$ret = $a->verify_new_auction($local_id);
-					DB::Execute('INSERT INTO premium_ecommerce_allegro_auctions (auction_id,item_id,created_by,started_on,buy_price) VALUES(%d,%d,%d,%T,%f)',array($ret['item-id'],$r['id'],Acl::get_user(),$ret['item-starting-time'],$buy_now));
+					DB::Execute('INSERT INTO premium_ecommerce_allegro_auctions (auction_id,item_id,created_by,started_on,buy_price) VALUES(%d,%d,%d,%T,%f)',array($ret['item-id'],$r['id'],Acl::get_user(),$ret['item-starting-time'],$buy_now?$buy_now:null));
 				}
 			} else {
 				$ret = $a->check_new_auction_price($fields);

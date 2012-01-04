@@ -9,7 +9,7 @@ if(!$old_user) Acl::set_user(1);
 
 ModuleManager::load_modules();
 
-if(!isset($_GET['id']) || !is_numeric($_GET['id'])) {
+if(!isset($_GET['i']) || !isset($_GET['id']) || !is_numeric($_GET['id'])) {
 	if(!isset($_SERVER['HTTP_REFERER'])) die('Nie ma takiej aukcji');
 	header('Location: '.$_SERVER['HTTP_REFERER']);
         if(!$old_user) Acl::set_user();
