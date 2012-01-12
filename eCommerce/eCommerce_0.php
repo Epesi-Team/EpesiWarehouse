@@ -733,18 +733,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 		$form->addRule('path', $this->t('Field required'), 'required');
 
 		if($form->validate()) {
-		    $p = rtrim($form->exportValue('path'),'/');
-		    DB::Execute('INSERT INTO premium_ecommerce_quickcart(path) VALUES(%s)',array($p));
-		    @set_time_limit(0);
-		    @mkdir($p.'/files/epesi');
-		    @mkdir($p.'/files/100/epesi');
-		    @mkdir($p.'/files/200/epesi');
-		    Utils_AttachmentCommon::call_user_func_on_file('premium_ecommerce_products',array('Premium_Warehouse_eCommerceCommon','copy_attachment'));
-		    Utils_AttachmentCommon::call_user_func_on_file('premium_ecommerce_descriptions',array('Premium_Warehouse_eCommerceCommon','copy_attachment'));
-		    @mkdir($p.'/files/epesi/banners');
-		    $banners = DB::GetCol('SELECT f_file FROM premium_ecommerce_banners_data_1 WHERE active=1');
-		    foreach($banners as $b)
-			Premium_Warehouse_eCommerceCommon::copy_banner($b);
+		    Premium_Warehouse_eCommerceCommon::register_qc($form->exportValue('path'));
 		    return false;
 		} else $form->display();
 

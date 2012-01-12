@@ -1129,6 +1129,21 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 			return Utils_CommonDataCommon::get_value('Premium_Items_Orders_Shipment_Types/'.$shi[0]);
 		return Utils_CommonDataCommon::get_value('Premium_Items_Orders_Shipment_Types/'.$shi[0]).' ('.Utils_CommonDataCommon::get_value('Premium_Items_Orders_Shipment_Types/'.$shi[0].'/'.$shi[1]).')';
 	}
+	
+	public static function register_qc($path) {
+		    $p = rtrim($path,'/');
+		    DB::Execute('INSERT INTO premium_ecommerce_quickcart(path) VALUES(%s)',array($p));
+		    @set_time_limit(0);
+		    @mkdir($p.'/files/epesi');
+		    @mkdir($p.'/files/100/epesi');
+		    @mkdir($p.'/files/200/epesi');
+		    Utils_AttachmentCommon::call_user_func_on_file('premium_ecommerce_products',array('Premium_Warehouse_eCommerceCommon','copy_attachment'));
+		    Utils_AttachmentCommon::call_user_func_on_file('premium_ecommerce_descriptions',array('Premium_Warehouse_eCommerceCommon','copy_attachment'));
+		    @mkdir($p.'/files/epesi/banners');
+		    $banners = DB::GetCol('SELECT f_file FROM premium_ecommerce_banners_data_1 WHERE active=1');
+		    foreach($banners as $b)
+			Premium_Warehouse_eCommerceCommon::copy_banner($b);
+	}
 }
 
 ?>
