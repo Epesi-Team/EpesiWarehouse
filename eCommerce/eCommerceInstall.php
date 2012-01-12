@@ -710,10 +710,11 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 	}
 
 	public static function post_install() {
-	        Premium_Warehouse_eCommerceCommon::register_qc('modules/Premium/Warehouse/eCommerce/quickcart33pro');
+	        if(!DB::GetOne('SELECT 1 FROM premium_ecommerce_quickcart'))
+	                Premium_Warehouse_eCommerceCommon::register_qc('modules/Premium/Warehouse/eCommerce/quickcart33pro');
 		return array(
 				array('type'=>'header','label'=>'Please set your virtual host for ecommerce site','name'=>null),
-				array('type'=>'static','label'=>'','values'=>'Your current ecommerce directory is set to: <i>'.dirname(__FILE__).'/quickcart33pro</i><br />Please set valid virtual host.')
+				array('type'=>'static','label'=>'','values'=>'Your current ecommerce directory is set to: <i>'.dirname(__FILE__).'/quickcart33pro</i><br />Please set your virtual host in web server settings.<br />Please set all files in <i>'.dirname(__FILE__).'/quickcart33pro/config directory writable by web server user.')
 			);
 	}
 
