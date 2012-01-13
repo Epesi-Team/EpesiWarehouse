@@ -162,6 +162,12 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 		
 		$qf->addElement('submit','submit','Wystaw');
 		
+		$prefs = DB::GetOne('SELECT prefs FROM premium_ecommerce_allegro_auctions WHERE item_id=%d ORDER BY started_on DESC',array($r['id']));
+		if($prefs && $prefs = @unserialize($prefs)) {
+		    unset($prefs['template']);
+		    $qf->setDefaults($prefs);
+		}
+		
 		if($qf->validate()) {
 			$vals = $qf->exportValues();
 			$a = Premium_Warehouse_eCommerce_AllegroCommon::get_lib();
@@ -423,8 +429,8 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 				                'fvalue-range-date-min' => '',
 				                'fvalue-range-date-max' => '')
 			);
-			if(isset($vals['stan']) && $vals['stan'] && $stan_id = DB::GetOne('SELECT field_id FROM premium_ecommerce_allegro_stan WHERE country=%d AND cat_id=%d',array($country,$vals['category'])))
-			$fields[] = array(
+			if(isset($vals['stan']) && $vals['stan'] && $stan_id = DB::GetOne('SELECT field_id FROM premium_ecommerce_allegro_stan WHERE country=%d AND cat_id=%d',array($country,$vals['category']))) {
+			    $fields[] = array(
 				        'fid' => $stan_id,   // Transport
 				        'fvalue-string' => '',
 				        'fvalue-int' => $vals['stan'],
@@ -441,7 +447,8 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 				        'fvalue-range-date' => array(
 				                'fvalue-range-date-min' => '',
 				                'fvalue-range-date-max' => '')
-			);
+			    );
+			}
 			$fields[] = array(
 				        'fid' => 13,   // Za granicę
 				        'fvalue-string' => '',
@@ -520,7 +527,7 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 				);
 			}
 			$carriers = array();
-			if(isset($vals['post_service_price']) && $vals['post_service_price']) {
+			if(isset($vals['post_service_price'])) {
 				$fields[] = array(
 					        'fid' => 36,   // Paczka pocztowa ekonomiczna
 					        'fvalue-string' => '',
@@ -541,7 +548,7 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 				);
 				$carriers[] = 'Poczta Polska: '.$vals['post_service_price'].' zł';
 			}
-			if(isset($vals['post_service_price_p']) && $vals['post_service_price_p']) {
+			if(isset($vals['post_service_price_p'])) {
 				$fields[] = array(
 					        'fid' => 40,   // Paczka pocztowa ekonomiczna
 					        'fvalue-string' => '',
@@ -562,7 +569,7 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 				);
 				$carriers[] = 'Poczta Polska (pobranie): '.$vals['post_service_price_p'].' zł';
 			}
-			if(isset($vals['ups_price']) && $vals['ups_price']) {
+			if(isset($vals['ups_price'])) {
 				$fields[] = array(
 					        'fid' => 44,   // Paczka pocztowa ekonomiczna
 					        'fvalue-string' => '',
@@ -583,7 +590,7 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 				);
 				$carriers[] = 'Kurier: '.$vals['ups_price'].' zł';
 			}
-			if(isset($vals['ups_price_p']) && $vals['ups_price_p']) {
+			if(isset($vals['ups_price_p'])) {
 				$fields[] = array(
 					        'fid' => 45,   // Paczka pocztowa ekonomiczna
 					        'fvalue-string' => '',
@@ -720,7 +727,7 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 				else {
 					Epesi::alert('Aukcja została dodana.');
 					$ret = $a->verify_new_auction($local_id);
-					DB::Execute('INSERT INTO premium_ecommerce_allegro_auctions (auction_id,item_id,created_by,started_on,buy_price) VALUES(%d,%d,%d,%T,%f)',array($ret['item-id'],$r['id'],Acl::get_user(),$ret['item-starting-time'],$buy_now?$buy_now:null));
+					DB::Execute('INSERT INTO premium_ecommerce_allegro_auctions (auction_id,item_id,created_by,started_on,buy_price,prefs) VALUES(%d,%d,%d,%T,%f,%s)',array($ret['item-id'],$r['id'],Acl::get_user(),$ret['item-starting-time'],$buy_now?$buy_now:null,serialize($vals)));
 				}
 			} else {
 				$ret = $a->check_new_auction_price($fields);
@@ -775,11 +782,12 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 		array('name'=>'Aktywna','width'=>20,'order'=>'a.active'),
 		array('name'=>'Stworzona przez','width'=>50,'order'=>'u.login'),
 		array('name'=>'Start','width'=>50,'order'=>'a.started_on'),
+		array('name'=>'Koniec','width'=>50,'order'=>'a.ended_on'),
 		));
-		$gb->set_default_order(array($this->t('Start')=>'DESC'));
+		$gb->set_default_order(array('Start'=>'DESC'));
 		
 		$search = $gb->get_search_query();
-		$query = 'SELECT u.login, a.active,a.started_on,a.auction_id FROM premium_ecommerce_allegro_auctions a INNER JOIN user_login u ON u.id=a.created_by WHERE a.item_id='.$r['id'].($search?' AND '.$search:'');
+		$query = 'SELECT u.login, a.active,a.started_on,a.auction_id,a.ended_on FROM premium_ecommerce_allegro_auctions a INNER JOIN user_login u ON u.id=a.created_by WHERE a.item_id='.$r['id'].($search?' AND '.$search:'');
 		$query_qty = 'SELECT count(a.auction_id) FROM premium_ecommerce_allegro_auctions a INNER JOIN user_login u ON u.id=a.created_by WHERE a.item_id='.$r['id'].($search?' AND '.$search:'');
 		
 		$ret = $gb->query_order_limit($query, $query_qty);
@@ -788,7 +796,7 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 		$off = '<span class="checkbox_off" />';
 		while(($row=$ret->FetchRow())) {
 			$gb->add_row((Base_User_SettingsCommon::get('Premium_Warehouse_eCommerce_Allegro','country')!=1?'<a target="_blank" href="http://testwebapi.pl/i'.$row['auction_id'].'.html">'.$row['auction_id'].'</a>':'<a href="http://allegro.pl/ShowItem2.php?item='.$row['auction_id'].'" target="_blank">'.$row['auction_id'].'</a>'),
-				$row['active']?$on:$off,$row['login'],$row['started_on']);			
+				$row['active']?$on:$off,$row['login'],$row['started_on'],$row['ended_on']);			
 		}
 		$this->display_module($gb);		
 	}
@@ -797,6 +805,25 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 		if(strlen(htmlspecialchars($a))>50)
 			return false;
 		return true;
+	}
+
+	public function applet($conf,$opts) {
+		$opts['title'] = 'Allegro - ostatnio zakończone aukcje';
+		
+		$gb = & $this->init_module('Utils/GenericBrowser',null,'t1');
+		$gb->set_table_columns(array(
+		array('name'=>'Przedmiot','width'=>50),
+		array('name'=>'Koniec','width'=>50),
+		));
+		
+		$query = 'SELECT a.item_id,a.ended_on FROM premium_ecommerce_allegro_auctions a WHERE a.active=0 AND ended_on is not null ORDER BY a.ended_on DESC LIMIT 10';
+		
+		$ret = DB::Execute($query);
+
+		while(($row=$ret->FetchRow())) {
+			$gb->add_row('<a '.Utils_RecordBrowserCommon::create_record_href('premium_warehouse_items', $row['item_id'], 'view',array('switch_to_addon'=>'Allegro')).'>'.Premium_Warehouse_ItemsCommon::display_item_name($row['item_id'],true).'</a>',$row['ended_on']);			
+		}
+		$this->display_module($gb);
 	}
 
 }

@@ -30,7 +30,9 @@ class Premium_Warehouse_eCommerce_AllegroInstall extends ModuleInstall {
 							active I1 DEFAULT 1,
 							buy_price F,
 							created_by I4,
-							started_on T',
+							started_on T,
+							ended_on T,
+							prefs X',
 				array('constraints'=>', FOREIGN KEY (item_id) REFERENCES premium_warehouse_items_data_1(id),
 										FOREIGN KEY (created_by) REFERENCES user_login(id)'));
 		if(!$ret){

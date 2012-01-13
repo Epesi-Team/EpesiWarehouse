@@ -18,33 +18,51 @@ class Premium_Warehouse_eCommerce_AllegroCommon extends ModuleCommon {
     }
     
     public static function update_cats() {
+    	$country = Base_User_SettingsCommon::get('Premium_Warehouse_eCommerce_Allegro','country');
+
     	/* @var $a Allegro */
     	$a = self::get_lib();
     	$fields = $a->get_sell_form_fields();
+    	if(!isset($fields['sell-form-fields'])) return array();
     	$cats = array();
-    	foreach($fields['sell-form-fields'] as $f) {
-    	    if($f->{'sell-form-title'} == 'Stan')
-	    	DB::Replace('premium_ecommerce_allegro_stan', array('field_id'=>$f->{'sell-form-cat'},'cat_id'=>$f->{'sell-form-id'}), array('cat_id','field_id'));
-    	}
+    	$stan = array();
+    	$stan_old = DB::GetAssoc('SELECT cat_id,field_id FROM premium_ecommerce_allegro_stan WHERE country=%d',array($country));
     	
+    	foreach($fields['sell-form-fields'] as $f) {
+    	    if($f->{'sell-form-title'} == 'Stan') {
+    		if(!isset($stan_old[$f->{'sell-form-cat'}]) || $stan_old[$f->{'sell-form-cat'}]!=$f->{'sell-form-id'})
+			DB::Replace('premium_ecommerce_allegro_stan', array('field_id'=>$f->{'sell-form-id'},'cat_id'=>$f->{'sell-form-cat'},'country'=>$country), array('cat_id','country'));
+	    	$stan[$f->{'sell-form-cat'}] = $f->{'sell-form-id'};
+	    	unset($stan_old[$f->{'sell-form-cat'}]);
+	    }
+    	}
+
     	$ret = $a->get_categories();
     	if(!is_array($ret['cats-list'])) return array();
     	$cats = array();
     	$cats_with_ch = array();
     	foreach($ret['cats-list'] as $c) {
     		if($c->{'cat-parent'}==0) {
-    			$cats[$c->{'cat-id'}] = $c->{'cat-name'};    			
-    		} elseif(isset($cats[$c->{'cat-parent'}])) {
+    			$cats[$c->{'cat-id'}] = $c->{'cat-name'};
+    		} else {
+    		    if(!isset($stan[$c->{'cat-id'}]) && isset($stan[$c->{'cat-parent'}])) {
+		    	DB::Replace('premium_ecommerce_allegro_stan', array('field_id'=>$stan[$c->{'cat-parent'}],'cat_id'=>$c->{'cat-id'},'country'=>$country), array('cat_id','country'));
+		    	$stan[$c->{'cat-id'}] = $stan[$c->{'cat-parent'}];
+		    	unset($stan_old[$c->{'cat-id'}]);
+    		    }
+    		    if(isset($cats[$c->{'cat-parent'}])) {
     			$cats[$c->{'cat-id'}] = $cats[$c->{'cat-parent'}].'&rarr;'.$c->{'cat-name'};
     			$cats_with_ch[$c->{'cat-parent'}] = $cats[$c->{'cat-parent'}];
     			unset($cats[$c->{'cat-parent'}]);
-    		} elseif(isset($cats_with_ch[$c->{'cat-parent'}])) {
+    		    } elseif(isset($cats_with_ch[$c->{'cat-parent'}])) {
     			$cats[$c->{'cat-id'}] = $cats_with_ch[$c->{'cat-parent'}].'&rarr;'.$c->{'cat-name'};
-    		} else {
+    		    } else {
     			$ret['cats-list'][] = $c;
-    		}    		
+    		    }
+    		}
     	}
-    	$country = Base_User_SettingsCommon::get('Premium_Warehouse_eCommerce_Allegro','country');
+    	if($stan_old)
+    		DB::Execute('DELETE FROM premium_ecommerce_allegro_stan WHERE country=%d AND cat_id IN ('.implode(',',array_keys($stan_old)).')',array($country));
     	foreach($cats as $k=>$v)
 	    	DB::Replace('premium_ecommerce_allegro_cats', array('id'=>$k,'name'=>DB::qstr($v),'country'=>$country), array('id','country'));
     	return $cats;
@@ -60,7 +78,7 @@ class Premium_Warehouse_eCommerce_AllegroCommon extends ModuleCommon {
     			$close[] = $it->{'item-info'}->{'it-id'};
     	}
     	if($close)    	
-    		DB::Execute('UPDATE premium_ecommerce_allegro_auctions SET active=0 WHERE auction_id IN ('.implode(',',$close).')');
+    		DB::Execute('UPDATE premium_ecommerce_allegro_auctions SET active=0,ended_on=%T WHERE auction_id IN ('.implode(',',$close).')',array(time()));
     	
     	if($ret['array-items-not-found'])
     		DB::GetCol('DELETE FROM premium_ecommerce_allegro_auctions WHERE active=0 AND auction_id IN ('.implode(',',$ret['array-items-not-found']).')');
@@ -69,14 +87,18 @@ class Premium_Warehouse_eCommerce_AllegroCommon extends ModuleCommon {
     }
     
     public static function cron() {
+	$us = Acl::get_user();
+	Acl::set_user(2);
     	$c = Variable::get('ecommerce_allegro_cats_up',0);
     	$t = time();
-    	if($c+3600*24<$t || true) {
+    	if($c+3600*24*3<$t || true) {
+//    		print("up cats\n");
     		if(self::update_cats())
     			Variable::set('ecommerce_allegro_cats_up',$t);
     	}
     	self::update_statuses();
 	DB::Execute('DELETE FROM premium_ecommerce_allegro_cross WHERE created_on<%T',array(time()-3600*12));
+	Acl::set_user($us);
     }
     
     public static function get_lib() {
@@ -213,6 +235,15 @@ class Premium_Warehouse_eCommerce_AllegroCommon extends ModuleCommon {
 		$country = Base_User_SettingsCommon::get('Premium_Warehouse_eCommerce_Allegro','country');
 		$emps = DB::GetOne('SELECT name FROM premium_ecommerce_allegro_cats WHERE country=%d AND id=%d',array($country,$arg));
 		return $emps;
+	}
+
+
+	public static function applet_caption() {
+		return "Allegro";
+	}
+
+	public static function applet_info() {
+		return "Ostatnio zakończone aukcje na allegro";
 	}
 }
 
