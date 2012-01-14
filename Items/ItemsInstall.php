@@ -51,24 +51,22 @@ class Premium_Warehouse_ItemsInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::set_recent('premium_warehouse_items', 15);
 		Utils_RecordBrowserCommon::set_caption('premium_warehouse_items', 'Items');
 		Utils_RecordBrowserCommon::set_icon('premium_warehouse_items', Base_ThemeCommon::get_template_filename('Premium/Warehouse/Items', 'icon.png'));
-		Utils_RecordBrowserCommon::set_access_callback('premium_warehouse_items', array('Premium_Warehouse_ItemsCommon', 'access_items'));
 		Utils_RecordBrowserCommon::enable_watchdog('premium_warehouse_items', array('Premium_Warehouse_ItemsCommon','watchdog_label'));
 		Utils_RecordBrowserCommon::register_processing_callback('premium_warehouse_items', array('Premium_Warehouse_ItemsCommon', 'submit_item'));
 
 		$fields = array(
 			array('name'=>'Category Name', 	'type'=>'text', 'param'=>128, 'required'=>true, 'extra'=>false, 'visible'=>true),
 			array('name'=>'Parent Category','type'=>'select', 'param'=>'premium_warehouse_items_categories::Category Name' ,'required'=>false, 'extra'=>false, 'visible'=>false, 'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_category_parent')),
-			array('name'=>'Position', 		'type'=>'integer', 'required'=>false, 'extra'=>false, 'visible'=>false)
+			array('name'=>'Position', 		'type'=>'hidden', 'param'=>Utils_RecordBrowserCommon::actual_db_type('integer'), 'required'=>false, 'extra'=>false, 'visible'=>false)
 		);
 		Utils_RecordBrowserCommon::install_new_recordset('premium_warehouse_items_categories', $fields);
 		
 		Utils_RecordBrowserCommon::set_caption('premium_warehouse_items_categories', 'Items Categories');
 		Utils_RecordBrowserCommon::set_icon('premium_warehouse_items_categories', Base_ThemeCommon::get_template_filename('Premium/Warehouse/Items', 'icon.png'));
-		Utils_RecordBrowserCommon::set_access_callback('premium_warehouse_items_categories', array('Premium_Warehouse_ItemsCommon', 'access_items_categories'));
 		Utils_RecordBrowserCommon::register_processing_callback('premium_warehouse_items_categories', array('Premium_Warehouse_ItemsCommon', 'submit_position'));
 
 // ************ addons ************** //
-		Utils_RecordBrowserCommon::new_addon('premium_warehouse_items', 'Premium/Warehouse/Items', 'attachment_addon', 'Notes');
+		Utils_AttachmentCommon::new_addon('premium_warehouse_items');
 		Utils_RecordBrowserCommon::new_addon('premium_warehouse_items_categories', 'Premium/Warehouse/Items', 'subcategories_addon', 'Subcategories');
 
 // ************ other ************** //	
@@ -76,18 +74,13 @@ class Premium_Warehouse_ItemsInstall extends ModuleInstall {
 		Utils_CommonDataCommon::new_array('Premium_Warehouse_Items_Categories',array());
 		Utils_CommonDataCommon::extend_array('Companies_Groups',array('manufacturer'=>'Manufacturer'));
 
-		$this->add_aco('browse items',array('Employee'));
-		$this->add_aco('browse my items',array('Customer'));
-		$this->add_aco('view items',array('Employee'));
-		$this->add_aco('view my items',array('Customer'));
-		$this->add_aco('edit items',array('Employee'));
-		$this->add_aco('delete items',array('Employee Manager'));
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_items', 'view', 'EMPLOYEE');
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_items', 'add', 'EMPLOYEE', array(), array('item_type'));
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_items', 'edit', 'EMPLOYEE', array(), array('item_type'));
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_items', 'delete', array('EMPLOYEE', 'GROUP:manager'));
 
-		$this->add_aco('view protected notes','Employee');
-		$this->add_aco('view public notes','Employee');
-		$this->add_aco('edit protected notes','Employee Administrator');
-		$this->add_aco('edit public notes','Employee');
-		
+		Utils_RecordBrowserCommon::add_default_access('premium_warehouse_items_categories');
+
 		return true;
 	}
 	
@@ -96,7 +89,7 @@ class Premium_Warehouse_ItemsInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::unregister_processing_callback('premium_warehouse_items', array('Premium_Warehouse_ItemsCommon', 'submit_item'));
 		Utils_RecordBrowserCommon::unregister_processing_callback('premium_warehouse_items_categories', array('Premium_Warehouse_ItemsCommon', 'submit_position'));
 		Utils_RecordBrowserCommon::delete_addon('premium_warehouse_items_categories', 'Premium/Warehouse/Items', 'subcategories_addon');
-		Utils_RecordBrowserCommon::delete_addon('premium_warehouse_items', 'Premium/Warehouse/Items', 'attachment_addon');
+		Utils_AttachmentCommon::delete_addon('premium_warehouse_items');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_warehouse_items');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_warehouse_items_categories');
 

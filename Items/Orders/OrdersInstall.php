@@ -90,7 +90,6 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::set_recent('premium_warehouse_items_orders', 15);
 		Utils_RecordBrowserCommon::set_caption('premium_warehouse_items_orders', 'Items Transactions');
 //		Utils_RecordBrowserCommon::set_icon('premium_warehouse_items_orders', Base_ThemeCommon::get_template_filename('Premium/Warehouse/Items/Orders', 'icon.png'));
-		Utils_RecordBrowserCommon::set_access_callback('premium_warehouse_items_orders', array('Premium_Warehouse_Items_OrdersCommon', 'access_orders'));
 		Utils_RecordBrowserCommon::enable_watchdog('premium_warehouse_items_orders', array('Premium_Warehouse_Items_OrdersCommon','watchdog_label'));
 		Utils_RecordBrowserCommon::register_processing_callback('premium_warehouse_items_orders', array('Premium_Warehouse_Items_OrdersCommon', 'submit_order'));
 			
@@ -129,7 +128,6 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::set_recent('premium_warehouse_items_orders_details', 15);
 		Utils_RecordBrowserCommon::set_caption('premium_warehouse_items_orders_details', 'Items Order Details');
 		Utils_RecordBrowserCommon::set_icon('premium_warehouse_items_orders_details', Base_ThemeCommon::get_template_filename('Premium/Warehouse/Items/Orders', 'details_icon.png'));
-		Utils_RecordBrowserCommon::set_access_callback('premium_warehouse_items_orders_details', array('Premium_Warehouse_Items_OrdersCommon', 'access_order_details'));
 //		Utils_RecordBrowserCommon::enable_watchdog('premium_warehouse_items_orders_details', array('Premium_Warehouse_Items_OrdersCommon','watchdog_label'));
 		Utils_RecordBrowserCommon::register_processing_callback('premium_warehouse_items_orders_details', array('Premium_Warehouse_Items_OrdersCommon', 'submit_order_details'));
 		
@@ -139,7 +137,7 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 
 // ************ addons ************** //
 		Utils_RecordBrowserCommon::new_addon('premium_warehouse_items_orders', 'Premium/Warehouse/Items/Orders', 'order_details_addon', 'Items');
-		Utils_RecordBrowserCommon::new_addon('premium_warehouse_items_orders', 'Premium/Warehouse/Items/Orders', 'attachment_addon', 'Notes');
+		Utils_AttachmentCommon::new_addon('premium_warehouse_items_orders');
 		Utils_RecordBrowserCommon::new_addon('premium_warehouse_items', 'Premium/Warehouse/Items/Orders', 'transaction_history_addon', 'Transaction History');
 		Utils_RecordBrowserCommon::new_addon('contact', 'Premium/Warehouse/Items/Orders', 'contact_orders_addon', 'Premium_Warehouse_Items_OrdersCommon::contact_orders_label');
 		Utils_RecordBrowserCommon::new_addon('company', 'Premium/Warehouse/Items/Orders', 'company_orders_addon', 'Premium_Warehouse_Items_OrdersCommon::company_orders_label');
@@ -149,7 +147,7 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::set_addon_pos('premium_warehouse_items', 'Premium/Warehouse/Items/Location', 'location_addon', 1);
 
 // ************ other ************** //
-		Utils_RecordBrowserCommon::set_access_callback('premium_warehouse_items', array('Premium_Warehouse_Items_OrdersCommon', 'access_items'));
+		Utils_RecordBrowserCommon::field_deny_access('premium_warehouse_items', 'Quantity on Hand', 'edit');
 		Utils_RecordBrowserCommon::register_processing_callback('premium_warehouse_items', array('Premium_Warehouse_Items_OrdersCommon', 'submit_new_item_from_order'));
 
 		Utils_CommonDataCommon::new_array('Premium_Items_Orders_Trans_Types',array(0=>'Purchase',1=>'Sale',2=>'Inventory Adjustment',3=>'Rental',4=>'Transfer'));
@@ -174,22 +172,29 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 					'serial_id I,'.
 					'order_details_id I',
 					array('constraints'=>''));
-	
-		$this->add_aco('browse orders',array('Employee'));
-		$this->add_aco('browse my orders',array('Customer'));
-		$this->add_aco('view orders',array('Employee'));
-		$this->add_aco('view my orders',array('Customer'));
-		$this->add_aco('checkout orders',array('Customer Manager'));
-		$this->add_aco('edit orders',array('Employee'));
-		$this->add_aco('delete orders',array('Employee Manager'));
+					
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders', 'view', 'EMPLOYEE');
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders', 'view', 'ALL', array('contact'=>'USER'));
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders', 'view', array('ALL','GROUP:manager'), array('company'=>'USER_COMPANY'));
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders', 'add', 'EMPLOYEE', array(), array('transaction_type'));
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders', 'edit', 'EMPLOYEE', array('employee'=>'USER', '(>=transaction_date'=>'-7 days', '|<status'=>20), array('transaction_type', 'warehouse'));
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders', 'edit', 'EMPLOYEE', array('employee'=>'USER', 'warehouse'=>''), array('transaction_type'));
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders', 'edit', array('EMPLOYEE','GROUP:manager'), array(), array('transaction_type', 'warehouse'));
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders', 'delete', 'EMPLOYEE', array(':Created_by'=>'USER_ID'));
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders', 'delete', array('EMPLOYEE','GROUP:manager'));
+
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders_details', 'view', 'EMPLOYEE');
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders_details', 'view', 'ALL', array('transaction_id[contact]'=>'USER'));
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders_details', 'view', array('ALL','GROUP:manager'), array('transaction_id[company]'=>'USER_COMPANY'));
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders_details', 'add', 'EMPLOYEE', array('transaction_id[employee]'=>'USER', '(>=transaction_id[transaction_date]'=>'-7 days', '|<transaction_id[status]'=>20), array('transaction_id'));
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders_details', 'add', array('EMPLOYEE','GROUP:manager'), array(), array('transaction_id'));
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders_details', 'edit', 'EMPLOYEE', array('transaction_id[employee]'=>'USER', '(>=transaction_id[transaction_date]'=>'-7 days', '|<transaction_id[status]'=>20), array('transaction_id'));
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders_details', 'edit', array('EMPLOYEE','GROUP:manager'), array(), array('transaction_id'));
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders_details', 'delete', 'EMPLOYEE', array(':Created_by'=>'USER_ID'));
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders_details', 'delete', array('EMPLOYEE','GROUP:manager'));
 
 		$this->add_aco('sell with loss',array('Employee Manager'));
 
-		$this->add_aco('view protected notes','Employee');
-		$this->add_aco('view public notes','Employee');
-		$this->add_aco('edit protected notes','Employee Administrator');
-		$this->add_aco('edit public notes','Employee');
-		
 		return true;
 	}
 	
@@ -199,14 +204,12 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::unregister_processing_callback('premium_warehouse_items_orders', array('Premium_Warehouse_Items_OrdersCommon', 'submit_order'));
 		Utils_RecordBrowserCommon::unregister_processing_callback('premium_warehouse_items_orders_details', array('Premium_Warehouse_Items_OrdersCommon', 'submit_order_details'));
 		
-		Utils_RecordBrowserCommon::set_access_callback('premium_warehouse_items', array('Premium_Warehouse_ItemsCommon', 'access_items'));
-
 		Utils_RecordBrowserCommon::delete_record_field('premium_warehouse_items','Reserved Qty');
 		Utils_RecordBrowserCommon::delete_record_field('premium_warehouse_items','Available Qty');
 
 		Base_ThemeCommon::uninstall_default_theme($this->get_type());
 		Utils_RecordBrowserCommon::delete_addon('premium_warehouse_items_orders', 'Premium/Warehouse/Items/Orders', 'order_details_addon');
-		Utils_RecordBrowserCommon::delete_addon('premium_warehouse_items_orders', 'Premium/Warehouse/Items/Orders', 'attachment_addon');
+		Utils_AttachmentCommon::delete_addon('premium_warehouse_items_orders');
 		Utils_RecordBrowserCommon::delete_addon('premium_warehouse_items', 'Premium/Warehouse/Items/Orders', 'transaction_history_addon');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_warehouse_items_orders');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_warehouse_items_orders_details');

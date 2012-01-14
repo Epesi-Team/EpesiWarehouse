@@ -18,62 +18,6 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 	public static $plugin_path = 'modules/Premium/Warehouse/eCommerce/3rdp_plugins/';
     private static $curr_opts;
 
-    public static function access_products($action, $param=null){
-        $i = self::Instance();
-        switch ($action) {
-            case 'browse_crits':    return $i->acl_check('browse ecommerce');
-            case 'browse':  if(!$i->acl_check('browse ecommerce')) return false;
-                            $ret = array('position'=>false);
-                            if(!Variable::get('ecommerce_item_descriptions')) {
-                                $ret['product_name'] = false;
-                                $ret['description'] = false;
-                            }
-                            return $ret;                            
-            case 'view':    if (!$i->acl_check('view ecommerce')) return false;
-                            $ret = array('position'=>false);
-                            if(!Variable::get('ecommerce_item_descriptions')) {
-                                $ret['product_name'] = false;
-                                $ret['description'] = false;
-                            }
-                            return $ret;
-            case 'clone':
-            case 'add':
-            case 'edit':    return $i->acl_check('edit ecommerce');
-            case 'delete':  return $i->acl_check('delete ecommerce');
-        }
-        return false;
-    }
-
-    public static function access_parameters($action, $param=null){
-        $i = self::Instance();
-        switch ($action) {
-            case 'browse_crits':    return $i->acl_check('browse ecommerce');
-            case 'browse':  return $i->acl_check('browse ecommerce');
-            case 'view':    if (!$i->acl_check('view ecommerce')) return false;
-                            return array('position'=>false);
-            case 'clone':
-            case 'add':
-            case 'edit':    return $i->acl_check('edit ecommerce');
-            case 'delete':  return $i->acl_check('delete ecommerce');
-        }
-        return false;
-    }
-
-    public static function access_3rdp_info($action, $param=null){
-        $i = self::Instance();
-        switch ($action) {
-            case 'browse_crits':    return $i->acl_check('browse ecommerce');
-            case 'browse':  return true;
-            case 'view':    if (!$i->acl_check('view ecommerce')) return false;
-                            return array('position'=>false);
-            case 'clone':
-            case 'add':
-            case 'edit':    return $i->acl_check('edit ecommerce');
-            case 'delete':  return $i->acl_check('delete ecommerce');
-        }
-        return false;
-    }
-
     public static function display_item_name($r, $nolink, $desc) {
         return Utils_RecordBrowserCommon::create_linked_label('premium_warehouse_items','item_name',$r['item_name'],$nolink);
     }
@@ -180,10 +124,6 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
             return array('show'=>false);
         return array('show'=>true, 'label'=>'Descriptions');
     }
-
-    public static function access_users($action, $param=null){
-        return self::access_parameters($action,$param);
-        }
 
     public static function submit_user($values, $mode) {
         switch ($mode) {
@@ -305,16 +245,19 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
     }
 
     public static function menu() {
-		if (self::access_parameters('browse'))
-			return array('Warehouse'=>array(
-				'__submenu__'=>1,
-				'eCommerce'=>array('__submenu__'=>1,
-					'Express publish'=>array('__function__'=>'fast_fill'),
-					'Comments queue'=>array('__function__'=>'comments'),
-					'Newsletter'=>array('__function__'=>'newsletter'),
-					'Products'=>array(),
-					'Stats'=>array('__function__'=>'stats'))));
-		return array();
+		$m = array('__submenu__'=>1,
+					'Stats'=>array('__function__'=>'stats'));
+		if (Utils_RecordBrowserCommon::get_access('premium_ecommerce_products', 'add'))
+			$m['Express publish'] = array('__function__'=>'fast_fill');
+		if (Utils_RecordBrowserCommon::get_access('premium_ecommerce_products', 'browse'))
+			$m['Products'] = array();
+		if (Utils_RecordBrowserCommon::get_access('premium_ecommerce_product_comments', 'browse'))
+			$m['Comments queue'] = array('__function__'=>'comments');
+		if (Utils_RecordBrowserCommon::get_access('premium_ecommerce_newsletter', 'browse'))
+			$m['Newsletter'] = array('__function__'=>'newsletter');
+		return array('Warehouse'=>array(
+			'__submenu__'=>1,
+			'eCommerce'=>$m));
     }
 
     public static function get_quickcarts() {

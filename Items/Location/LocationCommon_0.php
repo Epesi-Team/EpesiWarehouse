@@ -56,28 +56,6 @@ class Premium_Warehouse_Items_LocationCommon extends ModuleCommon {
 		return self::mark_used($r['used']).$r['serial'];
 	}
 
-	public static function access_location($action, $param){
-		$i = self::Instance();
-		switch ($action) {
-			case 'browse_crits':	if($i->acl_check('browse location')) return true;
-			                        if($i->acl_check('browse my location')) {
-                			            $myrec = CRM_ContactsCommon::get_my_record();
-			                            return array('id'=>DB::GetCol('select ls.location_id FROM  premium_warehouse_location_serial ls where ls.owner=%d',array($myrec['id'])));
-			                        }
-			                        return false;
-			case 'browse':	return ($i->acl_check('browse location') || $i->acl_check('browse my location'));
-			case 'view':	return true;
-			case 'clone':
-			case 'add':
-			case 'edit':	if(!$i->acl_check('edit location')) return false;
-			                $ret = array('item_sku'=>false, 'warehouse'=>false);
-							if (!Base_AclCommon::i_am_sa()) $ret['quantity'] = false;
-							return $ret;
-			case 'delete':	return false;
-		}
-		return false;
-    }
-    
     public static function display_quantity($r,$nolink=false) {
 		$i = self::Instance();
 		if($i->acl_check('view location'))

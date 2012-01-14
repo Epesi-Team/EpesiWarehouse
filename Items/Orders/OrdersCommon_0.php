@@ -32,10 +32,10 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			));
 	}
 	public static function attachment_addon_access() {
-		return self::access_orders('edit');
+		return Utils_RecordBrowserCommon::get_access('premium_warehouse_items_orders','edit');
 	}
 	public static function order_serial_addon_access() {
-		return self::access_orders('edit');
+		return Utils_RecordBrowserCommon::get_access('premium_warehouse_items_orders','edit');
 	}
     public static function get_order($id) {
 		return Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $id);
@@ -487,7 +487,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 
 	public static function QFfield_status(&$form, $field, $label, $mode, $default, $desc, $rb_obj){
 		$opts = self::get_status_array($rb_obj->record);
-		if ($mode=='edit') {
+		if ($mode!='view') {
 			$form->addElement('select', $field, $label, $opts, array('id'=>'status'));
 			$form->setDefaults(array($field=>$default));
 			$form->addFormRule(array('Premium_Warehouse_Items_OrdersCommon','check_if_warehouse_set'));
@@ -744,331 +744,6 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		return true;
 	} 
 	
-	public static function access_order_details($action, $param=null, $crits=null){
-		$i = self::Instance();
-		$ret = array();
-		if (isset($param['transaction_id'])) {
-			$trans_id = $param['transaction_id'];
-			$trans = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $trans_id);
-		}
-		switch ($action) {
-			case 'browse_crits':	
-			                if($i->acl_check('browse orders')) return true;
-			                if($i->acl_check('browse my orders')) {
-        			            $myrec = CRM_ContactsCommon::get_my_record();
-			                    if(isset($crits['item_name'])) //addon in item view
-    			                    return array('id'=>DB::GetCol('SELECT d.id FROM premium_warehouse_items_orders_details_data_1 d INNER JOIN premium_warehouse_items_orders_data_1 o ON o.id=d.f_transaction_id WHERE d.f_item_name=%d AND (o.f_contact='.$myrec['id'].($myrec['company_name']?' OR o.f_company='.$myrec['company_name']:'').')',array($crits['item_name'])));
-    			                elseif(isset($crits['transaction_id'])) //addon in order view
-    			                    return true;
-			                }
-			                return false;
-			case 'browse':	return true;
-			case 'view':	
-			                if ($i->acl_check('view my orders') && !$i->acl_check('view orders')) {
-			                    $myrec = CRM_ContactsCommon::get_my_record();
-			                    if(!isset($trans) || ($trans['contact']!=$myrec['id'] && $trans['company']!=$myrec['company_name'])) return false;
-			                } elseif (!$i->acl_check('view orders')) return false;
-							if ($trans['transaction_type']!=3) {
-								$ret['return_date'] = false;
-								$ret['returned'] = false;
-							}
-							if ($trans['transaction_type']==4 || !$trans['payment']) {
-								$ret['net_price'] = false;
-								$ret['net_total'] = false;
-								$ret['tax_rate'] = false;
-								$ret['tax_value'] = false;
-								$ret['gross_price'] = false;
-								$ret['gross_total'] = false;
-							}
-							if ($trans['transaction_type']==3) {
-								$ret['transaction_date'] = false;
-								$ret['transaction_type'] = false;
-								$ret['warehouse'] = false;
-								$ret['debit'] = false;
-								$ret['credit'] = false;
-								$ret['net_price'] = false;
-								$ret['net_total'] = false;
-								$ret['tax_rate'] = false;
-								$ret['tax_value'] = false;
-								$ret['gross_price'] = false;
-								$ret['gross_total'] = false;
-								$ret['quantity_on_hand'] = false;
-							}
-							if ($trans['transaction_type']!=2) {
-								$ret['credit'] = false;
-								$ret['debit'] = false;
-							} else {
-								$ret['net_price'] = false;
-								$ret['net_total'] = false;
-								$ret['tax_rate'] = false;
-								$ret['tax_value'] = false;
-								$ret['gross_price'] = false;
-								$ret['gross_total'] = false;
-//								$ret['quantity'] = false;
-							}
-							return $ret;
-			case 'clone':
-			case 'add':		if (!isset($param['transaction_id'])) return false;
-			                $ret = array('transaction_id'=>false);
-							if (!$i->acl_check('edit orders') || !self::access_orders('add') || !self::access_orders('edit', Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $param['transaction_id']))) {
-			                    if($i->acl_check('checkout orders') && isset($param['transaction_id'])) {
-			                        $ord = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $param['transaction_id']);
-			                        if($ord['terms']==0 && $ord['payment']==0 && $ord['transaction_type']==1 && !$ord['status']) return $ret;
-			                    }
-			                    return false;
-			                }
-//							if ($trans['transaction_type']==3)
-//								$ret['returned'] = false;
-							return $ret;
-			case 'edit':	if (!$i->acl_check('edit orders') || !self::access_orders('edit', Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $param['transaction_id']))) {
-			                    if($i->acl_check('checkout orders') && isset($param['transaction_id'])) {
-			                        $ord = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $param['transaction_id']);
-			                        if($ord['terms']==0 && $ord['payment']==0 && $ord['transaction_type']==1 && !$ord['status']) return true;
-			                    }
-			                    return false;
-			                }
-							$ret = array('item_name'=>false,'transaction_id'=>false);
-							if ($trans['transaction_type']==3)
-								$ret['returned'] = false;
-							return $ret;
-			case 'delete':	
-							if (!self::check_order_details_deletion($trans, $param)) return false;
-							if($i->acl_check('edit orders')) {
-							    $me = CRM_ContactsCommon::get_my_record();
-    							if ($me['id']==$trans['employee'] && self::access_orders('edit', Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $param['transaction_id']))) return true;
-	    						if ($trans['status']<=0 || $trans['status']=='') return true;
-	    				    } elseif($i->acl_check('checkout orders') && isset($param['transaction_id'])) {
-			                    $ord = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $param['transaction_id']);
-			                    if($ord['terms']==0 && $ord['payment']==0 && $ord['transaction_type']==1 && !$ord['status']) return true;
-			                }
-							return $i->acl_check('delete orders');
-		}
-		return false;
-	}
-
-	public static function check_order_details_deletion($trans, $param) {
-		if ($trans['transaction_type']==0) {
-			$ret = DB::GetOne('SELECT COUNT(*) FROM premium_warehouse_location_orders_serial os LEFT JOIN premium_warehouse_location_serial s ON s.id=os.serial_id WHERE os.order_details_id=%d AND s.location_id IS NULL', array($param['id']));
-			if ($ret>0) return false;
-		}
-		return true;
-	}
-
-	public static function access_orders($action, $param=null){
-		$i = self::Instance();
-		$ret = array();
-		$tt = isset($param['transaction_type'])?$param['transaction_type']:null;
-		if (class_exists('Utils_RecordBrowser') && isset(Utils_RecordBrowser::$mode)) $mode = Utils_RecordBrowser::$mode;
-		else $mode = 'view';
-		switch ($action) {
-			case 'browse_crits':	
-			                if($i->acl_check('browse orders')) return true;
-			                if($i->acl_check('browse my orders')) {
-        			            $myrec = CRM_ContactsCommon::get_my_record();
-								if ($myrec['company_name']) 
-									return array('(contact'=>$myrec['id'],'|company'=>$myrec['company_name']);
-							    else
-							        return array('contact'=>$myrec['id']);
-			                }
-			                return false;
-			case 'browse':	return array('target_warehouse'=>false);
-			case 'view':	if ($i->acl_check('view my orders') && !$i->acl_check('view orders')) {
-			                    $myrec = CRM_ContactsCommon::get_my_record();
-			                    if(isset($param['contact']) && isset($param['company']) && $param['contact']!=$myrec['id'] && (!$myrec['company_name'] || $param['company']!=$myrec['company_name'])) return false;
-			                } elseif (!$i->acl_check('view orders')) return false;
-							if (!isset($param['related']) || !$param['related']) $ret['related'] = false;
-                    		if(ModuleManager::is_installed('Premium_Warehouse_eCommerce')>=0 && $tt!=1)
-								$ret['online_order'] = false;
-							$ret['related'] = false;
-						    if ($mode=='add') $ret['status'] = false;
-						    if ($mode=='view') {
-    							$ret['company'] = false;
-	    						$ret['contact'] = false;
-							}
-		    				if (isset($param['payment']) && !$param['payment']) {
-								$ret['payment_type'] = false;
-								$ret['payment_no'] = false;
-								$ret['terms'] = false;
-								$ret['total_value'] = false;
-								$ret['tax_value'] = false;
-								$ret['invoice_number'] = false;
-								$ret['invoice_print_date'] = false;
-								$ret['tax_value'] = false;
-								$ret['receipt'] = false;
-	    					}
-	    					if($tt!=4 || $mode=='view') {
-    							$ret['target_warehouse'] = false;
-    						}
-							if ($tt!=3) {
-								$ret['payment'] = false;
-								$ret['return_date'] = false;
-							}
-							if ($tt==2 || $tt==4) {
-								$ret['receipt'] = false;
-								$ret['company'] = false;
-								$ret['contact'] = false;
-								$ret['tax_id'] = false;
-								$ret['company_name'] = false;
-								$ret['first_name'] = false;
-								$ret['last_name'] = false;
-								$ret['address_1'] = false;
-								$ret['address_2'] = false;
-								$ret['city'] = false;
-								$ret['country'] = false;
-								$ret['zone'] = false;
-								$ret['postal_code'] = false;
-								$ret['phone'] = false;
-
-								$ret['shipping_company'] = false;
-								$ret['shipping_contact'] = false;
-								$ret['shipping_tax_id'] = false;
-								$ret['shipping_company_name'] = false;
-								$ret['shipping_first_name'] = false;
-								$ret['shipping_last_name'] = false;
-								$ret['shipping_address_1'] = false;
-								$ret['shipping_address_2'] = false;
-								$ret['shipping_city'] = false;
-								$ret['shipping_country'] = false;
-								$ret['shipping_zone'] = false;
-								$ret['shipping_postal_code'] = false;
-								$ret['shipping_phone'] = false;
-
-								$ret['payment_type'] = false;
-								$ret['payment_no'] = false;
-								$ret['terms'] = false;
-								$ret['total_value'] = false;
-								$ret['tax_value'] = false;
-							}
-							if ($tt==2) {
-								$ret['shipment_type'] = false;
-								$ret['shipment_date'] = false;
-								$ret['shipment_no'] = false;
-								$ret['shipment_employee'] = false;
-								$ret['shipment_eta'] = false;
-								$ret['shipment_cost'] = false;
-								$ret['expiration_date'] = false;
-								$ret['handling_cost'] = false;
-							}
-							if ($tt==4) {
-								$ret['invoice_number'] = false;
-								$ret['invoice_print_date'] = false;
-								$ret['tax_value'] = false;
-							}
-							if (isset($param['shipment_type']) && $param['shipment_type']===0) {
-								$ret['shipment_date'] = false;
-								$ret['shipment_no'] = false;
-								$ret['shipment_employee'] = false;
-								$ret['shipment_eta'] = false;
-								$ret['shipment_cost'] = false;
-							}
-							if (isset($param['payment_type']) && $param['payment_type']===0) {
-								$ret['payment_no'] = false;
-							}
-							if ($tt==0 && isset($param['status'])) {
-								if ($param['status']<4) {
-									$ret['shipment_date'] = false;
-									$ret['shipment_no'] = false;
-									$ret['shipment_employee'] = false;
-									$ret['shipment_eta'] = false;
-									$ret['shipment_cost'] = false;
-									$ret['handling_cost'] = false;
-								}
-								if ($param['status']<2) {
-									$ret['payment_no'] = false;
-									$ret['payment_type'] = false;
-									$ret['shipment_type'] = false;
-									$ret['terms'] = false;
-									$ret['total_value'] = false;
-									$ret['tax_value'] = false;
-								} elseif ($param['status']<20) { 
-									$ret['shipment_no'] = false;
-								}
-								if ($param['status']!=1) $ret['expiration_date'] = false;
-							}
-							if ($tt==1 && isset($param['status'])) {
-								if ($param['status']<7) {
-									$ret['shipment_date'] = false;
-									$ret['shipment_employee'] = false;
-									$ret['shipment_no'] = false;
-								}
-								if ($param['status']<2) {
-									$ret['payment_no'] = false;
-									if($param['status']>=0) {
-    										$ret['payment_type'] = false;
-										$ret['shipment_type'] = false;
-									}
-									$ret['terms'] = false;
-//									$ret['total_value'] = false;
-//									$ret['tax_value'] = false;
-								}
-								if ($param['status']!=1) $ret['expiration_date'] = false;
-							}
-							return $ret;
-			case 'clone':	
-			case 'add':		if (!$i->acl_check('edit orders')) {
-			                    if($i->acl_check('checkout orders')) {
-			                        return array('status'=>false,'transaction_type'=>false,'contact'=>false,'company'=>false,'employee'=>false,
-			                        'shipment_employee'=>false, 'shipment_date'=>false,'transaction_date'=>false,'shipment_eta'=>false,'shipment_no'=>false,'ref_no'=>false,'shipment_cost'=>false,'handling_cost'=>false);
-                			    }
-			                    return false;
-			                }
-							$ret['status'] = false;
-							$ret['transaction_type'] = false;
-							return $ret;
-			case 'edit':	if (!Base_AclCommon::i_am_admin() &&
-								($param['status']>=20
-								|| ($param['status']>=3 && $param['transaction_type']==0)
-								|| ($param['status']>=6 && $param['transaction_type']==1)
-								) &&
-								(time()-strtotime($param['transaction_date']) > 60*60*24*31 ||
-								Acl::get_user()!=$param['created_by']))
-								return false;
-							if (!$i->acl_check('edit orders')) return false;
-							if ((($tt!=0 && $tt!=1) || (isset($param['status']) && $param['status']>=2)) && $param['warehouse'] && $action=='edit') 
-								$ret['warehouse'] = false;
-							if (!Base_AclCommon::i_am_admin())
-								$ret['status'] = false;
-							$ret['transaction_type'] = false;
-							return $ret;
-			case 'delete':	
-			                if (!self::check_orders_deletion($param)) return false;
-			                if($i->acl_check('edit orders')) {
-	    						if (Acl::get_user()==$param['created_by']) return true;
-		    					if ($param['status']<=0 || $param['status']=='') return true;
-		    		        }
-							return $i->acl_check('delete orders');
-		}
-		return false;
-    }
-	public static function check_orders_deletion($param) {
-		if ($param['transaction_type']==0) {
-			$ret = DB::GetOne('SELECT COUNT(*) FROM (premium_warehouse_location_orders_serial os LEFT JOIN premium_warehouse_location_serial s ON s.id=os.serial_id) LEFT JOIN premium_warehouse_items_orders_details_data_1 odd ON os.order_details_id=odd.id WHERE s.location_id IS NULL AND odd.f_transaction_id=%d', array($param['id']));
-			if ($ret>0) return false;
-		}
-		return true;
-	}
-
-	public static function access_items($action, $param=null){
-		$ret = Premium_Warehouse_ItemsCommon::access_items($action,$param);
-		switch ($action) {
-			case 'view':	if($ret) {
-    			                if (!is_array($ret)) $ret = array();
-							    if (isset($param['item_type']) && ($param['item_type']==2 || $param['item_type']==3)) 
-							        $ret = array_merge($ret,array('reorder_point'=>false,'quantity_on_hand'=>false,'upc'=>false,'manufacturer_part_number'=>false, 'quantity_en_route'=>false));
-							    else
-							        $ret = array_merge($ret,array('quantity_sold'=>false));
-							}
-							break;
-			case 'clone':
-			case 'add':
-			case 'edit':	if($ret) {
-    			                if(!is_array($ret)) $ret = array();
-    			                $ret['quantity_on_hand']=false;
-    			            }
-		}
-		return $ret;
-    }
-
     public static function menu() {
 		if (self::Instance()->acl_check('browse orders'))
 			return array('Warehouse'=>array('__submenu__'=>1,'Items: Transactions'=>array()));
@@ -1323,6 +998,12 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	}
 	
 	public static function submit_order($values, $mode) {
+		if (in_array($mode, array('view', 'editing', 'adding'))) {
+			load_js('modules/Premium/Warehouse/Items/Orders/field_control.js');
+			eval_js('warehouse_order_mode = "'.str_replace('ing', '', $mode).'";');
+			eval_js('warehouse_orders_hide_fields('.$values['transaction_type'].', '.($values['status']?$values['status']:0).', '.($values['shipment_type']?$values['shipment_type']:0).', '.($values['payment_type']?$values['payment_type']:0).');');
+		}
+
 		switch ($mode) {
 			case 'cloned':
 				$recs = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details',array('transaction_id'=>$values['original']));
@@ -1338,6 +1019,10 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 					eval_js('new ContractorUpdate()');
 				}
 			case 'editing':
+				eval_js('if($("transaction_type"))Event.observe("transaction_type","change",function(){warehouse_orders_hide_fields();});');
+				eval_js('if($("status"))Event.observe("status","change",function(){warehouse_orders_hide_fields();});');
+				eval_js('if($("shipment_type"))Event.observe("shipment_type","change",function(){warehouse_orders_hide_fields();});');
+				eval_js('if($("payment_type"))Event.observe("payment_type","change",function(){warehouse_orders_hide_fields();});');
 				if ($values['transaction_type']==3) {
 					$opts_pay = self::get_status_array($values,true);
 					$opts_no_pay = self::get_status_array($values,false);
@@ -1522,6 +1207,12 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			$values['item_name'] = Utils_RecordBrowserCommon::get_id('premium_warehouse_items', 'item_name', $values['item_name']);
 		if (isset($values['item_name'])) $item_type = Utils_RecordBrowserCommon::get_value('premium_warehouse_items', $values['item_name'], 'item_type');
 		$trans = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $values['transaction_id']);
+		if (in_array($mode, array('view', 'editing', 'adding'))) {
+			load_js('modules/Premium/Warehouse/Items/Orders/field_control.js');
+			eval_js('order_details_trans_type = '.$trans['transaction_type'].';');
+			eval_js('order_details_trans_payment = '.$trans['payment'].';');
+			eval_js('warehouse_order_details_hide_fields();');
+		}
 		switch ($mode) {
 			case 'adding':
 				return $values;

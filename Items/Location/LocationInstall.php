@@ -37,7 +37,6 @@ class Premium_Warehouse_Items_LocationInstall extends ModuleInstall {
 //		Utils_RecordBrowserCommon::set_recent('premium_warehouse_location', 15);
 		Utils_RecordBrowserCommon::set_caption('premium_warehouse_location', 'Item Location');
 //		Utils_RecordBrowserCommon::set_icon('premium_warehouse_items_orders', Base_ThemeCommon::get_template_filename('Premium/Warehouse/Items/Orders', 'icon.png'));
-//		Utils_RecordBrowserCommon::set_access_callback('premium_warehouse_items_orders', array('Premium_Warehouse_Items_OrdersCommon', 'access_orders'));
 //		Utils_RecordBrowserCommon::register_processing_callback('premium_warehouse_location', array('Premium_Warehouse_Items_OrdersCommon', 'submit_order'));
 
 		DB::CreateIndex('premium_warehouse_location__qsw__idx', 'premium_warehouse_location_data_1', 'f_quantity,f_item_sku,f_warehouse');
@@ -51,7 +50,6 @@ class Premium_Warehouse_Items_LocationInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::set_addon_pos('premium_warehouse', 'Premium/Warehouse/Items/Location', 'warehouse_item_list_addon', 1);
 
 // ************ other ************** //
-		Utils_RecordBrowserCommon::set_access_callback('premium_warehouse_location', array('Premium_Warehouse_Items_LocationCommon', 'access_location'));
 		Utils_RecordBrowserCommon::set_display_callback('premium_warehouse_items', 'Quantity on Hand', array('Premium_Warehouse_Items_LocationCommon', 'display_item_quantity'));
 		Utils_RecordBrowserCommon::set_QFfield_callback('premium_warehouse_items', 'Quantity on Hand', array('Premium_Warehouse_Items_LocationCommon', 'QFfield_item_quantity'));
 		
@@ -64,18 +62,8 @@ class Premium_Warehouse_Items_LocationInstall extends ModuleInstall {
 					'owner C(32)',
 					array('constraints'=>''));
 
-		$this->add_aco('browse my location',array('Customer'));
-		$this->add_aco('browse location',array('Employee'));
-		$this->add_aco('view location',array('Employee'));
-		$this->add_aco('view my location',array('Customer'));
-		$this->add_aco('edit location',array('Employee'));
-		$this->add_aco('delete location',array('Employee Manager'));
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_location', 'view', 'EMPLOYEE');
 
-/*		$this->add_aco('view protected notes','Employee');
-		$this->add_aco('view public notes','Employee');
-		$this->add_aco('edit protected notes','Employee Administrator');
-		$this->add_aco('edit public notes','Employee');*/
-		
 		return true;
 	}
 	

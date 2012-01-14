@@ -864,6 +864,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 			Variable::set('ecommerce_item_prices',(isset($vals['prices']) && $vals['prices'])?true:false);
 			Variable::set('ecommerce_item_descriptions',(isset($vals['descriptions']) && $vals['descriptions'])?true:false);
 			Variable::set('ecommerce_item_parameters',(isset($vals['parameters']) && $vals['parameters'])?true:false);
+			DB::Execute('UPDATE premium_ecommerce_products_field SET type=%s WHERE field=%s OR field=%s', array(Variable::get('ecommerce_item_descriptions')?'calculated':'hidden', 'Product Name', 'Description'));
 			return false;
 		} else $form->display();
 
@@ -936,44 +937,6 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 	    @recursive_rmdir($path.'/files/200/epesi/');
 	}
 	
-	public function attachment_product_addon($arg){
-		$a = $this->init_module('Utils/Attachment',array('premium_ecommerce_products/'.$arg['item_name']));
-		$a->allow_protected($this->acl_check('view protected notes'),$this->acl_check('edit protected notes'));
-		$a->allow_public($this->acl_check('view public notes'),$this->acl_check('edit public notes'));
-		$a->set_add_func(array('Premium_Warehouse_eCommerceCommon','copy_attachment'));
-		$a->set_persistent_delete();
-		$a->set_max_file_size(1024*1024);
-		$this->display_module($a);
-	}
-
-	public function attachment_product_desc_addon($arg){
-		$a = $this->init_module('Utils/Attachment',array('premium_ecommerce_descriptions/'.$arg['language'].'/'.$arg['item_name']));
-		$a->allow_protected($this->acl_check('view protected notes'),$this->acl_check('edit protected notes'));
-		$a->allow_public($this->acl_check('view public notes'),$this->acl_check('edit public notes'));
-		$a->set_add_func(array('Premium_Warehouse_eCommerceCommon','copy_attachment'));
-		$a->set_persistent_delete();
-		$a->set_max_file_size(1024*1024);
-		$this->display_module($a);
-	}
-
-	public function attachment_page_addon($arg){
-		$a = $this->init_module('Utils/Attachment',array('premium_ecommerce_pages/'.$arg['id']));
-		$a->allow_protected($this->acl_check('view protected notes'),$this->acl_check('edit protected notes'));
-		$a->allow_public($this->acl_check('view public notes'),$this->acl_check('edit public notes'));
-		$a->set_persistent_delete();
-		$a->set_max_file_size(1024*1024);
-		$this->display_module($a);
-	}
-	
-	public function attachment_page_desc_addon($arg){
-		$a = $this->init_module('Utils/Attachment',array('premium_ecommerce_pages_data/'.$arg['language'].'/'.$arg['page']));
-		$a->allow_protected($this->acl_check('view protected notes'),$this->acl_check('edit protected notes'));
-		$a->allow_public($this->acl_check('view public notes'),$this->acl_check('edit public notes'));
-		$a->set_persistent_delete();
-		$a->set_max_file_size(1024*1024);
-		$this->display_module($a);
-	}
-
 	public function get_3rd_party_info_addon($arg){
 	}
 	

@@ -40,32 +40,26 @@ class Premium_WarehouseInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::set_favorites('premium_warehouse', true);
 		Utils_RecordBrowserCommon::set_caption('premium_warehouse', 'Warehouse');
 		Utils_RecordBrowserCommon::set_icon('premium_warehouse', Base_ThemeCommon::get_template_filename('Premium/Warehouse', 'icon.png'));
-		Utils_RecordBrowserCommon::set_access_callback('premium_warehouse', array('Premium_WarehouseCommon', 'access_warehouse'));
 		Utils_RecordBrowserCommon::enable_watchdog('premium_warehouse', array('Premium_WarehouseCommon','watchdog_label'));
 		
 // ************ addons ************** //
-		Utils_RecordBrowserCommon::new_addon('premium_warehouse', 'Premium/Warehouse', 'attachment_addon', 'Notes');
+		Utils_AttachmentCommon::new_addon('premium_warehouse');
 
 // ************ other ************** //	
-		$this->add_aco('browse warehouses',array('Employee'));
-		$this->add_aco('view warehouses',array('Employee'));
-		$this->add_aco('edit warehouses',array('Employee'));
-		$this->add_aco('delete warehouses',array('Employee Manager'));
-
-		$this->add_aco('view protected notes','Employee');
-		$this->add_aco('view public notes','Employee');
-		$this->add_aco('edit protected notes','Employee Administrator');
-		$this->add_aco('edit public notes','Employee');
-
 		Variable::set('premium_warehouse_weight_units', 'kg');
 		Variable::set('premium_warehouse_volume_units', 'm<sup>3</sup>');
+
+		Utils_RecordBrowserCommon::add_access('premium_warehouse', 'view', 'EMPLOYEE');
+		Utils_RecordBrowserCommon::add_access('premium_warehouse', 'add', 'EMPLOYEE');
+		Utils_RecordBrowserCommon::add_access('premium_warehouse', 'edit', 'EMPLOYEE');
+		Utils_RecordBrowserCommon::add_access('premium_warehouse', 'delete', array('EMPLOYEE', 'GROUP:manager'));
 		
 		return true;
 	}
 	
 	public function uninstall() {
 		Base_ThemeCommon::uninstall_default_theme($this->get_type());
-		Utils_RecordBrowserCommon::delete_addon('premium_warehouse', 'Premium/Warehouse', 'attachment_addon');
+		Utils_AttachmentCommon::delete_addon('premium_warehouse');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_warehouse');
 		return true;
 	}

@@ -302,15 +302,6 @@ class Premium_Warehouse_Wholesale extends Module {
         $this->display_module($this->rb);
     }
 
-    public function attachment_addon($arg){
-        $a = $this->init_module('Utils/Attachment',array('premium_warehouse_distributor/'.$arg['id']));
-        $a->set_view_func(array('Premium_Warehouse_WholesaleCommon','search_format'),array($arg['id']));
-        $a->additional_header('Distributor: '.$arg['name']);
-        $a->allow_protected($this->acl_check('view protected notes'),$this->acl_check('edit protected notes'));
-        $a->allow_public($this->acl_check('view public notes'),$this->acl_check('edit public notes'));
-        $this->display_module($a);
-    }
-
     public function unlink_item($id) {
         DB::Execute('UPDATE premium_warehouse_wholesale_items SET item_id=NULL WHERE id=%d', array($id));
         return false;

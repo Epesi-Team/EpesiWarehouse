@@ -79,52 +79,6 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 		return '--';
 	}
 	
-	public static function access_items($action, $param=null){
-		$i = self::Instance();
-        $myrec = CRM_ContactsCommon::get_my_record();
-		switch ($action) {
-			case 'browse_crits':	
-			        if($i->acl_check('browse items'))
-			            return true;
-			        if(ModuleManager::is_installed('Premium_Warehouse_Items_Location')>=0 && $i->acl_check('browse my items')) {
-			            $myrec = CRM_ContactsCommon::get_my_record();
-			            return array('id'=>DB::GetCol('select l1.f_item_sku from premium_warehouse_location_data_1 l1 inner join premium_warehouse_location_serial ls on ls.location_id=l1.id where ls.owner=%d',array($myrec['id'])));
-			        }
-			        return false;
-			case 'browse':	return $i->acl_check('browse items');
-			case 'view':	
-			        if($i->acl_check('view items'))
-			            return true;
-			        if(ModuleManager::is_installed('Premium_Warehouse_Items_Location')>=0 && $i->acl_check('view my items')) {
-			            $myrec = CRM_ContactsCommon::get_my_record();
-			            if(DB::GetOne('select 1 from premium_warehouse_location_data_1 l1 inner join premium_warehouse_location_serial ls on ls.location_id=l1.id where l1.f_item_sku=%d AND ls.owner=%d',array($param['id'],$myrec['id'])))
-			               return true;
-			        }
-			        return false;
-			case 'clone':
-			case 'add':
-			case 'edit':	if (!$i->acl_check('edit items')) return false;
-							return array('item_type'=>false);
-			case 'delete':	return $i->acl_check('delete items');
-		}
-		return false;
-    }
-
-	public static function access_items_categories($action, $param=null){
-		$i = self::Instance();
-		switch ($action) {
-			case 'browse_crits':	return $i->acl_check('browse items');
-			case 'browse':	return true;
-			case 'view':	if (!$i->acl_check('view items')) return false;
-							return array('position'=>false);
-			case 'clone':
-			case 'add':
-			case 'edit':	return $i->acl_check('edit items');
-			case 'delete':	return $i->acl_check('delete items');
-		}
-		return false;
-    }
-    
     public static function build_category_tree(&$opts, $root='', $prefix='', $count=0) {
 		$cats = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_categories', array('parent_category'=>$root),array('category_name'),array('position'=>'ASC'));
 		foreach($cats as $v) {
@@ -261,9 +215,14 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
     }
 
     public static function menu() {
-		if (self::access_items('browse'))
-			return array('Warehouse'=>array('__submenu__'=>1,'Items'=>array(), 'Items: Categories'=>array('recordset'=>'categories')));
-		return array();
+		$m = array();
+		if (Utils_RecordBrowserCommon::get_access('premium_warehouse_items','browse'))
+			$m['Items'] = array();
+		if (Utils_RecordBrowserCommon::get_access('premium_warehouse_items_categories','browse'))
+			$m['Items: Categories'] = array('recordset'=>'categories');
+		if (empty($m)) return $m;
+		$m['__submenu__'] = 1;
+		return array('Warehouse'=>$m);
 	}
 
 	public static function generate_id($id) {
@@ -340,6 +299,10 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 						Base_ActionBarCommon::add($icon,$label,Utils_RecordBrowserCommon::create_new_record_href('premium_warehouse_items_orders_details', $defaults,'add_to_order'));
 					}
 				}
+			case 'adding':
+			case 'editing':
+				load_js('modules/Premium/Warehouse/Items/field_control.js');
+				eval_js('warehouse_items_hide_fields('.$values['item_type'].');');
 				return $values;
 			case 'edit':
 				$values['sku'] = self::generate_id($values['id']);

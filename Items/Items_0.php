@@ -258,15 +258,6 @@ class Premium_Warehouse_Items extends Module {
 		$this->display_module($rb, $conds, 'mini_view');
 	}
 
-	public function attachment_addon($arg){
-		$a = $this->init_module('Utils/Attachment',array('premium_warehouse_items/'.$arg['id']));
-		$a->set_view_func(array('Premium_Warehouse_ItemsCommon','search_format'),array($arg['id']));
-		$a->additional_header('Item: '.$arg['item_name']);
-		$a->allow_protected($this->acl_check('view protected notes'),$this->acl_check('edit protected notes'));
-		$a->allow_public($this->acl_check('view public notes'),$this->acl_check('edit public notes'));
-		$this->display_module($a);
-	}
-	
 	public function caption(){
 		if (isset($this->rb)) return $this->rb->caption();
 	}

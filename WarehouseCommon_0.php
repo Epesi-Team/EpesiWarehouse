@@ -46,22 +46,8 @@ class Premium_WarehouseCommon extends ModuleCommon {
 		return $ret;
 	}
 	
-	public static function access_warehouse($action, $param=null){
-		$i = self::Instance();
-		switch ($action) {
-			case 'browse_crits': return $i->acl_check('browse warehouses');
-			case 'browse':	return $i->acl_check('browse warehouses');
-			case 'view':	return $i->acl_check('view warehouses');
-			case 'clone':
-			case 'add':
-			case 'edit':	return $i->acl_check('edit warehouses');
-			case 'delete':	return $i->acl_check('delete warehouses');
-		}
-		return false;
-    }
-
     public static function menu() {
-		if (self::access_warehouse('browse'))
+		if (Utils_RecordBrowserCommon::get_access('premium_warehouse','browse'))
 			return array('Warehouse'=>array('__submenu__'=>1,'Warehouses'=>array()));
 		return array();
 	}

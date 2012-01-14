@@ -41,14 +41,13 @@ class Premium_Warehouse_WholesaleInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::set_favorites('premium_warehouse_distributor', true);
 		Utils_RecordBrowserCommon::set_caption('premium_warehouse_distributor', 'Distributors');
 		Utils_RecordBrowserCommon::set_icon('premium_warehouse_distributor', Base_ThemeCommon::get_template_filename('Premium/Warehouse/Wholesale', 'icon.png'));
-		Utils_RecordBrowserCommon::set_access_callback('premium_warehouse_distributor', array('Premium_Warehouse_WholesaleCommon', 'access_distributor'));
 		Utils_RecordBrowserCommon::register_processing_callback('premium_warehouse_distributor', array('Premium_Warehouse_WholesaleCommon', 'submit_distributor'));
 		Utils_RecordBrowserCommon::enable_watchdog('premium_warehouse_distributor', array('Premium_Warehouse_WholesaleCommon','watchdog_label'));
 		
 // ************ addons ************** //
 		Utils_RecordBrowserCommon::new_addon('premium_warehouse_items', 'Premium/Warehouse/Wholesale', 'distributors_addon', 'Distributors');
 		Utils_RecordBrowserCommon::new_addon('premium_warehouse_distributor', 'Premium/Warehouse/Wholesale', 'items_addon', 'Items');
-		Utils_RecordBrowserCommon::new_addon('premium_warehouse_distributor', 'Premium/Warehouse/Wholesale', 'attachment_addon', 'Notes');
+		Utils_AttachmentCommon::new_addon('premium_warehouse_distributor');
 
 // ************ other ************** //	
 		Utils_RecordBrowserCommon::set_display_callback('premium_warehouse_items', 'Quantity on Hand', array('Premium_Warehouse_WholesaleCommon', 'display_item_quantity'));
@@ -56,16 +55,6 @@ class Premium_Warehouse_WholesaleInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items', 'Dist Qty', 'calculated', true, false, '', 'integer', false, false, 'Reserved Qty');
 		Utils_RecordBrowserCommon::set_display_callback('premium_warehouse_items', 'Dist Qty', array('Premium_Warehouse_WholesaleCommon','display_distributor_qty'));
 
-		$this->add_aco('browse distributors',array('Employee'));
-		$this->add_aco('view distributors',array('Employee'));
-		$this->add_aco('edit distributors',array('Employee'));
-		$this->add_aco('delete distributors',array('Employee Manager'));
-
-		$this->add_aco('view protected notes','Employee');
-		$this->add_aco('view public notes','Employee');
-		$this->add_aco('edit protected notes','Employee Administrator');
-		$this->add_aco('edit public notes','Employee');
-		
 		DB::CreateTable('premium_warehouse_wholesale_plugin',
 						'id I4 AUTO KEY,'.
 						'name C(64),'.
@@ -104,7 +93,16 @@ class Premium_Warehouse_WholesaleInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::set_favorites('premium_warehouse_distr_categories', false);
 		Utils_RecordBrowserCommon::new_addon('premium_warehouse_distributor', 'Premium/Warehouse/Wholesale', 'categories_addon', 'Categories');
 		Utils_RecordBrowserCommon::set_caption('premium_warehouse_distr_categories', 'Distributor Categories');
-		Utils_RecordBrowserCommon::set_access_callback('premium_warehouse_distr_categories', array('Premium_Warehouse_WholesaleCommon', 'access_distributor_categories'));
+
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_distributor', 'view', 'EMPLOYEE');
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_distributor', 'add', 'EMPLOYEE');
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_distributor', 'edit', 'EMPLOYEE', array(), array('last_update'));
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_distributor', 'delete', array('EMPLOYEE', 'GROUP:manager'));
+
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_distr_categories', 'view', 'EMPLOYEE');
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_distr_categories', 'add', 'EMPLOYEE');
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_distr_categories', 'edit', 'EMPLOYEE');
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_distr_categories', 'delete', array('EMPLOYEE', 'GROUP:manager'));
 
 		return true;
 	}
@@ -119,7 +117,7 @@ class Premium_Warehouse_WholesaleInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::delete_record_field('premium_warehouse_items', 'Dist Qty');
 		Utils_RecordBrowserCommon::delete_addon('premium_warehouse_items', 'Premium/Warehouse/Wholesale', 'distributors_addon');
 		Utils_RecordBrowserCommon::delete_addon('premium_warehouse_distributor', 'Premium/Warehouse/Wholesale', 'items_addon');
-		Utils_RecordBrowserCommon::delete_addon('premium_warehouse_distributor', 'Premium/Warehouse/Wholesale', 'attachment_addon');
+		Utils_AttachmentCommon::delete_addon('premium_warehouse_distributor');
 		Utils_RecordBrowserCommon::delete_addon('premium_warehouse_distributor', 'Premium/Warehouse/Wholesale', 'categories_addon');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_warehouse_distributor');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_warehouse_distr_categories');

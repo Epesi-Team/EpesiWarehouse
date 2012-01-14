@@ -30,15 +30,9 @@ class Premium_Warehouse_eCommerce_CompareUpdatePricesInstall extends ModuleInsta
 
 		Utils_RecordBrowserCommon::set_favorites('premium_ecommerce_compare_prices', false);
 		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_compare_prices', 'eCommerce - compare prices');
-		Utils_RecordBrowserCommon::set_access_callback('premium_ecommerce_compare_prices', array('Premium_Warehouse_eCommerce_CompareUpdatePricesCommon', 'access_parameters'));
 
 		Utils_RecordBrowserCommon::new_addon('premium_warehouse_items', 'Premium/Warehouse/eCommerce/CompareUpdatePrices', 'item_addon', 'Premium_Warehouse_eCommerce_CompareUpdatePricesCommon::item_addon_parameters');
 		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_products', 'Premium/Warehouse/eCommerce/CompareUpdatePrices', 'product_addon', 'Compare Services');
-		
-		$this->add_aco('browse',array('Employee'));
-		$this->add_aco('view',array('Employee'));
-		$this->add_aco('edit',array('Employee'));
-		$this->add_aco('delete',array('Employee'));
 		
 		$this->create_data_dir();
 		

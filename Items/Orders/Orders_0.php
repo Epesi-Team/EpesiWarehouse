@@ -430,15 +430,6 @@ class Premium_Warehouse_Items_Orders extends Module {
 		if (!$r['returned']) $gb_row->add_action($this->create_callback_href(array($this,'mark_as_returned'),array($r)),'Restore', 'Mark as returned');
 	}
 
-	public function attachment_addon($arg){
-		$a = $this->init_module('Utils/Attachment',array('premium_warehouse_items_orders/'.$arg['id']));
-		$a->set_view_func(array('Premium_Warehouse_Items_OrdersCommon','search_format'),array($arg['id']));
-		$a->additional_header('Transaction ID: '.$arg['transaction_id']);
-		$a->allow_protected($this->acl_check('view protected notes'),$this->acl_check('edit protected notes'));
-		$a->allow_public($this->acl_check('view public notes'),$this->acl_check('edit public notes'));
-		$this->display_module($a);
-	}
-	
 	public function revise_items(&$po_form, $items, $trans) {
 		$po_form->addElement('select', 'payment_type', $this->t('Payment Type'), array(''=>'---')+Utils_CommonDataCommon::get_array('Premium_Items_Orders_Payment_Types'));
 		$po_form->addElement('text', 'payment_no', $this->t('Payment No'));
@@ -552,7 +543,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 		}
 		$p = $trans['payment'];
 		$lp = $this->init_module('Utils/LeightboxPrompt');
-		if ($trans['transaction_type']==0) {
+		if ($trans['transaction_type']==0 && isset($trans['id'])) {
 			if (!$p && $status<20) $status = 4;
 			switch ($status) {			
 				case '':

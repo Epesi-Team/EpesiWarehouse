@@ -99,21 +99,6 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 		Base_ThemeCommon::display_smarty($theme,'Premium_Warehouse_Wholesale','dist_qty_tooltip');
 	}
 	
-	public static function access_distributor($action, $param=null){
-		$i = self::Instance();
-		switch ($action) {
-			case 'browse_crits':	return $i->acl_check('browse distributors');
-			case 'browse':	return $i->acl_check('browse distributors');
-			case 'view':	return $i->acl_check('view distributors');
-			case 'clone':
-			case 'add':
-			case 'edit':	if(!$i->acl_check('edit distributors')) return false;
-							return array('last_update'=>false);
-			case 'delete':	return $i->acl_check('delete distributors');
-		}
-		return false;
-    }
-    
     private static function get_processing_message_js($str, $type=0, $hide_details=false) {
     	$cla = 'notification';
     	if ($type==1) $cla = 'success';
@@ -354,7 +339,7 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 	}
 	
     public static function menu() {
-		if (self::access_distributor('browse'))
+		if (Utils_RecordBrowserCommon::get_access('premium_warehouse_distributor','browse'))
 			return array('Warehouse'=>array('__submenu__'=>1,'Distributors'=>array()));
 		return array();
 	}
@@ -378,20 +363,6 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 		return Utils_RecordBrowserCommon::record_link_open_tag('premium_warehouse_distributor', $row['id']).Base_LangCommon::ts('Premium_Warehouse_Wholesale', 'Distributor (attachment) #%d, %s', array($row['id'], $row['name'])).Utils_RecordBrowserCommon::record_link_close_tag();
 	}
 	
-	public static function access_distributor_categories($action, $param=null){
-		$i = self::Instance();
-		switch ($action) {
-			case 'browse_crits':	return $i->acl_check('browse distributors');
-			case 'browse':	return true;
-			case 'view':	return $i->acl_check('view distributors');
-			case 'clone':
-			case 'add':	return false;
-			case 'edit':	if(!$i->acl_check('edit distributors')) return false;
-							return array('last_update'=>false);
-			case 'delete':	return $i->acl_check('delete distributors');
-		}
-		return false;
-    }
 	public static function QFfield_category_name(&$form, $field, $label, $mode, $default) {
 		$form->addElement('text', $field, $label)->freeze();
 		$form->setDefaults(array($field=>$default));
