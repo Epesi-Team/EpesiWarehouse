@@ -97,12 +97,12 @@ class Premium_Warehouse_WholesaleInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::add_access('premium_warehouse_distributor', 'view', 'EMPLOYEE');
 		Utils_RecordBrowserCommon::add_access('premium_warehouse_distributor', 'add', 'EMPLOYEE');
 		Utils_RecordBrowserCommon::add_access('premium_warehouse_distributor', 'edit', 'EMPLOYEE', array(), array('last_update'));
-		Utils_RecordBrowserCommon::add_access('premium_warehouse_distributor', 'delete', array('EMPLOYEE', 'GROUP:manager'));
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_distributor', 'delete', array('EMPLOYEE', 'CLEARANCE:manager'));
 
 		Utils_RecordBrowserCommon::add_access('premium_warehouse_distr_categories', 'view', 'EMPLOYEE');
 		Utils_RecordBrowserCommon::add_access('premium_warehouse_distr_categories', 'add', 'EMPLOYEE');
 		Utils_RecordBrowserCommon::add_access('premium_warehouse_distr_categories', 'edit', 'EMPLOYEE');
-		Utils_RecordBrowserCommon::add_access('premium_warehouse_distr_categories', 'delete', array('EMPLOYEE', 'GROUP:manager'));
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_distr_categories', 'delete', array('EMPLOYEE', 'CLEARANCE:manager'));
 
 		return true;
 	}
