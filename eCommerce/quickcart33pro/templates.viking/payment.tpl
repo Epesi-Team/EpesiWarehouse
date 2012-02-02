@@ -1,6 +1,6 @@
 <!-- BEGIN PAYMENT_FORM_1 -->
 <form action="https://ssl.dotpay.eu/" method="post" id="formPayment">
-  <fieldset>
+  <fieldset style="border:0px;">
     <input type="hidden" name="id" value="$config[allpay_id]" />
     <input type="hidden" name="lang" value="$config[language]" />
     <input type="hidden" name="potw" value="0" />
@@ -23,13 +23,15 @@
     <input type="hidden" name="country" value="$aOrder[sCountry]" />
     <input type="hidden" name="email" value="$aOrder[sEmail]" />
     <input type="hidden" name="phone" value="$aOrder[sPhone]" />
+
+    <input type="submit" name="submit_form" value="&raquo; $lang[open_authorization_window] &laquo;" />
   </fieldset>
 </form>
 <!-- END PAYMENT_FORM_1 -->
 
 <!-- BEGIN PAYMENT_FORM_2 -->
 <form action="https://secure.przelewy24.pl/index.php" method="post" id="formPayment">
-  <fieldset>
+  <fieldset style="border:0px;">
     <input type="hidden" name="p24_session_id" value="$iOrder" />
     <input type="hidden" name="p24_id_sprzedawcy" value="$config[przelewy24_id]" />
     <input type="hidden" name="p24_language" value="$config[language]" />
@@ -44,13 +46,15 @@
     <input type="hidden" name="p24_kod" value="$aOrder[sZipCode]" />
     <input type="hidden" name="p24_kraj" value="PL" />
     <input type="hidden" name="p24_email" value="$aOrder[sEmail]" />
+
+    <input type="submit" name="submit_form" value="&raquo; $lang[open_authorization_window] &laquo;" />
   </fieldset>
 </form>
 <!-- END PAYMENT_FORM_2 -->
 
 <!-- BEGIN PAYMENT_FORM_3 -->
 <form action="https://www.paypal.com/cgi-bin/webscr" method="post" id='formPayment'>
-  <fieldset>
+  <fieldset style="border:0px;">
     <input type="hidden" name="cmd" value="_cart" />
     <input type="hidden" name="upload" value="1" />
     <input type="hidden" name="tx" value="$iOrder" />
@@ -61,13 +65,15 @@
     <input type="hidden" name="currency_code" value="$config[currency_symbol]" />
     <input type="hidden" name="return" value="$aUrl[scheme]://$aUrl[host]$aUrl[path]?,paypal,payment" />
     <input type="hidden" name="rm" value="2" />
+
+    <input type="submit" name="submit_form" value="&raquo; $lang[open_authorization_window] &laquo;" />
   </fieldset>
 </form>
 <!-- END PAYMENT_FORM_3 -->
 
 <!-- BEGIN PAYMENT_FORM_4 -->
 <form action="https://www.platnosci.pl/paygw/ISO/NewPayment" method="post" id="formPayment">
-  <fieldset>
+  <fieldset style="border:0px;">
     <input type="hidden" name="pos_id" value="$config[platnosci_id]" />
     <input type="hidden" name="pos_auth_key" value="$config[platnosci_pos_auth_key]" />
     <input type="hidden" name="pay_type" value="$aOrder[mPaymentChannel]" />
@@ -89,6 +95,8 @@
     <input type="hidden" name="language" value="PL" />
     <input type="hidden" name="client_ip" value="$_SERVER[REMOTE_ADDR]" />
     <input type="hidden" name="js" id="oJsEnabled" value="0" />
+
+    <input type="submit" name="submit_form" value="&raquo; $lang[open_authorization_window] &laquo;" />
   </fieldset>
 </form>
 <script type="text/javascript">
@@ -100,7 +108,7 @@
 
 <!-- BEGIN PAYMENT_FORM_5 -->
 <form action="http://www.zagiel.com.pl/kalkulator/index_smart.php" method="post" id="formPayment">
-  <fieldset>
+  <fieldset style="border:0px;">
     $sProductsZagielList
     <input type="hidden" name="action" value="getklientdet_si" />
     <input type="hidden" name="IDZamowienieSklep" value="$iOrder" />
@@ -121,13 +129,14 @@
     <input type="hidden" name="shopMailAdress" value="$config['email']" />
     <input type="hidden" name="shopPhone" value="" />
   
+    <input type="submit" name="submit_form" value="&raquo; $lang[open_authorization_window] &laquo;" />
   </fieldset>
 </form>
 <!-- END PAYMENT_FORM_5 -->
 
 <!-- BEGIN PAYMENT_FORM_6 -->
 <form action="$config[epesi_payments_url]" method="post" id="formPayment">
-  <fieldset>
+  <fieldset style="border:0px;">
     <input type="hidden" name="record_id" value="$iOrder" />
     <input type="hidden" name="record_type" value="premium_warehouse_items_orders" />
     <input type="hidden" name="amount" value="$aData[sOrderSummary]" />
@@ -145,6 +154,10 @@
     <input type="hidden" name="country" value="$aOrder[sCountryCode]" />
     <input type="hidden" name="email" value="$aOrder[sEmail]" />
     <input type="hidden" name="phone" value="$aOrder[sPhone]" />
+
+    <input type="hidden" name="limit" value="1" />
+
+    <input type="submit" name="submit_form" value="&raquo; $lang[open_authorization_window] &laquo;" />
   </fieldset>
 </form>
 <!-- END PAYMENT_FORM_6 -->
@@ -159,15 +172,12 @@
     setTimeout( "document.getElementById( 'formPayment' ).submit()", 5000 );
   //-->
   </script>
-  <div id="authWindow"><a href="#" onclick="document.getElementById( 'formPayment' ).submit();">&raquo; $lang[open_authorization_window] &laquo;</a></div>
 </div>
 <!-- END PAYMENT_OUTER -->
 
 <!-- BEGIN PAYMENT_OUTER_MAIL -->
 <div id="paymentOuter">
   $sPaymentOuterForm
-
-  <div id="authWindow"><a href="#" onclick="document.getElementById( 'formPayment' ).submit();">&raquo; $lang[open_authorization_window] &laquo;</a></div>
 </div>
 <!-- END PAYMENT_OUTER_MAIL -->
 

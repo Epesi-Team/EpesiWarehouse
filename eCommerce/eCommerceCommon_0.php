@@ -899,10 +899,10 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 	                $erec = array_shift($erec);
             	}
             }
-            if(isset($erec) && is_array($erec)) {
+            if(isset($erec) && is_array($erec) && $values['status']!=-1) {
                 $emails = Utils_RecordBrowserCommon::get_records('premium_ecommerce_emails',array('send_on_status'=>$values['status'],'language'=>$erec['language']));
                 if(!$emails)
-                    $emails = Utils_RecordBrowserCommon::get_records('premium_ecommerce_emails',array('send_on_status'=>$values['status']));
+                    $emails = Utils_RecordBrowserCommon::get_records('premium_ecommerce_emails',array('send_on_status'=>$values['status'],'language'=>''));
                 if($emails) {
                     $email = array_shift($emails);
                     $txt = $email['content'];

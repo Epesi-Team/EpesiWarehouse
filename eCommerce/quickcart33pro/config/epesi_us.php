@@ -1,9 +1,9 @@
 <?php
 $config['currency_symbol'] = 'USD';
 $config['delivery_free'] = 100000;
-$config['title'] = 'Shopping Portal - Prosperix Group';
+$config['title'] = 'Shopping Portal - Viking Importing Company';
 $config['description'] = '';
-$config['slogan'] = 'We try our best to make it easy on you';
+$config['slogan'] = '';
 $config['keywords'] = '';
-$config['foot_info'] = 'Copyright &copy; 2009 <a href=\'http://prosperixgroup.com\'>Prosperix Group</a>';
+$config['foot_info'] = 'Copyright &copy; 2009 <a href=\'http://vikingimporting.com\'>Viking importing Company</a>';
 ?>

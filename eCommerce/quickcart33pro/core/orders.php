@@ -1034,18 +1034,19 @@ class Orders
   * @param string $sFile
   * @param int    $iOrder
   */
-/*   function sendEmailWithOrderDetails( $sFile, $iOrder ){
+   function sendEmailWithOrderDetails( $sFile, $iOrder ){
     global $aOuterPaymentOption, $sPaymentOuterForm;
     $oTpl     =& TplParser::getInstance( );
     $content  = null;
     $aData    = $this->throwOrder( $iOrder );
+    $msg = DB::GetRow('SELECT * FROM premium_ecommerce_emails_data_1 WHERE active=1 AND f_send_on_status=-1 ANd f_language=%s', array($aData['sLanguage']));
+    if (!$msg) $msg = DB::GetRow('SELECT * FROM premium_ecommerce_emails_data_1 WHERE active=1 AND f_send_on_status=-1 ANd f_language IS NULL');
+    if (!$msg) return;
 
     $aData['sProducts'] = $this->listProducts( $sFile, $iOrder, 'ORDER_EMAIL_' );
     $aData['sOrderSummary'] = $this->aOrders[$iOrder]['sOrderSummary'];
     $aPayment = $this->throwPaymentCarrier( $aData['iCarrier'], $aData['iPayment'] );
-    $aData['sPaymentDescription'] = '';
-    if( !empty( $aPayment['sDescription'] ) )
-      $aData['sPaymentDescription'] .= $aPayment['sDescription'];
+    $aData['sPaymentDescription'] = $msg['f_content'];
 
     if( !empty( $aData['iPaymentSystem'] ) && isset( $aOuterPaymentOption[$aData['iPaymentSystem']] ) ){
       $aUrl = parse_url( 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'] );
@@ -1088,10 +1089,11 @@ class Orders
     $oTpl->setVariables( 'aData', $aData );
 
     $aSend['sMailContent'] = $oTpl->tbHtml( $sFile, 'ORDER_EMAIL_BODY' );
-    $aSend['sTopic'] = $oTpl->tbHtml( $sFile, 'ORDER_EMAIL_TITLE' );
+    $aSend['sTopic'] = $msg['f_subject'].' - ID '.$iOrder;
     $aSend['sSender']= $GLOBALS['config']['email'];
 
     sendEmail( $aSend, null, $aData['sEmail'], true ); //send e-mail to client
-  } // end function sendEmailWithOrderDetails */
+  } // end function sendEmailWithOrderDetails
+
 };
 ?>
