@@ -52,7 +52,7 @@ class Premium_WarehouseInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::add_access('premium_warehouse', 'view', 'EMPLOYEE');
 		Utils_RecordBrowserCommon::add_access('premium_warehouse', 'add', 'EMPLOYEE');
 		Utils_RecordBrowserCommon::add_access('premium_warehouse', 'edit', 'EMPLOYEE');
-		Utils_RecordBrowserCommon::add_access('premium_warehouse', 'delete', array('EMPLOYEE', 'CLEARANCE:manager'));
+		Utils_RecordBrowserCommon::add_access('premium_warehouse', 'delete', array('EMPLOYEE', 'ACCESS:manager'));
 		
 		return true;
 	}
