@@ -30,10 +30,10 @@ class Premium_Warehouse_Items_Location extends Module {
 		$na_serials = array();
 		$myrec = CRM_ContactsCommon::get_my_record();
 		foreach ($recs as $v) {
-		    if($this->acl_check('browse location'))
+		    if(Utils_RecordBrowserCommon::get_access('premium_warehouse_location','browse'))
               	$item_serials = DB::GetAssoc('SELECT id, serial, owner, notes, shelf FROM premium_warehouse_location_serial WHERE location_id=%d', array($v['id']));
-    	    elseif($this->acl_check('browse my location'))
-              	$item_serials = DB::GetAssoc('SELECT id, serial, owner, notes, shelf FROM premium_warehouse_location_serial WHERE location_id=%d AND owner=%d', array($v['id'],$myrec['id']));
+//    	    elseif(browse my location))
+//            	$item_serials = DB::GetAssoc('SELECT id, serial, owner, notes, shelf FROM premium_warehouse_location_serial WHERE location_id=%d AND owner=%d', array($v['id'],$myrec['id']));
 			foreach ($item_serials as $w) {
 				if (!$w['serial']) {
 					if (!isset($na_serials[$v['warehouse']])) $na_serials[$v['warehouse']] = array();

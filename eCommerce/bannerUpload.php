@@ -14,7 +14,7 @@ header("Expires: Mon, 26 Jul 1997 05:00:00 GMT"); // date in the past
 
 define('CID',false);
 require_once('../../../../include.php');
-if(!Acl::is_user() || !isset($_FILES['file']) || !Acl::check('Premium_Warehouse_eCommerce','edit ecommerce'))
+if(!Acl::is_user() || !isset($_FILES['file']) || !Utils_RecordBrowserCommon::get_access('premium_ecommerce_banners', 'add'))
 	exit();
 $doc = $_FILES['file'];
 $dest_filename  = microtime(true);

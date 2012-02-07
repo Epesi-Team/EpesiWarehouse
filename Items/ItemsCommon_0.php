@@ -317,7 +317,7 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 	}
 	
 	public static function search_format($id) {
-		if(Acl::check('Premium_Warehouse_Items','browse items')) return false;
+		if(!Utils_RecordBrowserCommon::get_access('premium_warehouse_items','browse')) return false;
 		$row = Utils_RecordBrowserCommon::get_records('premium_warehouse_items',array('id'=>$id));
 		if(!$row) return false;
 		$row = array_pop($row);

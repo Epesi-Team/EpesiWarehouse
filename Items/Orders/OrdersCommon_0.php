@@ -336,10 +336,12 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			if (isset($qty['per_warehouse'][$w['id']])) $minus = $qty['per_warehouse'][$w['id']];
 			else $minus = 0;  
 			if($l_id) {
-			    if($i->acl_check('browse location'))
+			    if(Utils_RecordBrowserCommon::get_access('premium_warehouse_location','browse'))
         			$qty['per_warehouse'][$w['id']] = Utils_RecordBrowserCommon::get_value('premium_warehouse_location', $l_id, 'quantity') - $minus;
-        	    elseif($i->acl_check('browse my location'))
-        			$qty['per_warehouse'][$w['id']] = DB::GetOne('SELECT SUM(id) FROM premium_warehouse_location_serial WHERE owner = %d AND location_id=%d',array($myrec['id'],$l_id)) - $minus;
+//        	    elseif(browse my location)
+//        			$qty['per_warehouse'][$w['id']] = DB::GetOne('SELECT SUM(id) FROM premium_warehouse_location_serial WHERE owner = %d AND location_id=%d',array($myrec['id'],$l_id)) - $minus;
+				else
+					$qty['per_warehouse'][$w['id']] = -$minus;
 			} else {
     			$qty['per_warehouse'][$w['id']] = -$minus;
 			}
@@ -493,7 +495,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			$form->addFormRule(array('Premium_Warehouse_Items_OrdersCommon','check_if_warehouse_set'));
 		} else {
 		    $i = self::Instance();
-		    if($i->acl_check('edit orders')) {
+		    if(Utils_RecordBrowserCommon::get_access('premium_warehouse_items_orders','edit',Utils_RecordBrowser::$last_record)) {
     			$obj = $rb_obj->init_module('Premium/Warehouse/Items/Orders');
 	    		$rb_obj->display_module($obj, array(Utils_RecordBrowser::$last_record, $default), 'change_status_leightbox');
 		    	$href = $obj->get_href();
@@ -745,10 +747,10 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	} 
 	
     public static function menu() {
-		if (self::Instance()->acl_check('browse orders'))
+		if (Utils_RecordBrowserCommon::get_access('premium_warehouse_items_orders','browse'))
 			return array('Warehouse'=>array('__submenu__'=>1,'Items: Transactions'=>array()));
-		if (self::Instance()->acl_check('browse my orders'))
-			return array('Orders'=>array());
+/*		if (browse my orders)
+			return array('Orders'=>array());*/
 		return array();
 	}
 
@@ -1312,7 +1314,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	}
 
 	public static function search_format($id) {
-		if(Acl::check('Premium_Warehouse_Items_Orders','browse orders')) return false;
+		if(!Utils_RecordBrowserCommon::get_access('premium_warehouse_items_orders','browse')) return false;
 		$row = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders',array('id'=>$id));
 		if(!$row) return false;
 		$row = array_pop($row);

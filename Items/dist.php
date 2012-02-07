@@ -36,7 +36,7 @@ function login() {
 }
 
 login();
-if(!Acl::check('Premium_Warehouse_Items','browse items') || !Acl::check('Premium_Warehouse_Items','view items'))
+if(!Utils_RecordBrowserCommon::get_access('premium_warehouse_items','browse'))
 	die('permission denied');
 session_commit();
 

@@ -25,7 +25,7 @@ class Premium_Warehouse_Items extends Module {
 			$this->rb->set_additional_actions_method(array($this, 'actions_for_position'));
 			$this->rb->force_order(array('position'=>'ASC','category_name'=>'ASC'));
 			$this->display_module($this->rb, array(array(),array('parent_category'=>'')));
-			if($this->acl_check('edit items'))
+			if (Utils_RecordBrowserCommon::get_access('premium_warehouse_items_categories','add'))
     			Base_ActionBarCommon::add('attach',$this->t('Merge categories'),$this->create_callback_href(array($this,'merge_categories')));
 			return;
 		}

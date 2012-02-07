@@ -356,7 +356,7 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 	}
 	
 	public static function search_format($id) {
-		if(Acl::check('Premium_Warehouse','browse distributors')) return false;
+		if(!Utils_RecordBrowserCommon::get_access('premium_warehouse_distributor','browse')) return false;
 		$row = Utils_RecordBrowserCommon::get_records('premium_warehouse_distributor',array('id'=>$id));
 		if(!$row) return false;
 		$row = array_pop($row);

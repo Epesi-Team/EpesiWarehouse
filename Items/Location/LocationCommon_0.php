@@ -58,7 +58,7 @@ class Premium_Warehouse_Items_LocationCommon extends ModuleCommon {
 
     public static function display_quantity($r,$nolink=false) {
 		$i = self::Instance();
-		if($i->acl_check('view location'))
+		if(Utils_RecordBrowserCommon::get_access('premium_warehouse_location','browse'))
 		    return $r['quantity'];
         $myrec = CRM_ContactsCommon::get_my_record();
 		return DB::GetOne('SELECT SUM(id) FROM premium_warehouse_location_serial WHERE owner = %d AND location_id=%d',array($myrec['id'],$r['id']));
@@ -71,7 +71,7 @@ class Premium_Warehouse_Items_LocationCommon extends ModuleCommon {
 //		if ($rental) $crits['rental_item']=1;
 //		else $crits['rental_item']=array(0,'');
 		$i = self::Instance();
-		if($i->acl_check('browse location')) {
+		if(Utils_RecordBrowserCommon::get_access('premium_warehouse_location','browse')) {
     		$recs = Utils_RecordBrowserCommon::get_records('premium_warehouse_location', $crits, array('quantity'));
 	    	foreach ($recs as $v) {
 		    	$my_quantity += $v['quantity'];
@@ -122,10 +122,10 @@ class Premium_Warehouse_Items_LocationCommon extends ModuleCommon {
 			$quantities = array();
 			$i = self::Instance();
 			foreach ($locations as $v) {
-        		if(!$i->acl_check('browse location') && $i->acl_check('browse my location')) {
+/*        		if(!browse my location)) {
                     $myrec = CRM_ContactsCommon::get_my_record();
                     $v['quantity'] = DB::GetOne('SELECT SUM(id) FROM premium_warehouse_location_serial WHERE owner = %d AND location_id=%d',array($myrec['id'],$v['id']));
-                }
+                }*/
 				$total += $v['quantity'];
 				if ($nolink) {
 					$quantities[$v['warehouse']] = $v['quantity'];

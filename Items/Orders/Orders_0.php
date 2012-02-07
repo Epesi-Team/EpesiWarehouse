@@ -27,7 +27,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 							'employee'=>$me['id'],
 							'warehouse'=>Base_User_SettingsCommon::get('Premium_Warehouse','my_warehouse')
 							);
-		if($this->acl_check('edit orders')) {
+		if(Utils_RecordBrowserCommon::get_access('premium_warehouse_items_orders','edit')) {
 			$disabled = Variable::get('premium_warehouse_trans_types', false);
 			if (!$disabled) $disabled = array();
 			else $disabled = array_flip($disabled);
@@ -294,7 +294,7 @@ class Premium_Warehouse_Items_Orders extends Module {
     		$rb->set_defaults($defaults);
     		eval_js('$(\'add_in_table_row\').style.display=\'\';warehouse_itemAutocompleter.hide();focus_by_id(\'quantity\')');
         }
-        if($this->acl_check('edit orders') && $arg['transaction_type']==0 && !$arg['payment'])
+        if(Utils_RecordBrowserCommon::get_access('premium_warehouse_items_orders','edit',$arg) && $arg['transaction_type']==0 && !$arg['payment'])
     		$rb->set_button($this->create_callback_href(array($this, 'jump_to_check_in_new_item'), array($arg)));
 		else
 			$rb->enable_quick_new_records();

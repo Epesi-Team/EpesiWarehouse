@@ -8,7 +8,7 @@ class Premium_Warehouse_Items_WebcamCommon extends ModuleCommon {
     }
 
     public static function attach_webcam_button($values,$mode=null) {
-        if(($mode==null||$mode=='view') && Premium_Warehouse_ItemsCommon::Instance()->acl_check('edit items')) {
+        if(($mode==null||$mode=='view') && Utils_RecordBrowserCommon::get_access('premium_warehouse_items','edit',$values)) {
             if(!is_array($values)) $values = array('id'=>md5($values));
             Libs_LeightboxCommon::display('webcam','<div style="text-align:center; padding: 20px; width:100%"><object	classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000"
     width="512"

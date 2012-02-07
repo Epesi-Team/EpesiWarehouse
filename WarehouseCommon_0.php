@@ -64,7 +64,7 @@ class Premium_WarehouseCommon extends ModuleCommon {
 	}
 	
 	public static function search_format($id) {
-		if(Acl::check('Premium_Warehouse','browse warehouses')) return false;
+		if(!Utils_RecordBrowserCommon::get_access('premium_warehouse','browse')) return false;
 		$row = Utils_RecordBrowserCommon::get_records('premium_warehouse',array('id'=>$id));
 		if(!$row) return false;
 		$row = array_pop($row);
