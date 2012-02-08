@@ -88,7 +88,7 @@ class Premium_Warehouse_Wholesale__Plugin_incom implements Premium_Warehouse_Who
 	 * @param array distributor record
 	 * @return bool true if the update was successful, false otherwise
 	 */
-	public function update_from_file($filename, $distributor) {
+	public function update_from_file($filename, $distributor, $params) {
 	    $result = @unserialize(file_get_contents($filename));
 	    if(!$result || !is_array($result)) {
 			Premium_Warehouse_WholesaleCommon::file_scan_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Invalid file, aborting.', array('PLN')), 2, true);

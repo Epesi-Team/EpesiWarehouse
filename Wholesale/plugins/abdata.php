@@ -33,7 +33,8 @@ class Premium_Warehouse_Wholesale__Plugin_abdata implements Premium_Warehouse_Wh
 /*		return array(
 			'ID'=>'text',
 			'Password'=>'password'
-		);*/
+		);
+*/
 	}
 
 	/**
@@ -163,7 +164,7 @@ class Premium_Warehouse_Wholesale__Plugin_abdata implements Premium_Warehouse_Wh
 	 * @param array distributor record
 	 * @return bool true if the update was successful, false otherwise
 	 */
-	public function update_from_file($filename, $distributor) {
+	public function update_from_file($filename, $distributor, $params) {
 
 		$f = fopen($filename,'r');
 		$row = fgetcsv($f);

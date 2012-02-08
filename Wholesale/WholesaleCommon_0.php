@@ -448,7 +448,7 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 				$ret .= 'failed file download: '.$dist['name'].'<br>';
 				continue;
 			}
-			$res = @$plugin->update_from_file($filename, $dist);
+			$res = @$plugin->update_from_file($filename, $dist, $params);
 			if(is_array($filename))
 			    foreach($filename as $filename2)
 				@unlink($filename2);

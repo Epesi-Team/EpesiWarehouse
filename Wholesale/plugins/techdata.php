@@ -130,7 +130,7 @@ class Premium_Warehouse_Wholesale__Plugin_techdata implements Premium_Warehouse_
 	    return $dir.$filename;
 	}
 
-	public function update_from_file($filename, $distributor) {
+	public function update_from_file($filename, $distributor, $params) {
 		$d = dbase_open($filename, 0);
 
 		$total = 0;

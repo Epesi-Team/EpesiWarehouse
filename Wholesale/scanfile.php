@@ -15,9 +15,15 @@ if(!Acl::is_user()) die('Not logged in');
 
 $dist = Utils_RecordBrowserCommon::get_record('premium_warehouse_distributor', $_GET['id']);
 $plugin = Premium_Warehouse_WholesaleCommon::get_plugin($dist['plugin']);
+$params = $plugin->get_parameters();
+$i = 1;
+foreach ($params as $k=>$v) {
+        $params[$k] = $dist['param'.$i];
+        $i++;
+}
 
 $file = preg_match('/,/',$_GET['file'])?explode(',',$_GET['file']):$_GET['file'];
-$res = $plugin->update_from_file($file, $dist);
+$res = $plugin->update_from_file($file, $dist, $params);
 
 if ($res===true) { 
 	$time = time();

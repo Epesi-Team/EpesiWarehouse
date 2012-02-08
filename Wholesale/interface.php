@@ -54,7 +54,7 @@ interface Premium_Warehouse_Wholesale__Plugin {
 	 * @param array distributor record
 	 * @return bool true if the update was successful, false otherwise
 	 */
-	public function update_from_file($filename, $distributor);
+	public function update_from_file($filename, $distributor, $params);
 }
 
 ?>

@@ -79,7 +79,7 @@ class Premium_Warehouse_Wholesale__Plugin_abcdata implements Premium_Warehouse_W
 	    return $filename;
 	}
 
-	public function update_from_file($filename, $distributor) {
+	public function update_from_file($filename, $distributor, $params) {
 		try {
 			ini_set("memory_limit","1024M");
 			$xls = Libs_PHPExcelCommon::load($filename);

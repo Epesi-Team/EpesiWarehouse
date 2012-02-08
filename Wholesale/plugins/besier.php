@@ -123,7 +123,7 @@ class Premium_Warehouse_Wholesale__Plugin_besier implements Premium_Warehouse_Wh
 	    return $filename;
 	}
 
-	public function update_from_file($filename, $distributor) {
+	public function update_from_file($filename, $distributor, $params) {
 		try {
 			$old_err = error_reporting(0);
 			$xls = Libs_PHPExcelCommon::load($filename);

@@ -99,7 +99,7 @@ class Premium_Warehouse_Wholesale__Plugin_foto7 implements Premium_Warehouse_Who
 	    return $filename;
 	}
 
-	public function update_from_file($filename, $distributor) {
+	public function update_from_file($filename, $distributor, $params) {
 		ini_set("memory_limit","1024M");
 		$xls = @simplexml_load_file($filename[0]);
 		if(!$xls) {
