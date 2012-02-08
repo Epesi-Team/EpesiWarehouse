@@ -1168,7 +1168,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 				}
 				break;
 			case 'added':
-				if ($values['online_order']) {
+				if (isset($values['online_order']) && $values['online_order']) {
 					$users = Base_User_SettingsCommon::get_users_settings('Premium_Warehouse', 'new_online_order_auto_subs');
 					foreach ($users as $u=>$v)
 						if ($v==1) Utils_WatchdogCommon::user_subscribe($u, 'premium_warehouse_items_orders', $values['id']);
