@@ -272,13 +272,13 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 				$js .= 	'if($("param'.$i.'"))$("param'.$i.'").type="'.$v.'";'.
 						'if($("_param'.$i.'__label")){'.
 							'$("_param'.$i.'__label").innerHTML="'.Base_LangCommon::ts('Premium_Warehouse_Wholesale',$k).'";'.
-							'$("_param'.$i.'__label").parentNode.parentNode.style.display="";'.
+							'$("_param'.$i.'__label").up("tr").style.display="";'.
 						'}';
 				$i++;
 			}
 		}
 		while($i<=6) {
-			$js .= 'if($("_param'.$i.'__label"))$("_param'.$i.'__label").parentNode.parentNode.style.display="none";';
+			$js .= 'if($("_param'.$i.'__label"))$("_param'.$i.'__label").up("tr").style.display="none";';
 			$i++;
 		}
 		return $js;
