@@ -93,11 +93,13 @@ class Premium_Warehouse_Items_LocationCommon extends ModuleCommon {
 	}
 	
 	public static function QFfield_item_quantity(&$form, $field, $label, $mode, $default) {
-		$form->addElement('static', $field, $label, self::display_item_quantity(Utils_RecordBrowser::$last_record, false));
+		$form->addElement('static', $field, $label);
+		$form->setDefaults(array($field=>'<div class="static_field">'.self::display_item_quantity(Utils_RecordBrowser::$last_record, false)));
 	}
 	
 	public static function display_item_quantity_in_warehouse_and_total($r, $warehouse, $nolink=false, $enroute=null, $custom_label=null) {
-		if ($r['item_type']==2 || $r['item_type']==3 || !isset($r['id'])) return '---';
+		if ($r['item_type']==2 || $r['item_type']==3) return '---';
+		if (!isset($r['id'])) return '0';
 		if ($custom_label===null) $custom_label = array(
 			'main'=>'Quantity on hand',
 			'in_one'=>'%s',
