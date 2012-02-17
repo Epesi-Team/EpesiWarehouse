@@ -12,14 +12,14 @@
  */
 defined("_VALID_ACCESS") || die('Direct access forbidden');
 
-class Premium_Warehouse_Wholesale__Plugin_xlscsv implements Premium_Warehouse_Wholesale__Plugin {
+class Premium_Warehouse_Wholesale__Plugin_xlscsv2 implements Premium_Warehouse_Wholesale__Plugin {
 	/**
 	 * Returns the name of the plugin
 	 * 
 	 * @return string plugin name 
 	 */
 	public function get_name() {
-		return 'XLS or CSV custom import (manufacturer)';
+		return 'XLS or CSV custom import (UPC/EAN)';
 	}
 	
 	/**
@@ -34,7 +34,7 @@ class Premium_Warehouse_Wholesale__Plugin_xlscsv implements Premium_Warehouse_Wh
 			'Nazwa produktu'=>'text',
                         'Stan magazynu'=>'text',
                         'Cena netto'=>'text',
-                        'Producent'=>'text',
+                        'UPC/EAN'=>'text',
                         'Kod producenta'=>'text'
 		);
 	}
@@ -77,13 +77,12 @@ class Premium_Warehouse_Wholesale__Plugin_xlscsv implements Premium_Warehouse_Wh
 			return false;
 		}
             $uploaded_data = array();    
-            $map = array(
-			strtolower(trim($params["ID"]))=>'Kod produktu',
-			strtolower(trim($params["Nazwa produktu"]))=>'Nazwa produktu',
-			strtolower(trim($params["Stan magazynu"]))=>'Stan mag',
-			strtolower(trim($params["Cena netto"]))=>'Cena netto',
-                        strtolower(trim($params["Producent"]))=>'Producent',
-                        strtolower(trim($params["Kod producenta"]))=>'Kod producenta'
+            $map = array(array(strtolower(trim($params["ID"])),'Kod produktu'),
+			array(strtolower(trim($params["Nazwa produktu"])),'Nazwa produktu'),
+			array(strtolower(trim($params["Stan magazynu"])),'Stan mag'),
+			array(strtolower(trim($params["Cena netto"])),'Cena netto'),
+                        array(strtolower(trim($params["UPC/EAN"])),'UPC/EAN'),
+                        array(strtolower(trim($params["Kod producenta"])),'Kod producenta')
 		);
            
             foreach($xls->getAllSheets() as $sheet) {
@@ -96,23 +95,25 @@ class Premium_Warehouse_Wholesale__Plugin_xlscsv implements Premium_Warehouse_Wh
 					foreach ($cellIterator as $j=>$cell) {
 						$cols[$j] = strtolower(trim($cell->getValue()));
 					}
-                                  
 				} else {
 					$tmp = array();
                                         $blad=false;
 					foreach ($cellIterator as $j=>$cell) {
-						if(!isset($map[$cols[$j]]))
-							continue;
-						$tmp[$map[$cols[$j]]] = trim($cell->getValue());
-                                                if($tmp[$map[$cols[$j]]]==='' && (($map[$cols[$j]]=='Kod produktu') //pobranie wymagania produktu
-                                                        || ($map[$cols[$j]]=='Nazwa produktu') ||($map[$cols[$j]]=='Stan mag')|| ($map[$cols[$j]]=='Cenna netto') )) {
-                                                    $blad = true;
-                                                   break;
+                                                foreach($map as $mmm) {
+                                                    if($mmm[0] != $cols[$j]) continue;
+                                                    $tmp[$mmm[1]] = trim($cell->getValue());
+                                                    if($tmp[$mmm[1]]==='' && (($mmm[1]=='Kod produktu') //pobranie wymagania produktu
+                                                            || ($mmm[1]=='Nazwa produktu') ||($mmm=='Stan mag')|| ($mmm=='Cenna netto') )) {
+                                                        $blad = true;
+                                                       break;
+                                                    }
                                                 }
 					}
                                         
                                         if(!$blad)
                                                 $uploaded_data[] = $tmp;
+                                            error_log(print_r($tmp,true),3,"/tmp/blad1");
+                                            
 				}
 			}
 		}
@@ -159,23 +160,10 @@ class Premium_Warehouse_Wholesale__Plugin_xlscsv implements Premium_Warehouse_Wh
 				$quantity = 1;
 			}
                         if(!isset($row['Kod producenta'])) $row['Kod producenta']='';
+                        if(!isset($row['UPC/EAN'])) $row['UPC/EAN']='';
                         if(!is_numeric($row['Cena netto'])) continue;
 			
-                        $manufacturer = null;
-			if(isset($row['Producent'])&&$row['Producent']) {
-				$cc = CRM_ContactsCommon::get_companies(array('company_name'=>$row['Producent']),array('group'));
-				$producent = explode(' ',$row['Producent']);
-				if(!$cc && count($producent)>1) 
-					$cc = CRM_ContactsCommon::get_companies(array('company_name'=>$producent[0]),array('group'));
-				if($cc) {
-					$cc2 = array_shift($cc);
-					$manufacturer = $cc2['id'];
-			    		if(!in_array('manufacturer', $cc2['group'])) {
-			    			$cc2['group']['manufacturer'] = 'manufacturer';
-				    		Utils_RecordBrowserCommon::update_record('company',$cc2['id'],array('group'=>$cc2['group']));
-			    		}
-				}
-			}	
+                       	
                         
 			/*** check for exact match ***/
 			$internal_key = DB::GetOne('SELECT internal_key FROM premium_warehouse_wholesale_items WHERE internal_key=%s AND distributor_id=%d', array($row['Kod produktu'], $distributor['id']));
@@ -186,7 +174,7 @@ class Premium_Warehouse_Wholesale__Plugin_xlscsv implements Premium_Warehouse_Wh
 					$matches = Utils_RecordBrowserCommon::get_records('premium_warehouse_items', array(
 						'(~"item_name'=>DB::Concat(DB::qstr('%'),DB::qstr($row['Nazwa produktu']),DB::qstr('%')),
 						'|manufacturer_part_number'=>$row['Kod producenta'],
-						'|upc'=>$row['Kod producenta']
+						'|upc'=>$row['UPC/EAN']
 					));
 					if (!empty($matches))
 						if (count($matches)==1) {
@@ -196,7 +184,7 @@ class Premium_Warehouse_Wholesale__Plugin_xlscsv implements Premium_Warehouse_Wh
 						} else {
 							/*** found more candidates, only product code is important now ***/
 							foreach ($matches as $v)
-								if ($v['manufacturer_part_number']==$row['Kod producenta'] || $v['upc']==$row['Kod producenta']) {
+								if ($v['manufacturer_part_number']==$row['Kod producenta'] || $v['upc']==$row['UPC/EAN']) {
 									$w_item = $v['id'];
 									break;
 								}
@@ -210,14 +198,14 @@ class Premium_Warehouse_Wholesale__Plugin_xlscsv implements Premium_Warehouse_Wh
 					$item_exist++;
 				}
 				if ($w_item!==null) {
-					DB::Execute('INSERT INTO premium_warehouse_wholesale_items (item_id, internal_key, distributor_item_name, distributor_id, quantity, quantity_info, price, price_currency,manufacturer,manufacturer_part_number) VALUES (%d, %s, %s, %d, %d, %s, %f, %d, %d, %s)', array($w_item, $row['Kod produktu'], $row['Nazwa produktu'], $distributor['id'], $quantity, $quantity_info, $row['Cena netto'], $pln_id, $manufacturer,substr($row['Kod producenta'],0,32)));
+					DB::Execute('INSERT INTO premium_warehouse_wholesale_items (item_id, internal_key, distributor_item_name, distributor_id, quantity, quantity_info, price, price_currency,upc,manufacturer_part_number) VALUES (%d, %s, %s, %d, %d, %s, %f, %d, %s, %s)', array($w_item, $row['Kod produktu'], $row['Nazwa produktu'], $distributor['id'], $quantity, $quantity_info, $row['Cena netto'], $pln_id, substr($row['UPC/EAN'],0,128),substr($row['Kod producenta'],0,32)));
 				} else {
-					DB::Execute('INSERT INTO premium_warehouse_wholesale_items (internal_key, distributor_item_name, distributor_id, quantity, quantity_info, price, price_currency,manufacturer,manufacturer,manufacturer_part_number) VALUES (%s, %s, %d, %d, %s, %f, %d, %d, %s)', array($row['Kod produktu'], $row['Nazwa produktu'], $distributor['id'], $quantity, $quantity_info, $row['Cena netto'], $pln_id,$manufacturer, substr($row['Kod producenta'],0,32)));
+					DB::Execute('INSERT INTO premium_warehouse_wholesale_items (internal_key, distributor_item_name, distributor_id, quantity, quantity_info, price, price_currency,upc,manufacturer_part_number) VALUES (%s, %s, %d, %d, %s, %f, %d, %s, %s)', array($row['Kod produktu'], $row['Nazwa produktu'], $distributor['id'], $quantity, $quantity_info, $row['Cena netto'], $pln_id,substr($row['UPC/EAN'],0,128), substr($row['Kod producenta'],0,32)));
 				}
 			} else {
 				/*** there's an exact match in the system already ***/
 				$link_exist++;
-				DB::Execute('UPDATE premium_warehouse_wholesale_items SET quantity=%d, quantity_info=%s, price=%f, price_currency=%d,manufacturer=%d,manufacturer_part_number=%s WHERE internal_key=%s AND distributor_id=%d', array($quantity, $quantity_info, $row['Cena netto'], $pln_id, $manufacturer,substr($row['Kod producenta'],0,32), $row['Kod produktu'], $distributor['id']));
+				DB::Execute('UPDATE premium_warehouse_wholesale_items SET quantity=%d, quantity_info=%s, price=%f, price_currency=%d,upc=%s,manufacturer_part_number=%s WHERE internal_key=%s AND distributor_id=%d', array($quantity, $quantity_info, $row['Cena netto'], $pln_id, substr($row['UPC/EAN'],0,128),substr($row['Kod producenta'],0,32), $row['Kod produktu'], $distributor['id']));
 			}
 		} 
 		Premium_Warehouse_WholesaleCommon::file_scan_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Scan complete.'), 1);
@@ -227,3 +215,4 @@ class Premium_Warehouse_Wholesale__Plugin_xlscsv implements Premium_Warehouse_Wh
 }
 
 ?>
+
