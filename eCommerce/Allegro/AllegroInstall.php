@@ -25,7 +25,7 @@ class Premium_Warehouse_eCommerce_AllegroInstall extends ModuleInstall {
 		}
 
 		$ret = DB::CreateTable('premium_ecommerce_allegro_auctions','
-							auction_id I4 NOTNULL KEY,
+							auction_id I8 NOTNULL KEY,
 							item_id I4 NOTNULL,
 							active I1 DEFAULT 1,
 							buy_price F,
