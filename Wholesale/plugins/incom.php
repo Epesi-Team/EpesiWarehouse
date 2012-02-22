@@ -161,7 +161,8 @@ class Premium_Warehouse_Wholesale__Plugin_incom implements Premium_Warehouse_Who
 					/*** exact match not found, looking for candidates ***/
 						$matches = Utils_RecordBrowserCommon::get_records('premium_warehouse_items', array(
 							'(~"item_name'=>DB::Concat(DB::qstr('%'),DB::qstr($row->Nazwa),DB::qstr('%')),
-							'|manufacturer_part_number'=>$row->SymbolProducenta
+							'|manufacturer_part_number'=>$row->SymbolProducenta,
+							'|product_code'=>$row->SymbolProducenta
 						));
 					if (!empty($matches))
 						if (count($matches)==1) {

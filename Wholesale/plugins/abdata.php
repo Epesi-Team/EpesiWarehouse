@@ -259,7 +259,8 @@ class Premium_Warehouse_Wholesale__Plugin_abdata implements Premium_Warehouse_Wh
 						/*** exact match not found, looking for candidates ***/
 						$matches = Utils_RecordBrowserCommon::get_records('premium_warehouse_items', array(
 							'(~"item_name'=>DB::Concat(DB::qstr('%'),DB::qstr($row['nazwa']),DB::qstr('%')),
-							'|manufacturer_part_number'=>$row['indeks p.']
+							'|manufacturer_part_number'=>$row['indeks p.'],
+							'|product_code'=>$row['indeks p.']
 						));
 						if (!empty($matches))
 							if (count($matches)==1) {

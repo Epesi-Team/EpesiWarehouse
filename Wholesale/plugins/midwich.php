@@ -194,7 +194,8 @@ class Premium_Warehouse_Wholesale__Plugin_midwich implements Premium_Warehouse_W
 				if($row['manu_part_no'])
 					$matches = Utils_RecordBrowserCommon::get_records('premium_warehouse_items', array(
 						'(~"item_name'=>DB::Concat(DB::qstr('%'),DB::qstr($row['product_name']),DB::qstr('%')),
-						'|manufacturer_part_number'=>$row['manu_part_no']
+						'|manufacturer_part_number'=>$row['manu_part_no'],
+						'|product_code'=>$row['manu_part_no']
 					));
 				if (!empty($matches))
 					if (count($matches)==1) {

@@ -112,8 +112,6 @@ class Premium_Warehouse_Wholesale__Plugin_xlscsv2 implements Premium_Warehouse_W
                                         
                                         if(!$blad)
                                                 $uploaded_data[] = $tmp;
-                                            error_log(print_r($tmp,true),3,"/tmp/blad1");
-                                            
 				}
 			}
 		}
@@ -139,6 +137,7 @@ class Premium_Warehouse_Wholesale__Plugin_xlscsv2 implements Premium_Warehouse_W
 		}
 
 		DB::Execute('UPDATE premium_warehouse_wholesale_items SET quantity=%d, quantity_info=%s WHERE distributor_id=%d', array(0, '', $distributor['id']));
+//		DB::Execute('DELETE FROM premium_warehouse_wholesale_items WHERE distributor_id=%d', array($distributor['id']));
 		
 		Premium_Warehouse_WholesaleCommon::file_scan_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Scanning...'));
 		foreach($uploaded_data as $row) {
@@ -169,10 +168,11 @@ class Premium_Warehouse_Wholesale__Plugin_xlscsv2 implements Premium_Warehouse_W
 			$internal_key = DB::GetOne('SELECT internal_key FROM premium_warehouse_wholesale_items WHERE internal_key=%s AND distributor_id=%d', array($row['Kod produktu'], $distributor['id']));
 			if ($internal_key===false || $internal_key===null) {
 				$w_item = null;
-				if($row['Kod producenta']) {
+				if($row['Kod producenta'] || $row['UPC/EAN']) {
 					/*** exact match not found, looking for candidates ***/
 					$matches = Utils_RecordBrowserCommon::get_records('premium_warehouse_items', array(
 						'(~"item_name'=>DB::Concat(DB::qstr('%'),DB::qstr($row['Nazwa produktu']),DB::qstr('%')),
+						'|product_code'=>$row['Kod producenta'],
 						'|manufacturer_part_number'=>$row['Kod producenta'],
 						'|upc'=>$row['UPC/EAN']
 					));

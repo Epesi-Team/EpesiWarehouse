@@ -227,7 +227,8 @@ class Premium_Warehouse_Wholesale__Plugin_techdata implements Premium_Warehouse_
 					if($row_parts['SYMBOLPROD'])
 						$matches = Utils_RecordBrowserCommon::get_records('premium_warehouse_items', array(
 							'(~"item_name'=>DB::Concat(DB::qstr('%'),DB::qstr($row_parts['NAZWA']),DB::qstr('%')),
-							'|manufacturer_part_number'=>$row_parts['SYMBOLPROD']
+							'|manufacturer_part_number'=>$row_parts['SYMBOLPROD'],
+							'|product_code'=>$row_parts['SYMBOLPROD']
 						));
 					if (!empty($matches))
 						if (count($matches)==1) {

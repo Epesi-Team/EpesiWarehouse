@@ -183,7 +183,8 @@ class Premium_Warehouse_Wholesale__Plugin_asbis implements Premium_Warehouse_Who
 			    if(empty($matches) && $row['Kod producenta'])
     				$matches = Utils_RecordBrowserCommon::get_records('premium_warehouse_items', array(
 	    				'(~"item_name'=>DB::Concat(DB::qstr('%'),DB::qstr($row['Nazwa produktu']),DB::qstr('%')),
-		    			'|manufacturer_part_number'=>$row['Kod producenta']
+		    			'|manufacturer_part_number'=>$row['Kod producenta'],
+		    			'|product_code'=>$row['Kod producenta']
 				));
 				if (!empty($matches))
 					if (count($matches)==1) {
