@@ -184,16 +184,16 @@ class Premium_Warehouse_eCommerce_AllegroCommon extends ModuleCommon {
 			    WHERE ord.f_language="pl" AND or_det2.f_item_name=%d) GROUP BY or_det.f_item_name ORDER BY count(or_det.f_item_name) DESC LIMIT 9',array($id,$id));
 	foreach($products as $p) {
 		$pp = Utils_RecordBrowserCommon::get_record('premium_ecommerce_products',$p,array('item_name'));
-		$x = DB::GetRow('SELECT auction_id,buy_price FROM premium_ecommerce_allegro_auctions WHERE item_id=%d AND active=1',array($pp['item_name']));
+		$x = DB::GetRow('SELECT auction_id,buy_price FROM premium_ecommerce_allegro_auctions WHERE item_id=%d AND active=1 AND auction_id>=0',array($pp['item_name']));
 		if($x) {
 			$result[] = array('auction'=>$x['auction_id'],'item'=>$pp['item_name'],'buy_price'=>$x['buy_price']);
 			$skip_item_ids[] = $pp['item_name'];
 		}
 	}
 	for($i=count($result); $i<9; $i++) {
-	        $row = DB::GetRow('SELECT c.ret_item_id as item, c.ret_auction_id as auction,a.buy_price FROM premium_ecommerce_allegro_cross c INNER JOIN premium_ecommerce_allegro_auctions a ON a.auction_id=c.ret_auction_id AND a.item_id=c.ret_item_id  WHERE c.item_id=%d AND c.position=%d AND c.ip=%s ORDER BY c.position',array($id,$i,$_SERVER['REMOTE_ADDR']));
+	        $row = DB::GetRow('SELECT c.ret_item_id as item, c.ret_auction_id as auction,a.buy_price FROM premium_ecommerce_allegro_cross c INNER JOIN premium_ecommerce_allegro_auctions a ON a.auction_id=c.ret_auction_id AND a.item_id=c.ret_item_id  WHERE c.item_id=%d AND c.position=%d AND ret_auction_id>=0 AND c.ip=%s ORDER BY c.position',array($id,$i,$_SERVER['REMOTE_ADDR']));
 		if(!$row) {
-			$row = DB::GetRow('SELECT auction_id as auction,item_id as item,buy_price FROM premium_ecommerce_allegro_auctions WHERE active=1 AND item_id NOT IN ('.implode(',',$skip_item_ids).') ORDER BY RAND()');
+			$row = DB::GetRow('SELECT auction_id as auction,item_id as item,buy_price FROM premium_ecommerce_allegro_auctions WHERE active=1 AND auction_id>=0 AND item_id NOT IN ('.implode(',',$skip_item_ids).') ORDER BY RAND()');
 			if(!$row) break;
 		}
 		$skip_item_ids[] = $row['item'];
