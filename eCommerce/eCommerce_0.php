@@ -926,7 +926,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 		|| (file_exists(rtrim($p,'/').'/files/100/epesi') && !is_writable(rtrim($p,'/').'/files/100/epesi'))
 		|| (file_exists(rtrim($p,'/').'/files/200/epesi') && !is_writable(rtrim($p,'/').'/files/200/epesi'))
 		|| !is_writable(rtrim($p,'/').'/config')
-		|| !file_exists(rtrim($p,'/').'/config/epesi.php') || !is_writable(rtrim($p,'/').'/config/epesi.php')) return false;
+		|| (file_exists(rtrim($p,'/').'/config/epesi.php') && !is_writable(rtrim($p,'/').'/config/epesi.php'))) return false;
 	    return true;
 	}
 	
