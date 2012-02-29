@@ -82,7 +82,7 @@ class Premium_Warehouse_SalesReportInstall extends ModuleInstall {
 	}
 	
 	public static function simple_setup() {
-		return true;
+        return array('package'=>'Inventory Management');
 	}
 	
 }

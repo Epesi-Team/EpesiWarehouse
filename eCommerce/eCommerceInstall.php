@@ -702,7 +702,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 	}
 	
 	public static function simple_setup() {
-		return true;
+        return array('package'=>'eCommerce');
 	}
 
 	public static function post_install() {

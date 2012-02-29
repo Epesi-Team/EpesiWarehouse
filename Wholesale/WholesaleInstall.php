@@ -144,7 +144,7 @@ class Premium_Warehouse_WholesaleInstall extends ModuleInstall {
 	}
 	
 	public static function simple_setup() {
-		return true;
+        return array('package'=>'Inventory Management', 'option'=>'Wholesale data sync');
 	}
 }
 

@@ -241,7 +241,7 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 	}
 	
 	public static function simple_setup() {
-		return true;
+        return array('package'=>'Inventory Management');
 	}
 }
 

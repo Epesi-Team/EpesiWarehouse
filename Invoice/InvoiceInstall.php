@@ -73,7 +73,7 @@ class Premium_Warehouse_InvoiceInstall extends ModuleInstall {
 	}
 	
 	public static function simple_setup() {
-		return true;
+        return array('package'=>'Inventory Management', 'option'=>'Invoice Print');
 	}
 }
 
