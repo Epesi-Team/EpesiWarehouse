@@ -1003,7 +1003,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		if (in_array($mode, array('view', 'editing', 'adding'))) {
 			load_js('modules/Premium/Warehouse/Items/Orders/field_control.js');
 			eval_js('warehouse_order_mode = "'.str_replace('ing', '', $mode).'";');
-			eval_js('warehouse_orders_hide_fields('.$values['transaction_type'].', '.($values['status']?$values['status']:0).', '.($values['shipment_type']?$values['shipment_type']:0).', '.($values['payment_type']?$values['payment_type']:0).');');
+			eval_js('warehouse_orders_hide_fields('.$values['transaction_type'].', '.($values['status']?$values['status']:0).', "'.($values['shipment_type']?$values['shipment_type']:0).'", "'.($values['payment_type']?$values['payment_type']:0).'");');
 		}
 
 		switch ($mode) {

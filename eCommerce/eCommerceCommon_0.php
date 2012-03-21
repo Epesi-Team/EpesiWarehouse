@@ -500,7 +500,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
     }
 
     public static function orders_addon_parameters($r) {
-        if(!isset(self::$orders_rec)) {
+        if(!isset(self::$orders_rec) && isset($r['id'])) {
             $ret = Utils_RecordBrowserCommon::get_records('premium_ecommerce_orders',array('transaction_id'=>$r['id']));
             if(!$ret)
                 return array('show'=>false);
