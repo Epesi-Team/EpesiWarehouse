@@ -14,7 +14,7 @@ class Allegro {
         
         public function __construct($login,$password,$country,$key) {
 		try {
-			$this->client = new SoapClient('http://webapi.allegro.pl/uploader.php?wsdl');
+			$this->client = new SoapClient('https://webapi.allegro.pl/uploader.php?wsdl');
 			$this->version = $this->client->doQuerySysStatus(1, $country, $key);
 			$this->tabsession = $this->client->doLogin($login, $password, $country, $key, $this->version['ver-key']);
 			$this->session_id = $this->tabsession['session-handle-part'];
