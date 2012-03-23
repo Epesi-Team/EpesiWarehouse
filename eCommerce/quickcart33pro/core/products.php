@@ -477,6 +477,8 @@ class Products
             $aData['sBasketPage'] = $sBasketPage;
             $oTpl->setVariables( 'aData', $aData );
             $aData['sBasket'] = $oTpl->tbHtml( $sFile, 'PRODUCTS_BASKET' );
+          } else {
+            $aData['sBasket'] = $oTpl->tbHtml( $sFile, 'PRODUCTS_OUT_OF_STOCK' );
           }
           $oTpl->setVariables( 'aData', $aData );
           $aData['sPrice'] = $oTpl->tbHtml( $sFile, 'PRODUCTS_PRICE' );
