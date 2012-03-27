@@ -1322,6 +1322,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	}
 
 	public static function contact_orders_label($r) {
+		if (!isset($r['id'])) return array();
 	    if(!isset(self::$orders_rec)) {
 		    $ret = Utils_RecordBrowserCommon::get_records_count('premium_warehouse_items_orders',array('contact'=>$r['id']));
 		    if(!$ret)
@@ -1331,6 +1332,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	}
 
 	public static function company_orders_label($r) {
+		if (!isset($r['id'])) return array();
 		if(!isset(self::$orders_rec)) {
 			$ret = Utils_RecordBrowserCommon::get_records_count('premium_warehouse_items_orders',array('company'=>$r['id']));
 			if(!$ret)

@@ -103,6 +103,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
     }
 
     public static function users_addon_parameters($r) {
+		if (!isset($r['id'])) return array();
 //      $ret = Utils_RecordBrowserCommon::get_records('premium_ecommerce_users',array('contact'=>$r['id']));
         if(!in_array('custm',$r['group']))
             return array('show'=>false);
