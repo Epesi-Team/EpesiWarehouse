@@ -25,7 +25,7 @@ warehouse_orders_hide_fields = function(trans_type, status, shipment_type, payme
 	warehouse_orders_hide_field('tax_value', ((status<2 && trans_type==0) || !payments || trans_type==2 || trans_type==4));
 	warehouse_orders_hide_field('receipt', (!payments || trans_type==2 || trans_type==4));
 
-	warehouse_orders_hide_field('target_warehouse', (trans_type!=1 || warehouse_order_mode=='view'));
+	warehouse_orders_hide_field('target_warehouse', (trans_type!=4 || warehouse_order_mode=='view'));
 
 	warehouse_orders_hide_field('payment', (trans_type!=3));
 	warehouse_orders_hide_field('return_date', (trans_type!=3));

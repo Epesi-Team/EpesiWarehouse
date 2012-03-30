@@ -458,7 +458,13 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		}
 	}
 	
+	public static function check_target_warehouse_required($data) {
+		if (Utils_RecordBrowser::$last_record['transaction_type']!=4) return true;
+		if ($data['target_warehouse']) return true;
+		return array('target_warehouse'=>Base_LangCommon::ts('Libs_QuickForm','Field required'));
+	}
 	public static function QFfield_company_name(&$form, $field, $label, $mode, $default, $desc, $rb_obj){
+		$form->addFormRule(array('Premium_Warehouse_Items_OrdersCommon','check_target_warehouse_required'));
 		if ($mode!='view' && (Utils_RecordBrowser::$last_record['transaction_type']==0 || Utils_RecordBrowser::$last_record['transaction_type']==1)) {
 			load_js('modules/Premium/Warehouse/Items/Orders/contractor_update.js');
 			eval_js('new ContractorUpdate()');
