@@ -44,15 +44,16 @@ class Premium_Warehouse_SalesReportCommon extends ModuleCommon {
 		DB::Execute('DELETE FROM premium_warehouse_sales_report_purchase_fifo_tmp');
 		DB::Execute('DELETE FROM premium_warehouse_sales_report_purchase_lifo_tmp');
 //		$purchases = DB::Execute('SELECT *, o.id AS order_id FROM premium_warehouse_items_orders_details_data_1 AS od LEFT JOIN premium_warehouse_items_orders_data_1 AS o ON o.id=od.f_transaction_id WHERE od.active=1 AND (o.f_transaction_type=0 OR o.f_transaction_type=4) AND o.f_status=20 ORDER BY (SELECT MAX(oeh.edited_on) FROM premium_warehouse_items_orders_edit_history_data AS oehd LEFT JOIN premium_warehouse_items_orders_edit_history AS oeh ON oehd.edit_id=oeh.id WHERE oeh.premium_warehouse_items_orders_id=o.id AND oehd.field="status" AND oehd.old_value!="") ASC, o.f_transaction_type ASC, o.created_on ASC');
-		$purchases = DB::Execute('SELECT *, o.id AS order_id FROM premium_warehouse_items_orders_details_data_1 AS od LEFT JOIN premium_warehouse_items_orders_data_1 AS o ON o.id=od.f_transaction_id WHERE od.active=1 AND (o.f_transaction_type=0 OR o.f_transaction_type=4) AND o.f_status=20 ORDER BY o.f_transaction_date ASC, o.f_transaction_type ASC, o.created_on ASC');
+		$purchases = DB::Execute('SELECT *, o.id AS order_id FROM premium_warehouse_items_orders_details_data_1 AS od INNER JOIN premium_warehouse_items_orders_data_1 AS o ON o.id=od.f_transaction_id WHERE od.active=1 AND o.f_transaction_type=0 AND o.f_status=20 ORDER BY o.f_transaction_date ASC, o.f_transaction_type ASC, o.created_on ASC');
 		$id = 0;
 		DB::Execute('DELETE FROM premium_warehouse_sales_report_earning');
 //		$sales = DB::Execute('SELECT *, od.id AS od_id FROM premium_warehouse_items_orders_details_data_1 AS od LEFT JOIN premium_warehouse_items_orders_data_1 AS o ON o.id=od.f_transaction_id WHERE od.active=1 AND o.f_transaction_type=1 AND o.f_status=20 ORDER BY (SELECT MAX(oeh.edited_on) FROM premium_warehouse_items_orders_edit_history_data AS oehd LEFT JOIN premium_warehouse_items_orders_edit_history AS oeh ON oehd.edit_id=oeh.id WHERE oeh.premium_warehouse_items_orders_id=o.id AND oehd.field="status" AND oehd.old_value!="") ASC');
-		$sales = DB::Execute('SELECT *, od.id AS od_id FROM premium_warehouse_items_orders_details_data_1 AS od LEFT JOIN premium_warehouse_items_orders_data_1 AS o ON o.id=od.f_transaction_id WHERE od.active=1 AND o.f_transaction_type=1 AND o.f_status=20 ORDER BY o.f_transaction_date ASC');
+		$sales = DB::Execute('SELECT *, od.id AS od_id FROM premium_warehouse_items_orders_details_data_1 AS od INNER JOIN premium_warehouse_items_orders_data_1 AS o ON o.id=od.f_transaction_id WHERE od.active=1 AND (o.f_transaction_type=1 OR o.f_transaction_type=4) AND o.f_status=20 ORDER BY o.f_transaction_date ASC');
 		$sale = $sales->FetchRow();
 		do {
 			$trans = $purchases->FetchRow();
 			while ($sale && !$trans) {
+			    if ($sale['f_transaction_type']==1) {
 				$sale['f_price'] = Utils_CurrencyFieldCommon::get_values($sale['f_net_price']);
 				$net_price = $sale['f_price'][0];
 				if ($sale['f_price'][1]!=$currency)
@@ -98,49 +99,48 @@ class Premium_Warehouse_SalesReportCommon extends ModuleCommon {
 				$qty_lifo = $sale['f_quantity']-$sold_qty;
 				
 				DB::Execute('INSERT INTO premium_warehouse_sales_report_earning VALUES(%d,%d,%d,%d,%d,%d,%d)', array($sale['od_id'], $qty_lifo, $qty_fifo, $earnings['g_lifo'], $earnings['g_fifo'], $earnings['n_lifo'], $earnings['n_fifo']));
-				$sale = $sales->FetchRow();
-			}
-			if (!$trans) break;
-			if ($trans['f_transaction_type']==0) {
-				$trans['f_price'] = Utils_CurrencyFieldCommon::get_values($trans['f_net_price']);
-				$net_price = $trans['f_price'][0];
-				if ($trans['f_price'][1]!=$currency)
-					$net_price = self::currency_exchange($net_price, $trans['f_price'][1], $trans['order_id']);
-				$gross_price = round((100+Data_TaxRatesCommon::get_tax_rate($trans['f_tax_rate']))*$net_price/100, $prec);
-				DB::Execute('INSERT INTO premium_warehouse_sales_report_purchase_fifo_tmp VALUES (%d, %d, %d, %d, %d, %d)', array($id, $trans['f_item_name'], $trans['f_quantity'], $trans['f_warehouse'], $net_price*$multip, $gross_price*$multip));
-				DB::Execute('INSERT INTO premium_warehouse_sales_report_purchase_lifo_tmp VALUES (%d, %d, %d, %d, %d, %d)', array($id, $trans['f_item_name'], $trans['f_quantity'], $trans['f_warehouse'], $net_price*$multip, $gross_price*$multip));
-				$id++;
-			} else {
- 				$trans_qty = $trans['f_quantity'];
- 				$items = DB::Execute('SELECT * FROM premium_warehouse_sales_report_purchase_fifo_tmp WHERE item_id=%d AND warehouse=%d ORDER BY id ASC', array($trans['f_item_name'], $trans['f_warehouse']));
+			    } else {
+ 				$trans_qty = $sale['f_quantity'];
+ 				$items = DB::Execute('SELECT * FROM premium_warehouse_sales_report_purchase_fifo_tmp WHERE item_id=%d AND warehouse=%d ORDER BY id ASC', array($sale['f_item_name'], $sale['f_warehouse']));
 				while ($trans_qty>0 && $item=$items->FetchRow()) {
 					$qty = min($trans_qty, $item['quantity']);
 					$trans_qty -= $qty;
 					if ($item['quantity']>$qty) {
 						DB::Execute('UPDATE premium_warehouse_sales_report_purchase_fifo_tmp SET quantity=%d WHERE id=%d', array($item['quantity']-$qty, $item['id']));
 						DB::Execute('UPDATE premium_warehouse_sales_report_purchase_fifo_tmp SET id=id+1 WHERE id>%d ORDER BY id DESC', array($item['id']));
-						DB::Execute('INSERT INTO premium_warehouse_sales_report_purchase_fifo_tmp VALUES (%d, %d, %d, %d, %d, %d)', array($item['id']+1, $item['item_id'], $qty, $trans['f_target_warehouse'], $item['net_price'], $item['gross_price']));
+						DB::Execute('INSERT INTO premium_warehouse_sales_report_purchase_fifo_tmp VALUES (%d, %d, %d, %d, %d, %d)', array($item['id']+1, $item['item_id'], $qty, $sale['f_target_warehouse'], $item['net_price'], $item['gross_price']));
 						$id++;
 					} else {
-						DB::Execute('UPDATE premium_warehouse_sales_report_purchase_fifo_tmp SET warehouse=%d WHERE id=%d', array($trans['f_target_warehouse'], $item['id']));
+						DB::Execute('UPDATE premium_warehouse_sales_report_purchase_fifo_tmp SET warehouse=%d WHERE id=%d', array($sale['f_target_warehouse'], $item['id']));
 					}
 				}
 
- 				$trans_qty = $trans['f_quantity'];
- 				$items = DB::Execute('SELECT * FROM premium_warehouse_sales_report_purchase_lifo_tmp WHERE item_id=%d AND warehouse=%d ORDER BY id DESC', array($trans['f_item_name'], $trans['f_warehouse']));
+ 				$trans_qty = $sale['f_quantity'];
+ 				$items = DB::Execute('SELECT * FROM premium_warehouse_sales_report_purchase_lifo_tmp WHERE item_id=%d AND warehouse=%d ORDER BY id DESC', array($sale['f_item_name'], $sale['f_warehouse']));
 				while ($trans_qty>0 && $item=$items->FetchRow()) {
 					$qty = min($trans_qty, $item['quantity']);
 					$trans_qty -= $qty;
 					if ($item['quantity']>$qty) {
 						DB::Execute('UPDATE premium_warehouse_sales_report_purchase_lifo_tmp SET quantity=%d WHERE id=%d', array($item['quantity']-$qty, $item['id']));
 						DB::Execute('UPDATE premium_warehouse_sales_report_purchase_lifo_tmp SET id=id+1 WHERE id>%d ORDER BY id DESC', array($item['id']));
-						DB::Execute('INSERT INTO premium_warehouse_sales_report_purchase_lifo_tmp VALUES (%d, %d, %d, %d, %d, %d)', array($item['id']+1, $item['item_id'], $qty, $trans['f_target_warehouse'], $item['net_price'], $item['gross_price']));
+						DB::Execute('INSERT INTO premium_warehouse_sales_report_purchase_lifo_tmp VALUES (%d, %d, %d, %d, %d, %d)', array($item['id']+1, $item['item_id'], $qty, $sale['f_target_warehouse'], $item['net_price'], $item['gross_price']));
 						$id++;
 					} else {
-						DB::Execute('UPDATE premium_warehouse_sales_report_purchase_lifo_tmp SET warehouse=%d WHERE id=%d', array($trans['f_target_warehouse'], $item['id']));
+						DB::Execute('UPDATE premium_warehouse_sales_report_purchase_lifo_tmp SET warehouse=%d WHERE id=%d', array($sale['f_target_warehouse'], $item['id']));
 					}
 				}
+			    }
+			    $sale = $sales->FetchRow();
 			}
+			if (!$trans) break;
+			$trans['f_price'] = Utils_CurrencyFieldCommon::get_values($trans['f_net_price']);
+			$net_price = $trans['f_price'][0];
+			if ($trans['f_price'][1]!=$currency)
+				$net_price = self::currency_exchange($net_price, $trans['f_price'][1], $trans['order_id']);
+			$gross_price = round((100+Data_TaxRatesCommon::get_tax_rate($trans['f_tax_rate']))*$net_price/100, $prec);
+			DB::Execute('INSERT INTO premium_warehouse_sales_report_purchase_fifo_tmp VALUES (%d, %d, %d, %d, %d, %d)', array($id, $trans['f_item_name'], $trans['f_quantity'], $trans['f_warehouse'], $net_price*$multip, $gross_price*$multip));
+			DB::Execute('INSERT INTO premium_warehouse_sales_report_purchase_lifo_tmp VALUES (%d, %d, %d, %d, %d, %d)', array($id, $trans['f_item_name'], $trans['f_quantity'], $trans['f_warehouse'], $net_price*$multip, $gross_price*$multip));
+			$id++;
 		} while (true);
 	}  
 }
