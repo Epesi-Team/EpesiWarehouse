@@ -18,6 +18,25 @@ class Premium_Warehouse_eCommerce_CompareUpdatePricesCommon extends ModuleCommon
 			return array('show'=>false);
 		return array('show'=>true, 'label'=>'Compare Services');
 	}
+
+	public static function access_parameters($action, $param=null){
+		$i = self::Instance();
+		switch ($action) {
+			case 'browse_crits':    return $i->acl_check('browse');
+			case 'browse':  return $i->acl_check('browse');
+			case 'view':    
+				if (!$i->acl_check('view')) return false;
+				return true;
+			case 'clone':
+			case 'add':
+			case 'edit': 
+				if($i->acl_check('edit'))
+					return array('currency'=>false,'gross_price'=>false);
+				return false;
+			case 'delete':  return $i->acl_check('delete');
+		}
+		return false;
+	}
 	
 	public static function update() {
 		$ret = Utils_RecordBrowserCommon::get_records('premium_ecommerce_compare_prices');
@@ -59,15 +78,21 @@ class Premium_Warehouse_eCommerce_CompareUpdatePricesCommon extends ModuleCommon
 				$qty -= $res['total'];
 				if($qty>0) {
 					$value = Utils_CurrencyFieldCommon::get_values($item['last_purchase_price']);
-					if($value[1] != $a->currency || $a->price <= $value[0]) {
+					if($value[1] != $a->currency || ($a->price*100/(100+$tax)) <= $value[0]) {
 						$a->price = '';
 						$a->currency = '';
 					}
 				} else {
-					$ff = DB::GetOne('SELECT price FROM premium_warehouse_wholesale_items WHERE item_id=%d AND quantity>%d AND price_currency=%d ORDER BY price',array($row['item_name'],-$qty,$a->currency));
-					if(!$ff || $ff>($a->price*100/(100+$tax))) {
+					$ff = DB::GetRow('SELECT i.price, d.f_minimal_profit FROM premium_warehouse_wholesale_items i INNER JOIN premium_warehouse_distributor_data_1 d ON d.id=i.distributor_id WHERE i.item_id=%d AND i.quantity>%d AND i.price_currency=%d ORDER BY price',array($row['item_name'],-$qty,$a->currency));
+					if(!isset($ff['price']) || !$ff['price']) {
 						$a->price = '';
 						$a->currency = '';
+					} else {
+					    $dpr = $ff['price']+$ff['f_minimal_profit'];
+					    if($dpr>($a->price*100/(100+$tax))) {
+						$a->price = '';
+						$a->currency = '';
+					    }
 					}
 				}
 			}

@@ -894,7 +894,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 					$items_unavailable = $this->check_if_items_available($trans, $items);
 					$serials = $this->get_select_serials_form($trans, $items, $any_item);
 
-					if ($trans['payment_type']==0 && $trans['shipment_type']==0) $lp->add_option('quick_delivery', $this->t($p?'Paid & Delivered':'Delivered'), null, ($items_unavailable===null)?($any_item?$serials:null):$items_unavailable);
+					if ($trans['payment_type']==0 && $trans['shipment_type']==0 && $items_unavailable===null) $lp->add_option('quick_delivery', $this->t($p?'Paid & Delivered':'Delivered'), null, ($any_item?$serials:null));
 
 					$lp->add_option('accepted', $this->t('Payment Accepted'), null, null);
 					$lp->add_option('onhold', $this->t('Payment Declined - Put On Hold'), null, null);
