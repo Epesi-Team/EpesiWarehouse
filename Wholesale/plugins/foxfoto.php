@@ -80,7 +80,7 @@ class Premium_Warehouse_Wholesale__Plugin_foxfoto implements Premium_Warehouse_W
 	    $time = time();
 
 		$filename = $dir.'foxfoto_'.$time.'.tmp';
-		file_put_contents($filename, iconv("cp1250","UTF-8",$output));
+		file_put_contents($filename, $output);
 
 	    curl_close($c);
 
@@ -138,7 +138,7 @@ class Premium_Warehouse_Wholesale__Plugin_foxfoto implements Premium_Warehouse_W
 			}
 			if (strlen($row['Nazwa produktu'])>127) $row['Nazwa produktu'] = substr($row['Nazwa produktu'],0,127);
 			
-			$cena = str_replace(',','.',$row['cenaNetto'.$params['Cennik']]);
+			$cena = str_replace(',','.',$row['Cena netto '.$params['Cennik'].' - PLN']);
 			if(!is_numeric($cena)) continue;
 			
 			if ($row['Dostępność']!=0) {
@@ -154,13 +154,13 @@ class Premium_Warehouse_Wholesale__Plugin_foxfoto implements Premium_Warehouse_W
 				$quantity=0;
 			}
 				
-			if($row['kategoria'] ) {
-				if(!isset($categories[$row['kategoria']])) {
-					$categories[$row['kategoria']] = Utils_RecordBrowserCommon::new_record('premium_warehouse_distr_categories',array('foreign_category_name'=>$row['kategoria'],'distributor'=>$distributor['id']));
+			if($row['Kategoria'] ) {
+				if(!isset($categories[$row['Kategoria']])) {
+					$categories[$row['Kategoria']] = Utils_RecordBrowserCommon::new_record('premium_warehouse_distr_categories',array('foreign_category_name'=>$row['Kategoria'],'distributor'=>$distributor['id']));
 					$new_categories++;
-				} elseif(isset($categories_to_del[$row['kategoria']]))
-					unset($categories_to_del[$row['kategoria']]);
-				$category = $categories[$row['kategoria']];
+				} elseif(isset($categories_to_del[$row['Kategoria']]))
+					unset($categories_to_del[$row['Kategoria']]);
+				$category = $categories[$row['Kategoria']];
 			} else $category = null;
 
 			$manufacturer = null;

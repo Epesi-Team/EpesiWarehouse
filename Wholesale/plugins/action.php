@@ -219,9 +219,6 @@ class Premium_Warehouse_Wholesale__Plugin_action implements Premium_Warehouse_Wh
 				}
 			}
 
-			/*** check for exact match ***/
-			$internal_key = DB::GetOne('SELECT internal_key FROM premium_warehouse_wholesale_items WHERE internal_key=%s AND distributor_id=%d', array($row['Kod produktu'], $distributor['id']));
-			if ($internal_key===false || $internal_key===null) {
 				$w_item = null;
 				if($row['Kod producenta']) {
 					/*** exact match not found, looking for candidates ***/
@@ -253,16 +250,21 @@ class Premium_Warehouse_Wholesale__Plugin_action implements Premium_Warehouse_Wh
 					$item_exist++;
 				}
 				if (!is_numeric($row['Cena netto'])) $row['Cena netto'] = 0;
+
+			/*** check for exact match ***/
+			$internal_key = DB::GetOne('SELECT internal_key FROM premium_warehouse_wholesale_items WHERE internal_key=%s AND distributor_id=%d', array($row['Kod produktu'], $distributor['id']));
+			if ($internal_key===false || $internal_key===null) {
 				if ($w_item!==null) {
 					DB::Execute('INSERT INTO premium_warehouse_wholesale_items (item_id, internal_key, distributor_item_name, distributor_id, quantity, quantity_info, price, price_currency,distributor_category,manufacturer,manufacturer_part_number) VALUES (%d, %s, %s, %d, %d, %s, %f, %d,%d,%d, %s)', array($w_item, $row['Kod produktu'], $row['Nazwa produktu'], $distributor['id'], $quantity, $quantity_info, $row['Cena netto'], $pln_id,$category,$manufacturer, substr($row['Kod producenta'],0,32)));
 				} else {
 					DB::Execute('INSERT INTO premium_warehouse_wholesale_items (internal_key, distributor_item_name, distributor_id, quantity, quantity_info, price, price_currency,distributor_category,manufacturer,manufacturer_part_number) VALUES (%s, %s, %d, %d, %s, %f, %d,%d,%d, %s)', array($row['Kod produktu'], $row['Nazwa produktu'], $distributor['id'], $quantity, $quantity_info, $row['Cena netto'], $pln_id,$category,$manufacturer, substr($row['Kod producenta'],0,32)));
 				}
 			} else {
-				if (!is_numeric($row['Cena netto'])) $row['Cena netto'] = 0;
 				/*** there's an exact match in the system already ***/
 				$link_exist++;
 				DB::Execute('UPDATE premium_warehouse_wholesale_items SET quantity=%d, quantity_info=%s, price=%f, price_currency=%d,distributor_category=%d,manufacturer=%d,manufacturer_part_number=%s WHERE internal_key=%s AND distributor_id=%d', array($quantity, $quantity_info, $row['Cena netto'], $pln_id, $category,$manufacturer, substr($row['Kod producenta'],0,32), $row['Kod produktu'], $distributor['id']));
+				if ($w_item!=null)
+					DB::Execute('UPDATE premium_warehouse_wholesale_items SET item_id=%d WHERE internal_key=%s AND distributor_id=%d', array($w_item, $row['Kod produktu'], $distributor['id']));
 			}
 		} 
 		foreach($categories_to_del as $name=>$id) {

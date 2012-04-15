@@ -251,9 +251,6 @@ class Premium_Warehouse_Wholesale__Plugin_abdata implements Premium_Warehouse_Wh
 					}
 				}
 
-				/*** check for exact match ***/
-				$internal_key = DB::GetOne('SELECT internal_key FROM premium_warehouse_wholesale_items WHERE internal_key=%s AND distributor_id=%d', array($row['indeks'], $distributor['id']));
-				if (($internal_key===false || $internal_key===null)) {
 					$w_item = null;
 					if($row['indeks p.']) {
 						/*** exact match not found, looking for candidates ***/
@@ -284,6 +281,10 @@ class Premium_Warehouse_Wholesale__Plugin_abdata implements Premium_Warehouse_Wh
 						/*** found match ***/
 						$item_exist++;
 					}
+
+				/*** check for exact match ***/
+				$internal_key = DB::GetOne('SELECT internal_key FROM premium_warehouse_wholesale_items WHERE internal_key=%s AND distributor_id=%d', array($row['indeks'], $distributor['id']));
+				if (($internal_key===false || $internal_key===null)) {
 					if ($w_item!==null) {
 						DB::Execute('INSERT INTO premium_warehouse_wholesale_items (item_id, internal_key, distributor_item_name, distributor_id, quantity, quantity_info, price, price_currency, distributor_category,manufacturer,upc) VALUES (%d, %s, %s, %d, %d, %s, %f, %d, %d, %d, %s)', array($w_item, $row['indeks'], $row['nazwa'], $distributor['id'], $quantity, $quantity_info, $row['cena netto'], $pln_id,$category, $manufacturer,substr($row['EAN'],0,128)));
 					} else {
@@ -293,6 +294,8 @@ class Premium_Warehouse_Wholesale__Plugin_abdata implements Premium_Warehouse_Wh
 					/*** there's an exact match in the system already ***/
 					$link_exist++;
 					DB::Execute('UPDATE premium_warehouse_wholesale_items SET quantity=%d, quantity_info=%s, price=%f, price_currency=%d, distributor_category=%d, manufacturer=%d, upc=%s WHERE internal_key=%s AND distributor_id=%d', array($quantity, $quantity_info, $row['cena netto'], $pln_id, $category, $manufacturer, substr($row['EAN'],0,128), $row['indeks'], $distributor['id']));
+					if ($w_item!=null)
+						DB::Execute('UPDATE premium_warehouse_wholesale_items SET item_id=%d WHERE internal_key=%s AND distributor_id=%d', array($w_item, $row['indeks'], $distributor['id']));
 				}
 			} 
 		}

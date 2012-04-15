@@ -218,9 +218,6 @@ class Premium_Warehouse_Wholesale__Plugin_techdata implements Premium_Warehouse_
 					}
 				}
 
-				/*** check for exact match ***/
-				$internal_key = DB::GetOne('SELECT internal_key FROM premium_warehouse_wholesale_items WHERE internal_key=%s AND distributor_id=%d', array($row_parts['KOD_TD'], $distributor['id']));
-				if (($internal_key===false || $internal_key===null)) {
 					$w_item = null;
 					/*** exact match not found, looking for candidates ***/
 					$matches = array();
@@ -251,6 +248,10 @@ class Premium_Warehouse_Wholesale__Plugin_techdata implements Premium_Warehouse_
 						/*** found match ***/
 						$item_exist++;
 					}
+
+				/*** check for exact match ***/
+				$internal_key = DB::GetOne('SELECT internal_key FROM premium_warehouse_wholesale_items WHERE internal_key=%s AND distributor_id=%d', array($row_parts['KOD_TD'], $distributor['id']));
+				if (($internal_key===false || $internal_key===null)) {
 					if ($w_item!==null) {
 						DB::Execute('INSERT INTO premium_warehouse_wholesale_items (item_id, internal_key, distributor_item_name, distributor_id, quantity, quantity_info, price, price_currency, distributor_category,manufacturer,manufacturer_part_number) VALUES (%d, %s, %s, %d, %d, %s, %f, %d, %d,%d, %s)', array($w_item, $row_parts['KOD_TD'], $row_parts['NAZWA'], $distributor['id'], $quantity, $quantity_info, $row_parts['CENA_C'], $pln_id,$category,$manufacturer, substr($row_parts['SYMBOLPROD'],0,32)));
 					} else {
@@ -260,6 +261,8 @@ class Premium_Warehouse_Wholesale__Plugin_techdata implements Premium_Warehouse_
 					/*** there's an exact match in the system already ***/
 					$link_exist++;
 					DB::Execute('UPDATE premium_warehouse_wholesale_items SET quantity=%d, quantity_info=%s, price=%f, price_currency=%d, distributor_category=%d, manufacturer=%d, manufacturer_part_number=%s WHERE internal_key=%s AND distributor_id=%d', array($quantity, $quantity_info, $row_parts['CENA_C'], $pln_id, $category,$manufacturer, substr($row_parts['SYMBOLPROD'],0,32), $row_parts['KOD_TD'], $distributor['id']));
+					if ($w_item!=null)
+						DB::Execute('UPDATE premium_warehouse_wholesale_items SET item_id=%d WHERE internal_key=%s AND distributor_id=%d', array($w_item, $row['KOD_TD'], $distributor['id']));
 				}
 			} 
 		}

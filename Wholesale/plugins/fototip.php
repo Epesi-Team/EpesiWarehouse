@@ -110,7 +110,7 @@ class Premium_Warehouse_Wholesale__Plugin_fototip implements Premium_Warehouse_W
 
             $out = file_get_contents($filename);
             $data = array();
-            if(!preg_match_all('/<tr.*?><td.*?>.*?<\/td><td.*?><a.*?products_id=([0-9]+).*?>(.*?)<\/a><\/td><td.*?>(.*?)<\/td><td.*?>(.*?) zł<\/td><td.*?>(.*?)<\/td><td.*?>.*?<\/td><td.*?>.*?<\/td><td.*?>.*?<\/td><\/tr>/i',$out,$data,PREG_SET_ORDER)) {
+            if(!preg_match_all('/<tr.*?><td.*?>.*?<\/td><td.*?>(.*?)<\/td><td.*?>(.*?)<\/td><td.*?>(.*?) zł<\/td><td.*?>(.*?)<\/td><td.*?>.*?<\/td><td.*?>.*?<\/td><td.*?>.*?<\/td><\/tr>/i',$out,$data,PREG_SET_ORDER)) {
 		Premium_Warehouse_WholesaleCommon::file_scan_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Invalid file, aborting.'), 2, true);
 		return false;
             }
@@ -125,7 +125,6 @@ class Premium_Warehouse_Wholesale__Plugin_fototip implements Premium_Warehouse_W
 		
 		$keys = array(
 			'',
-			'Kod produktu',
 			'Nazwa produktu',
 			'Kod producenta',
 			'Cena netto',
@@ -147,6 +146,12 @@ class Premium_Warehouse_Wholesale__Plugin_fototip implements Premium_Warehouse_W
 			
 			foreach ($row as $k=>$v) $row[$keys[$k]] = $v;
 			$row['Nazwa produktu'] = trim($row['Nazwa produktu']);
+			if(preg_match('/^<a.*?products_id=([0-9]+).*?>(.*?)<\/a>$/i',$row['Nazwa produktu'],$data)) {
+				$row['Kod produktu'] = $data[1];
+				$row['Nazwa produktu'] = $data[2];
+			} else {
+				$row['Kod produktu'] = md5($row['Nazwa produktu']);
+			}
 			if (strlen($row['Nazwa produktu'])>127) $row['Nazwa produktu'] = substr($row['Nazwa produktu'],0,127);
 			
 			if ($row['Stan mag']!=0) {
@@ -161,9 +166,7 @@ class Premium_Warehouse_Wholesale__Plugin_fototip implements Premium_Warehouse_W
 				$quantity = 0;
 			}
 				
-			/*** check for exact match ***/
-			$internal_key = DB::GetOne('SELECT internal_key FROM premium_warehouse_wholesale_items WHERE internal_key=%s AND distributor_id=%d', array($row['Kod produktu'], $distributor['id']));
-			if ($internal_key===false || $internal_key===null) {
+
 				$w_item = null;
 				if($row['Kod producenta']) {
 					/*** exact match not found, looking for candidates ***/
@@ -194,6 +197,9 @@ class Premium_Warehouse_Wholesale__Plugin_fototip implements Premium_Warehouse_W
 					/*** found match ***/
 					$item_exist++;
 				}
+			/*** check for exact match ***/
+			$internal_key = DB::GetOne('SELECT internal_key FROM premium_warehouse_wholesale_items WHERE internal_key=%s AND distributor_id=%d', array($row['Kod produktu'], $distributor['id']));
+			if ($internal_key===false || $internal_key===null) {
 				if ($w_item!==null) {
 					DB::Execute('INSERT INTO premium_warehouse_wholesale_items (item_id, internal_key, distributor_item_name, distributor_id, quantity, quantity_info, price, price_currency,manufacturer_part_number) VALUES (%d, %s, %s, %d, %d, %s, %f, %d, %s)', array($w_item, $row['Kod produktu'], $row['Nazwa produktu'], $distributor['id'], $quantity, $quantity_info, $row['Cena netto'], $pln_id, substr($row['Kod producenta'],0,32)));
 				} else {
@@ -203,6 +209,8 @@ class Premium_Warehouse_Wholesale__Plugin_fototip implements Premium_Warehouse_W
 				/*** there's an exact match in the system already ***/
 				$link_exist++;
 				DB::Execute('UPDATE premium_warehouse_wholesale_items SET quantity=%d, quantity_info=%s, price=%f, price_currency=%d,manufacturer_part_number=%s WHERE internal_key=%s AND distributor_id=%d', array($quantity, $quantity_info, $row['Cena netto'], $pln_id, substr($row['Kod producenta'],0,32), $row['Kod produktu'], $distributor['id']));
+				if ($w_item!=null)
+					DB::Execute('UPDATE premium_warehouse_wholesale_items SET item_id=%d WHERE internal_key=%s AND distributor_id=%d', array($w_item, $row['Kod produktu'], $distributor['id']));
 			}
 		} 
 		Premium_Warehouse_WholesaleCommon::file_scan_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Scan complete.'), 1);
@@ -210,5 +218,3 @@ class Premium_Warehouse_Wholesale__Plugin_fototip implements Premium_Warehouse_W
 		return true;
 	}
 }
-
-?>
