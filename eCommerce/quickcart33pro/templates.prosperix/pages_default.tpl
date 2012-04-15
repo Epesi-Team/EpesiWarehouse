@@ -354,3 +354,6 @@ $aData['manufacturers']
 	    </select>
   </form>
 <!-- END PRODUCTS_MANUFACTURERS -->
+<!-- BEGIN PRODUCTS_OUT_OF_STOCK -->
+<div style="padding: 7px 0;border-bottom: 1px solid white;background-color: transparent;color: #ED1C24;font-size: 1.417em;font-weight: bold;text-align: right;">$lang['Out_of_stock']</div>
+<!-- END PRODUCTS_OUT_OF_STOCK -->

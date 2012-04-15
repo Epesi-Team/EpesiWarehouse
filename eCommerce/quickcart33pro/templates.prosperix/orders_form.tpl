@@ -498,7 +498,7 @@ function pickupShopCheck(e) {
 <table class="multi_payment_carrier">
 <!-- END ORDER_PAYMENT_CARRIERS_MULTI_BEGIN -->
 <!-- BEGIN ORDER_PAYMENT_CARRIERS_MULTI_LIST -->
-<tr><td>$aData[sPaymentCarrierDescription]</td><td><input type="radio" name="sPaymentCarrier" value="$aData[iCarrier];$aData[iPayment];$aData[fPaymentCarrierPrice]" alt="radio;$lang['Select_delivery_and_payment']" onChange="countCarrierPrice( this );saveUserData( this.name, this.value );if(typeof pickupShopCheck != 'undefined')pickupShopCheck(this)" />&#36;&nbsp;$aData[sPaymentCarrierPrice]</td></tr>
+<tr><td>$aData[sPaymentCarrierDescription]</td><td><input type="radio" name="sPaymentCarrier" value="$aData[iCarrier];$aData[iPayment];$aData[fPaymentCarrierPrice]" alt="radio;$lang['Select_delivery_and_payment']" onChange="countCarrierPrice( this );saveUserData( this.name, this.value );if(typeof pickupShopCheck != 'undefined')pickupShopCheck(this)" />$aData[sPaymentCarrierPrice]</td></tr>
 <!-- END ORDER_PAYMENT_CARRIERS_MULTI_LIST -->
 <!-- BEGIN ORDER_PAYMENT_CARRIERS_MULTI_END -->
 </table>

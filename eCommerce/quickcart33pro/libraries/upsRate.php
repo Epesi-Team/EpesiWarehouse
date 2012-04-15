@@ -33,6 +33,11 @@ class upsRate {
 
     // Define the function getRate()
     function getRate($country,$PostalCode,$dest_country,$dest_zip,$service,$weight,$weight_unit = 'LBS') {
+	static $cache;
+	if(!isset($cache)) $cache = array();
+	$args = func_get_args();
+	$cache_id = md5(serialize($args));
+	if(isset($cache[$cache_id])) return $cache[$cache_id];
         $data ="<?xml version=\"1.0\"?>  
                 <AccessRequest xml:lang=\"en-US\">  
                     <AccessLicenseNumber>$this->AccessLicenseNumber</AccessLicenseNumber>  
@@ -111,8 +116,8 @@ class upsRate {
                 if($res->Response->ResponseStatusCode==0) {
                     throw new Exception($res->Response->Error[0]->ErrorDescription);
                 }
-
-                return array((string)$res->RatedShipment->TotalCharges->MonetaryValue,(string)$res->RatedShipment->TotalCharges->CurrencyCode);  
+		
+                return ($cache[$cache_id] = array((string)$res->RatedShipment->TotalCharges->MonetaryValue,(string)$res->RatedShipment->TotalCharges->CurrencyCode));  
             }  
     }
 
