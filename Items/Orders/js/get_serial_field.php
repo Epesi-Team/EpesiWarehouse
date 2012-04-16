@@ -89,7 +89,7 @@ if ($trans['transaction_type']==1 || $trans['transaction_type']==4 || ($trans['t
 		$shelf_html = '<input type="text" name="shelf_'.$serial.'" id="serial__shelf__'.($serial-1).'" value="'.$shelf.'">';
 		$js = 'var serials_data=[];';
 		foreach ($item_serials as $k=>$v)
-			$js .= 'serials_data['.$k.'] = {"note":"'.$v['note'].'", "shelf":"'.$v['shelf'].'"};';
+			$js .= 'serials_data["'.$k.'"] = {"note":"'.$v['note'].'", "shelf":"'.$v['shelf'].'"};';
 		$js .= 	'update_note_and_shelf=function(span_id){';
 		$js .= 		'var current_val = $("serial__1__"+span_id).value;';
 		$js .= 		'$("serial__note__"+span_id).value=serials_data[current_val]["note"];';
