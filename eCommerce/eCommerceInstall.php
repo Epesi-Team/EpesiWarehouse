@@ -480,10 +480,14 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items_categories',array('name'=>'Available languages',	'type'=>'calculated', 'required'=>false, 'filter'=>false, 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_eCommerceCommon','display_category_available_languages')));
 		Utils_RecordBrowserCommon::new_record_field('premium_warehouse',array('name'=>'Pickup Place',	'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>true));
 		
-		Utils_AttachmentCommon::new_addon('premium_ecommerce_descriptions');
-		Utils_AttachmentCommon::new_addon('premium_ecommerce_pages_data');
-		Utils_AttachmentCommon::new_addon('premium_ecommerce_pages_data');
-		Utils_AttachmentCommon::new_addon('premium_ecommerce_products');
+//		Utils_AttachmentCommon::new_addon('premium_ecommerce_descriptions');
+//		Utils_AttachmentCommon::new_addon('premium_ecommerce_pages_data');
+//		Utils_AttachmentCommon::new_addon('premium_ecommerce_pages_data');
+//		Utils_AttachmentCommon::new_addon('premium_ecommerce_products');
+		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_descriptions', 'Premium/Warehouse/eCommerce', 'attachment_product_desc_addon', 'Notes');
+		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_pages', 'Premium/Warehouse/eCommerce', 'attachment_page_addon', 'Notes');
+		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_pages_data', 'Premium/Warehouse/eCommerce', 'attachment_page_desc_addon', 'Notes');
+		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_products', 'Premium/Warehouse/eCommerce', 'attachment_product_addon', 'Notes');
 
 		Variable::set('ecommerce_rules','You can edit this page in Administration - eCommerce settings.');
 		Variable::set('ecommerce_contactus','You can edit this page in Administration - eCommerce settings.');
@@ -640,10 +644,14 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::delete_addon('premium_warehouse_items_orders', 'Premium/Warehouse/eCommerce', 'orders_addon');
 		Utils_RecordBrowserCommon::delete_addon('contact', 'Premium/Warehouse/eCommerce', 'users_addon');
 
-		Utils_AttachmentCommon::delete_addon('premium_ecommerce_descriptions');
-		Utils_AttachmentCommon::delete_addon('premium_ecommerce_pages_data');
-		Utils_AttachmentCommon::delete_addon('premium_ecommerce_pages_data');
-		Utils_AttachmentCommon::delete_addon('premium_ecommerce_products');
+//		Utils_AttachmentCommon::delete_addon('premium_ecommerce_descriptions');
+//		Utils_AttachmentCommon::delete_addon('premium_ecommerce_pages_data');
+//		Utils_AttachmentCommon::delete_addon('premium_ecommerce_pages_data');
+//		Utils_AttachmentCommon::delete_addon('premium_ecommerce_products');
+		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_pages', 'Premium/Warehouse/eCommerce', 'attachment_page_addon');
+		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_pages_data', 'Premium/Warehouse/eCommerce', 'attachment_page_desc_addon');
+		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_products', 'Premium/Warehouse/eCommerce', 'attachment_product_addon');
+		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_descriptions', 'Premium/Warehouse/eCommerce', 'attachment_product_desc_addon');
 
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_emails');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_3rdp_info');

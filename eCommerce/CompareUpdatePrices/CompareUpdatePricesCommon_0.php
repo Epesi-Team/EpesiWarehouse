@@ -13,6 +13,8 @@ defined("_VALID_ACCESS") || die('Direct access forbidden');
 class Premium_Warehouse_eCommerce_CompareUpdatePricesCommon extends ModuleCommon {
 
 	public static function item_addon_parameters($r) {
+		if(!isset($r['id'])) 
+			return array('show'=>false);
 		$ret = Utils_RecordBrowserCommon::get_records_count('premium_ecommerce_products',array('item_name'=>$r['id']));
 		if(!$ret)
 			return array('show'=>false);

@@ -165,6 +165,7 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 		$prefs = DB::GetOne('SELECT prefs FROM premium_ecommerce_allegro_auctions WHERE item_id=%d ORDER BY started_on DESC',array($r['id']));
 		if(!$qf->exportValue('submited') && $prefs && $prefs = @unserialize($prefs)) {
 		    unset($prefs['template']);
+		    unset($prefs['publish']);
 		    $qf->setDefaults($prefs);
 		}
 		

@@ -11,7 +11,9 @@
 defined("_VALID_ACCESS") || die('Direct access forbidden');
 
 class Premium_Warehouse_eCommerce_AllegroCommon extends ModuleCommon {
-	public static function warehouse_item_addon_label($r, $rb) {
+	public static function warehouse_item_addon_label($r) {
+	if(!isset($r['id']))
+	    return array('show'=>false);
         $x = Utils_RecordBrowserCommon::get_records_count('premium_ecommerce_products',array('item_name'=>$r['id']));
         if (!$x || !Base_User_SettingsCommon::get('Premium_Warehouse_eCommerce_Allegro','login')) return array('show'=>false);
         return array('label'=>'Allegro', 'show'=>true);
