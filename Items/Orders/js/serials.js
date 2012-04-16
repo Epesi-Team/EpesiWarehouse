@@ -20,9 +20,9 @@ set_serials_fields = function(qty, order_details, debit) {
 		var newEl = document.createElement('tr');
 		tbody.appendChild(newEl);
 		newEl.innerHTML = 
-			'<td class="label">'+serial_label+(x-1)+'</td><td class="data" id="serial_field_space_'+(x-1)+'">...<td>'+
-			'<td class="label">'+note_label+(x-1)+'</td><td class="data" id="note_field_space_'+(x-1)+'">...<td>'+
-			'<td class="label">'+shelf_label+(x-1)+'</td><td class="data" id="shelf_field_space_'+(x-1)+'">...<td>';
+			'<td><table><tr><td class="label">'+serial_label+(x-1)+'</td><td class="data" id="serial_field_space_'+(x-1)+'">...<td></tr>'+
+			'<tr><td class="label">'+note_label+(x-1)+'</td><td class="data" id="note_field_space_'+(x-1)+'">...<td></tr>'+
+			'<tr><td class="label">'+shelf_label+(x-1)+'</td><td class="data" id="shelf_field_space_'+(x-1)+'">...<td></tr></table></td>';
 		new Ajax.Request('modules/Premium/Warehouse/Items/Orders/js/get_serial_field.php', {
 			method: 'post',
 			parameters:{
