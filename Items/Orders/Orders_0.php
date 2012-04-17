@@ -214,7 +214,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 		$cols['transaction_status'] = false;			
 		$cols['warehouse'] = false;			
 		$header_prop = array(
-			'item_name'=>array('width'=>'100px', 'wrapmode'=>'nowrap'),
+			'item_name'=>array('width'=>'180px', 'wrapmode'=>'nowrap'),
 			'description'=>array('width'=>70, 'wrapmode'=>'nowrap'),
 			'gross_total'=>array('width'=>'50px', 'wrapmode'=>'nowrap'),
 			'tax_value'=>array('width'=>'50px', 'wrapmode'=>'nowrap'),
