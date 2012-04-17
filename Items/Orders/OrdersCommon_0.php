@@ -426,7 +426,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	
 	public static function check_no_empty_invoice($data) {
 		if (isset($data['receipt']) && $data['receipt']) return true;
-		if (Utils_RecordBrowser::$last_record['transaction_type']!=4) return true;
+		if (Utils_RecordBrowser::$last_record['transaction_type']==4 || Utils_RecordBrowser::$last_record['transaction_type']==2) return true;
 		$ret = array();
 		if (!isset($data['company_name']) || !$data['company_name']) {
 			if (!isset($data['last_name']) || !$data['last_name']) $ret['last_name'] = 'Field required for non-receipt transactions'; 
