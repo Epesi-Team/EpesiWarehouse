@@ -214,23 +214,23 @@ class Premium_Warehouse_Items_Orders extends Module {
 		$cols['transaction_status'] = false;			
 		$cols['warehouse'] = false;			
 		$header_prop = array(
-			'item_name'=>array('width'=>'180px', 'wrapmode'=>'nowrap'),
+			'item_name'=>array('width'=>'130px', 'wrapmode'=>'nowrap'),
 			'description'=>array('width'=>70, 'wrapmode'=>'nowrap'),
-			'gross_total'=>array('width'=>'50px', 'wrapmode'=>'nowrap'),
-			'tax_value'=>array('width'=>'50px', 'wrapmode'=>'nowrap'),
-			'tax_rate'=>array('width'=>'50px', 'wrapmode'=>'nowrap'),
+			'gross_total'=>array('width'=>'90px', 'wrapmode'=>'nowrap'),
+			'tax_value'=>array('width'=>'70px', 'wrapmode'=>'nowrap'),
+			'tax_rate'=>array('width'=>'100px', 'wrapmode'=>'nowrap'),
 			'sww'=>array('width'=>15, 'wrapmode'=>'nowrap'),
-			'net_total'=>array('width'=>'50px', 'wrapmode'=>'nowrap'),
+			'net_total'=>array('width'=>'90px', 'wrapmode'=>'nowrap'),
 			'net_price'=>array('width'=>'80px', 'wrapmode'=>'nowrap'),
 			'gross_price'=>array('width'=>'80px', 'wrapmode'=>'nowrap'),
 			'debit'=>array('width'=>20, 'wrapmode'=>'nowrap'),
 			'credit'=>array('width'=>20, 'wrapmode'=>'nowrap'),
-			'quantity'=>array('name'=>'Qty', 'width'=>'35px', 'wrapmode'=>'nowrap'),
+			'quantity'=>array('name'=>'Qty', 'width'=>'45px', 'wrapmode'=>'nowrap'),
 			'serial'=>array('width'=>40, 'wrapmode'=>'nowrap')
 		);
 		if ($arg['transaction_type']==0) {
-			$header_prop['net_price'] = array('name'=>'Net Cost', 'width'=>28, 'wrapmode'=>'nowrap');
-			$header_prop['gross_price'] = array('name'=>'Gross Cost', 'width'=>28, 'wrapmode'=>'nowrap');
+			$header_prop['net_price'] = array('name'=>'Net Cost', 'width'=>'100px', 'wrapmode'=>'nowrap');
+			$header_prop['gross_price'] = array('name'=>'Gross Cost', 'width'=>'100px', 'wrapmode'=>'nowrap');
 //			if ($arg['status']!=20) {
 //				$cols['serial'] = false;
 //			}
