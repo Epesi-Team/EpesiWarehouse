@@ -726,13 +726,18 @@ class Products
     $oTpl   =& TplParser::getInstance( );
     
     if(!is_array($iProduct)) $iProduct = array($iProduct);
-    
-    $products = DB::GetAssoc('SELECT or_det.f_item_name,count(or_det.f_item_name) FROM premium_warehouse_items_orders_details_data_1 or_det 
+    $cache_id = md5(serialize($iProduct));
+    if(file_exists('cache/cross/'.$cache_id) && filemtime('cache/cross/'.$cache_id)>time()-3600*72) {
+	$products = @unserialize(file_get_contents('cache/cross/'.$cache_id));
+	if(!is_array($products)) $products = array();
+    } else {
+        $products = DB::GetAssoc('SELECT or_det.f_item_name,count(or_det.f_item_name) FROM premium_warehouse_items_orders_details_data_1 or_det 
 			    WHERE or_det.f_item_name NOT IN ('.implode(',',$iProduct).') AND or_det.f_transaction_id IN 
 			    (SELECT ord.f_transaction_id FROM premium_warehouse_items_orders_details_data_1 or_det2 
 			    INNER JOIN premium_ecommerce_orders_data_1 ord ON ord.f_transaction_id=or_det2.f_transaction_id
 			    WHERE ord.f_language=%s AND or_det2.f_item_name IN ('.implode(',',$iProduct).')) GROUP BY or_det.f_item_name ORDER BY count(or_det.f_item_name) DESC LIMIT 5',array(LANGUAGE));
-
+	file_put_contents('cache/cross/'.$cache_id,serialize($products));
+    }
 
     foreach($products as $p=>$num) {
           $aData = $this->getProduct($p);
