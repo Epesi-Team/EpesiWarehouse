@@ -61,18 +61,18 @@ class Premium_Warehouse_Items extends Module {
 		}
 			
 		$this->rb->set_header_properties(array(
-						'quantity_on_hand'=>array('name'=>'On Hand', 'width'=>6, 'wrapmode'=>'nowrap'),
-						'quantity_en_route'=>array('name'=>'En Route', 'width'=>6, 'wrapmode'=>'nowrap'),
-						'available_qty'=>array('name'=>'Avail. Qty', 'width'=>6, 'wrapmode'=>'nowrap'),
-						'dist_qty'=>array('name'=>'Dist. Qty', 'width'=>6, 'wrapmode'=>'nowrap'),
-						'reserved_qty'=>array('name'=>'Res. Qty', 'width'=>6, 'wrapmode'=>'nowrap'),
+						'quantity_on_hand'=>array('name'=>'On Hand', 'width'=>4, 'wrapmode'=>'nowrap'),
+						'quantity_en_route'=>array('name'=>'En Route', 'width'=>4, 'wrapmode'=>'nowrap'),
+						'available_qty'=>array('name'=>'Avail. Qty', 'width'=>4, 'wrapmode'=>'nowrap'),
+						'dist_qty'=>array('name'=>'Dist. Qty', 'width'=>4, 'wrapmode'=>'nowrap'),
+						'reserved_qty'=>array('name'=>'Res. Qty', 'width'=>4, 'wrapmode'=>'nowrap'),
 						'manufacturer_part_number'=>array('name'=>'Part Number', 'width'=>10, 'wrapmode'=>'nowrap'),
 						'item_type'=>array('width'=>10, 'wrapmode'=>'nowrap'),
 						'gross_price'=>array('name'=>'Price','width'=>8, 'wrapmode'=>'nowrap'),
 						'item_name'=>array('width'=>20,'wrapmode'=>'nowrap'),
 						'sku'=>array('width'=>6, 'wrapmode'=>'nowrap'),
-						'upc'=>array('width'=>6, 'wrapmode'=>'nowrap'),
-						'product_code'=>array('width'=>6, 'wrapmode'=>'nowrap'),
+						'upc'=>array('width'=>8, 'wrapmode'=>'nowrap'),
+						'product_code'=>array('width'=>8, 'wrapmode'=>'nowrap'),
 						'manufacturer'=>array('width'=>8)
 						));
 
