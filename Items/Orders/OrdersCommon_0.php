@@ -376,7 +376,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	}
 
 	public static function get_status_array($trans, $payment=null) {
-		if ($payment==null) $payment = $trans['payment'];
+		if ($payment==null) $payment = isset($trans['payment'])?$trans['payment']:null;
 		switch ($trans['transaction_type']) {
 			// PURCHASE
 			case 0: $opts = array(''=>'New', 1=>'Purchase Quote', 2=>'Purchase Order', 3=>'New Shipment', 4=>'Shipment Received', 5=>'On Hold', 20=>'Delivered', 21=>'Canceled');
