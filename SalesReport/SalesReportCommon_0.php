@@ -17,7 +17,7 @@ class Premium_Warehouse_SalesReportCommon extends ModuleCommon {
 		return "Sales Report";
 	}
 	public static function currency_exchange_addon_access() {
-		return Utils_RecordBrowserCommon::get_access('premium_warehouse_items_orders','edit');
+		return Utils_RecordBrowserCommon::get_access('premium_warehouse_items_orders','edit',Utils_RecordBrowser::$last_record);
 	}
 	public static function menu() {
 		if (!Base_AclCommon::i_am_admin()) return;

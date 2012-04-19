@@ -27,7 +27,10 @@ class Premium_Warehouse_Items_Orders extends Module {
 							'employee'=>$me['id'],
 							'warehouse'=>Base_User_SettingsCommon::get('Premium_Warehouse','my_warehouse')
 							);
-		if(Utils_RecordBrowserCommon::get_access('premium_warehouse_items_orders','edit')) {
+		if(Acl::get_user()==19)
+		    print_r(Base_AclCommon::get_clearance());
+		if(Utils_RecordBrowserCommon::get_access('premium_warehouse_items_orders','add')) {
+
 			$disabled = Variable::get('premium_warehouse_trans_types', false);
 			if (!$disabled) $disabled = array();
 			else $disabled = array_flip($disabled);
@@ -74,7 +77,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 
 		$this->rb->set_header_properties(array(
 			'terms'=>array('width'=>10, 'wrapmode'=>'nowrap'),
-			'status'=>array('width'=>10, 'wrapmode'=>'nowrap'),
+			'status'=>array('width'=>15, 'wrapmode'=>'nowrap'),
 			'transaction_id'=>array('width'=>10, 'wrapmode'=>'nowrap', 'name'=>'Trans. ID'),
 			'transaction_type'=>array('width'=>10, 'wrapmode'=>'nowrap', 'name'=>'Type'),
 			'invoice_number'=>array('width'=>10, 'wrapmode'=>'nowrap', 'name'=>'Invoice'),
@@ -214,12 +217,12 @@ class Premium_Warehouse_Items_Orders extends Module {
 		$cols['transaction_status'] = false;			
 		$cols['warehouse'] = false;			
 		$header_prop = array(
-			'item_name'=>array('width'=>'130px', 'wrapmode'=>'nowrap'),
-			'description'=>array('width'=>70, 'wrapmode'=>'nowrap'),
+			'item_name'=>array('width'=>'210px', 'wrapmode'=>'nowrap'),
+			'description'=>array('width'=>40, 'wrapmode'=>'nowrap'),
 			'gross_total'=>array('width'=>'90px', 'wrapmode'=>'nowrap'),
 			'tax_value'=>array('width'=>'70px', 'wrapmode'=>'nowrap'),
-			'tax_rate'=>array('width'=>'100px', 'wrapmode'=>'nowrap'),
-			'sww'=>array('width'=>9, 'wrapmode'=>'nowrap'),
+			'tax_rate'=>array('width'=>'50px', 'wrapmode'=>'nowrap'),
+			'sww'=>array('width'=>4, 'wrapmode'=>'nowrap'),
 			'net_total'=>array('width'=>'90px', 'wrapmode'=>'nowrap'),
 			'net_price'=>array('width'=>'80px', 'wrapmode'=>'nowrap'),
 			'gross_price'=>array('width'=>'80px', 'wrapmode'=>'nowrap'),

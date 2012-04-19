@@ -27,7 +27,7 @@ class Premium_Warehouse_Wholesale extends Module {
     public function items() {
         $gb = $this->init_module('Utils/GenericBrowser', null, 'wholesale_items_addon');
         $gb->set_table_columns(array(
-            array('name'=>$this->t('Actions'), 'width'=>6, 'wrapmode'=>'nowrap', 'order'=>'item_id'),
+            array('name'=>$this->t('Actions'), 'width'=>8, 'wrapmode'=>'nowrap', 'order'=>'item_id'),
             array('name'=>$this->t('Item Name'), 'width'=>40, 'wrapmode'=>'nowrap', 'order'=>'distributor_item_name', 'search'=>'distributor_item_name'),
             array('name'=>$this->t('Distributor'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'distributor_id'),
             array('name'=>$this->t('Distributor Code'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'internal_key', 'search'=>'internal_key'),
@@ -310,7 +310,7 @@ class Premium_Warehouse_Wholesale extends Module {
     public function items_addon($arg) {
         $gb = $this->init_module('Utils/GenericBrowser', null, 'wholesale_items_addon');
         $gb->set_table_columns(array(
-            array('name'=>$this->t('Status'), 'width'=>6, 'wrapmode'=>'nowrap', 'order'=>'item_id'),
+            array('name'=>$this->t('Status'), 'width'=>8, 'wrapmode'=>'nowrap', 'order'=>'item_id'),
             array('name'=>$this->t('Item Name'), 'width'=>40, 'wrapmode'=>'nowrap', 'order'=>'distributor_item_name', 'search'=>'distributor_item_name'),
             array('name'=>$this->t('Distributor Code'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'internal_key', 'search'=>'internal_key'),
             array('name'=>$this->t('Price'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'price'),

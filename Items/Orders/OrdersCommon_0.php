@@ -32,10 +32,10 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			));
 	}
 	public static function attachment_addon_access() {
-		return Utils_RecordBrowserCommon::get_access('premium_warehouse_items_orders','edit');
+		return Utils_RecordBrowserCommon::get_access('premium_warehouse_items_orders','edit',Utils_RecordBrowser::$last_record);
 	}
 	public static function order_serial_addon_access() {
-		return Utils_RecordBrowserCommon::get_access('premium_warehouse_items_orders','edit');
+		return Utils_RecordBrowserCommon::get_access('premium_warehouse_items_orders','edit',Utils_RecordBrowser::$last_record);
 	}
     public static function get_order($id) {
 		return Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $id);
