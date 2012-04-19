@@ -27,8 +27,6 @@ class Premium_Warehouse_Items_Orders extends Module {
 							'employee'=>$me['id'],
 							'warehouse'=>Base_User_SettingsCommon::get('Premium_Warehouse','my_warehouse')
 							);
-		if(Acl::get_user()==19)
-		    print_r(Base_AclCommon::get_clearance());
 		if(Utils_RecordBrowserCommon::get_access('premium_warehouse_items_orders','add')) {
 
 			$disabled = Variable::get('premium_warehouse_trans_types', false);
