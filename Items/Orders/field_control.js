@@ -57,12 +57,12 @@ warehouse_orders_hide_fields = function(trans_type, status, shipment_type, payme
 
 	warehouse_orders_hide_field('shipment_type', (trans_type==2 || (trans_type==0 && status<2) || (trans_type==1 && status<2 && status>=0)));
 	warehouse_orders_hide_field('payment_type', ((trans_type==0 && status<2) || (trans_type==1 && status<2 && status>=0)));
-	warehouse_orders_hide_field('shipment_date', (trans_type==2 || shipment_type==0 || (trans_type==0 && status<4) || (trans_type==1 && status<7)));
-	warehouse_orders_hide_field('shipment_no', (trans_type==2 || shipment_type==0 || (trans_type==0 && status<20) || (trans_type==1 && status<7)));
-	warehouse_orders_hide_field('shipment_employee', (trans_type==2 || shipment_type==0 || (trans_type==0 && status<4) || (trans_type==1 && status<7)));
-	warehouse_orders_hide_field('shipment_eta', (trans_type==2 || shipment_type==0 || (trans_type==0 && status<4)));
-	warehouse_orders_hide_field('shipment_cost', (trans_type==2 || shipment_type==0 || (trans_type==0 && status<4)));
-	warehouse_orders_hide_field('handling_cost', (trans_type==2 || (trans_type==0 && status<4)));
+	warehouse_orders_hide_field('shipment_date', (trans_type==2 || shipment_type==0 || (trans_type==0 && status<2) || (trans_type==1 && status<7)));
+	warehouse_orders_hide_field('shipment_no', (trans_type==2 || shipment_type==0 || (trans_type==0 && status<2) || (trans_type==1 && status<7)));
+	warehouse_orders_hide_field('shipment_employee', (trans_type==2 || shipment_type==0 || (trans_type==0 && status<2) || (trans_type==1 && status<7)));
+	warehouse_orders_hide_field('shipment_eta', (trans_type==2 || shipment_type==0 || (trans_type==0 && status<2)));
+	warehouse_orders_hide_field('shipment_cost', (trans_type==2 || shipment_type==0 || (trans_type==0 && status<2)));
+	warehouse_orders_hide_field('handling_cost', (trans_type==2 || (trans_type==0 && status<2)));
 	warehouse_orders_hide_field('expiration_date', (trans_type==2 || (trans_type==0 && status!=1) || (trans_type==1 && status!=1)));
 }
 
