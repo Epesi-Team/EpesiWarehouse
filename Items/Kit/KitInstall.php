@@ -24,7 +24,6 @@ class Premium_Warehouse_Items_KitInstall extends ModuleInstall {
 	
 	public function uninstall() {
 		Utils_RecordBrowserCommon::unregister_processing_callback('premium_warehouse_items', array('Premium_Warehouse_Items_KitCommon', 'submit_items'));
-		Utils_RecordBrowserCommon::set_access_callback('premium_warehouse_items', array('Premium_Warehouse_Items_OrdersCommon', 'access_items'));
 		Utils_RecordBrowserCommon::delete_record_field('premium_warehouse_items', 'Kit items');
 		Utils_RecordBrowserCommon::set_QFfield_callback('premium_warehouse_items', 'Quantity on Hand', array('Premium_Warehouse_Items_LocationCommon', 'QFfield_item_quantity'));
 		Utils_RecordBrowserCommon::set_display_callback('premium_warehouse_items', 'Quantity on Hand', array('Premium_Warehouse_Items_LocationCommon', 'display_item_quantity'));
