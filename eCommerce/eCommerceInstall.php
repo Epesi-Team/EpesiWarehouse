@@ -17,6 +17,7 @@ defined("_VALID_ACCESS") || die('Direct access forbidden');
 class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 
 	public function install() {
+		set_time_limit(0);
 //		Base_LangCommon::install_translations($this->get_type());
 //		Base_ThemeCommon::install_default_theme($this->get_type());
 
