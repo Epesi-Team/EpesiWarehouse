@@ -571,6 +571,8 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::add_default_access('premium_ecommerce_users');
 		Utils_RecordBrowserCommon::add_default_access('premium_ecommerce_newsletter');
 
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders', 'edit', 'EMPLOYEE', array('online_order'=>1, '<status'=>6), array('transaction_type'));
+
 		return true;
 	}
 	

@@ -178,6 +178,7 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders', 'view', array('ALL','ACCESS:manager'), array('company'=>'USER_COMPANY'));
 		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders', 'add', 'EMPLOYEE', array(), array('transaction_type'));
 		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders', 'edit', 'EMPLOYEE', array('employee'=>'USER', '(>=transaction_date'=>'-7 days', '|<status'=>20), array('transaction_type', 'warehouse'));
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders', 'edit', 'EMPLOYEE', array('transaction_type'=>4, '<status'=>20), array('transaction_type', 'warehouse'));
 		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders', 'edit', 'EMPLOYEE', array('employee'=>'USER', 'warehouse'=>''), array('transaction_type'));
 		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders', 'edit', array('EMPLOYEE','ACCESS:manager'), array(), array('transaction_type', 'warehouse'));
 		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders', 'delete', 'EMPLOYEE', array(':Created_by'=>'USER_ID'));
