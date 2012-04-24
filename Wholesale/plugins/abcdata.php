@@ -81,7 +81,7 @@ class Premium_Warehouse_Wholesale__Plugin_abcdata implements Premium_Warehouse_W
 
 	public function update_from_file($filename, $distributor, $params) {
 		try {
-			ini_set("memory_limit","1024M");
+			ini_set("memory_limit","1536M");
 			$xls = Libs_PHPExcelCommon::load($filename);
 		} catch(Exception $e) {
 			Premium_Warehouse_WholesaleCommon::file_scan_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Unable to parse uploaded file, invalid XLS. '.$e), 2, true);

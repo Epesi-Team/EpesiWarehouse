@@ -151,6 +151,7 @@ class Premium_Warehouse_Wholesale__Plugin_epesi_with_tax implements Premium_Ware
 			
 			foreach ($row as $k=>$v) $row[$keys[$k]] = $v;
 			if (strlen($row['Name'])>127) $row['Name'] = substr($row['Name'],0,127);
+			$row['Price'] = str_replace(',','.',$row['Price']);
 
 			$pln_id = Utils_CurrencyFieldCommon::get_id_by_code($row['Currency']);
 			if ($pln_id===false || $pln_id===null) {

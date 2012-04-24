@@ -56,6 +56,7 @@ class Premium_Warehouse_Wholesale__Plugin_action implements Premium_Warehouse_Wh
 	 */
 	public function download_file($parameters, $distributor) {
 		$dir = ModuleManager::get_data_dir('Premium_Warehouse_Wholesale');
+		@unlink($dir.'cookiefile.cf');
 
 	    $c = curl_init();
 		$url = 'https://i-serwis2.action.pl/Login.aspx';
@@ -64,10 +65,10 @@ class Premium_Warehouse_Wholesale__Plugin_action implements Premium_Warehouse_Wh
 		curl_setopt($c, CURLOPT_SSL_VERIFYPEER, false);
 		curl_setopt($c, CURLOPT_SSL_VERIFYHOST,  2);
 		curl_setopt($c, CURLOPT_HEADER, false);
-		curl_setopt($c, CURLOPT_POST, true);
+		curl_setopt($c, CURLOPT_POST, false);
 		curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($c, CURLOPT_USERAGENT, "Mozilla/4.0 (compatible; MSIE 6.01; Windows NT 5.0)");
-		curl_setopt($c, CURLOPT_FOLLOWLOCATION, false);
+		curl_setopt($c, CURLOPT_USERAGENT, "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.0)");
+		curl_setopt($c, CURLOPT_FOLLOWLOCATION, true);
 		curl_setopt($c, CURLOPT_COOKIEFILE, $dir.'cookiefile.cf');
 		curl_setopt($c, CURLOPT_COOKIEJAR, $dir.'cookiefile.cf');
 
@@ -86,6 +87,7 @@ class Premium_Warehouse_Wholesale__Plugin_action implements Premium_Warehouse_Wh
 			return false;
 		}
 
+	    curl_setopt($c, CURLOPT_POST, true);
 	    curl_setopt($c, CURLOPT_POSTFIELDS, http_build_query(array(
 			'txtCustomerID'=>$parameters['ID'], 
 			'txtLogin'=>$parameters['Login'], 

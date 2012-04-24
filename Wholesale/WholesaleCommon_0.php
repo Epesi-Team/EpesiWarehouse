@@ -435,7 +435,9 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 		$dists = Utils_RecordBrowserCommon::get_records('premium_warehouse_distributor',array('<last_update'=>date('Y-m-d 8:00:00',time()-3600*23)));
 		$ret = '';
 		foreach($dists as $dist) {
+			if($dist['id']!=7) continue;
 			$plugin = self::get_plugin($dist['plugin']);
+			if(!$plugin->is_auto_download()) continue;
 			$params = $plugin->get_parameters();
 			$i = 1;
 			foreach ($params as $k=>$v) {
@@ -444,10 +446,12 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 			}
 			ob_start();
 			$filename = @$plugin->download_file($params, $dist);
+			ob_end_clean();
 			if(!$filename) {
 				$ret .= 'failed file download: '.$dist['name'].'<br>';
 				continue;
 			}
+			ob_start();
 			$res = @$plugin->update_from_file($filename, $dist, $params);
 			if(is_array($filename))
 			    foreach($filename as $filename2)
