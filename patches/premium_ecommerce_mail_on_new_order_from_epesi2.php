@@ -7,10 +7,10 @@ if (ModuleManager::is_installed('Premium_Warehouse_eCommerce')>=0) {
 			Utils_RecordBrowserCommon::new_record('premium_ecommerce_emails',array('send_on_status'=>"-1",'language'=>$k,'subject'=>'New order','content'=>$txt));
 		Variable::delete('ecommerce_order_email_'.$k,false);
 	}
-	$txt = Variable::get('ecommerce_order_email');
+	$txt = Variable::get('ecommerce_order_email',false);
 	if($txt)
 		Utils_RecordBrowserCommon::new_record('premium_ecommerce_emails',array('send_on_status'=>"-1",'subject'=>'New order','content'=>$txt));
-	Variable::delete('ecommerce_order_email');
+	Variable::delete('ecommerce_order_email',false);
 	
 	Utils_RecordBrowserCommon::register_processing_callback('premium_payments', array('Premium_Warehouse_eCommerceCommon', 'submit_payment'));
 }
