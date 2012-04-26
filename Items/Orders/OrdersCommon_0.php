@@ -558,10 +558,11 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		return Premium_Warehouse_Items_LocationCommon::mark_used(Utils_RecordBrowserCommon::get_value('premium_warehouse_location',$r['serial'],'used')).Utils_RecordBrowserCommon::get_value('premium_warehouse_location',$r['serial'],'serial');
 	}
 	
-	public static function QFfield_return_date(&$form, $field, $label, $mode, $default, $rb){
-	        Epesi::alert($rb->record['transaction_type']);
-                if($rb->record['transaction_type']!=3) return;
-                $form->addElement('date',$args['id'],$label,array('format'=>'d M Y', 'minYear'=>date('Y')-95,'maxYear'=>date('Y')+5, 'addEmptyOption'=>true, 'emptyOptionText'=>'--'));
+	public static function QFfield_return_date(&$form, $field, $label, $mode, $default, $args, $rb){
+		$rec = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders',$rb->record['transaction_id']);
+//	        Epesi::alert($rec['transaction_type']);
+                if($rec['transaction_type']!=3) return;
+                $form->addElement('datepicker',$args['id'],$label,array('format'=>'d M Y', 'minYear'=>date('Y')-95,'maxYear'=>date('Y')+5, 'addEmptyOption'=>true, 'emptyOptionText'=>'--'));
 		$form->setDefaults(array($field=>$default));
 	}
 	
