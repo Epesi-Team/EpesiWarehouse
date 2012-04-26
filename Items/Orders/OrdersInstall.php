@@ -108,7 +108,7 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 			array('name'=>'Credit',				'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>false, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_credit'), 'QFfield_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'QFfield_credit')),
 			array('name'=>'Quantity',			'type'=>'integer', 'required'=>true, 'extra'=>false, 'visible'=>true, 'QFfield_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'QFfield_quantity')),
 
-			array('name'=>'Return Date', 		'type'=>'date', 'required'=>true, 'extra'=>false, 'visible'=>false, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon','display_return_date')),
+			array('name'=>'Return Date', 		'type'=>'date', 'required'=>false, 'extra'=>false, 'visible'=>false, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon','display_return_date'), 'QFfield_callback'=>array('Premium_Warehouse_Items_OrdersCommon','QFfield_return_date')),
 			array('name'=>'Returned', 			'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>false),
 
 			array('name'=>'Net Price', 			'type'=>'currency', 'required'=>true, 'extra'=>false, 'visible'=>true, 'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_net_price')),
