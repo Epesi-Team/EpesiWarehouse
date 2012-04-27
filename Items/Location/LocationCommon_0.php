@@ -210,7 +210,7 @@ class Premium_Warehouse_Items_LocationCommon extends ModuleCommon {
 
 	public static function company_items_addon_parameters($record) {
 		if (!isset($record['id'])) return array();
-	    $items = DB::GetOne('SELECT count(location_id) FROM premium_warehouse_location_serial WHERE owner="C:%d"', array($record['id']));
+	    $items = DB::GetOne('SELECT count(location_id) FROM premium_warehouse_location_serial WHERE owner=%s', array('C:'.$record['id']));
 		if (!$items) return array('show'=>false);
 		return array('show'=>true, 'label'=>'Warehouse Items');
 	}

@@ -73,7 +73,7 @@ class Premium_Warehouse_Items_Location extends Module {
 	}
 
 	public function company_items_addon($arg){
-	    $items = DB::GetCol('SELECT location_id FROM premium_warehouse_location_serial WHERE owner="C:%d"', array($arg['id']));
+	    $items = DB::GetCol('SELECT location_id FROM premium_warehouse_location_serial WHERE owner=%s', array('C:'.$arg['id']));
 		$rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_location','premium_warehouse_location_module');
 		$this->display_module($rb, array(array('id'=>$items, '!quantity'=>0), array('warehouse'=>false,'item_name'=>true), array('item_name'=>'ASC')), 'show_data');
 	}
