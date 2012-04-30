@@ -48,7 +48,7 @@ class Premium_Warehouse_InvoiceCommon extends ModuleCommon {
 	public static function generate_invoice_number($order) {
 		if (!Utils_RecordBrowserCommon::get_access('premium_warehouse_items_orders','edit', $order)) return '';
 		if (!$order['warehouse']) return '';
-		$t = date('Y-m-d');//strtotime($order['transaction_date']);
+		$t = strtotime(date('Y-m-d'));//strtotime($order['transaction_date']);
 		$invoice_number = DB::GetOne('SELECT MAX(CONVERT(f_invoice_number,UNSIGNED)) FROM premium_warehouse_items_orders_data_1 WHERE f_warehouse=%d AND f_transaction_type=%d AND f_receipt=%d AND f_invoice_print_date>=%D AND f_invoice_print_date<=%D AND active=1', array($order['warehouse'], $order['transaction_type'], $order['receipt']?1:0, date('Y-m-01',$t), date('Y-m-t',$t)));
 		if (!is_numeric($invoice_number)) $invoice_number = 0;
 		$order['invoice_number'] = $invoice_number+1;
