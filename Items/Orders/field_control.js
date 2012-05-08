@@ -15,7 +15,7 @@ warehouse_orders_hide_fields = function(trans_type, status, shipment_type, payme
 	warehouse_orders_hide_field('status', (warehouse_order_mode=='add'));
 	warehouse_orders_hide_field('company', (warehouse_order_mode=='view' || trans_type==2 || trans_type==4));
 	warehouse_orders_hide_field('contact', (warehouse_order_mode=='view' || trans_type==2 || trans_type==4));
-	var payments = $('payment') && $('payment').checked?true:false;
+	var payments = ($('payment') && $('payment').checked) || warehouse_order_mode=='view'?true:false;
 	warehouse_orders_hide_field('payment_type', (!payments || trans_type==2 || trans_type==4));
 	warehouse_orders_hide_field('payment_no', ((status<2 && trans_type!=3) || payment_type==0 || !payments || trans_type==2 || trans_type==4));
 	warehouse_orders_hide_field('terms', ((status<2 && trans_type!=3) || !payments || trans_type==2 || trans_type==4));

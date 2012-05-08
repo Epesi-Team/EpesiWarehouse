@@ -201,7 +201,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	}	
 
 	public static function display_transaction_type_order($r, $nolink=false) {
-		if (!$r['payment']) {
+		if (!isset($r['payment']) || !$r['payment']) {
 			if ($r['transaction_type']==0) return Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Check-in');
 			if ($r['transaction_type']==1) return Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Check-out');
 		}
