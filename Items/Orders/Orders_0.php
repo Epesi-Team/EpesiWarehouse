@@ -777,16 +777,23 @@ class Premium_Warehouse_Items_Orders extends Module {
 					$new_form->setDefaults(array('warehouse'=>!$trans['warehouse']?Base_User_SettingsCommon::get('Premium_Warehouse', 'my_warehouse'):$trans['warehouse']));
 					$new_form->setDefaults(array('employee'=>$me['id']));
 					$lp->add_option('new', $this->t('Order received'), null, $new_form);
+					$lp->add_option('cancel', $this->t('Cancel'), null, null);
 					$items_availability_table = $this->get_items_availability_table($trans);
 					$this->display_module($lp, array($this->t('Recieve Online Order'), array(), $items_availability_table));
 					$this->href = $lp->get_href();
 					$vals = $lp->export_values();
 					if ($vals!==null) {
-						if (isset($the_one_warehouse)) $vals['form']['warehouse'] = $the_one_warehouse;
-						if (!isset($vals['form']) || !is_array($vals['form'])) $vals['form'] = array();
-						else $vals['form']['status'] = 2;
-						if (is_numeric($vals['form']['employee']) && (!isset($vals['form']['warehouse']) || is_numeric($vals['form']['warehouse']))) 
+						if ($vals['option']=='cancel') {
+							$vals['form'] = array();
+							$vals['form']['status'] = 21;
 							Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $trans['id'], $vals['form']);
+						} else {
+							if (isset($the_one_warehouse)) $vals['form']['warehouse'] = $the_one_warehouse;
+							if (!isset($vals['form']) || !is_array($vals['form'])) $vals['form'] = array();
+							else $vals['form']['status'] = 2;
+							if (is_numeric($vals['form']['employee']) && (!isset($vals['form']['warehouse']) || is_numeric($vals['form']['warehouse']))) 
+								Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $trans['id'], $vals['form']);
+						}
 						location(array());
 					}
 					break;
