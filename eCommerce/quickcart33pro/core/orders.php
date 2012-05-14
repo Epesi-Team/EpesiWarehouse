@@ -427,10 +427,12 @@ class Orders
 		    		if($companies['related']) $related = $companies['related'].$company.'__';
 		    		else $related = '__'.$company.'__';
 	    			DB::Execute('UPDATE contact_data_1 SET f_related_companies=%s WHERE id=%d',array($related,$contact));
-    				DB::Execute('INSERT INTO contact_edit_history_data(edit_id, field, old_value) VALUES (%d,%s,%s)', array($contact, 'related_companies', $companies['related']));
+	    			DB::Execute('INSERT INTO contact_edit_history(contact_id,edited_on) VALUES(%d,%T)',array($contact,time()));
+    				DB::Execute('INSERT INTO contact_edit_history_data(edit_id, field, old_value) VALUES (%d,%s,%s)', array(DB::Insert_ID('contact_edit_history','id'), 'related_companies', $companies['related']));
 	    		} else {
 	    			DB::Execute('UPDATE contact_data_1 SET f_company_name=%s WHERE id=%d',array($company,$contact));
-    				DB::Execute('INSERT INTO contact_edit_history_data(edit_id, field, old_value) VALUES (%d,%s,%s)', array($contact, 'company_name', $companies['main']));
+	    			DB::Execute('INSERT INTO contact_edit_history(contact_id,edited_on) VALUES(%d,%T)',array($contact,time()));
+    				DB::Execute('INSERT INTO contact_edit_history_data(edit_id, field, old_value) VALUES (%d,%s,%s)', array(DB::Insert_ID('contact_edit_history','id'), 'company_name', $companies['main']));
     			}
 	    	}
 	}
@@ -476,10 +478,12 @@ class Orders
 		    		if($companies['related']) $related = $companies['related'].$company.'__';
 		    		else $related = '__'.$company.'__';
 	    			DB::Execute('UPDATE contact_data_1 SET f_related_companies=%s WHERE id=%d',array($related,$contact));
-    				DB::Execute('INSERT INTO contact_edit_history_data(edit_id, field, old_value) VALUES (%d,%s,%s)', array($contact, 'related_companies', $companies['related']));
+	    			DB::Execute('INSERT INTO contact_edit_history(contact_id,edited_on) VALUES(%d,%T)',array($contact,time()));
+    				DB::Execute('INSERT INTO contact_edit_history_data(edit_id, field, old_value) VALUES (%d,%s,%s)', array(DB::Insert_ID('contact_edit_history','id'), 'related_companies', $companies['related']));
 	    		} else{
 	    			DB::Execute('UPDATE contact_data_1 SET f_company_name=%s WHERE id=%d',array($company,$contact));
-    				DB::Execute('INSERT INTO contact_edit_history_data(edit_id, field, old_value) VALUES (%d,%s,%s)', array($contact, 'company_name', $companies['main']));
+	    			DB::Execute('INSERT INTO contact_edit_history(contact_id,edited_on) VALUES(%d,%T)',array($contact,time()));
+    				DB::Execute('INSERT INTO contact_edit_history_data(edit_id, field, old_value) VALUES (%d,%s,%s)', array(DB::Insert_ID('contact_edit_history','id'), 'company_name', $companies['main']));
 	    		}
 	    	}
     	}

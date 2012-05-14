@@ -82,10 +82,10 @@ function listProductsCompare( $sFile, $sBlock ){
       $aData['sCategoryNokaut'] = preg_replace( '/&nbsp;&raquo;&nbsp;/', ' / ', strip_tags( $GLOBALS['oProduct']->throwProductsPagesTree( array($aData['iPage']=>$aData['iPage']) ) ) );
 
       if(empty( $aData['sDescriptionFull'] ) && !empty( $aData['sDescriptionShort'] ) )
-    	$aData['sDescriptionFull'] = $aData['sDescriptionShort'];
+      $aData['sDescriptionFull'] = $aData['sDescriptionShort'];
       else
-        $aData['sDescriptionFull'] = preg_replace( '/\|n\|/', '', $aData['sDescriptionFull'] );;
-
+       $aData['sDescriptionFull'] = preg_replace( '/\|n\|/', '', $aData['sDescriptionFull'] );
+   
       $aData['sFeatures'] = null;
       if( isset( $aFeaturesProducts[$aData['iProduct']] ) ){
         foreach( $aFeaturesProducts[$aData['iProduct']] as $aData['sFeatureName'] => $aData['sFeatureValue'] ){
