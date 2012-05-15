@@ -85,15 +85,16 @@ class Premium_Warehouse_eCommerce_CompareUpdatePricesCommon extends ModuleCommon
 						$a->currency = '';
 					}
 				} else {
-					$ff = DB::GetRow('SELECT i.price, d.f_minimal_profit FROM premium_warehouse_wholesale_items i INNER JOIN premium_warehouse_distributor_data_1 d ON d.id=i.distributor_id WHERE i.item_id=%d AND i.quantity>%d AND i.price_currency=%d ORDER BY price',array($row['item_name'],-$qty,$a->currency));
+					$ff = DB::GetRow('SELECT i.price, d.f_minimal_profit FROM premium_warehouse_wholesale_items i INNER JOIN premium_warehouse_distributor_data_1 d ON d.id=i.distributor_id WHERE i.item_id=%d AND i.quantity>%d AND i.price_currency=%d ORDER BY i.price+d.f_minimal_profit',array($row['item_name'],-$qty,$a->currency));
 					if(!isset($ff['price']) || !$ff['price']) {
 						$a->price = '';
 						$a->currency = '';
 					} else {
 					    $dpr = $ff['price']+$ff['f_minimal_profit'];
+					    if(defined('TEST')) print($dpr.'>'.($a->price*100/(100+$tax))." => ".($dpr*(100+$tax)/100)."\n");
 					    if($dpr>($a->price*100/(100+$tax))) {
-						$a->price = '';
-						$a->currency = '';
+						$a->price = $dpr*(100+$tax)/100;
+//						$a->currency = '';
 					    }
 					}
 				}
