@@ -73,6 +73,7 @@ if( isset( $aActions['a'] ) && is_numeric( $aActions['a'] ) ){
       $sPrice = $oTpl->tbHtml( $aData['sTemplate'], 'OUT_OF_STOCK' ). $oTpl->tbHtml( $aData['sTemplate'], 'PRICE' );    
     } else {
       $sPrice = $oTpl->tbHtml( $aData['sTemplate'], 'NO_PRICE' );
+      $sAvailable = null;
     }
 
     $content .= $oTpl->tbHtml( $aData['sTemplate'], 'CONTAINER' );
