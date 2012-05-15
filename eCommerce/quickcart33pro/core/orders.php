@@ -1060,7 +1060,7 @@ class Orders
       if( isset( $aData['fOrderSummary'] ) )
         $iAmount =  sprintf( '%01.2f', $aData['fOrderSummary'] ) * 100;
       if( $aData['iPaymentSystem'] == 5 )
-        $sProductsZagielList = $oOrder->listProducts( 'payment.tpl', $iOrder, 'ZAGIEL_' );
+        $sProductsZagielList = $this->listProducts( 'payment.tpl', $iOrder, 'ZAGIEL_' );
       $sPaymentOuterForm = $oTpl->tbHtml( 'payment.tpl', 'PAYMENT_FORM_'.$aData['iPaymentSystem'] );
       $aData['sPaymentDescription'] .= $oTpl->tbHtml( 'payment.tpl', 'PAYMENT_OUTER_MAIL' );
     }
