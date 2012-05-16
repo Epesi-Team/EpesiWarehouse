@@ -817,7 +817,7 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 		array('name'=>'Koniec','width'=>50),
 		));
 		
-		$query = 'SELECT a.item_id,a.ended_on FROM premium_ecommerce_allegro_auctions a WHERE a.active=0 AND (SELECT 1 FROM premium_ecommerce_allegro_auctions a2 WHERE a2.item_id=a.item_id AND a2.active=1) IS NULL AND ended_on is not null ORDER BY a.ended_on DESC LIMIT 10';
+		$query = 'SELECT a.item_id,a.ended_on FROM premium_ecommerce_allegro_auctions a WHERE a.active=0 AND (SELECT 1 FROM premium_ecommerce_allegro_auctions a2 WHERE a2.item_id=a.item_id AND a2.active=1 LIMIT 1) IS NULL AND ended_on is not null ORDER BY a.ended_on DESC LIMIT 10';
 //		$query = 'SELECT a.item_id,a.ended_on FROM premium_ecommerce_allegro_auctions a WHERE a.active=0 AND ended_on is not null ORDER BY a.ended_on DESC LIMIT 10';
 		
 		$ret = DB::Execute($query);
