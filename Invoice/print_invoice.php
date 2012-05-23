@@ -124,12 +124,14 @@ $paid = array();
 $amount_due = array();
 
 if (ModuleManager::is_installed('Premium_Payments')>=0) {
-	$payments = Utils_RecordBrowserCommon::get_records('premium_payments', array('record_type'=>'premium_warehouse_items_orders', 'record_id'=>$order['id'], 'status'=>2));
+	$payments = Utils_RecordBrowserCommon::get_records('premium_payments', array('record_type'=>'premium_warehouse_items_orders', 'record_id'=>$order['id']));
 	foreach ($payments as $k=>$v) {
 		$payments[$k]['amount_label'] = Utils_CurrencyFieldCommon::format($v['amount']);
+		$payments[$k]['card_number'] = str_pad(substr($payments[$k]['card_number'],-4),strlen($payments[$k]['card_number']),'*',STR_PAD_LEFT);
+		$payments[$k]['cvc_cvv'] = '***';
 		$p = Utils_CurrencyFieldCommon::get_values($v['amount']);
 		if (!isset($paid[$p[1]])) $paid[$p[1]] = 0;
-		$paid[$p[1]] += $p[0];
+		if ($v['status']==2) $paid[$p[1]] += $p[0];
 	}
 	$theme->assign('payments', $payments);
 }
