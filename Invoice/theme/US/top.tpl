@@ -15,6 +15,11 @@
 				{$company.web_address}
 			</font>
 		</td>
+		{if !isset($logo)}
+			<td width="65">
+				&nbsp;
+			</td>
+		{/if}
 		<td align="right" width="230">
 			{if $warehouse.city}{$warehouse.city}, {/if}{$date}<br/>
 		</td>
