@@ -47,10 +47,10 @@ if ($order['transaction_type']==0) {
 //	$header = 'Zamówienie '.$order['po_id'];
 }
 
-/*if (!$order['invoice_print_date']) {
+if (!$order['invoice_print_date']) {
 	$order['invoice_print_date'] = date('Y-m-d');
 	Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $order['id'], array('invoice_print_date'=>$order['invoice_print_date']));
-}*/
+}
 
 $order['employee_name'] = CRM_ContactsCommon::contact_format_no_company(CRM_ContactsCommon::get_contact($order['employee']));
 $order['payment_type_label'] = Utils_CommonDataCommon::get_value('Premium_Items_Orders_Payment_Types/'.$order['payment_type'],true);
