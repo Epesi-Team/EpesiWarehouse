@@ -265,7 +265,6 @@ class Premium_Warehouse_Items_Orders extends Module {
 			$rb->set_additional_actions_method(array($this, 'actions_for_order_details'));
 		}
 		$order = array(array('transaction_id'=>$arg['id']), $cols, array());
-		$rb_item = $this->init_module('Utils/RecordBrowser','premium_warehouse_items_orders_details');
 		
         $defaults = array();
         $new_item_types = array(
