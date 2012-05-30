@@ -14,6 +14,9 @@ class Premium_Warehouse_eCommerce_CurrencyUpdatePricesInstall extends ModuleInst
 
 	public function install() {
 		Utils_RecordBrowserCommon::new_record_field('premium_ecommerce_prices',array('name'=>'Auto update',	'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>true));
+        Variable::set('ecommerce_price_updater', null);
+        Variable::set('ecommerce_price_updater_last_upd', null);
+        Variable::set('ecommerce_price_updater_rates', null);
 		return true;
 	}
 	

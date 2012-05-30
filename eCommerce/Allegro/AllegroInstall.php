@@ -66,6 +66,7 @@ class Premium_Warehouse_eCommerce_AllegroInstall extends ModuleInstall {
 		$this->create_data_dir();
 		
 		$this->add_aco('settings',array('Employee'));
+		Variable::set('ecommerce_allegro_cats_up', null);
 		
 		return true;
 	}
