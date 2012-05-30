@@ -509,6 +509,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		$this->create_data_dir();
 		@mkdir($this->get_data_dir().'banners');
 		Base_ThemeCommon::install_default_theme('Premium/Warehouse/eCommerce');
+		recursive_copy('modules/Premium/Warehouse/eCommerce/quickcart33pro/templates.default', 'modules/Premium/Warehouse/eCommerce/quickcart33pro/templates');
 		
 		$areas = array(
 				"EU,07"=>'EU, UPS Express',
