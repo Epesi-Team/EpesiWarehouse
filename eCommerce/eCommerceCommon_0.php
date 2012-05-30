@@ -1087,6 +1087,84 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 		    $banners = DB::GetCol('SELECT f_file FROM premium_ecommerce_banners_data_1 WHERE active=1');
 		    foreach($banners as $b)
 			Premium_Warehouse_eCommerceCommon::copy_banner($b);
+			Premium_Warehouse_eCommerceCommon::write_configs($p);
+	}
+	
+	public static function write_configs($path, $values = array()) {
+		$data_dir = dirname(dirname(dirname(dirname(dirname(__FILE__))))).'/'.DATA_DIR;
+		$langs = Utils_CommonDataCommon::get_array('Premium/Warehouse/eCommerce/Languages');
+		if (!isset($vals['default_lang'])) $vals['default_lang'] = Base_LangCommon::get_lang_code();
+		if (!isset($vals['available_lang'])) $vals['available_lang'] = array(Base_LangCommon::get_lang_code());
+		if (!isset($vals['email'])) $vals['email'] = '';
+		if (!isset($vals['products_list'])) $vals['products_list'] = '';
+		if (!isset($vals['news_list'])) $vals['news_list'] = '';
+		if (!isset($vals['time_diff'])) $vals['time_diff'] = '0';
+		if (!isset($vals['allpay_id'])) $vals['allpay_id'] = false;
+		if (!isset($vals['przelewy24_id'])) $vals['przelewy24_id'] = false;
+		if (!isset($vals['platnosci_id'])) $vals['platnosci_id'] = false;
+		if (!isset($vals['platnosci_pos_auth_key'])) $vals['platnosci_pos_auth_key'] = false;
+		if (!isset($vals['platnosci_key1'])) $vals['platnosci_key1'] = '';
+		if (!isset($vals['platnosci_key2'])) $vals['platnosci_key2'] = '';
+		if (!isset($vals['zagiel_id'])) $vals['zagiel_id'] = false;
+		if (!isset($vals['zagiel_min_price'])) $vals['zagiel_min_price'] = '';
+		if (!isset($vals['paypal_email'])) $vals['paypal_email'] = '';
+		if (!isset($vals['default_image_size'])) $vals['default_image_size'] = '';
+		if (!isset($vals['epesi_payments_url'])) $vals['epesi_payments_url'] = '';
+		foreach (array('ups_accesskey','ups_username','ups_password','ups_shipper_number','ups_src_country','ups_src_zip','ups_weight_unit') as $f)
+			if (!isset($vals[$f])) $vals[$f] = '';
+		$ccc = "<?php
+define('EPESI_DATA_DIR','".str_replace('\'','\\\'',$data_dir)."');
+if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi, log in as administrator, go to Menu->Adminitration->eCommerce->QuickCart settings and add \''.dirname(dirname(__FILE__)).'\' directory to setup quickcart');
+\$config['default_lang'] = '".$vals['default_lang']."';
+\$config['available_lang'] = array('".implode('\',\'',$vals['available_lang'])."');
+\$config['text_size'] = ".((isset($vals['text_size']) && $vals['text_size'])?'true':'false').";
+\$config['email'] = '".$vals['email']."';
+\$config['skapiec_shop_id'] = ".($vals['skapiec_shop_id']?$vals['skapiec_shop_id']:0).";
+\$config['products_list'] = ".$vals['products_list'].";
+\$config['news_list'] = ".$vals['news_list'].";
+\$config['site_map_products'] = ".((isset($vals['site_map_products']) && $vals['site_map_products'])?'true':'false').";
+\$config['time_diff'] = ".$vals['time_diff'].";
+\$config['allpay_id'] = ".($vals['allpay_id']?$vals['allpay_id']:0).";
+\$config['przelewy24_id'] = ".($vals['przelewy24_id']?$vals['przelewy24_id']:0).";
+\$config['platnosci_id']	= ".($vals['platnosci_id']?$vals['platnosci_id']:0).";
+\$config['platnosci_pos_auth_key'] = ".($vals['platnosci_pos_auth_key']?$vals['platnosci_pos_auth_key']:0).";
+\$config['platnosci_key1'] = '".$vals['platnosci_key1']."';
+\$config['platnosci_key2'] = '".$vals['platnosci_key2']."';
+\$config['epesi_payments_url'] = '".$vals['epesi_payments_url']."';
+\$config['zagiel_id'] = ".($vals['zagiel_id']?$vals['zagiel_id']:'null').";
+\$config['zagiel_min_price'] = ".($vals['zagiel_min_price']?$vals['zagiel_min_price']:'null').";
+\$config['paypal_email'] = '".$vals['paypal_email']."';
+\$config['default_image_size'] = ".$vals['default_image_size'].";
+\$config['ups_accesskey'] = '".str_replace('\'','\\\'',$vals['ups_accesskey'])."';
+\$config['ups_username'] = '".str_replace('\'','\\\'',$vals['ups_username'])."';
+\$config['ups_password'] = '".str_replace('\'','\\\'',$vals['ups_password'])."';
+\$config['ups_shipper_number'] = '".str_replace('\'','\\\'',$vals['ups_shipper_number'])."';
+\$config['ups_src_country'] = '".str_replace('\'','\\\'',$vals['ups_src_country'])."';
+\$config['ups_src_zip'] = '".str_replace('\'','\\\'',$vals['ups_src_zip'])."';
+\$config['ups_weight_unit'] = '".str_replace('\'','\\\'',$vals['ups_weight_unit'])."';
+?>";
+		file_put_contents($path.'/config/epesi.php',$ccc);
+		
+		foreach($langs as $code=>$l) {
+			$mc = CRM_ContactsCommon::get_company(CRM_ContactsCommon::get_main_company());
+			if (!isset($vals[$code.'-currency_symbol'])) $vals[$code.'-currency_symbol'] = Utils_CurrencyFieldCommon::get_code(Base_User_SettingsCommon::get('Utils_CurrencyField', 'default_currency'));
+			if (!isset($vals[$code.'-delivery_free'])) $vals[$code.'-delivery_free'] = '1000000';
+			if (!isset($vals[$code.'-title'])) $vals[$code.'-title'] = 'Shopping Portal - '.$mc['company_name'];
+			if (!isset($vals[$code.'-description'])) $vals[$code.'-description'] = '';
+			if (!isset($vals[$code.'-slogan'])) $vals[$code.'-slogan'] = '';
+			if (!isset($vals[$code.'-keywords'])) $vals[$code.'-keywords'] = '';
+			if (!isset($vals[$code.'-foot_info'])) $vals[$code.'-foot_info'] = 'Copyright &copy; 2009 <a href=\'http://'.$mc['web_address'].'\'>'.$mc['company_name'].'</a>';
+			$ccc = "<?php
+\$config['currency_symbol'] = '".str_replace('\'','\\\'',$vals[$code.'-currency_symbol'])."';
+\$config['delivery_free'] = ".$vals[$code.'-delivery_free'].";
+\$config['title'] = '".str_replace('\'','\\\'',$vals[$code.'-title'])."';
+\$config['description'] = '".str_replace('\'','\\\'',$vals[$code.'-description'])."';
+\$config['slogan'] = '".str_replace('\'','\\\'',$vals[$code.'-slogan'])."';
+\$config['keywords'] = '".str_replace('\'','\\\'',$vals[$code.'-keywords'])."';
+\$config['foot_info'] = '".str_replace('\'','\\\'',$vals[$code.'-foot_info'])."';
+?>";
+			file_put_contents($path.'/config/epesi_'.$code.'.php',$ccc);
+		}
 	}
 }
 
