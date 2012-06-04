@@ -87,7 +87,7 @@ a:hover {
   float:left;
   width: 240px;
   margin: 0;
-  background:url('img/logo.gif') no-repeat 0;
+  background:url('img/logo.png') no-repeat 0;
   text-decoration: none;
 }
 
@@ -534,7 +534,7 @@ float:left;
 #products li .price strong{font:bold 1.333em Verdana, sans-serif;}
 #products li .noPrice strong{font:bold 1.083em Verdana, sans-serif;}
 #products li .price span{padding-left:4px;font:bold 1em sans-serif;}
-#products li .basket{float:right;margin:12px 0 5px 20px;font-size:0.917em;font-weight:bold;}
+#products li .basket{float:right;clear:both;margin:12px 0 5px 20px;font-size:0.917em;font-weight:bold;}
 
 #products li .basket a {
   display: block;
