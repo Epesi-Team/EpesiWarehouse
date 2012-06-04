@@ -1096,8 +1096,9 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 		if (!isset($vals['default_lang'])) $vals['default_lang'] = Base_LangCommon::get_lang_code();
 		if (!isset($vals['available_lang'])) $vals['available_lang'] = array(Base_LangCommon::get_lang_code());
 		if (!isset($vals['email'])) $vals['email'] = '';
-		if (!isset($vals['products_list'])) $vals['products_list'] = '';
-		if (!isset($vals['news_list'])) $vals['news_list'] = '';
+		if (!isset($vals['skapiec_shop_id'])) $vals['skapiec_shop_id'] = false;
+		if (!isset($vals['products_list'])) $vals['products_list'] = '10';
+		if (!isset($vals['news_list'])) $vals['news_list'] = '4';
 		if (!isset($vals['time_diff'])) $vals['time_diff'] = '0';
 		if (!isset($vals['allpay_id'])) $vals['allpay_id'] = false;
 		if (!isset($vals['przelewy24_id'])) $vals['przelewy24_id'] = false;
@@ -1108,7 +1109,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 		if (!isset($vals['zagiel_id'])) $vals['zagiel_id'] = false;
 		if (!isset($vals['zagiel_min_price'])) $vals['zagiel_min_price'] = '';
 		if (!isset($vals['paypal_email'])) $vals['paypal_email'] = '';
-		if (!isset($vals['default_image_size'])) $vals['default_image_size'] = '';
+		if (!isset($vals['default_image_size'])) $vals['default_image_size'] = '0';
 		if (!isset($vals['epesi_payments_url'])) $vals['epesi_payments_url'] = '';
 		foreach (array('ups_accesskey','ups_username','ups_password','ups_shipper_number','ups_src_country','ups_src_zip','ups_weight_unit') as $f)
 			if (!isset($vals[$f])) $vals[$f] = '';
