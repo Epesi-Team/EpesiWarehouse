@@ -403,7 +403,8 @@ $buffer = Libs_TCPDFCommon::output($tcpdf);
 
 header('Content-Type: application/pdf');
 header('Content-Length: '.strlen($buffer));
-header('Content-disposition: attachement; filename="'.Base_LangCommon::ts('Premium_Warehouse_Invoice','Invoice').'_'.$order['invoice_id'].'.pdf"');
+//header('Content-disposition: attachement; filename="'.Base_LangCommon::ts('Premium_Warehouse_Invoice','Invoice').'_'.$order['invoice_id'].'.pdf"');
+header('Content-disposition: filename="'.Base_LangCommon::ts('Premium_Warehouse_Invoice','Invoice').'_'.$order['invoice_id'].'.pdf"');
 
 print($buffer);
 ?>
