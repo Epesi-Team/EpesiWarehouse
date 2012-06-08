@@ -119,6 +119,7 @@ class Premium_Warehouse_eCommerce_AllegroCommon extends ModuleCommon {
     public static function get_templates() {
 		$templates = array(''=>'---');
 		$dd = self::Instance()->get_data_dir();
+		if (!is_dir($dd)) return $templates;
 		foreach(scandir($dd) as $d) {
 			if(!preg_match('/\.tpl$/i',$d)) continue;
 			$templates[$dd.$d] = $d;
