@@ -222,7 +222,7 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 			$m['Items: Categories'] = array('recordset'=>'categories');
 		if (empty($m)) return $m;
 		$m['__submenu__'] = 1;
-		return array('Warehouse'=>$m);
+		return array('Inventory'=>$m);
 	}
 
 	public static function generate_id($id) {

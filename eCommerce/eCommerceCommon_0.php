@@ -256,7 +256,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 			$m['Comments queue'] = array('__function__'=>'comments');
 		if (Utils_RecordBrowserCommon::get_access('premium_ecommerce_newsletter', 'browse'))
 			$m['Newsletter'] = array('__function__'=>'newsletter');
-		return array('Warehouse'=>array(
+		return array('Inventory'=>array(
 			'__submenu__'=>1,
 			'eCommerce'=>$m));
     }

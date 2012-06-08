@@ -16,7 +16,7 @@ defined("_VALID_ACCESS") || die('Direct access forbidden');
 
 class Premium_WarehouseCommon extends ModuleCommon {
     public static function admin_caption() {
-		return 'Warehouse';
+		return 'Inventory';
     }
 
     public static function get_warehouse($id) {
@@ -36,7 +36,7 @@ class Premium_WarehouseCommon extends ModuleCommon {
 		$warehouses = array(''=>'---');
 		foreach ($rec as $v)
 			$warehouses[$v['id']] = $v['warehouse'];
-		$ret = array('Warehouse'=>array(
+		$ret = array('Inventory'=>array(
 			array('name'=>'my_warehouse','label'=>'My main Warehouse','type'=>'select','values'=>$warehouses,'default'=>'','translate'=>false)
 			));
 		$ret['Subscriptions'] = array(
@@ -48,7 +48,7 @@ class Premium_WarehouseCommon extends ModuleCommon {
 	
     public static function menu() {
 		if (Utils_RecordBrowserCommon::get_access('premium_warehouse','browse'))
-			return array('Warehouse'=>array('__submenu__'=>1,'Warehouses'=>array()));
+			return array('Inventory'=>array('__submenu__'=>1,'Warehouses'=>array()));
 		return array();
 	}
 

@@ -26,7 +26,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			'Transaction'=>array(
 				array('name'=>'my_transaction','label'=>'None','type'=>'hidden','default'=>'')
 			),
-			'Warehouse'=>array(
+			'Inventory'=>array(
 				array('name'=>'display_qty','label'=>'Quantity Display','type'=>'select','values'=>array(0=>'Availble', 1=>'On Hand', 2=>'Both'),'default'=>2),
 				array('name'=>'filter_by_my_warehouse','label'=>'Filter items by my warehouse','type'=>'select','values'=>array(0=>'No', 1=>'Yes'),'default'=>1)
 			));
@@ -767,7 +767,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	
     public static function menu() {
 		if (Utils_RecordBrowserCommon::get_access('premium_warehouse_items_orders','browse'))
-			return array('Warehouse'=>array('__submenu__'=>1,'Items: Transactions'=>array()));
+			return array('Inventory'=>array('__submenu__'=>1,'Items: Transactions'=>array()));
 /*		if (browse my orders)
 			return array('Orders'=>array());*/
 		return array();

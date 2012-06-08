@@ -340,7 +340,7 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 	
     public static function menu() {
 		if (Utils_RecordBrowserCommon::get_access('premium_warehouse_distributor','browse'))
-			return array('Warehouse'=>array('__submenu__'=>1,'Distributors'=>array()));
+			return array('Inventory'=>array('__submenu__'=>1,'Distributors'=>array()));
 		return array();
 	}
 
