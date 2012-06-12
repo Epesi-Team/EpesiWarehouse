@@ -10,6 +10,7 @@ class  Premium_Warehouse_eCommerce_CompareService_ceneo extends Premium_Warehous
 		curl_setopt($c, CURLOPT_SSL_VERIFYHOST,  2);
 		curl_setopt($c, CURLOPT_HEADER, false);
 		curl_setopt($c, CURLOPT_POST, false);
+//		curl_setopt($c, CURLOPT_PROXY, "127.0.0.1:8118");
 		curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($c, CURLOPT_USERAGENT, "Mozilla/4.0 (compatible; MSIE 6.01; Windows NT 5.0)");
 		curl_setopt($c, CURLOPT_FOLLOWLOCATION, false);

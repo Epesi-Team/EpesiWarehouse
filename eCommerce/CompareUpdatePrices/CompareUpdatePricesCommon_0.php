@@ -41,7 +41,7 @@ class Premium_Warehouse_eCommerce_CompareUpdatePricesCommon extends ModuleCommon
 	}
 	
 	public static function update() {
-		$ret = Utils_RecordBrowserCommon::get_records('premium_ecommerce_compare_prices');
+		$ret = Utils_RecordBrowserCommon::get_records('premium_ecommerce_compare_prices',array('<last_update'=>time()-3600*12),array(),array('last_update'=>'ASC'));
 		$services = array();
 		foreach($ret as $row) {
 			if(defined('TEST')) print($row['item_name'].' '.$row['plugin'].' '.$row['url']."\n");
@@ -85,11 +85,16 @@ class Premium_Warehouse_eCommerce_CompareUpdatePricesCommon extends ModuleCommon
 						$a->currency = '';
 					}
 				} else {
-					$ff = DB::GetRow('SELECT i.price, d.f_minimal_profit FROM premium_warehouse_wholesale_items i INNER JOIN premium_warehouse_distributor_data_1 d ON d.id=i.distributor_id WHERE i.item_id=%d AND i.quantity>%d AND i.price_currency=%d ORDER BY i.price+d.f_minimal_profit',array($row['item_name'],-$qty,$a->currency));
-					if(!isset($ff['price']) || !$ff['price']) {
+					$ffs = DB::GetAll('SELECT i.price, d.f_minimal_profit FROM premium_warehouse_wholesale_items i INNER JOIN premium_warehouse_distributor_data_1 d ON d.id=i.distributor_id WHERE i.item_id=%d AND i.quantity>%d AND i.price_currency=%d AND i.price is not null AND i.price!=""',array($row['item_name'],-$qty,$a->currency));
+					if(!$ffs) {
 						$a->price = '';
 						$a->currency = '';
 					} else {
+					    $ff = array_shift($ffs);
+					    foreach($ffs as $ff2) {
+						if($ff2['price']+$ff2['f_minimal_profit']<$ff['price']+$ff['f_minimal_profit'])
+							$ff = $ff2;
+					    }
 					    $dpr = $ff['price']+$ff['f_minimal_profit'];
 					    if(defined('TEST')) print($dpr.'>'.($a->price*100/(100+$tax))." => ".($dpr*(100+$tax)/100)."\n");
 					    if($dpr>($a->price*100/(100+$tax))) {
@@ -100,16 +105,18 @@ class Premium_Warehouse_eCommerce_CompareUpdatePricesCommon extends ModuleCommon
 				}
 			}
 			
-			Utils_RecordBrowserCommon::update_record('premium_ecommerce_compare_prices',$row['id'],array('gross_price'=>$a->price,'currency'=>$a->currency));
+			Utils_RecordBrowserCommon::update_record('premium_ecommerce_compare_prices',$row['id'],array('gross_price'=>$a->price,'currency'=>$a->currency,'last_update'=>time()));
+			
+			sleep(mt_rand(1,10));
 		}
 		Variable::set('premium_ecommerce_compare_servic',time());
 		return true;
 	}
 	
 	public static function cron() {
-	    if(Variable::get('premium_ecommerce_compare_servic',0)<(time()-12*3600)) {
+/*	    if(Variable::get('premium_ecommerce_compare_servic',0)<(time()-900)) {
 		if(self::update()===false) return 'Unable to update compare services prices';
-	    }
+	    }*/
 	    return '';
 	}
 

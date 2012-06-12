@@ -216,6 +216,7 @@ if( isset( $iContent ) && is_numeric( $iContent ) ){
           $checkFieldsRet1 = $oOrder->checkFields1( $_SESSION['order_step_1'] );
           $checkFieldsRet2 = $oOrder->checkFields2( $_POST );
           if( $checkFieldsRet1 === true  &&  $checkFieldsRet2 === true ) {
+          
             // save and print order
             $iOrder = $oOrder->addOrder( $_POST+$_SESSION['order_step_1'] );
             unset($_SESSION['order_step_1']);

@@ -909,9 +909,11 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
                     $txt = $email['content'];
                     $title = $email['subject'];
                     foreach($orec as $name=>$val) {
+                	if(!is_string($name) || !is_string($val)) continue;
                         $txt = str_replace('__'.strtoupper($name).'__',$val,$txt);
                     }
                     foreach($erec as $name=>$val) {
+                	if(!is_string($name) || !is_string($val)) continue;
                         $txt = str_replace('__'.strtoupper($name).'__',$val,$txt);
                     }
                 }
