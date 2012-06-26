@@ -50,10 +50,10 @@ class Premium_WarehouseInstall extends ModuleInstall {
 		Variable::set('premium_warehouse_weight_units', 'kg');
 		Variable::set('premium_warehouse_volume_units', 'm<sup>3</sup>');
 
-		Utils_RecordBrowserCommon::add_access('premium_warehouse', 'view', 'EMPLOYEE');
-		Utils_RecordBrowserCommon::add_access('premium_warehouse', 'add', 'EMPLOYEE');
-		Utils_RecordBrowserCommon::add_access('premium_warehouse', 'edit', 'EMPLOYEE');
-		Utils_RecordBrowserCommon::add_access('premium_warehouse', 'delete', array('EMPLOYEE', 'ACCESS:manager'));
+		Utils_RecordBrowserCommon::add_access('premium_warehouse', 'view', 'ACCESS:employee');
+		Utils_RecordBrowserCommon::add_access('premium_warehouse', 'add', 'ACCESS:employee');
+		Utils_RecordBrowserCommon::add_access('premium_warehouse', 'edit', 'ACCESS:employee');
+		Utils_RecordBrowserCommon::add_access('premium_warehouse', 'delete', array('ACCESS:employee', 'ACCESS:manager'));
 		
 		return true;
 	}

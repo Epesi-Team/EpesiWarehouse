@@ -65,13 +65,14 @@ class Premium_Warehouse_eCommerce_AllegroInstall extends ModuleInstall {
 		
 		$this->create_data_dir();
 		
-		$this->add_aco('settings',array('Employee'));
+		Base_AclCommon::add_permission('Inventory - Allegro Settings',array('ACCESS:employee'));
 		Variable::set('ecommerce_allegro_cats_up', null);
 		
 		return true;
 	}
 	
 	public function uninstall() {
+		Base_AclCommon::delete_permission('Inventory - Allegro Settings');
 		DB::DropTable('premium_ecommerce_allegro_stan');
 		DB::DropTable('premium_ecommerce_allegro_cats');
 		DB::DropTable('premium_ecommerce_allegro_auctions');
@@ -98,7 +99,7 @@ class Premium_Warehouse_eCommerce_AllegroInstall extends ModuleInstall {
 	}
 	
 	public static function simple_setup() {
-        return array('package'=>'eCommerce');
+        return false;
 	}
 	
 }

@@ -35,10 +35,10 @@ class Premium_Warehouse_eCommerce_CompareUpdatePricesInstall extends ModuleInsta
 		Utils_RecordBrowserCommon::new_addon('premium_warehouse_items', 'Premium/Warehouse/eCommerce/CompareUpdatePrices', 'item_addon', 'Premium_Warehouse_eCommerce_CompareUpdatePricesCommon::item_addon_parameters');
 		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_products', 'Premium/Warehouse/eCommerce/CompareUpdatePrices', 'product_addon', 'Compare Services');
 		
-		Utils_RecordBrowserCommon::add_access('premium_ecommerce_compare_prices', 'view', 'EMPLOYEE');
-		Utils_RecordBrowserCommon::add_access('premium_ecommerce_compare_prices', 'add', 'EMPLOYEE');
-		Utils_RecordBrowserCommon::add_access('premium_ecommerce_compare_prices', 'edit', 'EMPLOYEE');
-		Utils_RecordBrowserCommon::add_access('premium_ecommerce_compare_prices', 'delete', array('EMPLOYEE', 'ACCESS:manager'));
+		Utils_RecordBrowserCommon::add_access('premium_ecommerce_compare_prices', 'view', 'ACCESS:employee');
+		Utils_RecordBrowserCommon::add_access('premium_ecommerce_compare_prices', 'add', 'ACCESS:employee');
+		Utils_RecordBrowserCommon::add_access('premium_ecommerce_compare_prices', 'edit', 'ACCESS:employee');
+		Utils_RecordBrowserCommon::add_access('premium_ecommerce_compare_prices', 'delete', array('ACCESS:employee', 'ACCESS:manager'));
 		
 		$this->create_data_dir();
 		

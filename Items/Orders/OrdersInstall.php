@@ -173,33 +173,34 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 					'order_details_id I',
 					array('constraints'=>''));
 					
-		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders', 'view', 'EMPLOYEE');
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders', 'view', 'ACCESS:employee');
 		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders', 'view', 'ALL', array('contact'=>'USER'));
 		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders', 'view', array('ALL','ACCESS:manager'), array('company'=>'USER_COMPANY'));
-		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders', 'add', 'EMPLOYEE', array(), array('transaction_type'));
-		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders', 'edit', 'EMPLOYEE', array('employee'=>'USER', '(>=transaction_date'=>'-1 week', '|<status'=>20), array('transaction_type', 'warehouse'));
-		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders', 'edit', 'EMPLOYEE', array('transaction_type'=>4, '<status'=>20), array('transaction_type', 'warehouse'));
-		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders', 'edit', 'EMPLOYEE', array('employee'=>'USER', 'warehouse'=>''), array('transaction_type'));
-		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders', 'edit', array('EMPLOYEE','ACCESS:manager'), array(), array('transaction_type', 'warehouse'));
-		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders', 'delete', 'EMPLOYEE', array(':Created_by'=>'USER_ID'));
-		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders', 'delete', array('EMPLOYEE','ACCESS:manager'));
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders', 'add', 'ACCESS:employee', array(), array('transaction_type'));
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders', 'edit', 'ACCESS:employee', array('employee'=>'USER', '(>=transaction_date'=>'-1 week', '|<status'=>20), array('transaction_type', 'warehouse'));
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders', 'edit', 'ACCESS:employee', array('transaction_type'=>4, '<status'=>20), array('transaction_type', 'warehouse'));
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders', 'edit', 'ACCESS:employee', array('employee'=>'USER', 'warehouse'=>''), array('transaction_type'));
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders', 'edit', array('ACCESS:employee','ACCESS:manager'), array(), array('transaction_type', 'warehouse'));
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders', 'delete', 'ACCESS:employee', array(':Created_by'=>'USER_ID'));
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders', 'delete', array('ACCESS:employee','ACCESS:manager'));
 
-		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders_details', 'view', 'EMPLOYEE');
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders_details', 'view', 'ACCESS:employee');
 		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders_details', 'view', 'ALL', array('transaction_id[contact]'=>'USER'));
 		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders_details', 'view', array('ALL','ACCESS:manager'), array('transaction_id[company]'=>'USER_COMPANY'));
-		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders_details', 'add', 'EMPLOYEE', array('transaction_id[employee]'=>'USER', '(>=transaction_id[transaction_date]'=>'-1 week', '|<transaction_id[status]'=>20), array('transaction_id'));
-		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders_details', 'add', array('EMPLOYEE','ACCESS:manager'), array(), array('transaction_id'));
-		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders_details', 'edit', 'EMPLOYEE', array('transaction_id[employee]'=>'USER', '(>=transaction_id[transaction_date]'=>'-1 week', '|<transaction_id[status]'=>20), array('transaction_id'));
-		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders_details', 'edit', array('EMPLOYEE','ACCESS:manager'), array(), array('transaction_id'));
-		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders_details', 'delete', 'EMPLOYEE', array(':Created_by'=>'USER_ID'));
-		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders_details', 'delete', array('EMPLOYEE','ACCESS:manager'));
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders_details', 'add', 'ACCESS:employee', array('transaction_id[employee]'=>'USER', '(>=transaction_id[transaction_date]'=>'-1 week', '|<transaction_id[status]'=>20), array('transaction_id'));
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders_details', 'add', array('ACCESS:employee','ACCESS:manager'), array(), array('transaction_id'));
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders_details', 'edit', 'ACCESS:employee', array('transaction_id[employee]'=>'USER', '(>=transaction_id[transaction_date]'=>'-1 week', '|<transaction_id[status]'=>20), array('transaction_id'));
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders_details', 'edit', array('ACCESS:employee','ACCESS:manager'), array(), array('transaction_id'));
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders_details', 'delete', 'ACCESS:employee', array(':Created_by'=>'USER_ID'));
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders_details', 'delete', array('ACCESS:employee','ACCESS:manager'));
 
-		$this->add_aco('sell with loss',array('Employee Manager'));
+		Base_AclCommon::add_permission('Inventory - Sell at loss',array('ACCESS:employee','ACCESS:manager'));
 
 		return true;
 	}
 	
 	public function uninstall() {
+		Base_AclCommon::delete_permission('Inventory - Sell at loss');
 		DB::DropTable('premium_warehouse_location_orders_serial');
 		Utils_RecordBrowserCommon::unregister_processing_callback('premium_warehouse_items', array('Premium_Warehouse_Items_OrdersCommon', 'submit_new_item_from_order'));
 		Utils_RecordBrowserCommon::unregister_processing_callback('premium_warehouse_items_orders', array('Premium_Warehouse_Items_OrdersCommon', 'submit_order'));

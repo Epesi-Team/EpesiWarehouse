@@ -62,7 +62,7 @@ class Premium_Warehouse_Items_LocationInstall extends ModuleInstall {
 					'owner C(32)',
 					array('constraints'=>''));
 
-		Utils_RecordBrowserCommon::add_access('premium_warehouse_location', 'view', 'EMPLOYEE');
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_location', 'view', 'ACCESS:employee');
 
 		return true;
 	}

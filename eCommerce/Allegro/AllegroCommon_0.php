@@ -128,7 +128,7 @@ class Premium_Warehouse_eCommerce_AllegroCommon extends ModuleCommon {
     }
     
     public static function user_settings(){
-    	if(self::Instance()->acl_check('settings')) {
+    	if (Base_AclCommon::check_permission('Inventory - Allegro Settings')) {
     		$rule = array(array('message'=>'Field required', 'type'=>'required'));
     		$rule_pr = array(array('message'=>'Field required', 'type'=>'required'),array('type'=>'regex', 'message'=>'Nieprawidłowa cena','param'=>'/^[1-9][0-9]*(\.[0-9]+)?$/'));
     		$settings = array();

@@ -21,25 +21,6 @@ class Premium_Warehouse_eCommerce_CompareUpdatePricesCommon extends ModuleCommon
 		return array('show'=>true, 'label'=>'Compare Services');
 	}
 
-	public static function access_parameters($action, $param=null){
-		$i = self::Instance();
-		switch ($action) {
-			case 'browse_crits':    return $i->acl_check('browse');
-			case 'browse':  return $i->acl_check('browse');
-			case 'view':    
-				if (!$i->acl_check('view')) return false;
-				return true;
-			case 'clone':
-			case 'add':
-			case 'edit': 
-				if($i->acl_check('edit'))
-					return array('currency'=>false,'gross_price'=>false);
-				return false;
-			case 'delete':  return $i->acl_check('delete');
-		}
-		return false;
-	}
-	
 	public static function update() {
 		$ret = Utils_RecordBrowserCommon::get_records('premium_ecommerce_compare_prices',array('<last_update'=>time()-3600*12),array(),array('last_update'=>'ASC'));
 		$services = array();

@@ -662,7 +662,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 				$decp = Utils_CurrencyFieldCommon::get_decimal_point();
 				load_js('modules/Premium/Warehouse/Items/Orders/check_item_price_cost.js');
 				$msg = 'Warning';
-				$sell_with_loss = self::Instance()->acl_check('sell with loss');
+				$sell_with_loss = Base_AclCommon::check_permission('Inventory - Sell at loss');
 				if (!$sell_with_loss) {
 					$msg = 'Error';
 					$form->addFormRule(array('Premium_Warehouse_Items_OrdersCommon','check_sale_price'));

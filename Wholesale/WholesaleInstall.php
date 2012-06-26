@@ -94,15 +94,15 @@ class Premium_Warehouse_WholesaleInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::new_addon('premium_warehouse_distributor', 'Premium/Warehouse/Wholesale', 'categories_addon', 'Categories');
 		Utils_RecordBrowserCommon::set_caption('premium_warehouse_distr_categories', 'Distributor Categories');
 
-		Utils_RecordBrowserCommon::add_access('premium_warehouse_distributor', 'view', 'EMPLOYEE');
-		Utils_RecordBrowserCommon::add_access('premium_warehouse_distributor', 'add', 'EMPLOYEE', array(), array('last_update'));
-		Utils_RecordBrowserCommon::add_access('premium_warehouse_distributor', 'edit', 'EMPLOYEE', array(), array('last_update'));
-		Utils_RecordBrowserCommon::add_access('premium_warehouse_distributor', 'delete', array('EMPLOYEE', 'ACCESS:manager'));
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_distributor', 'view', 'ACCESS:employee');
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_distributor', 'add', 'ACCESS:employee', array(), array('last_update'));
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_distributor', 'edit', 'ACCESS:employee', array(), array('last_update'));
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_distributor', 'delete', array('ACCESS:employee', 'ACCESS:manager'));
 
-		Utils_RecordBrowserCommon::add_access('premium_warehouse_distr_categories', 'view', 'EMPLOYEE');
-		Utils_RecordBrowserCommon::add_access('premium_warehouse_distr_categories', 'add', 'EMPLOYEE');
-		Utils_RecordBrowserCommon::add_access('premium_warehouse_distr_categories', 'edit', 'EMPLOYEE');
-		Utils_RecordBrowserCommon::add_access('premium_warehouse_distr_categories', 'delete', array('EMPLOYEE', 'ACCESS:manager'));
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_distr_categories', 'view', 'ACCESS:employee');
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_distr_categories', 'add', 'ACCESS:employee');
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_distr_categories', 'edit', 'ACCESS:employee');
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_distr_categories', 'delete', array('ACCESS:employee', 'ACCESS:manager'));
 
 		return true;
 	}

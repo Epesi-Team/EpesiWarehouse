@@ -542,10 +542,10 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 				);
 		Utils_CommonDataCommon::new_array('Premium_Items_Orders_Shipment_Types/2',$areas,false,true);
 
-		Utils_RecordBrowserCommon::add_access('premium_ecommerce_products', 'view', 'EMPLOYEE');
-		Utils_RecordBrowserCommon::add_access('premium_ecommerce_products', 'add', 'EMPLOYEE');
-		Utils_RecordBrowserCommon::add_access('premium_ecommerce_products', 'edit', 'EMPLOYEE', array(), array('currency','gross_price'));
-		Utils_RecordBrowserCommon::add_access('premium_ecommerce_products', 'delete', 'EMPLOYEE');
+		Utils_RecordBrowserCommon::add_access('premium_ecommerce_products', 'view', 'ACCESS:employee');
+		Utils_RecordBrowserCommon::add_access('premium_ecommerce_products', 'add', 'ACCESS:employee');
+		Utils_RecordBrowserCommon::add_access('premium_ecommerce_products', 'edit', 'ACCESS:employee', array(), array('currency','gross_price'));
+		Utils_RecordBrowserCommon::add_access('premium_ecommerce_products', 'delete', 'ACCESS:employee');
 
 		Utils_RecordBrowserCommon::add_default_access('premium_ecommerce_emails');
 		Utils_RecordBrowserCommon::add_default_access('premium_ecommerce_3rdp_info');
@@ -572,7 +572,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::add_default_access('premium_ecommerce_users');
 		Utils_RecordBrowserCommon::add_default_access('premium_ecommerce_newsletter');
 
-		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders', 'edit', 'EMPLOYEE', array('online_order'=>1, '<status'=>6), array('transaction_type'));
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders', 'edit', 'ACCESS:employee', array('online_order'=>1, '<status'=>6), array('transaction_type'));
 
 		return true;
 	}

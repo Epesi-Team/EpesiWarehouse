@@ -74,10 +74,10 @@ class Premium_Warehouse_ItemsInstall extends ModuleInstall {
 		Utils_CommonDataCommon::new_array('Premium_Warehouse_Items_Categories',array());
 		Utils_CommonDataCommon::extend_array('Companies_Groups',array('manufacturer'=>'Manufacturer'));
 
-		Utils_RecordBrowserCommon::add_access('premium_warehouse_items', 'view', 'EMPLOYEE');
-		Utils_RecordBrowserCommon::add_access('premium_warehouse_items', 'add', 'EMPLOYEE', array(), array('item_type'));
-		Utils_RecordBrowserCommon::add_access('premium_warehouse_items', 'edit', 'EMPLOYEE', array(), array('item_type'));
-		Utils_RecordBrowserCommon::add_access('premium_warehouse_items', 'delete', array('EMPLOYEE', 'ACCESS:manager'));
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_items', 'view', 'ACCESS:employee');
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_items', 'add', 'ACCESS:employee', array(), array('item_type'));
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_items', 'edit', 'ACCESS:employee', array(), array('item_type'));
+		Utils_RecordBrowserCommon::add_access('premium_warehouse_items', 'delete', array('ACCESS:employee', 'ACCESS:manager'));
 
 		Utils_RecordBrowserCommon::add_default_access('premium_warehouse_items_categories');
 
