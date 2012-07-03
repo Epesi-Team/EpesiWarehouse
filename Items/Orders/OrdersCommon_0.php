@@ -1040,6 +1040,10 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 					eval_js('new ContractorUpdate()');
 				}
 			case 'editing':
+				if ($values['transaction_type']==2 || $values['transaction_type']==4) {
+					Utils_RecordBrowser::$rb_obj->hide_tab('Contact Details');
+					Utils_RecordBrowser::$rb_obj->hide_tab('Shipping Address');
+				}
 				eval_js('if($("transaction_type"))Event.observe("transaction_type","change",function(){warehouse_orders_hide_fields();});');
 				eval_js('if($("status"))Event.observe("status","change",function(){warehouse_orders_hide_fields();});');
 				eval_js('if($("shipment_type"))Event.observe("shipment_type","change",function(){warehouse_orders_hide_fields();});');
@@ -1084,6 +1088,10 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 					Utils_RecordBrowserCommon::restore_record('premium_warehouse_items_orders_details', $d['id']);
 				return;
 			case 'view':
+				if ($values['transaction_type']==2 || $values['transaction_type']==4) {
+					Utils_RecordBrowser::$rb_obj->hide_tab('Contact Details');
+					Utils_RecordBrowser::$rb_obj->hide_tab('Shipping Address');
+				}
 				if (self::$status_blocked)
 					print('<b>'.Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Warning: status change impossible - select warehouse first.').'</b>');
 				if (Base_AclCommon::i_am_admin() && $values['transaction_type']==2) {

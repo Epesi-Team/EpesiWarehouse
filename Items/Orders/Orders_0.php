@@ -215,15 +215,15 @@ class Premium_Warehouse_Items_Orders extends Module {
 		$cols['transaction_status'] = false;			
 		$cols['warehouse'] = false;			
 		$header_prop = array(
-			'item_name'=>array('width'=>'270px', 'wrapmode'=>'nowrap'),
+			'item_name'=>array('width'=>'150px', 'wrapmode'=>'nowrap'),
 			'description'=>array('width'=>30, 'wrapmode'=>'nowrap'),
 			'gross_total'=>array('width'=>'80px', 'wrapmode'=>'nowrap'),
 			'tax_value'=>array('width'=>'70px', 'wrapmode'=>'nowrap'),
 			'tax_rate'=>array('width'=>'60px', 'wrapmode'=>'nowrap'),
 			'sww'=>array('width'=>4, 'wrapmode'=>'nowrap'),
 			'net_total'=>array('width'=>'80px', 'wrapmode'=>'nowrap'),
-			'net_price'=>array('width'=>'80px', 'wrapmode'=>'nowrap'),
-			'gross_price'=>array('width'=>'80px', 'wrapmode'=>'nowrap'),
+			'net_price'=>array('width'=>'100px', 'wrapmode'=>'nowrap'),
+			'gross_price'=>array('width'=>'100px', 'wrapmode'=>'nowrap'),
 			'debit'=>array('width'=>20, 'wrapmode'=>'nowrap'),
 			'credit'=>array('width'=>20, 'wrapmode'=>'nowrap'),
 			'quantity'=>array('name'=>'Qty', 'width'=>'45px', 'wrapmode'=>'nowrap'),
