@@ -808,7 +808,7 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 		return true;
 	}
 
-	public function applet($conf,$opts) {
+	public function applet($conf, & $opts) {
 		$opts['title'] = 'Allegro - ostatnio zakończone aukcje';
 		
 		$gb = & $this->init_module('Utils/GenericBrowser',null,'t1');

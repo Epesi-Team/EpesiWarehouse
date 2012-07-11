@@ -102,7 +102,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 		return array('(warehouse'=>array($choice,''), '|target_warehouse'=>$choice);
 	}	
 
-	public function applet($conf,$opts) {
+	public function applet($conf, & $opts) {
 		$opts['go'] = true; // enable full screen
 		$rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items_orders','premium_warehouse_items_orders');
 		$limit = 15;

@@ -225,7 +225,7 @@ class Premium_Warehouse_Items extends Module {
 		Base_ActionBarCommon::add('attach',$this->t('Merge categories'),$this->create_callback_href(array($this,'merge_categories'),array($arg['id'])));
 	}
 
-	public function applet($conf,$opts) {
+	public function applet($conf, & $opts) {
 		$opts['go'] = true; // enable full screen
 		$xxx = array(1209600=>'2 weeks', 2419200=>'4 weeks', 4838400=>'2 months', 10281600=>'4 months');
 		$opts['title'] = $this->t('Not sold for %s',array(Base_LangCommon::ts('Base_Dashboard',$xxx[$conf['older']])));

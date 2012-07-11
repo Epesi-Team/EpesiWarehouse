@@ -1142,7 +1142,7 @@ class Premium_Warehouse_eCommerce extends Module {
 		return 'eCommerce administration';
 	}
 	
-	public function applet($conf,$opts) {
+	public function applet($conf, & $opts) {
 		//available applet options: toggle,href,title,go,go_function,go_arguments,go_contruct_arguments
 		$opts['go'] = false; // enable/disable full screen
 		$xxx = array(-2=>'New Online Order (with payment)', -1=>'New Online Order', 2=>'Order Received', 3=>'Payment Confirmed', 4=>'Order Confirmed', 5=>'On Hold', 6=>'Order Ready to Ship', 7=>'Shipped', 20=>'Delivered', 21=>'Canceled', 22=>'Missing','active'=>'Active');
