@@ -16,7 +16,7 @@ class Premium_Warehouse_SalesOpportunityIntegrationInstall extends ModuleInstall
 	public function install() {
 		Base_ThemeCommon::install_default_theme($this->get_type());
 
-		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items_orders', array('name'=>'Opportunity', 'type'=>'select', 'required'=>false, 'visible'=>false, 'param'=>'premium_salesopportunity::Opportunity Name;Premium_SalesOpportunityCommon::crm_opportunity_reference_crits', 'position'=>'Notes'));
+		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items_orders', array('name' => _M('Opportunity'), 'type'=>'select', 'required'=>false, 'visible'=>false, 'param'=>'premium_salesopportunity::Opportunity Name;Premium_SalesOpportunityCommon::crm_opportunity_reference_crits', 'position'=>'Notes'));
 		Utils_RecordBrowserCommon::set_QFfield_callback('premium_warehouse_items_orders', 'Opportunity', array('Premium_Warehouse_SalesOpportunityIntegrationCommon', 'QFfield_salesopp'));
 
 		Utils_RecordBrowserCommon::new_addon('premium_salesopportunity', 'Premium/Warehouse/SalesOpportunityIntegration', 'orders_addon', 'Transactions');
@@ -50,7 +50,7 @@ class Premium_Warehouse_SalesOpportunityIntegrationInstall extends ModuleInstall
 	}
 	
 	public static function simple_setup() {
-        return array('package'=>'Inventory Management', 'option'=>'Sales Opportunity Integration');
+        return array('package'=>__('Inventory Management'), 'option'=>__('Sales Opportunity Integration'));
 	}
 }
 

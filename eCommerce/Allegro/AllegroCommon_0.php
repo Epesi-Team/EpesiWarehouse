@@ -16,7 +16,7 @@ class Premium_Warehouse_eCommerce_AllegroCommon extends ModuleCommon {
 	    return array('show'=>false);
         $x = Utils_RecordBrowserCommon::get_records_count('premium_ecommerce_products',array('item_name'=>$r['id']));
         if (!$x || !Base_User_SettingsCommon::get('Premium_Warehouse_eCommerce_Allegro','login')) return array('show'=>false);
-        return array('label'=>'Allegro', 'show'=>true);
+        return array('label'=>__('Allegro'), 'show'=>true);
     }
     
     public static function update_cats() {
@@ -129,26 +129,26 @@ class Premium_Warehouse_eCommerce_AllegroCommon extends ModuleCommon {
     
     public static function user_settings(){
     	if (Base_AclCommon::check_permission('Inventory - Allegro Settings')) {
-    		$rule = array(array('message'=>'Field required', 'type'=>'required'));
-    		$rule_pr = array(array('message'=>'Field required', 'type'=>'required'),array('type'=>'regex', 'message'=>'Nieprawidłowa cena','param'=>'/^[1-9][0-9]*(\.[0-9]+)?$/'));
+    		$rule = array(array('message'=>__('Field required'), 'type'=>'required'));
+    		$rule_pr = array(array('message'=>__('Field required'), 'type'=>'required'),array('type'=>'regex', 'message'=>__('Invalid price'),'param'=>'/^[1-9][0-9]*(\.[0-9]+)?$/'));
     		$settings = array();
     		$countries = array();
 			$countries[1] = 'Polska';
 			$countries[228] = 'Neverland (webapi test)';
 			$states = explode('|','--|dolnośląskie|kujawsko-pomorskie|lubelskie|lubuskie|łódzkie|małopolskie|mazowieckie|opolskie|podkarpackie|podlaskie|pomorskie|śląskie|świętokrzyskie|warmińsko-mazurskie|wielkopolskie|zachodniopomorskie');
     		
-    		$settings[] = array('name'=>'key','label'=>'Klucz WEBAPI','type'=>'text','default'=>'','rule'=>$rule);
-			$settings[] = array('name'=>'login','label'=>'Login','type'=>'text','default'=>'','rule'=>$rule);
-    		$settings[] = array('name'=>'pass','label'=>'Hasło','type'=>'text','default'=>'','rule'=>$rule);
-    		$settings[] = array('name'=>'country','label'=>'Kraj','type'=>'select','values'=>$countries,'default'=>1,'rule'=>$rule);
-    		$settings[] = array('name'=>'state','label'=>'Województwo','type'=>'select','values'=>$states,'default'=>0,'rule'=>$rule);
-    		$settings[] = array('name'=>'city','label'=>'Miasto','type'=>'text','default'=>'','rule'=>$rule);
-    		$settings[] = array('name'=>'postal_code','label'=>'Kod pocztowy','type'=>'text','default'=>'','rule'=>$rule);
-    		$settings[] = array('name'=>'fvat','label'=>'Faktura VAT','type'=>'checkbox','default'=>1);
-    		$settings[] = array('name'=>'transport_description','label'=>'Dodatkowe informacje o przesyłce i płatności','type'=>'textarea','default'=>'');
-    		$settings[] = array('name'=>'template','label'=>'Szablon','type'=>'select','values'=>self::get_templates(),'default'=>'');
+    		$settings[] = array('name'=>'key','label'=>__('WEBAPI Key'),'type'=>'text','default'=>'','rule'=>$rule);
+			$settings[] = array('name'=>'login','label'=>__('Login'),'type'=>'text','default'=>'','rule'=>$rule);
+    		$settings[] = array('name'=>'pass','label'=>__('Password'),'type'=>'text','default'=>'','rule'=>$rule);
+    		$settings[] = array('name'=>'country','label'=>__('Country'),'type'=>'select','values'=>$countries,'default'=>1,'rule'=>$rule);
+    		$settings[] = array('name'=>'state','label'=>__('Zone'),'type'=>'select','values'=>$states,'default'=>0,'rule'=>$rule);
+    		$settings[] = array('name'=>'city','label'=>__('City'),'type'=>'text','default'=>'','rule'=>$rule);
+    		$settings[] = array('name'=>'postal_code','label'=>__('Postal Code'),'type'=>'text','default'=>'','rule'=>$rule);
+    		$settings[] = array('name'=>'fvat','label'=>__('Invoice'),'type'=>'checkbox','default'=>1);
+    		$settings[] = array('name'=>'transport_description','label'=>__('Additional info on shipment and payment'),'type'=>'textarea','default'=>'');
+    		$settings[] = array('name'=>'template','label'=>__('Template'),'type'=>'select','values'=>self::get_templates(),'default'=>'');
     		
-    		return array('Allegro'=>$settings);
+    		return array(__('Allegro')=>$settings);
     	}
     	return array();
     }
@@ -242,11 +242,11 @@ class Premium_Warehouse_eCommerce_AllegroCommon extends ModuleCommon {
 
 
 	public static function applet_caption() {
-		return "Allegro";
+		return __("Allegro");
 	}
 
 	public static function applet_info() {
-		return "Ostatnio zakończone aukcje na allegro";
+		return __("Ostatnio zakończone aukcje na allegro");
 	}
 }
 

@@ -26,17 +26,17 @@ class Premium_Warehouse_Items extends Module {
 			$this->rb->force_order(array('position'=>'ASC','category_name'=>'ASC'));
 			$this->display_module($this->rb, array(array(),array('parent_category'=>'')));
 			if (Utils_RecordBrowserCommon::get_access('premium_warehouse_items_categories','add'))
-    			Base_ActionBarCommon::add('attach',$this->t('Merge categories'),$this->create_callback_href(array($this,'merge_categories')));
+    			Base_ActionBarCommon::add('attach',__('Merge categories'),$this->create_callback_href(array($this,'merge_categories')));
 			return;
 		}
 		$this->rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items');
 		$this->rb->set_default_order(array('item_name'=>'ASC'));
 		$defaults = array('quantity_on_hand'=>'0','reorder_point'=>'0','weight'=>1);
 		$this->rb->set_defaults(array(
-			$this->t('Inv. Item')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'inv_item.png'), 'defaults'=>array_merge($defaults,array('item_type'=>0))),
-			$this->t('Serialized Item')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'serialized.png'), 'defaults'=>array_merge($defaults,array('item_type'=>1))),
-			$this->t('Non-Inv. Items')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'non-inv.png'), 'defaults'=>array_merge($defaults,array('item_type'=>2))),
-			$this->t('Service')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'service.png'), 'defaults'=>array_merge($defaults,array('item_type'=>3)))
+			__('Inv. Item')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'inv_item.png'), 'defaults'=>array_merge($defaults,array('item_type'=>0))),
+			__('Serialized Item')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'serialized.png'), 'defaults'=>array_merge($defaults,array('item_type'=>1))),
+			__('Non-Inv. Items')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'non-inv.png'), 'defaults'=>array_merge($defaults,array('item_type'=>2))),
+			__('Service')=>array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'service.png'), 'defaults'=>array_merge($defaults,array('item_type'=>3)))
 			), true);
 			
 		$warehouses = Utils_RecordBrowserCommon::get_records('premium_warehouse');
@@ -44,13 +44,13 @@ class Premium_Warehouse_Items extends Module {
 		$my_warehouse = Base_User_SettingsCommon::get('Premium_Warehouse','my_warehouse');
 		foreach ($warehouses as $v)
 			$opts[$v['id']] = $v['warehouse'];
-		$this->rb->set_custom_filter('sku',array('type'=>'select','label'=>$this->t('Warehouse'),'args'=>$opts,'trans_callback'=>array($this, 'trans_filter')));
+		$this->rb->set_custom_filter('sku',array('type'=>'select','label'=>__('Warehouse'),'args'=>$opts,'trans_callback'=>array($this, 'trans_filter')));
 		if (Base_User_SettingsCommon::get('Premium_Warehouse_Items_Orders', 'filter_by_my_warehouse')) $this->rb->set_filters_defaults(array('sku'=>$my_warehouse));
 		if (ModuleManager::is_installed('Premium_Warehouse_eCommerce_Allegro')!=-1) {
-			$this->rb->set_custom_filter('allegro',array('type'=>'select','label'=>$this->t('Allegro'),'args'=>array('__NULL__'=>'---','1'=>$this->t('Yes'),'0'=>$this->t('No')),'trans_callback'=>array('Premium_Warehouse_eCommerce_AllegroCommon', 'allegro_filter')));
+			$this->rb->set_custom_filter('allegro',array('type'=>'select','label'=>__('Allegro'),'args'=>array('__NULL__'=>'---','1'=>__('Yes'),'0'=>__('No')),'trans_callback'=>array('Premium_Warehouse_eCommerce_AllegroCommon', 'allegro_filter')));
 		}
 		if (ModuleManager::is_installed('Premium_Warehouse_eCommerce_CompareUpdatePrices')!=-1) {
-			$this->rb->set_custom_filter('cs',array('type'=>'select','label'=>$this->t('Compare Services'),'args'=>array('__NULL__'=>'---','1'=>$this->t('Yes'),'0'=>$this->t('No')),'trans_callback'=>array('Premium_Warehouse_eCommerce_CompareUpdatePricesCommon', 'compare_filter')));
+			$this->rb->set_custom_filter('cs',array('type'=>'select','label'=>__('Compare Services'),'args'=>array('__NULL__'=>'---','1'=>__('Yes'),'0'=>__('No')),'trans_callback'=>array('Premium_Warehouse_eCommerce_CompareUpdatePricesCommon', 'compare_filter')));
 		}
 		
 		$cols = array();
@@ -61,14 +61,14 @@ class Premium_Warehouse_Items extends Module {
 		}
 			
 		$this->rb->set_header_properties(array(
-						'quantity_on_hand'=>array('name'=>'On Hand', 'width'=>4, 'wrapmode'=>'nowrap'),
-						'quantity_en_route'=>array('name'=>'En Route', 'width'=>4, 'wrapmode'=>'nowrap'),
-						'available_qty'=>array('name'=>'Avail. Qty', 'width'=>4, 'wrapmode'=>'nowrap'),
-						'dist_qty'=>array('name'=>'Dist. Qty', 'width'=>4, 'wrapmode'=>'nowrap'),
-						'reserved_qty'=>array('name'=>'Res. Qty', 'width'=>4, 'wrapmode'=>'nowrap'),
-						'manufacturer_part_number'=>array('name'=>'Part Number', 'width'=>10, 'wrapmode'=>'nowrap'),
+						'quantity_on_hand'=>array('name'=>__('On Hand'), 'width'=>4, 'wrapmode'=>'nowrap'),
+						'quantity_en_route'=>array('name'=>__('En Route'), 'width'=>4, 'wrapmode'=>'nowrap'),
+						'available_qty'=>array('name'=>__('Avail. Qty'), 'width'=>4, 'wrapmode'=>'nowrap'),
+						'dist_qty'=>array('name'=>__('Dist Qty'), 'width'=>4, 'wrapmode'=>'nowrap'),
+						'reserved_qty'=>array('name'=>__('Res. Qty'), 'width'=>4, 'wrapmode'=>'nowrap'),
+						'manufacturer_part_number'=>array('name'=>__('Part Number'), 'width'=>10, 'wrapmode'=>'nowrap'),
 						'item_type'=>array('width'=>10, 'wrapmode'=>'nowrap'),
-						'gross_price'=>array('name'=>'Price','width'=>8, 'wrapmode'=>'nowrap'),
+						'gross_price'=>array('name'=>__('Price'),'width'=>8, 'wrapmode'=>'nowrap'),
 						'item_name'=>array('width'=>20,'wrapmode'=>'nowrap'),
 						'sku'=>array('width'=>6, 'wrapmode'=>'nowrap'),
 						'upc'=>array('width'=>8, 'wrapmode'=>'nowrap'),
@@ -105,11 +105,11 @@ class Premium_Warehouse_Items extends Module {
 		
 		$opts = array();
 		Premium_Warehouse_ItemsCommon::build_category_tree($opts,$root);
-		$qf->addElement('select', 'master_cat', $this->t('Master category'), $opts);
-		$qf->addRule('master_cat',$this->t('Field required'),'required');
-		$e = $qf->addElement('multiselect', 'cats', $this->t('Merge categories'), $opts,array('style'=>'height:380px;width:300px'));
-		$qf->addRule('cats',$this->t('Field required'),'required');
-		$qf->addRule(array('cats','master_cat'),$this->t('You must select at least one category different then master category'),'callback',array($this,'check_merge_cats'));
+		$qf->addElement('select', 'master_cat', __('Master category'), $opts);
+		$qf->addRule('master_cat',__('Field required'),'required');
+		$e = $qf->addElement('multiselect', 'cats', __('Merge categories'), $opts,array('style'=>'height:380px;width:300px'));
+		$qf->addRule('cats',__('Field required'),'required');
+		$qf->addRule(array('cats','master_cat'),__('You must select at least one category different then master category'),'callback',array($this,'check_merge_cats'));
 		
 		if($qf->validate()) {
 			set_time_limit(0);
@@ -174,8 +174,8 @@ class Premium_Warehouse_Items extends Module {
 		
 		$qf->display();
 	
-		Base_ActionBarCommon::add('save','Merge',$qf->get_submit_form_href());
-		Base_ActionBarCommon::add('back','Back',$this->create_back_href(true,'processing... this operation can take couple minutes...'));
+		Base_ActionBarCommon::add('save',__('Merge'),$qf->get_submit_form_href());
+		Base_ActionBarCommon::add('back',__('Back'),$this->create_back_href(true,'processing... this operation can take couple minutes...'));
 	}
 	
 	public static function check_merge_cats($val) {
@@ -222,13 +222,13 @@ class Premium_Warehouse_Items extends Module {
 //									));
 		$rb->set_additional_actions_method(array($this, 'actions_for_position'));
 		$this->display_module($rb,$order,'show_data');
-		Base_ActionBarCommon::add('attach',$this->t('Merge categories'),$this->create_callback_href(array($this,'merge_categories'),array($arg['id'])));
+		Base_ActionBarCommon::add('attach',__('Merge categories'),$this->create_callback_href(array($this,'merge_categories'),array($arg['id'])));
 	}
 
 	public function applet($conf, & $opts) {
 		$opts['go'] = true; // enable full screen
-		$xxx = array(1209600=>'2 weeks', 2419200=>'4 weeks', 4838400=>'2 months', 10281600=>'4 months');
-		$opts['title'] = $this->t('Not sold for %s',array(Base_LangCommon::ts('Base_Dashboard',$xxx[$conf['older']])));
+		$xxx = array(1209600=>__('2 weeks'), 2419200=>__('4 weeks'), 4838400=>__('2 months'), 10281600=>__('4 months'));
+		$opts['title'] = __('Not sold for %s',array($xxx[$conf['older']]));
 		$rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items','premium_warehouse_items');
 		$limit = null;
 		$crits = array();

@@ -14,18 +14,18 @@ defined("_VALID_ACCESS") || die('Direct access forbidden');
 
 class Premium_Warehouse_SalesReportCommon extends ModuleCommon {
 	public static function admin_caption() {
-		return "Sales Report";
+		return __("Sales Report");
 	}
 	public static function currency_exchange_addon_access() {
 		return Utils_RecordBrowserCommon::get_access('premium_warehouse_items_orders','edit',Utils_RecordBrowser::$last_record);
 	}
 	public static function menu() {
 		if (!Base_AclCommon::i_am_admin()) return;
-		return array('Reports'=>array('__submenu__'=>1, 
-			'Sales by Warehouse'=>array('mode'=>'sales_by_warehouse'), 
-			'Sales by Transaction'=>array('mode'=>'sales_by_transaction'),	
-			'Sales by Item'=>array('mode'=>'sales_by_item'),
-			'Stock Value by Warehouse'=>array('mode'=>'value_by_warehouse')	
+		return array(_M('Reports')=>array('__submenu__'=>1, 
+			_M('Sales by Warehouse')=>array('mode'=>'sales_by_warehouse'), 
+			_M('Sales by Transaction')=>array('mode'=>'sales_by_transaction'),	
+			_M('Sales by Item')=>array('mode'=>'sales_by_item'),
+			_M('Stock Value by Warehouse')=>array('mode'=>'value_by_warehouse')	
 		));	
 	}
 	

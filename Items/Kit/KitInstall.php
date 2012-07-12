@@ -13,8 +13,8 @@ defined("_VALID_ACCESS") || die('Direct access forbidden');
 class Premium_Warehouse_Items_KitInstall extends ModuleInstall {
 
 	public function install() {
-		Utils_CommonDataCommon::extend_array('Premium_Warehouse_Items_Type',array('kit'=>'Kit'));
-		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items', array('name'=>'Kit items',	'type'=>'multiselect', 'required'=>false, 'filter'=>true, 'extra'=>false, 'visible'=>false, 'param'=>'premium_warehouse_items::Item Name','QFfield_callback'=>array('Premium_Warehouse_Items_KitCommon','QFfield_kit_items')));
+		Utils_CommonDataCommon::extend_array('Premium_Warehouse_Items_Type',array('kit'=>_M('Kit')));
+		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items', array('name' => _M('Kit items'),	'type'=>'multiselect', 'required'=>false, 'filter'=>true, 'extra'=>false, 'visible'=>false, 'param'=>'premium_warehouse_items::Item Name','QFfield_callback'=>array('Premium_Warehouse_Items_KitCommon','QFfield_kit_items')));
 		Utils_RecordBrowserCommon::register_processing_callback('premium_warehouse_items', array('Premium_Warehouse_Items_KitCommon', 'submit_items'));
 		Utils_RecordBrowserCommon::set_display_callback('premium_warehouse_items', 'Quantity on Hand', array('Premium_Warehouse_Items_KitCommon', 'display_item_quantity'));
 		Utils_RecordBrowserCommon::set_QFfield_callback('premium_warehouse_items', 'Quantity on Hand', array('Premium_Warehouse_Items_KitCommon', 'QFfield_item_quantity'));

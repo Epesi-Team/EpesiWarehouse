@@ -104,16 +104,16 @@ $labels = array(
 	'classification' => 'NAPCS',
 	'quantity' => 'qty',
 	'units' => 'units',
-	'net_price' => 'Net price',
-	'tax_rate' => 'Tax rate',
+	'net_price' => 'Net Price',
+	'tax_rate' => 'Tax Rate',
 	'gorss_value' => 'Gross value',
 	'net_value' => 'Net value',
-	'tax_value' => 'Tax value',
+	'tax_value' => 'Tax Value',
 	'sku' => 'SKU',
 	'comments' => 'Comments'
 );
 foreach ($labels as $k=>$v)
-	$labels[$k] = Base_LangCommon::ts('Premium_Warehouse_Invoice', $v);
+	$labels[$k] = _V( $v);
 $theme->assign('labels', $labels);
 
 $file = Libs_TCPDFCommon::get_logo_filename();
@@ -185,7 +185,7 @@ foreach ($items as $k=>$v) {
 	$items[$k]['gross_price'] = Utils_CurrencyFieldCommon::format($items[$k]['gross_price'][0], $items[$k]['gross_price'][1]);
 	$items[$k]['net_price'] = Utils_CurrencyFieldCommon::format($items[$k]['net_price'][0], $items[$k]['net_price'][1]);
 	$items[$k]['tax_name'] = $tax.'%';
-	$items[$k]['units'] = Base_LangCommon::ts('Premium_Warehouse_Invoice', 'ea.');
+	$items[$k]['units'] = __( 'ea.');
 
 	$theme = Base_ThemeCommon::init_smarty();
 	$theme->assign('details', $items[$k]);
@@ -203,7 +203,7 @@ $additional_cost = array();
 $additional_cost['shipment'] = Utils_CurrencyFieldCommon::get_values($order['shipment_cost']);
 $additional_cost['handling'] = Utils_CurrencyFieldCommon::get_values($order['handling_cost']);
 
-foreach (array('shipment'=>Base_LangCommon::ts('Premium_Warehouse_Invoice','Shipment'), 'handling'=>Base_LangCommon::ts('Premium_Warehouse_Invoice','Handling')) as $k=>$v) {
+foreach (array('shipment'=>__('Shipment'), 'handling'=>__('Handling')) as $k=>$v) {
 	if ($additional_cost[$k][0]) {
 		$theme = Base_ThemeCommon::init_smarty();
 
@@ -244,7 +244,7 @@ foreach (array('shipment'=>Base_LangCommon::ts('Premium_Warehouse_Invoice','Ship
 				'gross_total'=>$gross,
 				'net_total'=>$net,
 				'tax_total'=>$tax,
-				'units'=>Base_LangCommon::ts('Premium_Warehouse_Invoice', 'ea.'),
+				'units'=>__( 'ea.'),
 			);
 		$theme->assign('details', $details);
 		$theme->assign('lp', $lp);
@@ -384,7 +384,7 @@ if (!$order['receipt']) {
 }
 
 foreach ($labels as $k=>$v)
-	if ($v) $labels[$k] = Base_LangCommon::ts('Premium_Warehouse_Invoice', $v);
+	if ($v) $labels[$k] = _V( $v);
 	else $labels[$k] = '';
 
 if ($labels['legal_notice'] == 'legal_notice') $labels['legal_notice'] = '';
@@ -403,8 +403,8 @@ $buffer = Libs_TCPDFCommon::output($tcpdf);
 
 header('Content-Type: application/pdf');
 header('Content-Length: '.strlen($buffer));
-//header('Content-disposition: attachement; filename="'.Base_LangCommon::ts('Premium_Warehouse_Invoice','Invoice').'_'.$order['invoice_id'].'.pdf"');
-header('Content-disposition: filename="'.Base_LangCommon::ts('Premium_Warehouse_Invoice','Invoice').'_'.$order['invoice_id'].'.pdf"');
+//header('Content-disposition: attachement; filename="'.__('Invoice').'_'.$order['invoice_id'].'.pdf"');
+header('Content-disposition: filename="'.__('Invoice').'_'.$order['invoice_id'].'.pdf"');
 
 print($buffer);
 ?>

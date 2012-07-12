@@ -34,7 +34,7 @@ class Premium_Warehouse_Items_WebcamInstall extends ModuleInstall {
 	}
 	
 	public static function simple_setup() {
-        return array('package'=>'Inventory Management', 'option'=>'Webcam photos');
+        return array('package'=>__('Inventory Management'), 'option'=>__('Webcam photos'));
 	}
 }
 

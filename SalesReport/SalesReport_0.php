@@ -31,7 +31,7 @@ class Premium_Warehouse_SalesReport extends Module {
 		if ($this->is_back())
 			return false;
 		$currency = Variable::get('premium_warehouse_ex_currency');
-		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
+		Base_ActionBarCommon::add('back', __('Back'), $this->create_back_href());
 
 		$form = $this->init_module('Libs/QuickForm');
 		$opts = Utils_CurrencyFieldCommon::get_currencies();
@@ -70,7 +70,7 @@ class Premium_Warehouse_SalesReport extends Module {
 		$form->addElement('hidden', 'currency', '', array('id'=>'currency'));
 		$form->addElement('hidden', 'prompt_header', '', array('id'=>'prompt_header'));
 		$form->addElement('hidden', 'submit_form_js', '', array('id'=>'submit_form_js'));
-		$form->setDefaults(array('prompt_header'=>Base_LangCommon::ts('Premium_Warehouse_SalesReport','Enter new exchange rate')));
+		$form->setDefaults(array('prompt_header'=>__('Enter new exchange rate')));
 		$form->setDefaults(array('submit_form_js'=>$form->get_submit_form_js()));
 		$form->display();
 		if ($form->validate()) {
@@ -111,7 +111,7 @@ class Premium_Warehouse_SalesReport extends Module {
 		$form->addElement('hidden', 'exch_rate', '', array('id'=>'exch_rate'));
 		$form->addElement('hidden', 'prompt_header', '', array('id'=>'prompt_header'));
 		$form->addElement('hidden', 'submit_form_js', '', array('id'=>'submit_form_js'));
-		$form->setDefaults(array('prompt_header'=>$this->t('Enter the amount in '.$cur_code)));
+		$form->setDefaults(array('prompt_header'=>_V('Enter the amount in '.$cur_code)));
 		$form->setDefaults(array('submit_form_js'=>$form->get_submit_form_js()));
 		$form->display();
 		if ($form->validate()) {
@@ -133,7 +133,7 @@ class Premium_Warehouse_SalesReport extends Module {
 			$gb_row = $gb->get_new_row();
 			$is_set = isset($mapping[$k]);
 			if ($is_set) $is_exch = $mapping[$k];
-			else $is_exch = $this->t('Not set');
+			else $is_exch = __('Not set');
 			$gb_row->add_data($v, $is_exch);
 			$gb_row->add_action('href="javascript:void(0);" onclick="report_edit_exchange('.$k.')"', 'edit', 'Edit');
 			if ($is_set) $gb_row->add_action($this->create_callback_href(array($this, 'remove_mapping'), array($r['id'], $k)), 'move-down', 'Unset');
@@ -154,7 +154,7 @@ class Premium_Warehouse_SalesReport extends Module {
 				location(array());
 			return;
 		}
-		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
+		Base_ActionBarCommon::add('back', __('Back'), $this->create_back_href());
 
 		$tb = $this->init_module('Utils_TabbedBrowser');
 		$tb->set_tab('Currency', array($this, 'currency_admin'));
@@ -181,7 +181,7 @@ class Premium_Warehouse_SalesReport extends Module {
 	public function qoh_admin() {
 		if (isset($_REQUEST['balance_all'])) $balance_all = true;
 		else $balance_all = false;
-		Base_ActionBarCommon::add('folder', 'Fix amounts', Module::create_href(array('balance_all'=>1)));
+		Base_ActionBarCommon::add('folder', __('Fix amounts'), Module::create_href(array('balance_all'=>1)));
 
 		$gb = $this->init_module('Utils_GenericBrowser',null,'qoh_sync');
 		$gb->set_table_columns(array('Item','Warehouse','Current','Calculated'));
@@ -238,7 +238,7 @@ class Premium_Warehouse_SalesReport extends Module {
 /************************************************************************************/
 	public function body() {
 		if (!Base_AclCommon::i_am_admin()) {
-			print($this->t('You don\'t have permission to access this module'));
+			print(__('You don\'t have permission to access this module'));
 			return;
 		}
 
@@ -250,27 +250,27 @@ class Premium_Warehouse_SalesReport extends Module {
 			case 'sales_by_item': $this->sales_by_item(); break;
 			case 'sales_by_transaction': $this->sales_by_transaction(); break;
 			case 'value_by_warehouse': $this->value_by_warehouse(); break;
-			default: print($this->t('Unknown mode'));
+			default: print(__('Unknown mode'));
 		}
 	}
 	
 	public function sales_by_warehouse() {
-		Base_ActionBarCommon::add('folder', 'Currencies', $this->create_callback_href(array($this, 'currency_exchange_editor')));
-		Base_ActionBarCommon::add('search', 'Scan', $this->create_callback_href(array($this, 'recalculate')));
+		Base_ActionBarCommon::add('folder', __('Currencies'), $this->create_callback_href(array($this, 'currency_exchange_editor')));
+		Base_ActionBarCommon::add('search', __('Scan'), $this->create_callback_href(array($this, 'recalculate')));
 		$this->cats = array('Sales Trans.','Sales Volume','Purchase Trans.','Purchase Volume','Net Profit','Sales Earnings');
 		$recs = Utils_RecordBrowserCommon::get_records('premium_warehouse',array(),array(),array('warehouse'=>'ASC'));
 		$this->rbr->set_reference_records($recs);
 		$this->rbr->set_reference_record_display_callback(array('Premium_WarehouseCommon','display_warehouse'));
 
 		$form = $this->init_module('Libs/QuickForm');
-		$form->addElement('select', 'method', $this->t('Method'), array('fifo'=>$this->t('FIFO'), 'lifo'=>$this->t('LIFO')));
-		$form->addElement('select', 'prices', $this->t('Prices'), array('net'=>$this->t('Net'), 'gross'=>$this->t('Gross')));
+		$form->addElement('select', 'method', __('Method'), array('fifo'=>__('FIFO'), 'lifo'=>__('LIFO')));
+		$form->addElement('select', 'prices', __('Prices'), array('net'=>__('Net'), 'gross'=>__('Gross')));
 		$form->setDefaults(array('method'=>'fifo','prices'=>'net'));
 
 		$this->range_type = $this->rbr->display_date_picker(array(), $form);
 		$this->rbr->set_categories($this->cats);
-		$this->rbr->set_summary('col', array('label'=>'Total'));
-		$this->rbr->set_summary('row', array('label'=>'Total'));
+		$this->rbr->set_summary('col', array('label'=>__('Total')));
+		$this->rbr->set_summary('row', array('label'=>__('Total')));
 		$this->rbr->set_format(array(	$this->cats[0]=>'numeric', 
 										$this->cats[1]=>'currency',
 										$this->cats[2]=>'numeric',
@@ -290,9 +290,9 @@ class Premium_Warehouse_SalesReport extends Module {
 			$header[] = date($this->format, $v);
 		$this->rbr->set_table_header($header);
 		$this->rbr->set_display_cell_callback(array($this, 'display_sales_by_warehouse_cells'));
-		$this->rbr->set_pdf_title($this->t('Sales Report, %s',array(date('Y-m-d H:i:s'))));
+		$this->rbr->set_pdf_title(__('Sales Report, %s',array(date('Y-m-d H:i:s'))));
 		$this->rbr->set_pdf_subject($this->rbr->pdf_subject_date_range());
-		$this->rbr->set_pdf_filename($this->t('Sales_Report_%s',array(date('Y_m_d__H_i_s'))));
+		$this->rbr->set_pdf_filename(__('Sales_Report_%s',array(date('Y_m_d__H_i_s'))));
 		$this->display_module($this->rbr);
 	}
 
@@ -439,13 +439,13 @@ class Premium_Warehouse_SalesReport extends Module {
 	}
 
 	public function sales_by_item() {
-		Base_ActionBarCommon::add('folder', 'Currencies', $this->create_callback_href(array($this, 'currency_exchange_editor')));
-		Base_ActionBarCommon::add('search', 'Scan', $this->create_callback_href(array($this, 'recalculate')));
-		print('<br><b>'.$this->t('Numbers in brackets indicate items sold that were omitted in earning calculation.').'</b><br><br>');
+		Base_ActionBarCommon::add('folder', __('Currencies'), $this->create_callback_href(array($this, 'currency_exchange_editor')));
+		Base_ActionBarCommon::add('search', __('Scan'), $this->create_callback_href(array($this, 'recalculate')));
+		print('<br><b>'.__('Numbers in brackets indicate items sold that were omitted in earning calculation.').'</b><br><br>');
 		$form = $this->init_module('Libs/QuickForm');
-		$form->addElement('select', 'method', $this->t('Method'), array('fifo'=>$this->t('FIFO'), 'lifo'=>$this->t('LIFO')));
-		$form->addElement('select', 'prices', $this->t('Prices'), array('net'=>$this->t('Net'), 'gross'=>$this->t('Gross')));
-		$form->addElement('text', 'item_name', $this->t('Item Search'));
+		$form->addElement('select', 'method', __('Method'), array('fifo'=>__('FIFO'), 'lifo'=>__('LIFO')));
+		$form->addElement('select', 'prices', __('Prices'), array('net'=>__('Net'), 'gross'=>__('Gross')));
+		$form->addElement('text', 'item_name', __('Item Search'));
 		$form->setDefaults(array('method'=>'fifo','prices'=>'net','item_name'=>''));
 		$this->cats = array('Qty Sold','Earnings');
 		$this->range_type = $this->rbr->display_date_picker(array(), $form);
@@ -469,8 +469,8 @@ class Premium_Warehouse_SalesReport extends Module {
 		$this->rbr->set_reference_records($items);
 		$this->rbr->set_reference_record_display_callback(array('Premium_Warehouse_ItemsCommon','display_item_name'));
 		$this->rbr->set_categories($this->cats);
-		$this->rbr->set_summary('col', array('label'=>'Total'));
-		$this->rbr->set_summary('row', array('label'=>'Total', 'callback'=>array($this,'sales_by_item_row_total')));
+		$this->rbr->set_summary('col', array('label'=>__('Total')));
+		$this->rbr->set_summary('row', array('label'=>__('Total'), 'callback'=>array($this,'sales_by_item_row_total')));
 		$this->rbr->set_format(array(	$this->cats[0]=>'numeric', 
 										$this->cats[1]=>'currency'
 									));
@@ -482,9 +482,9 @@ class Premium_Warehouse_SalesReport extends Module {
 		}
 		$this->rbr->set_table_header($header);
 		$this->rbr->set_display_cell_callback(array($this, 'display_sales_by_item_cells'));
-		$this->rbr->set_pdf_title($this->t('Sales Report, %s',array(date('Y-m-d H:i:s'))));
+		$this->rbr->set_pdf_title(__('Sales Report, %s',array(date('Y-m-d H:i:s'))));
 		$this->rbr->set_pdf_subject($this->rbr->pdf_subject_date_range());
-		$this->rbr->set_pdf_filename($this->t('Sales_Report_%s',array(date('Y_m_d__H_i_s'))));
+		$this->rbr->set_pdf_filename(__('Sales_Report_%s',array(date('Y_m_d__H_i_s'))));
 		$this->display_module($this->rbr);
 	}	
 
@@ -533,19 +533,19 @@ class Premium_Warehouse_SalesReport extends Module {
 	}
 	
 	public function sales_by_transaction() {
-		Base_ActionBarCommon::add('search', 'Scan', $this->create_callback_href(array($this, 'recalculate')));
-		Base_ActionBarCommon::add('folder', 'Currencies', $this->create_callback_href(array($this, 'currency_exchange_editor')));
+		Base_ActionBarCommon::add('search', __('Scan'), $this->create_callback_href(array($this, 'recalculate')));
+		Base_ActionBarCommon::add('folder', __('Currencies'), $this->create_callback_href(array($this, 'currency_exchange_editor')));
 		print('<br><b>Numbers in brackets indicate items sold that were omitted in earning calculation.</b><br><br>');
 		$form = $this->init_module('Libs/QuickForm');
-		$form->addElement('select', 'method', $this->t('Method'), array('fifo'=>$this->t('FIFO'), 'lifo'=>$this->t('LIFO')));
-		$form->addElement('select', 'prices', $this->t('Prices'), array('net'=>$this->t('Net'), 'gross'=>$this->t('Gross')));
+		$form->addElement('select', 'method', __('Method'), array('fifo'=>__('FIFO'), 'lifo'=>__('LIFO')));
+		$form->addElement('select', 'prices', __('Prices'), array('net'=>__('Net'), 'gross'=>__('Gross')));
 		$warehouses = Utils_RecordBrowserCommon::get_records('premium_warehouse',array(),array(),array('warehouse'=>'ASC'));
-		$warehouse_choice = array(''=>Base_LangCommon::ts('Premium_Warehouse_SalesReport','[all]'));
+		$warehouse_choice = array(''=>'['.__('All').']');
 		$my_warehouse = Base_User_SettingsCommon::get('Premium_Warehouse','my_warehouse');
 		if (!$my_warehouse) $my_warehouse = '';
 		foreach ($warehouses as $k=>$v)
 			$warehouse_choice[$v['id']] = $v['warehouse'];
-		$form->addElement('select', 'warehouse', $this->t('Warehouse'), $warehouse_choice);
+		$form->addElement('select', 'warehouse', __('Warehouse'), $warehouse_choice);
 		$form->setDefaults(array('method'=>'fifo','prices'=>'net', 'warehouse'=>$my_warehouse));
 		$this->cats = array('Qty Sold','Earnings');
 		$this->range_type = $this->rbr->display_date_picker(array(), $form);
@@ -572,17 +572,17 @@ class Premium_Warehouse_SalesReport extends Module {
 		$this->rbr->set_reference_records($transactions);
 		$this->rbr->set_reference_record_display_callback(array($this,'display_transaction_id'));
 		$this->rbr->set_categories($this->cats);
-		$this->rbr->set_summary('col', array('label'=>'Total'));
-//		$this->rbr->set_summary('row', array('label'=>'Total', 'callback'=>array($this,'sales_by_item_row_total')));
+		$this->rbr->set_summary('col', array('label'=>__('Total')));
+//		$this->rbr->set_summary('row', array('label'=>__('Total'), 'callback'=>array($this,'sales_by_item_row_total')));
 		$this->rbr->set_format(array(	$this->cats[0]=>'numeric', 
 										$this->cats[1]=>'currency'
 									));
 		$header = array('Transaction', 'Earnings');
 		$this->rbr->set_table_header($header);
 		$this->rbr->set_display_cell_callback(array($this, 'display_sales_by_transaction_cells'));
-//		$this->rbr->set_pdf_title($this->t('Sales Report, %s',array(date('Y-m-d H:i:s'))));
+//		$this->rbr->set_pdf_title(__('Sales Report, %s',array(date('Y-m-d H:i:s'))));
 //		$this->rbr->set_pdf_subject($this->rbr->pdf_subject_date_range());
-//		$this->rbr->set_pdf_filename($this->t('Sales_Report_%s',array(date('Y_m_d__H_i_s'))));
+//		$this->rbr->set_pdf_filename(__('Sales_Report_%s',array(date('Y_m_d__H_i_s'))));
 		$this->display_module($this->rbr);
 	}	
 	
@@ -611,31 +611,31 @@ class Premium_Warehouse_SalesReport extends Module {
 	}
 
 	public function value_by_warehouse() {
-		Base_ActionBarCommon::add('folder', 'Currencies', $this->create_callback_href(array($this, 'currency_exchange_editor')));
-		Base_ActionBarCommon::add('search', 'Scan', $this->create_callback_href(array($this, 'recalculate')));
+		Base_ActionBarCommon::add('folder', __('Currencies'), $this->create_callback_href(array($this, 'currency_exchange_editor')));
+		Base_ActionBarCommon::add('search', __('Scan'), $this->create_callback_href(array($this, 'recalculate')));
 		$this->cats = array('Items Qty','Items Volume');
 		$recs = Utils_RecordBrowserCommon::get_records('premium_warehouse',array(),array(),array('warehouse'=>'ASC'));
 		$this->rbr->set_reference_records($recs);
 		$this->rbr->set_reference_record_display_callback(array('Premium_WarehouseCommon','display_warehouse'));
 
 		$form = $this->init_module('Libs/QuickForm');
-		$form->addElement('select', 'method', $this->t('Method'), array('fifo'=>$this->t('FIFO'), 'lifo'=>$this->t('LIFO')));
-		$form->addElement('select', 'prices', $this->t('Prices'), array('net'=>$this->t('Net'), 'gross'=>$this->t('Gross')));
+		$form->addElement('select', 'method', __('Method'), array('fifo'=>__('FIFO'), 'lifo'=>__('LIFO')));
+		$form->addElement('select', 'prices', __('Prices'), array('net'=>__('Net'), 'gross'=>__('Gross')));
 		$form->setDefaults(array('method'=>'fifo','prices'=>'net'));
 
 		$this->range_type = $this->rbr->display_date_picker(array(), $form, false);
 		$this->rbr->set_categories($this->cats);
-		$this->rbr->set_summary('col', array('label'=>'Total'));
-		$this->rbr->set_summary('row', array('label'=>'Total'));
+		$this->rbr->set_summary('col', array('label'=>__('Total')));
+		$this->rbr->set_summary('row', array('label'=>__('Total')));
 		$this->rbr->set_format(array(	$this->cats[0]=>'numeric', 
 										$this->cats[1]=>'currency'
 									));
 		$header = array('Warehouse', 'Stock');
 		$this->rbr->set_table_header($header);
 		$this->rbr->set_display_cell_callback(array($this, 'display_value_by_warehouse_cells'));
-		$this->rbr->set_pdf_title($this->t('Sales Report, %s',array(date('Y-m-d H:i:s'))));
+		$this->rbr->set_pdf_title(__('Sales Report, %s',array(date('Y-m-d H:i:s'))));
 		$this->rbr->set_pdf_subject($this->rbr->pdf_subject_date_range());
-		$this->rbr->set_pdf_filename($this->t('Sales_Report_%s',array(date('Y_m_d__H_i_s'))));
+		$this->rbr->set_pdf_filename(__('Sales_Report_%s',array(date('Y_m_d__H_i_s'))));
 		$this->display_module($this->rbr);
 	}
 
@@ -676,7 +676,7 @@ class Premium_Warehouse_SalesReport extends Module {
 		$orders = array(array('warehouse'=>$warehouse_id,'transaction_type'=>'1','status'=>array(20,7),'>='.$order_date=>$start, '<='.$order_date=>$end), $cols, array($order_date=>'DESC'));
 		$rb->set_header_properties(array('terms'=>array('wrapmode'=>'nowrap'),'status'=>array('wrapmode'=>'nowrap')));
 		$this->display_module($rb,$orders,'show_data');
-		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
+		Base_ActionBarCommon::add('back', __('Back'), $this->create_back_href());
 		return true;
 	}
 	
@@ -689,13 +689,13 @@ class Premium_Warehouse_SalesReport extends Module {
 		$orders = array(array('warehouse'=>$warehouse_id,'transaction_type'=>'0','status'=>'20', '>='.$order_date=>$start, '<='.$order_date=>$end), $cols, array($order_date=>'DESC'));
 		$rb->set_header_properties(array('terms'=>array('wrapmode'=>'nowrap'),'status'=>array('wrapmode'=>'nowrap')));
 		$this->display_module($rb,$orders,'show_data');
-		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
+		Base_ActionBarCommon::add('back', __('Back'), $this->create_back_href());
 		return true;
 	}
 	
 /************************************************************************************/
 	public function caption() {
-		return 'Sales Report';
+		return __('Sales Report');
 	}
 
 }

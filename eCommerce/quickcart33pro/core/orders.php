@@ -709,7 +709,7 @@ class Orders
       if($countries_id===false)
 	    die('Common data key "Countries" not defined.');
       $aData['sCountry'] = DB::GetOne('SELECT p.value FROM utils_commondata_tree p WHERE p.parent_id=%d AND p.akey=%s ORDER BY p.akey',array($countries_id,$aData['sCountryCode']));
-      $aData['sCountry'] = Base_LangCommon::ts('Utils_CommonData',$aData['sCountry']);
+      $aData['sCountry'] = _V($aData['sCountry']);
       
       $shipment = explode('#',$aData['f_shipment_type']);
       $aData['sCarrierName'] = $aShipments[$shipment[0]];
@@ -747,7 +747,7 @@ class Orders
 
       $statusOpts = array(''=>'New', -1=>'New Online Order', 1=>'Sales Quote', 2=>'Order Received', 3=>'Payment Confirmed', 4=>'Order Confirmed', 5=>'On Hold', 6=>'Order Ready to Ship', 7=>'Shipped', 20=>'Delivered', 21=>'Canceled', 22=>'Missing');
       $aData['sStatus'] = $statusOpts[$aData['iStatus']];
-      $aData['sStatus'] = Base_LangCommon::ts('Premium_Warehouse_Items_Orders',$aData['sStatus']);
+      $aData['sStatus'] = _V($aData['sStatus']);
 
       if(!$aData['sShipmentNo'])
 	      $aData['sShipmentNo'] = '-';
@@ -974,7 +974,7 @@ class Orders
 	    die('Common data key "Premium_Items_Orders_Payment_Types" not defined.');
 	$payments = DB::GetAssoc('SELECT p.akey, p.value FROM utils_commondata_tree p WHERE p.parent_id=%d AND p.akey IN (SELECT f_payment FROM premium_ecommerce_payments_carriers_data_1 WHERE f_currency=%s AND active=1) ORDER BY akey',array($payments_id,$currency));
 	foreach($payments as $k=>$v) {
-			$payments[$k] = Base_LangCommon::ts('Utils_CommonData',$v);
+			$payments[$k] = _V($v);
 	}
     }
     return $payments;
@@ -994,7 +994,7 @@ class Orders
 		$k = $row['akey'];
 		$v = $row['value'];
 		self::$shipments_ids[$k] = $row['id'];
-		$shipments[$k] = Base_LangCommon::ts('Utils_CommonData',$v);
+		$shipments[$k] = _V($v);
 	}
     }
     return $shipments;

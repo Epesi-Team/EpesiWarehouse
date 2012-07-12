@@ -28,7 +28,7 @@ class Premium_Warehouse_EmpSalesReport extends Module {
 	public function body() {
 
 		if (!Base_AclCommon::i_am_admin()) {
-		print($this->t('You don\'t have permission to access this module'));
+		print(__('You don\'t have permission to access this module'));
 		return;
 		}
 
@@ -38,8 +38,8 @@ class Premium_Warehouse_EmpSalesReport extends Module {
 
 		$date_range = $this->rbr->display_date_picker();
 		$this->rbr->set_categories(self::$cats);
-		$this->rbr->set_summary('col', array('label'=>'Total'));
-		$this->rbr->set_summary('row', array('label'=>'Total'));
+		$this->rbr->set_summary('col', array('label'=>__('Total')));
+		$this->rbr->set_summary('row', array('label'=>__('Total')));
 		$this->rbr->set_format(array(	self::$cats[0]=>'numeric', 
 										self::$cats[1]=>'currency'
 									));
@@ -57,9 +57,9 @@ class Premium_Warehouse_EmpSalesReport extends Module {
 			$header[] = date($this->format, $v);
 		$this->rbr->set_table_header($header);
 		$this->rbr->set_display_cell_callback(array($this, 'display_cells'));
-		$this->rbr->set_pdf_title($this->t('Employee Sales Report, %s',array(date('Y-m-d H:i:s'))));
+		$this->rbr->set_pdf_title(__('Employee Sales Report, %s',array(date('Y-m-d H:i:s'))));
 		$this->rbr->set_pdf_subject($this->rbr->pdf_subject_date_range());
-		$this->rbr->set_pdf_filename($this->t('Emp_Sales_Report_%s',array(date('Y_m_d__H_i_s'))));
+		$this->rbr->set_pdf_filename(__('Emp_Sales_Report_%s',array(date('Y_m_d__H_i_s'))));
 		$this->display_module($this->rbr);
 	}
 
@@ -161,13 +161,13 @@ class Premium_Warehouse_EmpSalesReport extends Module {
 		$orders = array(array('employee'=>$employee_id,'transaction_type'=>'1','status'=>array(20,7),'>='.$order_date=>$start, '<='.$order_date=>$end), $cols, array($order_date=>'DESC'));
 		$rb->set_header_properties(array('terms'=>array('width'=>10, 'wrapmode'=>'nowrap'),'status'=>array('width'=>10, 'wrapmode'=>'nowrap')));
 		$this->display_module($rb,$orders,'show_data');
-		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
+		Base_ActionBarCommon::add('back',__('Back'),$this->create_back_href());
 		return true;
 	}
 	
 /************************************************************************************/
 	public function caption() {
-		return 'Employee Sales Report';
+		return __('Employee Sales Report');
 	}
 }
 

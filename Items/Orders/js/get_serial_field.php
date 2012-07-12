@@ -63,13 +63,13 @@ if ($trans['transaction_type']==1 || $trans['transaction_type']==4 || ($trans['t
 	while ($row = $item_serials_raw->FetchRow()) {
 		if ($i == $serial) $default = $row['id'];
 		if (!$row['serial']) {
-			if (!$empty) $item_serials['NULL'] = array('serial'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders','n/a'), 'note'=>'', 'shelf'=>'');
+			if (!$empty) $item_serials['NULL'] = array('serial'=>__('n/a'), 'note'=>'', 'shelf'=>'');
 			$empty++;
 		} else $item_serials[$row['id']] = array('serial'=>$row['serial'], 'note'=>$row['notes'], 'shelf'=>$row['shelf']);
 		$i++;
 	}
 	if ($default===null) {
-		$serial_html = '<b style="color: red;">'.Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Not enough serials supplied').'</b>';
+		$serial_html = '<b style="color: red;">'.__('Not enough serials supplied').'</b>';
 		$note_html = '';
 		$shelf_html = '';
 	} else {

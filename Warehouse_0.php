@@ -36,27 +36,27 @@ class Premium_Warehouse extends Module {
 	
 		$form = & $this->init_module('Libs/QuickForm');
 
-		$form->addElement('header', null, $this->t('Warehouse'));
+		$form->addElement('header', null, __('Warehouse'));
 
-		$form->addElement('text', 'weight_units', $this->t('Weight units'));
-		$form->addRule('weight_units', $this->t('Must be between 1 and 10 chars'), 'rangelength', array(1,10));
-		$form->addRule('weight_units', $this->t('Field required'), 'required');
-		$form->addElement('text', 'volume_units', $this->t('Volume units'));
-		$form->addRule('volume_units', $this->t('Must be between 1 and 10 chars'), 'rangelength', array(1,10));
-		$form->addRule('volume_units', $this->t('Field required'), 'required');
+		$form->addElement('text', 'weight_units', __('Weight units'));
+		$form->addRule('weight_units', __('Must be between 1 and 10 chars'), 'rangelength', array(1,10));
+		$form->addRule('weight_units', __('Field required'), 'required');
+		$form->addElement('text', 'volume_units', __('Volume units'));
+		$form->addRule('volume_units', __('Must be between 1 and 10 chars'), 'rangelength', array(1,10));
+		$form->addRule('volume_units', __('Field required'), 'required');
 
-		$form->addElement('static', 'notice', $this->t('Notice'), 'You can use upper indexing.<br />Example: "dm^3" will be displayed as "dm<sup>3</sup>"');
+		$form->addElement('static', 'notice', __('Notice'), 'You can use upper indexing.<br />Example: "dm^3" will be displayed as "dm<sup>3</sup>"');
 
 		if ($orders) {
-			$form->addElement('header', 'disable_trans_types_header', $this->t('Disable Transaction Types'));
-			$form->addElement('checkbox', 'disable_purchase', $this->t('Disable Purchase'));
-			$form->addElement('checkbox', 'disable_sales_quote', $this->t('Disable Sales Quote'));
-			$form->addElement('checkbox', 'disable_sale', $this->t('Disable Sale'));
-			$form->addElement('checkbox', 'disable_inv_adj', $this->t('Disable Inv. Adjustment'));
-//			$form->addElement('checkbox', 'disable_rental', $this->t('Disable Rental'));
-			$form->addElement('checkbox', 'disable_transfer', $this->t('Disable Warehouse Transfer'));
-			$form->addElement('checkbox', 'disable_checkin', $this->t('Check-in'));
-			$form->addElement('checkbox', 'disable_checkout', $this->t('Check-out'));
+			$form->addElement('header', 'disable_trans_types_header', __('Disable Transaction Types'));
+			$form->addElement('checkbox', 'disable_purchase', __('Disable Purchase'));
+			$form->addElement('checkbox', 'disable_sales_quote', __('Disable Sales Quote'));
+			$form->addElement('checkbox', 'disable_sale', __('Disable Sale'));
+			$form->addElement('checkbox', 'disable_inv_adj', __('Disable Inv. Adjustment'));
+//			$form->addElement('checkbox', 'disable_rental', __('Disable Rental'));
+			$form->addElement('checkbox', 'disable_transfer', __('Disable Warehouse Transfer'));
+			$form->addElement('checkbox', 'disable_checkin', __('Check-in'));
+			$form->addElement('checkbox', 'disable_checkout', __('Check-out'));
 			$disabled = Variable::get('premium_warehouse_trans_types', false);
 			if (!$disabled) $disabled = array();
 			foreach ($disabled as $d)
@@ -91,8 +91,8 @@ class Premium_Warehouse extends Module {
 			return;
 		} else $form->display();
 
-		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
-		Base_ActionBarCommon::add('save', 'Save', $form->get_submit_form_href());
+		Base_ActionBarCommon::add('back', __('Back'), $this->create_back_href());
+		Base_ActionBarCommon::add('save', __('Save'), $form->get_submit_form_href());
 		
     	return true;
 	}

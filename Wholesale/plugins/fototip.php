@@ -85,7 +85,7 @@ class Premium_Warehouse_Wholesale__Plugin_fototip implements Premium_Warehouse_W
 		curl_close($c);
 
 		if (!$output || strlen($output)<20000) {
-			Premium_Warehouse_WholesaleCommon::file_download_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Authentication failure, aborting.'), 2, true);
+			Premium_Warehouse_WholesaleCommon::file_download_message(__('Authentication failure, aborting.'), 2, true);
 			return false;
 		}
 	    $time = time();
@@ -93,7 +93,7 @@ class Premium_Warehouse_Wholesale__Plugin_fototip implements Premium_Warehouse_W
 		$filename = $dir.'fototip_'.$time.'.tmp';
 		file_put_contents($filename, iconv("cp1250","UTF-8",$output));
 
-		Premium_Warehouse_WholesaleCommon::file_download_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','File downloaded.'), 1, true);
+		Premium_Warehouse_WholesaleCommon::file_download_message(__('File downloaded.'), 1, true);
 	    
 	    return $filename;
 	}
@@ -111,7 +111,7 @@ class Premium_Warehouse_Wholesale__Plugin_fototip implements Premium_Warehouse_W
             $out = file_get_contents($filename);
             $data = array();
             if(!preg_match_all('/<tr.*?><td.*?>.*?<\/td><td.*?>(.*?)<\/td><td.*?>(.*?)<\/td><td.*?>(.*?) zł<\/td><td.*?>(.*?)<\/td><td.*?>.*?<\/td><td.*?>.*?<\/td><td.*?>.*?<\/td><\/tr>/i',$out,$data,PREG_SET_ORDER)) {
-		Premium_Warehouse_WholesaleCommon::file_scan_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Invalid file, aborting.'), 2, true);
+		Premium_Warehouse_WholesaleCommon::file_scan_message(__('Invalid file, aborting.'), 2, true);
 		return false;
             }
 
@@ -133,13 +133,13 @@ class Premium_Warehouse_Wholesale__Plugin_fototip implements Premium_Warehouse_W
 
 		$pln_id = Utils_CurrencyFieldCommon::get_id_by_code('PLN');
 		if ($pln_id===false || $pln_id===null) {
-			Premium_Warehouse_WholesaleCommon::file_scan_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Unable to find required currency (%s), aborting.', array('PLN')), 2, true);
+			Premium_Warehouse_WholesaleCommon::file_scan_message(__('Unable to find required currency (%s), aborting.', array('PLN')), 2, true);
 			return false;
 		}
 
 		DB::Execute('UPDATE premium_warehouse_wholesale_items SET quantity=%d, quantity_info=%s WHERE distributor_id=%d', array(0, '', $distributor['id']));
 		
-		Premium_Warehouse_WholesaleCommon::file_scan_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Scanning...'));
+		Premium_Warehouse_WholesaleCommon::file_scan_message(__('Scanning...'));
 		foreach($data as $row) {
 			Premium_Warehouse_WholesaleCommon::update_scan_status($total, $scanned, $available, $item_exist, $link_exist, $new_items, $new_categories);
 			$scanned++;
@@ -213,7 +213,7 @@ class Premium_Warehouse_Wholesale__Plugin_fototip implements Premium_Warehouse_W
 					DB::Execute('UPDATE premium_warehouse_wholesale_items SET item_id=%d WHERE internal_key=%s AND distributor_id=%d', array($w_item, $row['Kod produktu'], $distributor['id']));
 			}
 		} 
-		Premium_Warehouse_WholesaleCommon::file_scan_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Scan complete.'), 1);
+		Premium_Warehouse_WholesaleCommon::file_scan_message(__('Scan complete.'), 1);
 		Premium_Warehouse_WholesaleCommon::update_scan_status($scanned, $scanned, $available, $item_exist, $link_exist, $new_items, $new_categories);
 		return true;
 	}

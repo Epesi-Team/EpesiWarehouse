@@ -80,10 +80,10 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
     	$ret = DB::Execute('SELECT * FROM premium_warehouse_wholesale_items WHERE item_id=%d ORDER BY quantity', array($item_id));
 		$theme = Base_ThemeCommon::init_smarty();
 		$theme->assign('header', array(
-			'distributor'=>Base_LangCommon::ts('Premium_Warehouse_Wholesale','Distributor'),
-			'quantity'=>Base_LangCommon::ts('Premium_Warehouse_Wholesale','Quantity'),
-			'quantity_info'=>Base_LangCommon::ts('Premium_Warehouse_Wholesale','Qty Info'),
-			'price'=>Base_LangCommon::ts('Premium_Warehouse_Wholesale','Price')
+			'distributor'=>__('Distributor'),
+			'quantity'=>__('Quantity'),
+			'quantity_info'=>__('Qty Info'),
+			'price'=>__('Price')
 			));    	
 		$distros = array();
     	while ($row = $ret->FetchRow()) {
@@ -159,7 +159,7 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
     public static function scan_file_leightbox($rb) {
     	$form = $rb->init_module('Utils_FileUpload');
 		$form->add_upload_element();
-		$form->addElement('button',null,$rb->t('Upload'),$form->get_submit_form_href());
+		$form->addElement('button',null,__('Upload'),$form->get_submit_form_href());
 		ob_start();
 		$rb->display_module($form, array(array('Premium_Warehouse_WholesaleCommon','scan_file_processing')));
     	$form_html = ob_get_clean();
@@ -176,7 +176,7 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 			'unknown'=>'Unknown'
 		);
 		foreach ($fields as $k=>$v) 
-			$theme->assign($k, Base_LangCommon::ts('Premium_Warehouse_Wholesale', $v));
+			$theme->assign($k, _V( $v));
 		
 		load_js('modules/Premium/Warehouse/Wholesale/scan_file_progress_reporting.js');
 		load_js('modules/Premium/Warehouse/Wholesale/process_file.js');
@@ -185,9 +185,9 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 		Base_ThemeCommon::display_smarty($theme,'Premium_Warehouse_Wholesale','scan_status');
 		$html = ob_get_clean();
 
-		Libs_LeightboxCommon::display('wholesale_scan_file','<div id="wholesale_scan_file_progress" style="display:none;">'.$html.'</div><div id="wholesale_scan_file_form">'.$form_html.'</div>',Base_LangCommon::ts('Premium_Warehouse_Wholesale','Scan a file'));
+		Libs_LeightboxCommon::display('wholesale_scan_file','<div id="wholesale_scan_file_progress" style="display:none;">'.$html.'</div><div id="wholesale_scan_file_form">'.$form_html.'</div>',__('Scan a file'));
     	
-		Base_ActionBarCommon::add('folder', 'File scan', 'class="lbOn" rel="wholesale_scan_file" onmouseup="wholesale_leightbox_switch_to_form();"');
+		Base_ActionBarCommon::add('folder', __('File scan'), 'class="lbOn" rel="wholesale_scan_file" onmouseup="wholesale_leightbox_switch_to_form();"');
     }
     
     public static function update_scan_status($total, $scanned, $available, $item_exist, $link_exist, $new_items_added, $new_categories_added) {
@@ -195,7 +195,7 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 		$new_time = microtime(true);
 		if ($new_time-$time>1.5 || $total==$scanned) {
 			$time = $new_time;
-			if ($total===null) $total='"'.Base_LangCommon::ts('Premium_Warehouse_Wholesale','Unknown').'"';
+			if ($total===null) $total='"'.__('Unknown').'"';
 			echo('<script>parent.update_wholesale_scan_status('.$total.','.$scanned.','.$available.','.$item_exist.','.$link_exist.','.$new_items_added.','.$new_categories_added.');</script>');
 			flush();
 			@ob_flush();
@@ -238,7 +238,7 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 					if ($plugin->is_auto_download()) {
 						if (isset($_REQUEST['wholesale_module_auto_update']) && $_REQUEST['wholesale_module_auto_update']=$values['id'])
 							self::auto_update($values);
-						Base_ActionBarCommon::add('search','Auto-update', Module::create_href(array('wholesale_module_auto_update'=>$values['id'])));
+						Base_ActionBarCommon::add('search',__('Auto update'), Module::create_href(array('wholesale_module_auto_update'=>$values['id'])));
 					}
 				}
 				break;
@@ -271,7 +271,7 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 			foreach ($params as $k=>$v) {
 				$js .= 	'if($("param'.$i.'"))$("param'.$i.'").type="'.$v.'";'.
 						'if($("_param'.$i.'__label")){'.
-							'$("_param'.$i.'__label").innerHTML="'.Base_LangCommon::ts('Premium_Warehouse_Wholesale',$k).'";'.
+							'$("_param'.$i.'__label").innerHTML="'._V($k).'";'.
 							'$("_param'.$i.'__label").up("tr").style.display="";'.
 						'}';
 				$i++;
@@ -340,14 +340,14 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 	
     public static function menu() {
 		if (Utils_RecordBrowserCommon::get_access('premium_warehouse_distributor','browse'))
-			return array('Inventory'=>array('__submenu__'=>1,'Distributors'=>array()));
+			return array(_M('Inventory')=>array('__submenu__'=>1,_M('Distributors')=>array()));
 		return array();
 	}
 
 	public static function watchdog_label($rid = null, $events = array(), $details = true) {
 		return Utils_RecordBrowserCommon::watchdog_label(
 				'premium_warehouse_distributor',
-				Base_LangCommon::ts('Premium_Warehouse_Wholesale','Distributor'),
+				__('Distributor'),
 				$rid,
 				$events,
 				'name',
@@ -360,7 +360,7 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 		$row = Utils_RecordBrowserCommon::get_records('premium_warehouse_distributor',array('id'=>$id));
 		if(!$row) return false;
 		$row = array_pop($row);
-		return Utils_RecordBrowserCommon::record_link_open_tag('premium_warehouse_distributor', $row['id']).Base_LangCommon::ts('Premium_Warehouse_Wholesale', 'Distributor (attachment) #%d, %s', array($row['id'], $row['name'])).Utils_RecordBrowserCommon::record_link_close_tag();
+		return Utils_RecordBrowserCommon::record_link_open_tag('premium_warehouse_distributor', $row['id']).__( 'Distributor (attachment) #%d, %s', array($row['id'], $row['name'])).Utils_RecordBrowserCommon::record_link_close_tag();
 	}
 	
 	public static function QFfield_category_name(&$form, $field, $label, $mode, $default) {
@@ -417,7 +417,7 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 		$rec = Utils_RecordBrowserCommon::get_records('premium_warehouse_items', $crits);
 		$result = '<ul>';
     	if (empty($rec)) {
-			$result .= '<li><span style="text-align:center;font-weight:bold;" class="informal">'.Base_LangCommon::ts('Libs/QuickForm','No records founds').'</span></li>';
+			$result .= '<li><span style="text-align:center;font-weight:bold;" class="informal">'.__('No records founds').'</span></li>';
     	} else {
 			foreach ($rec as $k=>$v) {
 				$data = array(

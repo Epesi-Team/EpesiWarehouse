@@ -18,7 +18,7 @@ class Premium_Warehouse_eCommerce_CompareUpdatePricesCommon extends ModuleCommon
 		$ret = Utils_RecordBrowserCommon::get_records_count('premium_ecommerce_products',array('item_name'=>$r['id']));
 		if(!$ret)
 			return array('show'=>false);
-		return array('show'=>true, 'label'=>'Compare Services');
+		return array('show'=>true, 'label'=>__('Compare Services'));
 	}
 
 	public static function update() {

@@ -23,12 +23,12 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	
 	public static function user_settings() {
 		return array(	
-			'Transaction'=>array(
-				array('name'=>'my_transaction','label'=>'None','type'=>'hidden','default'=>'')
+			__('Transaction')=>array(
+				array('name'=>'my_transaction','label'=>'','type'=>'hidden','default'=>'')
 			),
-			'Inventory'=>array(
-				array('name'=>'display_qty','label'=>'Quantity Display','type'=>'select','values'=>array(0=>'Availble', 1=>'On Hand', 2=>'Both'),'default'=>2),
-				array('name'=>'filter_by_my_warehouse','label'=>'Filter items by my warehouse','type'=>'select','values'=>array(0=>'No', 1=>'Yes'),'default'=>1)
+			__('Inventory')=>array(
+				array('name'=>'display_qty','label'=>__('Quantity Display'),'type'=>'select','values'=>array(0=>__('Availble'), 1=>__('On Hand'), 2=>__('Both')),'default'=>2),
+				array('name'=>'filter_by_my_warehouse','label'=>__('Filter items by my warehouse'),'type'=>'select','values'=>array(0=>__('No'), 1=>__('Yes')),'default'=>1)
 			));
 	}
 	public static function attachment_addon_access() {
@@ -202,8 +202,8 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 
 	public static function display_transaction_type_order($r, $nolink=false) {
 		if (!isset($r['payment']) || !$r['payment']) {
-			if ($r['transaction_type']==0) return Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Check-in');
-			if ($r['transaction_type']==1) return Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Check-out');
+			if ($r['transaction_type']==0) return __('Check-in');
+			if ($r['transaction_type']==1) return __('Check-out');
 		}
 		return Utils_CommonDataCommon::get_value('Premium_Items_Orders_Trans_Types/'.$r['transaction_type'],true);	
 	}
@@ -217,7 +217,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	
 	public static function item_list_tooltip($r) {
 		$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$r['id']));
-		if (empty($items)) return Base_LangCommon::ts('Premium_Warehouse_Items_Orders','There are no items saved in this transaction');
+		if (empty($items)) return __('There are no items saved in this transaction');
 		$theme = Base_ThemeCommon::init_smarty();
 		foreach ($items as $k=>$v) {
 			$net = Utils_CurrencyFieldCommon::get_values($v['net_price']);
@@ -230,15 +230,15 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			$items[$k]['tax'] = Data_TaxRatesCommon::get_tax_name($v['tax_rate']);
 		}
 		$header = array(
-			'sku'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders','SKU'),
-			'item_name'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Item Name'),
-			'quantity'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Qty')
+			'sku'=>__('SKU'),
+			'item_name'=>__('Item Name'),
+			'quantity'=>__('Qty')
 			);
 		if ($r['payment']) {
 			$header = $header+array(
-				'net_price'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Net Price'),
-				'tax'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Tax'),
-				'gross_price'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Gross Price')
+				'net_price'=>__('Net Price'),
+				'tax'=>__('Tax'),
+				'gross_price'=>__('Gross Price')
 			);
 		}
 		$theme->assign('header', $header);	
@@ -407,7 +407,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 				$opts = array(''=>'New', 20=>'Delivered', 21=>'Canceled');
 		}
 		foreach ($opts as $k=>$v)
-			$opts[$k] = Base_LangCommon::ts('Premium_Warehouse_Items_Orders',$v);
+			$opts[$k] = _V($v);
 		return $opts;
 	}
 
@@ -439,7 +439,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		if (!isset($data['address_1']) || !$data['address_1']) $ret['address_1'] = 'Field required for non-receipt transactions'; 
 		if (!isset($data['city']) || !$data['city']) $ret['city'] = 'Field required for non-receipt transactions'; 
 		if (!isset($data['country']) || !$data['country']) $ret['country'] = 'Field required for non-receipt transactions'; 
-		foreach ($ret as $k=>$v) $ret[$k] = Base_LangCommon::ts('Premium_Warehouse_Items_Orders',$v);
+		foreach ($ret as $k=>$v) $ret[$k] = _V($v);
 		return empty($ret)?true:$ret;
 	}
 	
@@ -466,7 +466,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	public static function check_target_warehouse_required($data) {
 		if (Utils_RecordBrowser::$last_record['transaction_type']!=4) return true;
 		if ($data['target_warehouse']) return true;
-		return array('target_warehouse'=>Base_LangCommon::ts('Libs_QuickForm','Field required'));
+		return array('target_warehouse'=>__('Field required'));
 	}
 	public static function QFfield_company_name(&$form, $field, $label, $mode, $default, $desc, $rb_obj){
 		$form->addFormRule(array('Premium_Warehouse_Items_OrdersCommon','check_target_warehouse_required'));
@@ -492,9 +492,9 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			$warehouse = utils_RecordBrowser::$last_record['warehouse'];
 		
 		if ($data['status']>=2 && !$warehouse)
-			return array('warehouse'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Unable to change status - select warehouse first'));
+			return array('warehouse'=>__('Unable to change status - select warehouse first'));
 		if (isset($data['target_warehouse']) && $data['target_warehouse'] && $warehouse==$data['target_warehouse'])
-			return array('warehouse'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Source and target warehouses must be different'));
+			return array('warehouse'=>__('Source and target warehouses must be different'));
 		return true;
 	}
 
@@ -617,13 +617,13 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			if (!is_numeric($item_id))
 				$item_id = Utils_RecordBrowserCommon::get_id('premium_warehouse_items', 'item_name', $data['item_name']);
 		}
-		if (!is_numeric($item_id)) return array('item_name'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders', 'Item not found'));
+		if (!is_numeric($item_id)) return array('item_name'=>__( 'Item not found'));
 		$item = Utils_RecordBrowserCommon::get_record('premium_warehouse_items', $item_id);
 		$item['last_purchase_price'] = Utils_CurrencyFieldCommon::get_values($item['last_purchase_price']);
 		$sale_price = implode('.',explode(Utils_CurrencyFieldCommon::get_decimal_point(), $data['net_price']));
 		if (!$item['last_purchase_price'][0]) return true;
 		if ($item['last_purchase_price'][1]!=$data['__net_price__currency']) return true;
-		if ($sale_price<$item['last_purchase_price'][0]) return array('net_price'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Error! Price too low.'));
+		if ($sale_price<$item['last_purchase_price'][0]) return array('net_price'=>__('Error! Price too low.'));
 		return true;
 	}
 	
@@ -661,14 +661,14 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			if (self::$trans['transaction_type']==1 && self::$trans['payment']==1) {
 				$decp = Utils_CurrencyFieldCommon::get_decimal_point();
 				load_js('modules/Premium/Warehouse/Items/Orders/check_item_price_cost.js');
-				$msg = 'Warning';
+				$msg = __('Warning: Sale price is lower than the last purchase price.');
 				$sell_with_loss = Base_AclCommon::check_permission('Inventory - Sell at loss');
 				if (!$sell_with_loss) {
-					$msg = 'Error';
+					$msg = __('Error: Sale price is lower than the last purchase price!');
 					$form->addFormRule(array('Premium_Warehouse_Items_OrdersCommon','check_sale_price'));
 				}
-				$warning = Base_LangCommon::ts('Premium_Warehouse_Items_Orders',$msg.': Sale price is lower than the last purchase price!');
-				$form->addElement('button', 'submit', Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Submit'), array('style'=>'width:auto;', 'onclick'=>'if(check_item_price_cost_difference("'.$decp.'","'.$warning.'","'.((int)(!$sell_with_loss)).'")){'.$form->get_submit_form_js().'};'));
+				$warning = $msg;
+				$form->addElement('button', 'submit', __('Submit'), array('style'=>'width:auto;', 'onclick'=>'if(check_item_price_cost_difference("'.$decp.'","'.$warning.'","'.((int)(!$sell_with_loss)).'")){'.$form->get_submit_form_js().'};'));
 				$form->addElement('hidden', 'last_item_price', '', array('id'=>'last_item_price'));
 			}
 			$crits = array();
@@ -699,7 +699,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 
 	public static function check_qty_on_hand($data){
 		self::get_trans();
-		if (isset($data['quantity']) && intval($data['quantity'])!=$data['quantity']) return array('item_name'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders', 'Invalid amount'));
+		if (isset($data['quantity']) && intval($data['quantity'])!=$data['quantity']) return array('item_name'=>__( 'Invalid amount'));
 		if (self::$trans['transaction_type']==0) return true;
 		if (isset(Utils_RecordBrowser::$last_record['quantity'])) {
 			if (isset($data['quantity'])) {
@@ -713,7 +713,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		} elseif (isset($data['quantity']))
 			$ord_qty = $data['quantity'];
 	    elseif (self::$trans['transaction_type']!=2)
-	        return array('item_name'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders', 'Field required'));
+	        return array('item_name'=>__( 'Field required'));
 		if (!isset($data['item_name'])) {
 			$data['item_name'] = Utils_RecordBrowser::$last_record['item_name'];
 		} else { 
@@ -723,43 +723,43 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 				if (isset(Utils_RecordBrowser::$last_record['item_name']))
 					$data['item_name'] = Utils_RecordBrowser::$last_record['item_name'];
 				else
-					return array('item_name'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders', 'Item not found'));
+					return array('item_name'=>__( 'Item not found'));
 			}
 		}
 		$item_type = Utils_RecordBrowserCommon::get_value('premium_warehouse_items',$data['item_name'],'item_type');
 		if ($item_type>=2) return true;
 		if (self::$trans['transaction_type']==1) {
-			if ($ord_qty<=0) return array('quantity'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders', 'Invalid amount'));
+			if ($ord_qty<=0) return array('quantity'=>__( 'Invalid amount'));
 			if (self::$trans['status']<=1) return true;
 			$location_id = Utils_RecordBrowserCommon::get_records('premium_warehouse_location',array('item_sku'=>$data['item_name'],'warehouse'=>self::$trans['warehouse']));
 			$location_id = array_shift($location_id);
 			if (!isset($location_id) || !$location_id) {
-				return array('quantity'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders', 'Amount not available'));
+				return array('quantity'=>__( 'Amount not available'));
 			}
-			if ($data['quantity']>$location_id['quantity']) return array('quantity'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders', 'Amount not available'));
+			if ($data['quantity']>$location_id['quantity']) return array('quantity'=>__( 'Amount not available'));
 		}
 		if (self::$trans['transaction_type']==4) {
-			if ($ord_qty<=0) return array('quantity'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders', 'Invallid amount'));
+			if ($ord_qty<=0) return array('quantity'=>__( 'Invallid amount'));
 			$location_id = Utils_RecordBrowserCommon::get_records('premium_warehouse_location',array('item_sku'=>$data['item_name'],'warehouse'=>self::$trans['warehouse']));
 			$location_id = array_shift($location_id);
 			if (!isset($location_id) || !$location_id) {
-				return array('quantity'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders', 'Amount not available'));
+				return array('quantity'=>__( 'Amount not available'));
 			}
-			if ($data['quantity']>$location_id['quantity']) return array('quantity'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders', 'Amount not available'));
+			if ($data['quantity']>$location_id['quantity']) return array('quantity'=>__( 'Amount not available'));
 		}
 		if (self::$trans['transaction_type']==2) {
 			if (!isset($data['debit'])) return true;
 			if ($data['debit']<0 ||
-				$data['credit']<0) return array('debit'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders', 'Invallid amount'));
+				$data['credit']<0) return array('debit'=>__( 'Invallid amount'));
 //			if (!$data['debit']>0 &&
-//				!$data['credit']>0) return array('debit'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders', 'Non-zero amount must be entered'));
+//				!$data['credit']>0) return array('debit'=>__( 'Non-zero amount must be entered'));
 			if ($data['debit']>0) {
 				$location_id = Utils_RecordBrowserCommon::get_records('premium_warehouse_location',array('item_sku'=>$data['item_name'],'warehouse'=>self::$trans['warehouse']));
 				$location_id = array_shift($location_id);
 				if (!isset($location_id) || !$location_id) {
-					return array('debit'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders', 'Amount not available'));
+					return array('debit'=>__( 'Amount not available'));
 				}
-				if ($data['debit']>$location_id['quantity']) return array('debit'=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders', 'Amount not available'));
+				if ($data['debit']>$location_id['quantity']) return array('debit'=>__( 'Amount not available'));
 			}
 		}
 		return true;
@@ -767,42 +767,42 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	
     public static function menu() {
 		if (Utils_RecordBrowserCommon::get_access('premium_warehouse_items_orders','browse'))
-			return array('Inventory'=>array('__submenu__'=>1,'Items: Transactions'=>array()));
+			return array(_M('Inventory')=>array('__submenu__'=>1,_M('Items Transactions')=>array()));
 /*		if (browse my orders)
-			return array('Orders'=>array());*/
+			return array(_M('Orders')=>array());*/
 		return array();
 	}
 
 	public static function applet_caption() {
-		return 'Active Orders';
+		return __('Active Orders');
 	}
 	public static function applet_info() {
-		return 'Active Orders';
+		return __('Active Orders');
 	}
 
 	public static function applet_info_format($r){
 		$arr = array(
-			'Transaction ID'=>$r['transaction_id'],
-			'Status'=>self::display_status($r,true)
+			__('Transaction ID')=>$r['transaction_id'],
+			__('Status')=>self::display_status($r,true)
 		);
-		$ret = array('notes'=>Utils_TooltipCommon::format_info_tooltip($arr,'Utils_RecordBrowser:premium_warehouse_items_orders'));
+		$ret = array('notes'=>Utils_TooltipCommon::format_info_tooltip($arr));
 		return $ret;
 	}
 
 	public static function applet_settings() {
-		$opts = array('all'=>'---', 604800=>'1 week', 1209600=>'2 weeks', 2419200=>'4 weeks');
-		$types = array(0=>'Purchase', 1=>'Sale', 2=>'Inv. Adjustment', 3=>'Rental', 4=>'Transfer');
+		$opts = array('all'=>'---', 604800=>__('1 week'), 1209600=>__('2 weeks'), 2419200=>__('4 weeks'));
+		$types = array(0=>__('Purchase'), 1=>__('Sale'), 2=>__('Inv. Adjustment'), 3=>__('Rental'), 4=>__('Transfer'));
 		$warehouses = Utils_RecordBrowserCommon::get_records('premium_warehouse');
 		$wopts = array(''=>'---');
 		foreach ($warehouses as $v)
 			$wopts[$v['id']] = $v['warehouse'];
 		return array_merge(Utils_RecordBrowserCommon::applet_settings(),
 			array(
-			array('name'=>'settings_header','label'=>'Settings','type'=>'header'),
-			array('name'=>'older','label'=>'Transaction older then','type'=>'select','default'=>'all','rule'=>array(array('message'=>'Field required', 'type'=>'required')),'values'=>$opts),
-			array('name'=>'my','label'=>'Only mine and not assigned','type'=>'checkbox','default'=>0),
-			array('name'=>'type','label'=>'Transaction type','type'=>'select','default'=>1,'rule'=>array(array('message'=>'Field required', 'type'=>'required')),'values'=>$types),
-			array('name'=>'warehouse','label'=>'Warehouse','type'=>'select','default'=>1,'values'=>$wopts, 'translate'=>false)
+			array('name'=>'settings_header','label'=>__('Settings'),'type'=>'header'),
+			array('name'=>'older','label'=>__('Transaction older then'),'type'=>'select','default'=>'all','rule'=>array(array('message'=>__('Field required'), 'type'=>'required')),'values'=>$opts),
+			array('name'=>'my','label'=>__('Only mine and not assigned'),'type'=>'checkbox','default'=>0),
+			array('name'=>'type','label'=>__('Transaction Type'),'type'=>'select','default'=>1,'rule'=>array(array('message'=>__('Field required'), 'type'=>'required')),'values'=>$types),
+			array('name'=>'warehouse','label'=>__('Warehouse'),'type'=>'select','default'=>1,'values'=>$wopts)
 			));
 		}
 
@@ -810,7 +810,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	public static function watchdog_label($rid = null, $events = array(), $details = true) {
 		return Utils_RecordBrowserCommon::watchdog_label(
 				'premium_warehouse_items_orders',
-				Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Orders'),
+				__('Orders'),
 				$rid,
 				$events,
 				'transaction_id',
@@ -1093,11 +1093,11 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 					Utils_RecordBrowser::$rb_obj->hide_tab('Shipping Address');
 				}
 				if (self::$status_blocked)
-					print('<b>'.Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Warning: status change impossible - select warehouse first.').'</b>');
+					print('<b>'.__('Warning: status change impossible - select warehouse first.').'</b>');
 				if (Base_AclCommon::i_am_admin() && $values['transaction_type']==2) {
 					$debts = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$values['id'], '<quantity'=>0));
 					if (empty($debts)) {
-						Base_ActionBarCommon::add('attach',Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Turn into Purchase'),Module::create_href(array('premium_warehouse_turn_into_purchase'=>$values['id'])));
+						Base_ActionBarCommon::add('attach',__('Turn into Purchase'),Module::create_href(array('premium_warehouse_turn_into_purchase'=>$values['id'])));
 						if (isset($_REQUEST['premium_warehouse_turn_into_purchase']) && $_REQUEST['premium_warehouse_turn_into_purchase']===$values['id']) {
 							Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $values['id'], array('transaction_type'=>0, 'status'=>20, 'receipt'=>1));
 							unset($_REQUEST['premium_warehouse_turn_into_purchase']);
@@ -1118,10 +1118,10 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 				}
 				if ($active) {
 					$icon = Base_ThemeCommon::get_template_file('Premium_Warehouse_Items_Orders','deactivate.png');
-					$label = 'Leave this trans.';
+					$label = __('Leave this trans.');
 				} else {
 					$icon = Base_ThemeCommon::get_template_file('Premium_Warehouse_Items_Orders','activate.png');
-					$label = 'Use this Trans.';
+					$label = __('Use this Trans.');
 				}
 				Base_ActionBarCommon::add($icon,$label,Module::create_href(array('premium_warehouse_change_active_order'=>$values['id'])));
 				if (isset($_REQUEST['premium_warehouse_add_bill']) && $_REQUEST['premium_warehouse_add_bill']===$values['id']) {
@@ -1137,7 +1137,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 					location(array());
 				} else {
 					if (!$values['payment'] && !$values['related'] && ($values['transaction_type'] == 0 || $values['transaction_type'] == 1)) 
-						Base_ActionBarCommon::add('clone', 'Create bill', Module::create_href(array('premium_warehouse_add_bill'=>$values['id']))); // temporary name
+						Base_ActionBarCommon::add('clone', __('Create Bill'), Module::create_href(array('premium_warehouse_add_bill'=>$values['id']))); // temporary name
 				}
 				return $values;
 			case 'clone':
@@ -1217,12 +1217,17 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		$ret = Utils_CurrencyFieldCommon::format($r[$desc['id']]);
 		if (!$nolink) {
 			$htmlinfo = array();
-			$htmlinfo[$desc['name']] = Utils_CurrencyFieldCommon::format($r[$desc['id']]);
-			$htmlinfo['Tax'] = Data_TaxRatesCommon::get_tax_name($r['tax_rate']);
-			$htmlinfo['Tax Rate'] = Data_TaxRatesCommon::get_tax_rate($r['tax_rate']).'%';
-			$htmlinfo['Tax Value'] = Utils_CurrencyFieldCommon::format(($price[0]*Data_TaxRatesCommon::get_tax_rate($r['tax_rate']))/100, $price[1]);;
-			$htmlinfo[$desc['name'].' (Gross)'] = Utils_CurrencyFieldCommon::format(($price[0]*(100+Data_TaxRatesCommon::get_tax_rate($r['tax_rate'])))/100, $price[1]);;
-			$ret = Utils_TooltipCommon::create($ret, Utils_TooltipCommon::format_info_tooltip($htmlinfo,'Utils_RecordBrowser'), false);
+			if ($desc['id']=='last_sale_price') {
+				$label = __('Last Sale Price');
+			} else {
+				$label = __('Last Purchase Price');
+			}
+			$htmlinfo[$label] = Utils_CurrencyFieldCommon::format($r[$desc['id']]);
+			$htmlinfo[__('Tax')] = Data_TaxRatesCommon::get_tax_name($r['tax_rate']);
+			$htmlinfo[__('Tax Rate')] = Data_TaxRatesCommon::get_tax_rate($r['tax_rate']).'%';
+			$htmlinfo[__('Tax Value')] = Utils_CurrencyFieldCommon::format(($price[0]*Data_TaxRatesCommon::get_tax_rate($r['tax_rate']))/100, $price[1]);;
+			$htmlinfo[$label.' ('.__('Gross').')'] = Utils_CurrencyFieldCommon::format(($price[0]*(100+Data_TaxRatesCommon::get_tax_rate($r['tax_rate'])))/100, $price[1]);;
+			$ret = Utils_TooltipCommon::create($ret, Utils_TooltipCommon::format_info_tooltip($htmlinfo), false);
 		}
 		return $ret;
 	}
@@ -1270,7 +1275,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 				if (round($net[0]*(100+$tax_rate)/100,2)!=$gross[0]) {
 					$values['gross_price'] = round($net[0]*(100+$tax_rate)/100,2).'__'.$net[1];
 					$new_gross = Utils_CurrencyFieldCommon::get_values($values['gross_price']);
-					$notice = Base_LangCommon::ts('Premium_Warehouse_Items_Orders', '<font color="red"><b>Notice:</b></font> No gross price is worth %s including %s%% tax.<br />Gross price was adjusted to %s, based on net price', array(
+					$notice = __( '<font color="red"><b>Notice:</b></font> No gross price is worth %s including %s%% tax.<br />Gross price was adjusted to %s, based on net price', array(
 						Utils_CurrencyFieldCommon::format($gross[0], $gross[1]),
 						$tax_rate,
 						Utils_CurrencyFieldCommon::format($new_gross[0], $new_gross[1]),
@@ -1281,11 +1286,11 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
     				$item=Utils_RecordBrowserCommon::get_record('premium_warehouse_items', $values['item_name']);
     				$item_net = Utils_CurrencyFieldCommon::get_values($item['net_price']);
     				if ($trans['transaction_type']==0 && $trans['payment'] && $item_net[0] && $item_net[0]<$net[0] && $item_net[1]==$net[1]) {//if buy price is greater than suggested sell price
-    				    Epesi::alert(Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Warning! Purchase price is greater than sell price.'));
+    				    Epesi::alert(__('Warning! Purchase price is greater than sell price.'));
 		    		}
     				$item_last_purchase = Utils_CurrencyFieldCommon::get_values($item['last_purchase_price']);
     				if ($trans['transaction_type']==1 && $trans['payment'] && $item_last_purchase[0] && $item_last_purchase[0]>$net[0] && $item_net[1]==$net[1]) {//if buy price is greater than suggested sell price
-    				    Epesi::alert(Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Warning! Transaction sell price is lower than last purchase price.'));
+    				    Epesi::alert(__('Warning! Transaction sell price is lower than last purchase price.'));
 		    		}
 				}
 				self::add_transaction($trans, $values);
@@ -1345,7 +1350,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		$row = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders',array('id'=>$id));
 		if(!$row) return false;
 		$row = array_pop($row);
-		return Utils_RecordBrowserCommon::record_link_open_tag('premium_warehouse_items_orders', $row['id']).Base_LangCommon::ts('Premium_Warehouse_Items_Orders', 'Item order (attachment) #%d, %s %s', array($row['transaction_id'], $row['transaction_type'], $row['warehouse'])).Utils_RecordBrowserCommon::record_link_close_tag();
+		return Utils_RecordBrowserCommon::record_link_open_tag('premium_warehouse_items_orders', $row['id']).__( 'Item order (attachment) #%d, %s %s', array($row['transaction_id'], $row['transaction_type'], $row['warehouse'])).Utils_RecordBrowserCommon::record_link_close_tag();
 	}
 
 	public static function contact_orders_label($r) {
@@ -1355,7 +1360,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		    if(!$ret)
 			    return array('show'=>false);
 	    }
-	    return array('show'=>true, 'label'=>'Warehouse Orders');
+	    return array('show'=>true, 'label'=>__('Warehouse Orders'));
 	}
 
 	public static function company_orders_label($r) {
@@ -1365,7 +1370,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			if(!$ret)
 				return array('show'=>false);
 		}
-		return array('show'=>true, 'label'=>'Warehouse Orders');
+		return array('show'=>true, 'label'=>__('Warehouse Orders'));
 	}
 
    	public static function display_notes($r) {
@@ -1401,10 +1406,10 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			case $trans['transaction_type']==4 && $trans['status']<5: return false;
 		}
 
-		print('<span style="display:none;" id="serial_form_main_label">'.Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Serial #').'</span>');
-		print('<span style="display:none;" id="serial_form_note_label">'.Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Note for serial #').'</span>');
-		print('<span style="display:none;" id="serial_form_shelf_label">'.Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Shelf for serial #').'</span>');
-		$form->addElement('text', 'serial', Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Serial #'));
+		print('<span style="display:none;" id="serial_form_main_label">'.__('Serial #').'</span>');
+		print('<span style="display:none;" id="serial_form_note_label">'.__('Note for serial #').'</span>');
+		print('<span style="display:none;" id="serial_form_shelf_label">'.__('Shelf for serial #').'</span>');
+		$form->addElement('text', 'serial', __('Serial #'));
 		if ($trans['transaction_type']==0) {
 			$form->addFormRule(array('Premium_Warehouse_Items_OrdersCommon','check_if_no_sold_serial_is_removed'));
 		}
@@ -1443,21 +1448,21 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		$header = '<table style="width: 600px;" class="informal">'.
 				'<tr>'.
 					'<th width="300px;" align="center">'.
-						Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Item Name').
+						__('Item Name').
 					'</th>'.
 					'<th align="center">'.
-						Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Item SKU').
+						__('Item SKU').
 					'</th>'.
 					'<th width="60px;" align="center">'.
-						Base_LangCommon::ts('Premium_Warehouse_Items_Orders','QoH').
+						__('QoH').
 					'</th>'.
 					'<th width="60px;" align="center">'.
-						Base_LangCommon::ts('Premium_Warehouse_Items_Orders','Qty. Res.').
+						__('Qty. Res.').
 					'</th>';
 			
 		if ($trans_type==0 || $trans_type==1)
 			$header .= 	'<th width="90px;" align="center">'.
-						Base_LangCommon::ts('Premium_Warehouse_Items_Orders',$trans_type==0?'Cost':'Net price').
+						$trans_type==0?__('Cost'):__('Net Price').
 					'</th>';
 		$header .= 	'</tr>'.
 			'</table>';
@@ -1500,7 +1505,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
     }
 
     public static function shipping_maplink($r,$nolink,$desc) {
-        if (!$nolink) return Utils_TooltipCommon::create('<a '.self::create_shipping_map_href($r).'>'.$r[$desc['id']].'</a>',Base_LangCommon::ts('CRM_Contacts','Click here to search this location using google maps'));
+        if (!$nolink) return Utils_TooltipCommon::create('<a '.self::create_shipping_map_href($r).'>'.$r[$desc['id']].'</a>',__('Click here to search this location using google maps'));
         return $r[$desc['id']];
     }
 

@@ -52,7 +52,7 @@ class Premium_Warehouse_Items_Location extends Module {
 		}
 		foreach ($na_serials as $w=>$mag)
 			foreach ($mag as $owner=>$q)
-				$gb->add_row($this->t('n/a').' ('.$q.')', Utils_RecordBrowserCommon::create_linked_label('premium_warehouse', 'Warehouse', $w), CRM_ContactsCommon::autoselect_company_contact_format($owner), '', '');
+				$gb->add_row(__('n/a').' ('.$q.')', Utils_RecordBrowserCommon::create_linked_label('premium_warehouse', 'Warehouse', $w), CRM_ContactsCommon::autoselect_company_contact_format($owner), '', '');
 		$this->display_module($gb);
 	}
 

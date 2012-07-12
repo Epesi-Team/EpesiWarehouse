@@ -60,12 +60,12 @@ class Premium_Warehouse_Wholesale__Plugin_incom implements Premium_Warehouse_Who
     	    $client = new SoapClient('https://nbweb.incom.pl/NBWebServicePHP/service.svc?wsdl');
         	$result = $client->GetTowaryInfoList(array('UserName'=>$parameters['ID'],'Password'=>$parameters['Password']));
         } catch (Exception $e) {
-			Premium_Warehouse_WholesaleCommon::file_download_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Error: '.$e -> getMessage ()), 2, true);
+			Premium_Warehouse_WholesaleCommon::file_download_message(__('Error: %s'),array($e -> getMessage ())), 2, true);
             return false;
         }
 
 		if (!$result) {
-			Premium_Warehouse_WholesaleCommon::file_download_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Authentication failure, aborting.'), 2, true);
+			Premium_Warehouse_WholesaleCommon::file_download_message(__('Authentication failure, aborting.'), 2, true);
 			return false;
 		}
 		
@@ -75,7 +75,7 @@ class Premium_Warehouse_Wholesale__Plugin_incom implements Premium_Warehouse_Who
 		file_put_contents($filename, serialize($result->GetTowaryInfoListResult->TowarLista->TowarInfoTypePHP));
 
 		
-		Premium_Warehouse_WholesaleCommon::file_download_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','File downloaded.'), 1, true);
+		Premium_Warehouse_WholesaleCommon::file_download_message(__('File downloaded.'), 1, true);
 	    
 	    return $filename;
 	}
@@ -91,7 +91,7 @@ class Premium_Warehouse_Wholesale__Plugin_incom implements Premium_Warehouse_Who
 	public function update_from_file($filename, $distributor, $params) {
 	    $result = @unserialize(file_get_contents($filename));
 	    if(!$result || !is_array($result)) {
-			Premium_Warehouse_WholesaleCommon::file_scan_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Invalid file, aborting.', array('PLN')), 2, true);
+			Premium_Warehouse_WholesaleCommon::file_scan_message(__('Invalid file, aborting.', array('PLN')), 2, true);
 			return false;
 	    }
 	
@@ -105,7 +105,7 @@ class Premium_Warehouse_Wholesale__Plugin_incom implements Premium_Warehouse_Who
 		
 		$pln_id = Utils_CurrencyFieldCommon::get_id_by_code('PLN');
 		if ($pln_id===false || $pln_id===null) {
-			Premium_Warehouse_WholesaleCommon::file_scan_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Unable to find required currency (%s), aborting.', array('PLN')), 2, true);
+			Premium_Warehouse_WholesaleCommon::file_scan_message(__('Unable to find required currency (%s), aborting.', array('PLN')), 2, true);
 			return false;
 		}
 
@@ -114,7 +114,7 @@ class Premium_Warehouse_Wholesale__Plugin_incom implements Premium_Warehouse_Who
 		$categories = DB::GetAssoc('SELECT f_foreign_category_name,id FROM premium_warehouse_distr_categories_data_1 WHERE active=1 AND f_distributor=%d',array($distributor['id']));
 		$categories_to_del = $categories;
 
-		Premium_Warehouse_WholesaleCommon::file_scan_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Scanning...'));
+		Premium_Warehouse_WholesaleCommon::file_scan_message(__('Scanning...'));
 		foreach($result as $row) {
 			Premium_Warehouse_WholesaleCommon::update_scan_status($total, $scanned, $available, $item_exist, $link_exist, $new_items, $new_categories);
 			$scanned++;
@@ -203,7 +203,7 @@ class Premium_Warehouse_Wholesale__Plugin_incom implements Premium_Warehouse_Who
 		foreach($categories_to_del as $name=>$id) {
 			Utils_RecordBrowserCommon::delete_record('premium_warehouse_distr_categories',$id);
 		}
-		Premium_Warehouse_WholesaleCommon::file_scan_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Scan complete.'), 1);
+		Premium_Warehouse_WholesaleCommon::file_scan_message(__('Scan complete.'), 1);
 		Premium_Warehouse_WholesaleCommon::update_scan_status($scanned, $scanned, $available, $item_exist, $link_exist, $new_items, $new_categories);
 		return true;
 	}

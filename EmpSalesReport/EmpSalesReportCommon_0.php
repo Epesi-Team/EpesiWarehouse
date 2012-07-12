@@ -15,7 +15,7 @@ defined("_VALID_ACCESS") || die('Direct access forbidden');
 class Premium_Warehouse_EmpSalesReportCommon extends ModuleCommon {
 	public static function menu() {
 		if (!Base_AclCommon::i_am_admin()) return;
-		return array('Reports'=>array('__submenu__'=>1, 'Employee Sales'=>array()));	
+		return array(_M('Reports')=>array('__submenu__'=>1, _M('Employee Sales')=>array()));	
 	}
 }
 ?>

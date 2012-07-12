@@ -74,16 +74,16 @@ class Premium_Warehouse_Wholesale__Plugin_epesi_with_tax implements Premium_Ware
 	    $output = curl_exec($c);
 
 		if ($output=='not installed') {
-			Premium_Warehouse_WholesaleCommon::file_download_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Epesi distributor disabled.'), 2, true);
+			Premium_Warehouse_WholesaleCommon::file_download_message(__('Epesi distributor disabled.'), 2, true);
 			return false;
 		} elseif($output=='auth failed') {
-			Premium_Warehouse_WholesaleCommon::file_download_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Authentication failure, aborting.'), 2, true);
+			Premium_Warehouse_WholesaleCommon::file_download_message(__('Authentication failure, aborting.'), 2, true);
 			return false;
 		} elseif($output=='ban') {
-			Premium_Warehouse_WholesaleCommon::file_download_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Host banned, aborting.'), 2, true);
+			Premium_Warehouse_WholesaleCommon::file_download_message(__('Host banned, aborting.'), 2, true);
 			return false;
 		} elseif($output=='permission denied') {
-			Premium_Warehouse_WholesaleCommon::file_download_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Permission denied, aborting.'), 2, true);
+			Premium_Warehouse_WholesaleCommon::file_download_message(__('Permission denied, aborting.'), 2, true);
 			return false;
 		}
 
@@ -95,7 +95,7 @@ class Premium_Warehouse_Wholesale__Plugin_epesi_with_tax implements Premium_Ware
 
 	    curl_close($c);
 
-		Premium_Warehouse_WholesaleCommon::file_download_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','File downloaded.'), 1, true);
+		Premium_Warehouse_WholesaleCommon::file_download_message(__('File downloaded.'), 1, true);
 	    
 	    return $filename;
 	}
@@ -141,7 +141,7 @@ class Premium_Warehouse_Wholesale__Plugin_epesi_with_tax implements Premium_Ware
 		$categories = DB::GetAssoc('SELECT f_foreign_category_name,id FROM premium_warehouse_distr_categories_data_1 WHERE active=1 AND f_distributor=%d',array($distributor['id']));
 		$categories_to_del = $categories;
 
-		Premium_Warehouse_WholesaleCommon::file_scan_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Scanning...'));
+		Premium_Warehouse_WholesaleCommon::file_scan_message(__('Scanning...'));
 		while (!feof($f)) {
 			$row = fgetcsv($f,0,$delimiter);
 			if ($row===false) break;
@@ -266,7 +266,7 @@ class Premium_Warehouse_Wholesale__Plugin_epesi_with_tax implements Premium_Ware
 		foreach($categories_to_del as $name=>$id) {
 			Utils_RecordBrowserCommon::delete_record('premium_warehouse_distr_categories',$id);
 		}
-		Premium_Warehouse_WholesaleCommon::file_scan_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Scan complete.'), 1);
+		Premium_Warehouse_WholesaleCommon::file_scan_message(__('Scan complete.'), 1);
 		Premium_Warehouse_WholesaleCommon::update_scan_status($scanned, $scanned, $available, $item_exist, $link_exist, $new_items, $new_categories);
 		fclose($f);
 		return true;

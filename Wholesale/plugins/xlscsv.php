@@ -73,7 +73,7 @@ class Premium_Warehouse_Wholesale__Plugin_xlscsv implements Premium_Warehouse_Wh
 			ini_set("memory_limit","1024M");
 			$xls = Libs_PHPExcelCommon::load($filename);
 		} catch(Exception $e) {
-			Premium_Warehouse_WholesaleCommon::file_scan_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Unable to parse uploaded file, invalid XLS. '.$e), 2, true);
+			Premium_Warehouse_WholesaleCommon::file_scan_message(__('Unable to parse uploaded file, invalid XLS. %s',array($e)), 2, true);
 			return false;
 		}
             $uploaded_data = array();    
@@ -133,13 +133,13 @@ class Premium_Warehouse_Wholesale__Plugin_xlscsv implements Premium_Warehouse_Wh
 
 		$pln_id = Utils_CurrencyFieldCommon::get_id_by_code('PLN');
 		if ($pln_id===false || $pln_id===null) {
-			Premium_Warehouse_WholesaleCommon::file_scan_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Unable to find required currency (%s), aborting.', array('PLN')), 2, true);
+			Premium_Warehouse_WholesaleCommon::file_scan_message(__('Unable to find required currency (%s), aborting.', array('PLN')), 2, true);
 			return false;
 		}
 
 		DB::Execute('UPDATE premium_warehouse_wholesale_items SET quantity=%d, quantity_info=%s WHERE distributor_id=%d', array(0, '', $distributor['id']));
 		
-		Premium_Warehouse_WholesaleCommon::file_scan_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Scanning...'));
+		Premium_Warehouse_WholesaleCommon::file_scan_message(__('Scanning...'));
 		foreach($uploaded_data as $row) {
 			Premium_Warehouse_WholesaleCommon::update_scan_status($total, $scanned, $available, $item_exist, $link_exist, $new_items, $new_categories);
 			$scanned++;
@@ -224,7 +224,7 @@ class Premium_Warehouse_Wholesale__Plugin_xlscsv implements Premium_Warehouse_Wh
 					DB::Execute('UPDATE premium_warehouse_wholesale_items SET item_id=%d WHERE internal_key=%s AND distributor_id=%d', array($w_item, $row['Kod produktu'], $distributor['id']));
 			}
 		} 
-		Premium_Warehouse_WholesaleCommon::file_scan_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Scan complete.'), 1);
+		Premium_Warehouse_WholesaleCommon::file_scan_message(__('Scan complete.'), 1);
 		Premium_Warehouse_WholesaleCommon::update_scan_status($scanned, $scanned, $available, $item_exist, $link_exist, $new_items, $new_categories);
 		return true;
 	}

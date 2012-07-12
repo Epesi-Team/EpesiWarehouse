@@ -22,10 +22,10 @@ class Premium_Warehouse_Items_LocationInstall extends ModuleInstall {
 		Base_ThemeCommon::install_default_theme($this->get_type());
 
 		$fields = array(
-			array('name'=>'Item SKU', 	'type'=>'select', 'required'=>true, 'param'=>'premium_warehouse_items::SKU;Premium_Warehouse_Items_OrdersCommon::items_crits', 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_item_sku')),
-			array('name'=>'Item Name', 	'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>false, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_item_name')),
-			array('name'=>'Quantity',	'type'=>'integer', 'required'=>true, 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_LocationCommon', 'display_quantity')),
-			array('name'=>'Warehouse', 	'type'=>'select', 'required'=>true, 'param'=>'premium_warehouse::Warehouse;::', 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_LocationCommon', 'display_warehouse'))
+			array('name' => _M('Item SKU'), 	'type'=>'select', 'required'=>true, 'param'=>'premium_warehouse_items::SKU;Premium_Warehouse_Items_OrdersCommon::items_crits', 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_item_sku')),
+			array('name' => _M('Item Name'), 	'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>false, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_item_name')),
+			array('name' => _M('Quantity'),	'type'=>'integer', 'required'=>true, 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_LocationCommon', 'display_quantity')),
+			array('name' => _M('Warehouse'), 	'type'=>'select', 'required'=>true, 'param'=>'premium_warehouse::Warehouse;::', 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_LocationCommon', 'display_warehouse'))
 		);
 
 		Utils_RecordBrowserCommon::install_new_recordset('premium_warehouse_location', $fields);
@@ -35,18 +35,18 @@ class Premium_Warehouse_Items_LocationInstall extends ModuleInstall {
 //		Utils_RecordBrowserCommon::set_quickjump('premium_warehouse_location', 'Item');
 //		Utils_RecordBrowserCommon::set_favorites('premium_warehouse_location', true);
 //		Utils_RecordBrowserCommon::set_recent('premium_warehouse_location', 15);
-		Utils_RecordBrowserCommon::set_caption('premium_warehouse_location', 'Item Location');
+		Utils_RecordBrowserCommon::set_caption('premium_warehouse_location', _M('Item Location'));
 //		Utils_RecordBrowserCommon::set_icon('premium_warehouse_items_orders', Base_ThemeCommon::get_template_filename('Premium/Warehouse/Items/Orders', 'icon.png'));
 //		Utils_RecordBrowserCommon::register_processing_callback('premium_warehouse_location', array('Premium_Warehouse_Items_OrdersCommon', 'submit_order'));
 
 		DB::CreateIndex('premium_warehouse_location__qsw__idx', 'premium_warehouse_location_data_1', 'f_quantity,f_item_sku,f_warehouse');
 			
 // ************ addons ************** //
-//		Utils_RecordBrowserCommon::new_addon('premium_warehouse_location', 'Premium/Warehouse/Location', 'attachment_addon', 'Notes');
+//		Utils_RecordBrowserCommon::new_addon('premium_warehouse_location', 'Premium/Warehouse/Location', 'attachment_addon', _M('Notes'));
 		Utils_RecordBrowserCommon::new_addon('premium_warehouse_items', 'Premium/Warehouse/Items/Location', 'location_addon', 'Premium_Warehouse_Items_LocationCommon::location_addon_parameters');
 		Utils_RecordBrowserCommon::new_addon('premium_warehouse_items', 'Premium/Warehouse/Items/Location', 'location_serial_addon', 'Premium_Warehouse_Items_LocationCommon::location_serial_addon_parameters');
 		Utils_RecordBrowserCommon::new_addon('company', 'Premium/Warehouse/Items/Location', 'company_items_addon', 'Premium_Warehouse_Items_LocationCommon::company_items_addon_parameters');
-		Utils_RecordBrowserCommon::new_addon('premium_warehouse', 'Premium/Warehouse/Items/Location', 'warehouse_item_list_addon', 'Item List');
+		Utils_RecordBrowserCommon::new_addon('premium_warehouse', 'Premium/Warehouse/Items/Location', 'warehouse_item_list_addon', _M('Item List'));
 		Utils_RecordBrowserCommon::set_addon_pos('premium_warehouse', 'Premium/Warehouse/Items/Location', 'warehouse_item_list_addon', 1);
 
 // ************ other ************** //
@@ -98,7 +98,7 @@ class Premium_Warehouse_Items_LocationInstall extends ModuleInstall {
 	}
 	
 	public static function simple_setup() {
-        return array('package'=>'Inventory Management');
+        return array('package'=>__('Inventory Management'));
 	}
 }
 

@@ -19,25 +19,25 @@ class Premium_Warehouse_Wholesale extends Module {
         if(!DB::GetOne('SELECT 1 FROM premium_warehouse_distributor_data_1 WHERE active=1'))
             return $this->dists();
         $tb = & $this->init_module('Utils/TabbedBrowser');
-        $tb->set_tab($this->t('Items'), array($this,'items'));
-        $tb->set_tab($this->t('Distributors'), array($this,'dists'));
+        $tb->set_tab(__('Items'), array($this,'items'));
+        $tb->set_tab(__('Distributors'), array($this,'dists'));
         $this->display_module($tb);
     }
 
     public function items() {
         $gb = $this->init_module('Utils/GenericBrowser', null, 'wholesale_items_addon');
         $gb->set_table_columns(array(
-            array('name'=>$this->t('Actions'), 'width'=>8, 'wrapmode'=>'nowrap', 'order'=>'item_id'),
-            array('name'=>$this->t('Item Name'), 'width'=>40, 'wrapmode'=>'nowrap', 'order'=>'distributor_item_name', 'search'=>'distributor_item_name'),
-            array('name'=>$this->t('Distributor'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'distributor_id'),
-            array('name'=>$this->t('Distributor Code'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'internal_key', 'search'=>'internal_key'),
-            array('name'=>$this->t('Price'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'price'),
-            array('name'=>$this->t('Quantity'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'quantity'),
-            array('name'=>$this->t('Quantity Details'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'quantity_info'),
-            array('name'=>$this->t('Distributor Category'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'distributor_category', 'search'=>'f_foreign_category_name'),
-            array('name'=>$this->t('Manufacturer'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'manufacturer', 'search'=>'f_company_name'),
-            array('name'=>$this->t('MPN'), 'width'=>8, 'wrapmode'=>'nowrap', 'order'=>'manufacturer_part_number', 'search'=>'manufacturer_part_number'),
-            array('name'=>$this->t('UPC'), 'width'=>8, 'wrapmode'=>'nowrap', 'order'=>'upc', 'search'=>'upc')
+            array('name'=>__('Actions'), 'width'=>8, 'wrapmode'=>'nowrap', 'order'=>'item_id'),
+            array('name'=>__('Item Name'), 'width'=>40, 'wrapmode'=>'nowrap', 'order'=>'distributor_item_name', 'search'=>'distributor_item_name'),
+            array('name'=>__('Distributor'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'distributor_id'),
+            array('name'=>__('Distributor Code'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'internal_key', 'search'=>'internal_key'),
+            array('name'=>__('Price'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'price'),
+            array('name'=>__('Quantity'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'quantity'),
+            array('name'=>__('Quantity Details'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'quantity_info'),
+            array('name'=>__('Distributor Category'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'distributor_category', 'search'=>'f_foreign_category_name'),
+            array('name'=>__('Manufacturer'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'manufacturer', 'search'=>'f_company_name'),
+            array('name'=>__('MPN'), 'width'=>8, 'wrapmode'=>'nowrap', 'order'=>'manufacturer_part_number', 'search'=>'manufacturer_part_number'),
+            array('name'=>__('UPC'), 'width'=>8, 'wrapmode'=>'nowrap', 'order'=>'upc', 'search'=>'upc')
         ));
 
         $form = $this->init_module('Libs/QuickForm');
@@ -73,7 +73,7 @@ class Premium_Warehouse_Wholesale extends Module {
         if($available)
             $where .= ' AND quantity>0';
         $limit = $gb->get_limit(DB::GetOne('SELECT COUNT(*) FROM premium_warehouse_wholesale_items LEFT JOIN company_data_1 c ON c.id=manufacturer LEFT JOIN premium_warehouse_distr_categories_data_1 cat ON (cat.f_distributor=distributor_id AND cat.id=distributor_category) WHERE '.$where));
-        $gb->set_default_order(array($this->t('Item Name')=>'ASC'));
+        $gb->set_default_order(array(__('Item Name')=>'ASC'));
         $order = $gb->get_query_order();
 
         $ret = DB::SelectLimit('SELECT *, c.f_company_name as manufacturer_name, whl.id AS id,cat.f_foreign_category_name as category FROM premium_warehouse_wholesale_items AS whl LEFT JOIN company_data_1 c ON c.id=whl.manufacturer LEFT JOIN premium_warehouse_items_data_1 AS itm ON itm.id=whl.item_id LEFT JOIN premium_warehouse_distr_categories_data_1 cat ON (cat.f_distributor=distributor_id AND cat.id=distributor_category) WHERE '.$where.' '.$order, $limit['numrows'], $limit['offset']);
@@ -81,7 +81,7 @@ class Premium_Warehouse_Wholesale extends Module {
         while ($row=$ret->FetchRow()) {
             if ($row['item_id']) {
                 $sku = Utils_RecordBrowserCommon::create_linked_label('premium_warehouse_items', 'sku', $row['item_id']);
-				$sku .= '<a '.$this->create_confirm_callback_href($this->t('Are you sure you want to unlink the item?'), array($this, 'unlink_item'), array($row['id'])).'><img src="'.Base_ThemeCommon::get_template_file('Premium/Warehouse/Wholesale','cancel.png').'" border="0" /></a>';
+				$sku .= '<a '.$this->create_confirm_callback_href(__('Are you sure you want to unlink the item?'), array($this, 'unlink_item'), array($row['id'])).'><img src="'.Base_ThemeCommon::get_template_file('Premium/Warehouse/Wholesale','cancel.png').'" border="0" /></a>';
             } else {
 				$sku = '';
             }
@@ -131,27 +131,27 @@ class Premium_Warehouse_Wholesale extends Module {
 
 		/** dist_item fields **/
 		$theme->assign('dist_item_icon', Base_ThemeCommon::get_template_filename('Premium_Warehouse_Items','icon.png'));
-		$theme->assign('dist_item_caption', $this->t('Distributor Item'));
+		$theme->assign('dist_item_caption', __('Distributor Item'));
 
-		$form->addElement('static', 'dist_item_name', $this->t('Item Name'), $dist_item['distributor_item_name']);
-		$form->addElement('static', 'dist_price', $this->t('Price'), Utils_CurrencyFieldCommon::format($dist_item['price'],$dist_item['price_currency']));
-		$form->addElement('static', 'dist_category', $this->t('Category'), Utils_RecordBrowserCommon::get_value('premium_warehouse_distr_categories', $dist_item['distributor_category'], 'foreign_category_name'));
+		$form->addElement('static', 'dist_item_name', __('Item Name'), $dist_item['distributor_item_name']);
+		$form->addElement('static', 'dist_price', __('Price'), Utils_CurrencyFieldCommon::format($dist_item['price'],$dist_item['price_currency']));
+		$form->addElement('static', 'dist_category', __('Category'), Utils_RecordBrowserCommon::get_value('premium_warehouse_distr_categories', $dist_item['distributor_category'], 'foreign_category_name'));
 		
-		$form->addElement('static', 'dist_manufacturer', $this->t('Manufacturer'), $manufacturers[$dist_item['manufacturer']]);
-		$form->addElement('static', 'dist_mpn', $this->t('Manufacturer Part Number'), $dist_item['manufacturer_part_number']);
-		$form->addElement('static', 'dist_upc', $this->t('UPC'), $dist_item['upc']);
+		$form->addElement('static', 'dist_manufacturer', __('Manufacturer'), $manufacturers[$dist_item['manufacturer']]);
+		$form->addElement('static', 'dist_mpn', __('Manufacturer Part Number'), $dist_item['manufacturer_part_number']);
+		$form->addElement('static', 'dist_upc', __('UPC'), $dist_item['upc']);
 		
 		/** item fields **/
 
 		$theme->assign('item_icon', Base_ThemeCommon::get_template_filename('Premium_Warehouse_Items','icon.png'));
-		$theme->assign('item_caption', $this->t('Item'));
+		$theme->assign('item_caption', __('Item'));
 		
-		$form->addElement('select', 'create_new_item', $this->t('Link to'), array(0=>'Select Existing Item', 1=>'Create New Item'), array('onchange'=>'create_new_item_change(this.value);','id'=>'create_new_item'));
+		$form->addElement('select', 'create_new_item', __('Link to'), array(0=>'Select Existing Item', 1=>'Create New Item'), array('onchange'=>'create_new_item_change(this.value);','id'=>'create_new_item'));
 		eval_js('create_new_item_change($("create_new_item").value);');
 
 		/** existing item **/
 
-		$el = $form->addElement('autocomplete', 'add_candidates', $this->t('Search for new candidates'), array('Premium_Warehouse_WholesaleCommon', 'item_suggestbox'));
+		$el = $form->addElement('autocomplete', 'add_candidates', __('Search for new candidates'), array('Premium_Warehouse_WholesaleCommon', 'item_suggestbox'));
 		$el->on_hide_js('add_new_candidate();');
 
 		$form->addElement('hidden', 'selected_existing_item', '', array('id'=>'selected_existing_item'));
@@ -159,16 +159,16 @@ class Premium_Warehouse_Wholesale extends Module {
 		if ($already_linked_item)
 			$form->setDefaults(array('selected_existing_item'=>$already_linked_item));
 		
-		$form->addElement('button', 'change_candidate', $this->t('Change Item'), array('onclick'=>'item_was_selected(false);$("selected_existing_item").value = null;'));
+		$form->addElement('button', 'change_candidate', __('Change Item'), array('onclick'=>'item_was_selected(false);$("selected_existing_item").value = null;'));
 		eval_js('item_was_selected($("selected_existing_item").value);');
 
-		$form->addElement('text', 'e_item_name', $this->t('Item Name'), array('id'=>'e_item_name'));
-		$form->addElement('text', 'e_price', $this->t('Price'), array('id'=>'e_price'));
-		$form->addElement('text', 'e_category', $this->t('Category'), array('id'=>'e_category'));
+		$form->addElement('text', 'e_item_name', __('Item Name'), array('id'=>'e_item_name'));
+		$form->addElement('text', 'e_price', __('Price'), array('id'=>'e_price'));
+		$form->addElement('text', 'e_category', __('Category'), array('id'=>'e_category'));
 		
-		$form->addElement('text', 'e_manufacturer', $this->t('Manufacturer'), array('id'=>'e_manufacturer'));
-		$form->addElement('text', 'e_mpn', $this->t('Manufacturer Part Number'), array('id'=>'e_mpn'));
-		$form->addElement('text', 'e_upc', $this->t('UPC'), array('id'=>'e_upc'));
+		$form->addElement('text', 'e_manufacturer', __('Manufacturer'), array('id'=>'e_manufacturer'));
+		$form->addElement('text', 'e_mpn', __('Manufacturer Part Number'), array('id'=>'e_mpn'));
+		$form->addElement('text', 'e_upc', __('UPC'), array('id'=>'e_upc'));
 		
 		$current_item = $form->exportValue('selected_existing_item');
 		$current_item = Utils_RecordBrowserCommon::get_record('premium_warehouse_items', $current_item);
@@ -215,19 +215,19 @@ class Premium_Warehouse_Wholesale extends Module {
 		$item_types = Utils_CommonDataCommon::get_array('Premium_Warehouse_Items_Type', true);
         $taxes = array(''=>'---',)+Data_TaxRatesCommon::get_tax_rates();
 
-		$form->addElement('text', 'n_item_name', $this->t('Item Name'), array('id'=>'n_item_name'));
-		$form->addElement('select', 'n_item_type', $this->t('Item Type'), $item_types, array('id'=>'n_item_type'));
-		$form->addElement('select', 'n_tax_rate', $this->t('Tax Rate'), $taxes, array('id'=>'n_tax_rate'));
+		$form->addElement('text', 'n_item_name', __('Item Name'), array('id'=>'n_item_name'));
+		$form->addElement('select', 'n_item_type', __('Item Type'), $item_types, array('id'=>'n_item_type'));
+		$form->addElement('select', 'n_tax_rate', __('Tax Rate'), $taxes, array('id'=>'n_tax_rate'));
 
-		$form->addElement('select', 'n_manufacturer', $this->t('Manufacturer'), $manufacturers, array('id'=>'n_manufacturer'));
-		$form->addElement('text', 'n_create_manufacturer', $this->t('Manufacturer'), array('id'=>'n_create_manufacturer'));
-		$form->addElement('checkbox', 'n_enable_create_manufacturer', $this->t('Create New Manufacturer'), '', 'id="n_enable_create_manufacturer" onchange="create_or_select_manufacturer();" '.Utils_TooltipCommon::open_tag_attrs($this->t('Create a new manufacturer company')));
+		$form->addElement('select', 'n_manufacturer', __('Manufacturer'), $manufacturers, array('id'=>'n_manufacturer'));
+		$form->addElement('text', 'n_create_manufacturer', __('Manufacturer'), array('id'=>'n_create_manufacturer'));
+		$form->addElement('checkbox', 'n_enable_create_manufacturer', __('Create New Manufacturer'), '', 'id="n_enable_create_manufacturer" onchange="create_or_select_manufacturer();" '.Utils_TooltipCommon::open_tag_attrs(__('Create a new manufacturer company')));
 		eval_js('create_or_select_manufacturer();');
 		
-		$form->addElement('text', 'n_mpn', $this->t('Manufacturer Part Number'), array('id'=>'n_mpn'));
-		$form->addElement('text', 'n_upc', $this->t('UPC'), array('id'=>'n_upc'));
+		$form->addElement('text', 'n_mpn', __('Manufacturer Part Number'), array('id'=>'n_mpn'));
+		$form->addElement('text', 'n_upc', __('UPC'), array('id'=>'n_upc'));
 
-		$form->addElement('automulti', 'n_category', $this->t('Category'), array('Premium_Warehouse_ItemsCommon', 'automulti_search'), array(), array('Premium_Warehouse_ItemsCommon', 'automulti_format'));
+		$form->addElement('automulti', 'n_category', __('Category'), array('Premium_Warehouse_ItemsCommon', 'automulti_search'), array(), array('Premium_Warehouse_ItemsCommon', 'automulti_format'));
 		
 		$form->setDefaults(array(
 			'n_item_name'=>$dist_item['distributor_item_name'],
@@ -245,7 +245,7 @@ class Premium_Warehouse_Wholesale extends Module {
 
         if($ecommerce_on) {
 			$theme->assign('ecommerce_icon', Base_ThemeCommon::get_template_filename('Premium_Warehouse_eCommerce','icon.png'));
-			$theme->assign('ecommerce_caption', $this->t('eCommerce'));
+			$theme->assign('ecommerce_caption', __('eCommerce'));
         }
 		
 		$form->addFormRule(array($this, 'link_item_rules'));
@@ -278,8 +278,8 @@ class Premium_Warehouse_Wholesale extends Module {
 			return false;
 		}
 
-		Base_ActionBarCommon::add('delete', 'Cancel', $this->create_back_href());
-		Base_ActionBarCommon::add('save', 'Save', $form->get_submit_form_href());
+		Base_ActionBarCommon::add('delete', __('Cancel'), $this->create_back_href());
+		Base_ActionBarCommon::add('save', __('Save'), $form->get_submit_form_href());
 		
 		$form->assign_theme('form', $theme);
 		$theme->display('sync_item');
@@ -289,15 +289,15 @@ class Premium_Warehouse_Wholesale extends Module {
 
 	public function link_item_rules($data) {
 		if ($data['create_new_item']==0) {
-			if (!$data['selected_existing_item']) return array('create_new_item'=>$this->t('You need to select an item first.'));
+			if (!$data['selected_existing_item']) return array('create_new_item'=>__('You need to select an item first.'));
 		} else {
-			if (!$data['n_item_name']) return array('n_item_name'=>$this->t('Field required.'));
+			if (!$data['n_item_name']) return array('n_item_name'=>__('Field required'));
 		}
 		return true;
 	}
 
     public function dists() {
-        Base_ActionBarCommon::add('search','Scan plugins', $this->create_callback_href(array('Premium_Warehouse_WholesaleCommon','scan_for_plugins')));
+        Base_ActionBarCommon::add('search',__('Scan plugins'), $this->create_callback_href(array('Premium_Warehouse_WholesaleCommon','scan_for_plugins')));
         $this->rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_distributor','premium_warehouse_distributor_module');
         $this->display_module($this->rb);
     }
@@ -310,17 +310,17 @@ class Premium_Warehouse_Wholesale extends Module {
     public function items_addon($arg) {
         $gb = $this->init_module('Utils/GenericBrowser', null, 'wholesale_items_addon');
         $gb->set_table_columns(array(
-            array('name'=>$this->t('Status'), 'width'=>8, 'wrapmode'=>'nowrap', 'order'=>'item_id'),
-            array('name'=>$this->t('Item Name'), 'width'=>40, 'wrapmode'=>'nowrap', 'order'=>'distributor_item_name', 'search'=>'distributor_item_name'),
-            array('name'=>$this->t('Distributor Code'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'internal_key', 'search'=>'internal_key'),
-            array('name'=>$this->t('Price'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'price'),
-            array('name'=>$this->t('Quantity'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'quantity'),
-            array('name'=>$this->t('Quantity Details'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'quantity_info'),
-            array('name'=>$this->t('Epesi Category'), 'width'=>3, 'wrapmode'=>'nowrap'),
-            array('name'=>$this->t('Distributor Category'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'distributor_category', 'search'=>'f_foreign_category_name'),
-            array('name'=>$this->t('Manufacturer'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'manufacturer', 'search'=>'f_company_name'),
-            array('name'=>$this->t('MPN'), 'width'=>8, 'wrapmode'=>'nowrap', 'order'=>'manufacturer_part_number', 'search'=>'manufacturer_part_number'),
-            array('name'=>$this->t('UPC'), 'width'=>8, 'wrapmode'=>'nowrap', 'order'=>'upc', 'search'=>'upc')
+            array('name'=>__('Status'), 'width'=>8, 'wrapmode'=>'nowrap', 'order'=>'item_id'),
+            array('name'=>__('Item Name'), 'width'=>40, 'wrapmode'=>'nowrap', 'order'=>'distributor_item_name', 'search'=>'distributor_item_name'),
+            array('name'=>__('Distributor Code'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'internal_key', 'search'=>'internal_key'),
+            array('name'=>__('Price'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'price'),
+            array('name'=>__('Quantity'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'quantity'),
+            array('name'=>__('Quantity Details'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'quantity_info'),
+            array('name'=>__('Epesi Category'), 'width'=>3, 'wrapmode'=>'nowrap'),
+            array('name'=>__('Distributor Category'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'distributor_category', 'search'=>'f_foreign_category_name'),
+            array('name'=>__('Manufacturer'), 'width'=>7, 'wrapmode'=>'nowrap', 'order'=>'manufacturer', 'search'=>'f_company_name'),
+            array('name'=>__('MPN'), 'width'=>8, 'wrapmode'=>'nowrap', 'order'=>'manufacturer_part_number', 'search'=>'manufacturer_part_number'),
+            array('name'=>__('UPC'), 'width'=>8, 'wrapmode'=>'nowrap', 'order'=>'upc', 'search'=>'upc')
         ));
         
         $e_cats = DB::GetAssoc('SELECT f_foreign_category_name,1 FROM premium_warehouse_distr_categories_data_1 WHERE f_distributor=%d AND f_epesi_category!=""',array($arg['id']));
@@ -349,41 +349,41 @@ class Premium_Warehouse_Wholesale extends Module {
             $where .= ' AND quantity>0';
 //      $limit = $gb->get_limit(DB::GetOne('SELECT COUNT(*) FROM premium_warehouse_wholesale_items WHERE distributor_id=%d AND (quantity!=%d OR quantity_info!=%s) '.$where, array($arg['id'],0,'')));
         $limit = $gb->get_limit(DB::GetOne('SELECT COUNT(*) FROM premium_warehouse_wholesale_items LEFT JOIN company_data_1 c ON c.id=manufacturer LEFT JOIN premium_warehouse_distr_categories_data_1 cat ON (cat.f_distributor=distributor_id AND cat.id=distributor_category) WHERE distributor_id=%d '.$where, array($arg['id'])));
-        $gb->set_default_order(array($this->t('Item Name')=>'ASC'));
+        $gb->set_default_order(array(__('Item Name')=>'ASC'));
         $order = $gb->get_query_order();
 
         $form2 = $this->init_module('Libs/QuickForm');
-        $form2->addElement('text', 'item_name', $this->t('Item Name'),array('id'=>'add_item_name'));
-        $form2->addElement('commondata', 'item_type', $this->t('Item Type'), 'Premium_Warehouse_Items_Type', array('empty_option'=>true, 'order_by_key'=>true));
-        $form2->addElement('text', 'product_code', $this->t('Product Code'));
-        $form2->addElement('static', 'manufacturer', $this->t('Manufacturer'),'<span id="add_item_man"></span>');
-        $form2->addElement('text', 'manufacturer_part_number', $this->t('Manufacturer Part Number'),array('id'=>'add_item_mpn'));
-        $form2->addElement('text', 'upc', $this->t('UPC'),array('id'=>'add_item_upc'));
-        $form2->addElement('text', 'weight', $this->t('Weight'));
+        $form2->addElement('text', 'item_name', __('Item Name'),array('id'=>'add_item_name'));
+        $form2->addElement('commondata', 'item_type', __('Item Type'), 'Premium_Warehouse_Items_Type', array('empty_option'=>true, 'order_by_key'=>true));
+        $form2->addElement('text', 'product_code', __('Product Code'));
+        $form2->addElement('static', 'manufacturer', __('Manufacturer'),'<span id="add_item_man"></span>');
+        $form2->addElement('text', 'manufacturer_part_number', __('Manufacturer Part Number'),array('id'=>'add_item_mpn'));
+        $form2->addElement('text', 'upc', __('UPC'),array('id'=>'add_item_upc'));
+        $form2->addElement('text', 'weight', __('Weight'));
         $taxes = array(''=>'---',)+Data_TaxRatesCommon::get_tax_rates();
-        $form2->addElement('select', 'tax_rate', $this->t('Tax Rate'),$taxes);
+        $form2->addElement('select', 'tax_rate', __('Tax Rate'),$taxes);
         $ecommerce_on = ModuleManager::is_installed('Premium_Warehouse_eCommerce')!=-1;
         if($ecommerce_on) {
-            $form2->addElement('checkbox', 'ecommerce', $this->t('eCommerce publish'));
-            $form2->addElement('static', '3rd party', $this->t('Available data'),'<span id="3rdp_info_frame"></span>');
+            $form2->addElement('checkbox', 'ecommerce', __('eCommerce publish'));
+            $form2->addElement('static', '3rd party', __('Available data'),'<span id="3rdp_info_frame"></span>');
         }
         $form2->setDefaults(array('item_type'=>1, 'tax_rate'=>$arg['tax_rate']));
         $lp = $this->init_module('Utils_LeightboxPrompt');
         $lp->add_option('add', 'Add', '', $form2);
-        $this->display_module($lp, array($this->t('Create new item'), array('internal_id')));
+        $this->display_module($lp, array(__('Create new item'), array('internal_id')));
         $vals = $lp->export_values();
         if ($vals) {
             $validate = true;
             if (!isset($vals['form']['item_name']) || !$vals['form']['item_name']) {
-                Epesi::alert($this->t('Item name is required'));
+                Epesi::alert(__('Item name is required'));
                 $validate = false;
             }
             if (!isset($vals['form']['item_type']) || $vals['form']['item_type']==='') {
-                Epesi::alert($this->t('Item type is required'));
+                Epesi::alert(__('Item type is required'));
                 $validate = false;
             }
             if(!isset($vals['form']['weight']) || !is_numeric($vals['form']['weight'])) {
-                Epesi::alert($this->t('Weight is required and should be numeric'));
+                Epesi::alert(__('Weight is required and should be numeric'));
                 $validate = false;
             }
 
@@ -423,7 +423,7 @@ class Premium_Warehouse_Wholesale extends Module {
                 array('value'=>Utils_CurrencyFieldCommon::format($row['price'],$row['price_currency']), 'style'=>'text-align:right;'),
                 array('value'=>$row['quantity'], 'style'=>'text-align:right;'),
                 $row['quantity_info'],
-                isset($e_cats[$row['category']])?$this->t('Yes'):$this->t('No'),
+                isset($e_cats[$row['category']])?__('Yes'):__('No'),
                 $row['category'],
                 $row['manufacturer_name'],
                 $row['manufacturer_part_number'],
@@ -436,15 +436,15 @@ class Premium_Warehouse_Wholesale extends Module {
     public function distributors_addon($arg) {
         $gb = $this->init_module('Utils/GenericBrowser', null, 'wholesale_items_addon');
         $gb->set_table_columns(array(
-            array('name'=>$this->t('Distributor'), 'width'=>40, 'wrapmode'=>'nowrap'),
-            array('name'=>$this->t('Distributor Code'), 'width'=>7, 'wrapmode'=>'nowrap'),
-            array('name'=>$this->t('Price'), 'width'=>7, 'wrapmode'=>'nowrap'),
-            array('name'=>$this->t('Quantity'), 'width'=>7, 'wrapmode'=>'nowrap'),
-            array('name'=>$this->t('Quantity Details'), 'width'=>7, 'wrapmode'=>'nowrap'),
-            array('name'=>$this->t('Category'), 'width'=>7, 'wrapmode'=>'nowrap'),
-            array('name'=>$this->t('Manufacturer'), 'width'=>7, 'wrapmode'=>'nowrap'),
-            array('name'=>$this->t('MPN'), 'width'=>8, 'wrapmode'=>'nowrap'),
-            array('name'=>$this->t('Last Update'), 'width'=>8, 'wrapmode'=>'nowrap')
+            array('name'=>__('Distributor'), 'width'=>40, 'wrapmode'=>'nowrap'),
+            array('name'=>__('Distributor Code'), 'width'=>7, 'wrapmode'=>'nowrap'),
+            array('name'=>__('Price'), 'width'=>7, 'wrapmode'=>'nowrap'),
+            array('name'=>__('Quantity'), 'width'=>7, 'wrapmode'=>'nowrap'),
+            array('name'=>__('Quantity Details'), 'width'=>7, 'wrapmode'=>'nowrap'),
+            array('name'=>__('Category'), 'width'=>7, 'wrapmode'=>'nowrap'),
+            array('name'=>__('Manufacturer'), 'width'=>7, 'wrapmode'=>'nowrap'),
+            array('name'=>__('MPN'), 'width'=>8, 'wrapmode'=>'nowrap'),
+            array('name'=>__('Last update'), 'width'=>8, 'wrapmode'=>'nowrap')
         ));
 
 /*

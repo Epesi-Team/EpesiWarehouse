@@ -37,7 +37,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
         $id = Utils_RecordBrowserCommon::get_id('premium_ecommerce_parameter_labels', array('parameter', 'language'), array($r['id'], $lang_code));
         if (!is_numeric($id)) {
             $lan = Utils_CommonDataCommon::get_value('Premium/Warehouse/eCommerce/Languages/'.$lang_code);
-            return Base_LangCommon::ts('Premium_eCommerce','Description in <b>%s</b> missing', array($lan?$lan:$lang_code));
+            return __('Description in <b>%s</b> missing', array($lan?$lan:$lang_code));
         }
         return Utils_RecordBrowserCommon::get_value('premium_ecommerce_parameter_labels',$id,'label');
     }
@@ -47,7 +47,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
         $id = Utils_RecordBrowserCommon::get_id('premium_ecommerce_param_group_labels', array('group', 'language'), array($r['id'], $lang_code));
         if (!is_numeric($id)) {
             $lan = Utils_CommonDataCommon::get_value('Premium/Warehouse/eCommerce/Languages/'.$lang_code);
-            return Base_LangCommon::ts('Premium_eCommerce','Description in <b>%s</b> missing', array($lan?$lan:$lang_code));
+            return __('Description in <b>%s</b> missing', array($lan?$lan:$lang_code));
         }
         return Utils_RecordBrowserCommon::get_value('premium_ecommerce_param_group_labels',$id,'label');
     }
@@ -57,7 +57,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
         $id = Utils_RecordBrowserCommon::get_id('premium_ecommerce_descriptions', array('item_name', 'language'), array($r['item_name'], $lang_code));
         if (!is_numeric($id)) {
             $lan = Utils_CommonDataCommon::get_value('Premium/Warehouse/eCommerce/Languages/'.$lang_code);
-            return Base_LangCommon::ts('Premium_eCommerce','Description in <b>%s</b> missing', array($lan?$lan:$lang_code));
+            return __('Description in <b>%s</b> missing', array($lan?$lan:$lang_code));
         }
         return Utils_RecordBrowserCommon::get_value('premium_ecommerce_descriptions',$id,'short_description');
     }
@@ -67,7 +67,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
         $id = Utils_RecordBrowserCommon::get_id('premium_ecommerce_descriptions', array('item_name', 'language'), array($r['item_name'], $lang_code));
         if (!is_numeric($id)) {
             $lan = Utils_CommonDataCommon::get_value('Premium/Warehouse/eCommerce/Languages/'.$lang_code);
-            return Base_LangCommon::ts('Premium_eCommerce','Product name in <b>%s</b> missing', array($lan?$lan:$lang_code));
+            return __('Product name in <b>%s</b> missing', array($lan?$lan:$lang_code));
         }
         return  Utils_RecordBrowserCommon::record_link_open_tag('premium_ecommerce_products',$r['id'],$nolink).
                 Utils_RecordBrowserCommon::get_value('premium_ecommerce_descriptions',$id,'display_name').
@@ -91,7 +91,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
     public static function QFfield_password(&$form, $field, $label, $mode, $default) {
         if ($mode=='add' || $mode=='edit') {
             $form->addElement('password', $field, $label);
-            $form->addRule($field, Base_LangCommon::ts('Premium_Warehouse_eCommerce','Field required'), 'required');
+            $form->addRule($field, __('Field required'), 'required');
         } else {
             $form->addElement('static', $field, $label);
             $form->setDefaults(array($field=>'*****'));
@@ -107,23 +107,23 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 //      $ret = Utils_RecordBrowserCommon::get_records('premium_ecommerce_users',array('contact'=>$r['id']));
         if(!in_array('custm',$r['group']))
             return array('show'=>false);
-        return array('show'=>true, 'label'=>'eCommerce user');
+        return array('show'=>true, 'label'=>__('eCommerce user'));
     }
 
     public static function prices_addon_parameters($r) {
         if(!Variable::get('ecommerce_item_prices'))
             return array('show'=>false);
-        return array('show'=>true, 'label'=>'Prices');
+        return array('show'=>true, 'label'=>__('Prices'));
     }
     public static function parameters_addon_parameters($r) {
         if(!Variable::get('ecommerce_item_parameters'))
             return array('show'=>false);
-        return array('show'=>true, 'label'=>'Parameters');
+        return array('show'=>true, 'label'=>__('Parameters'));
     }
     public static function descriptions_addon_parameters($r) {
         if(!Variable::get('ecommerce_item_descriptions'))
             return array('show'=>false);
-        return array('show'=>true, 'label'=>'Descriptions');
+        return array('show'=>true, 'label'=>__('Descriptions'));
     }
 
     public static function submit_user($values, $mode) {
@@ -142,18 +142,18 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
         if ($mode=='add' || $mode=='edit') {
             $statuses = array();
             foreach(self::$order_statuses as $k=>$v)
-                $statuses[$k] = Base_LangCommon::ts('Premium_Warehouse_Items_Orders',$v);
+                $statuses[$k] = _V($v);
             $form->addElement('select', $field, $label, $statuses, array('id'=>$field));
             $form->addRule($field,'Field required','required');
             if ($mode=='edit') $form->setDefaults(array($field=>$default));
         } else {
             $form->addElement('static', $field, $label);
-            $form->setDefaults(array($field=>Base_LangCommon::ts('Premium_Warehouse_Items_Orders',self::$order_statuses[$default])));
+            $form->setDefaults(array($field=>_V(self::$order_statuses[$default])));
         }
     }
 
     public static function display_order_status($r, $nolink=false) {
-        return Base_LangCommon::ts('Premium_Warehouse_Items_Orders',self::$order_statuses[$r['type']]);
+        return _V(self::$order_statuses[$r['type']]);
     }
 
     private static $page_opts = array(''=>'---','1'=>'Top menu above logo','2'=>'Top menu under logo','5'=>'Hidden');
@@ -247,18 +247,18 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 
     public static function menu() {
 		$m = array('__submenu__'=>1,
-					'Stats'=>array('__function__'=>'stats'));
+					_M('Stats')=>array('__function__'=>'stats'));
 		if (Utils_RecordBrowserCommon::get_access('premium_ecommerce_products', 'add'))
-			$m['Express publish'] = array('__function__'=>'fast_fill');
+			$m[_M('Express publish')] = array('__function__'=>'fast_fill');
 		if (Utils_RecordBrowserCommon::get_access('premium_ecommerce_products', 'browse'))
-			$m['Products'] = array();
+			$m[_M('Products')] = array();
 		if (Utils_RecordBrowserCommon::get_access('premium_ecommerce_product_comments', 'browse'))
-			$m['Comments queue'] = array('__function__'=>'comments');
+			$m[_M('Comments queue')] = array('__function__'=>'comments');
 		if (Utils_RecordBrowserCommon::get_access('premium_ecommerce_newsletter', 'browse'))
-			$m['Newsletter'] = array('__function__'=>'newsletter');
-		return array('Inventory'=>array(
+			$m[_M('Newsletter')] = array('__function__'=>'newsletter');
+		return array(_M('Inventory')=>array(
 			'__submenu__'=>1,
-			'eCommerce'=>$m));
+			_M('eCommerce')=>$m));
     }
 
     public static function get_quickcarts() {
@@ -367,7 +367,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 			foreach ($params as $k=>$v) {
 				$js .= 	'if($("param'.$i.'"))$("param'.$i.'").type="'.$v.'";'.
 						'if($("_param'.$i.'__label")){'.
-							'$("_param'.$i.'__label").innerHTML="'.Base_LangCommon::ts('Premium_Warehouse_eCommerce',$k).'";'.
+							'$("_param'.$i.'__label").innerHTML="'._V($k).'";'.
 							'$("_param'.$i.'__label").parentNode.parentNode.style.display="";'.
 						'}';
 				$i++;
@@ -485,7 +485,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 
     public static function get_3rd_party_info_addon_parameters($r) {
         if(DB::GetOne('SELECT 1 FROM premium_ecommerce_3rdp_plugin WHERE active=1')) {
-            Base_ActionBarCommon::add('add','3rd party',Module::create_href(array('get_3rd_party_item_data'=>1),'Getting data from 3rd party servers - please wait.'));
+            Base_ActionBarCommon::add('add',__('3rd party'),Module::create_href(array('get_3rd_party_item_data'=>1),'Getting data from 3rd party servers - please wait.'));
             if(isset($_REQUEST['get_3rd_party_item_data'])) {
                 self::get_3rd_party_item_data($r['item_name']);
                 unset($_REQUEST['get_3rd_party_item_data']);
@@ -507,7 +507,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
                 return array('show'=>false);
             self::$orders_rec = array_pop($ret);
         }
-        return array('show'=>true, 'label'=>'eCommerce');
+        return array('show'=>true, 'label'=>__('eCommerce'));
     }
 
     public static function submit_products_position($values, $mode) {
@@ -582,7 +582,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
         $quantity = Utils_RecordBrowserCommon::get_records('premium_warehouse_location',array('item_sku'=>$r['id'],'>quantity'=>0));
         if(empty($recs)) {
             $icon = 'notavailable.png';
-                $tip .= '<tr><td colspan=2>'.Base_LangCommon::ts('Premium_Warehouse_eCommerce','eCommerce item doesn\'t exist.').'</td></tr>';
+                $tip .= '<tr><td colspan=2>'.__('eCommerce item doesn\'t exist.').'</td></tr>';
             $action = Module::create_href(array('publish_warehouse_item'=>$r['id']));
         } else {
             $rec = array_pop($recs);
@@ -598,18 +598,18 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
             } elseif(empty($quantity) || !$r['category'])
             $icon = 'published.png';
             $action = Module::create_href(array('toggle_publish'=>$rec['id'],'publish_value'=>$rec['publish']?0:1));
-                $tip .= '<tr><td>'.Base_LangCommon::ts('Premium_Warehouse_eCommerce','Published').'</td><td>'.($rec['publish']?$on:$off).'</td></tr>';
+                $tip .= '<tr><td>'.__('Published').'</td><td>'.($rec['publish']?$on:$off).'</td></tr>';
         }
 
-        $tip .= '<tr><td>'.Base_LangCommon::ts('Premium_Warehouse_eCommerce','Assigned category').'</td><td>'.($r['category']?$on:$off).'</td></tr>';
-        $tip .= '<tr><td>'.Base_LangCommon::ts('Premium_Warehouse_eCommerce','Available in warehouse').'</td><td>'.(empty($quantity)?$off:$on).'</td></tr>';
+        $tip .= '<tr><td>'.__('Assigned category').'</td><td>'.($r['category']?$on:$off).'</td></tr>';
+        $tip .= '<tr><td>'.__('Available in warehouse').'</td><td>'.(empty($quantity)?$off:$on).'</td></tr>';
         if(ModuleManager::is_installed('Premium_Warehouse_eCommerce_CompareUpdatePrices')>=0) {
             $cs = DB::GetCol('SELECT f_plugin FROM premium_ecommerce_compare_prices_data_1 WHERE f_item_name=%d AND active=1',array($r['id']));
-            $tip .= '<tr><td>'.Base_LangCommon::ts('Premium_Warehouse_eCommerce','Compare Service').'</td><td>'.($cs?implode(', ',$cs):$off).'</td></tr>';
+            $tip .= '<tr><td>'.__('Compare Service').'</td><td>'.($cs?implode(', ',$cs):$off).'</td></tr>';
         }
 	if(ModuleManager::is_installed('Premium_Warehouse_eCommerce_Allegro')>=0) {
 		$cs = DB::GetOne('SELECT count(*) FROM premium_ecommerce_allegro_auctions WHERE item_id=%d AND active=1',array($r['id']));
-	        $tip .= '<tr><td>'.Base_LangCommon::ts('Premium_Warehouse_eCommerce','Allegro').'</td><td>'.($cs?$cs:$off).'</td></tr>';
+	        $tip .= '<tr><td>'.__('Allegro').'</td><td>'.($cs?$cs:$off).'</td></tr>';
 	}
         $tip .= '</table>';
 
@@ -674,7 +674,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
         if(!$r['promotion_shipment_discount']) return '---';
         $r2 = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders',$r['transaction_id']);
         list($cc,$curr) = Utils_CurrencyFieldCommon::get_values($r2['shipment_cost']);
-        return Utils_CurrencyFieldCommon::format($r['promotion_shipment_discount'],$curr).' ('.Base_LangCommon::ts('Premium_Warehouse_eCommerce','"Shipment Cost" is already discounted').')';
+        return Utils_CurrencyFieldCommon::format($r['promotion_shipment_discount'],$curr).' ('.__('"Shipment Cost" is already discounted').')';
     }
 
     public static function QFfield_promotion_shipment_discount(&$form, $field, $label, $mode, $default,$desc,$parent_rb) {
@@ -682,7 +682,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
     }
 
     public static function display_payment_realized($r) {
-        return Base_LangCommon::ts('Premium_Warehouse_eCommerce',$r['payment_realized']?'Yes':'No');
+        return $r['payment_realized']?__('Yes'):__('No');
     }
 
     public static function QFfield_payment_realized(&$form, $field, $label, $mode, $default,$args) {
@@ -694,7 +694,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
             unset($_REQUEST['payment_realized']);
             $default = $val;
         }
-        $form->addElement('static', $field, $label, $default?'<a '.Module::create_confirm_href(Base_LangCommon::ts('Premium_Warehouse_eCommerce','Mark this record as not paid?'),array('payment_realized'=>0)).'><span class="checkbox_on" /></a>':'<a '.Module::create_href(array('payment_realized'=>1)).'><span '.Utils_TooltipCommon::open_tag_attrs('Click to mark as paid').' class="checkbox_off" /></a>');
+        $form->addElement('static', $field, $label, $default?'<a '.Module::create_confirm_href(__('Mark this record as not paid?'),array('payment_realized'=>0)).'><span class="checkbox_on" /></a>':'<a '.Module::create_href(array('payment_realized'=>1)).'><span '.Utils_TooltipCommon::open_tag_attrs('Click to mark as paid').' class="checkbox_off" /></a>');
     }
 
     private static $banner_opts = array(0=>'Top', 1=>'Menu left');
@@ -715,7 +715,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 
     public static function QFfield_freeze_int(&$form, $field, $label, $mode, $default,$args) {
         $form->addElement('text', $field, $label)->freeze();
-        $form->addRule($field, Base_LangCommon::ts('Premium_Warehouse_eCommerce','Only numbers are allowed.'), 'numeric');
+        $form->addRule($field, __('Only numbers are allowed.'), 'numeric');
         $form->setDefaults(array($args['id']=>$default));
     }
 
@@ -835,31 +835,32 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
     }
 
     public static function admin_caption() {
-        return 'eCommerce';
+        return __('eCommerce');
     }
 
     public static function applet_caption() {
-        return "eCommerce orders";
+        return __("eCommerce - Orders");
     }
 
     public static function applet_info() {
-        $html="Displays eCommerce orders.";
-        return $html;
+        return __("Displays eCommerce orders.");
     }
 
     public static function applet_settings() {
-        $opts = array(-1=>'New Online Order', -2=>'New Online Order (with payment)', 2=>'Order Received', 3=>'Payment Confirmed', 4=>'Order Confirmed', 5=>'On Hold', 6=>'Order Ready to Ship', 7=>'Shipped', 20=>'Delivered', 21=>'Canceled', 22=>'Missing','active'=>'[Active]');
+		$opts = Premium_Warehouse_Items_OrdersCommon::get_status_array(array('transaction_type'=>1, 'payment'=>1));
+		$opts = $opts + array('active'=>'['.__('Active').']');
+//        $opts = array(-1=>'New Online Order', -2=>'New Online Order (with payment)', 2=>'Order Received', 3=>'Payment Confirmed', 4=>'Order Confirmed', 5=>'On Hold', 6=>'Order Ready to Ship', 7=>'Shipped', 20=>'Delivered', 21=>'Canceled', 22=>'Missing');
         return array_merge(Utils_RecordBrowserCommon::applet_settings(),
             array(
-                array('name'=>'settings_header','label'=>'Settings','type'=>'header'),
-                array('name'=>'status','label'=>'Transaction status','type'=>'select','default'=>-1,'rule'=>array(array('message'=>'Field required', 'type'=>'required')),'values'=>$opts),
-                array('name'=>'my','label'=>'Only my and not assigned','type'=>'checkbox','default'=>0)
+                array('name'=>'settings_header','label'=>__('Settings'),'type'=>'header'),
+                array('name'=>'status','label'=>__('Transaction Status'),'type'=>'select','default'=>-1,'rule'=>array(array('message'=>__('Field required'), 'type'=>'required')),'values'=>$opts),
+                array('name'=>'my','label'=>__('Only my and not assigned'),'type'=>'checkbox','default'=>0)
                 ));
     }
 
     public static function applet_info_format($r){
-        return Utils_TooltipCommon::format_info_tooltip(array('Contact'=>$r['first_name'].' '.$r['last_name'],
-                    'Company'=>$r['company_name'],'Phone'=>$r['phone']),'Premium_Warehouse_eCommerce');
+        return Utils_TooltipCommon::format_info_tooltip(array(__('Contact')=>$r['first_name'].' '.$r['last_name'],
+                    __('Company')=>$r['company_name'],'Phone'=>$r['phone']));
     }
     
     public static function submit_ecommerce_order($values,$mode) {
@@ -937,7 +938,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
                 $sm->assign('ecommerce',$erec);
                 $sm->assign('items',$it_tmp);
 
-                $sm->assign('contact_us_title',Base_LangCommon::ts('Premium_Warehouse_eCommerce','Contact us'));
+                $sm->assign('contact_us_title',__('Contact us'));
                 if($erec) {
                     $contactus = Variable::get('ecommerce_contactus_'.$erec['language'],false);
                     if(!$contactus)
@@ -978,8 +979,8 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 
     		$opts = Premium_Warehouse_eCommerceCommon::get_categories();
 			$rp = $x->init_module('Utils/RecordBrowser/RecordPicker',array());
-    		$x->display_module($rp, array('premium_ecommerce_products',$field,array('Premium_Warehouse_eCommerceCommon','automulti_format'),isset($x->record['id'])?array('!id'=>$x->record['id']):array(),array(),array(),array(),array(),array('item_name'=>array('type'=>'select','label'=>Base_LangCommon::ts('Premium_Warehouse_eCommerce','Category'),'args'=>$opts,'trans_callback'=>array('Premium_Warehouse_eCommerceCommon', 'category_filter')))));
-			$el->set_search_button('<a '.$rp->create_open_href().' '.Utils_TooltipCommon::open_tag_attrs($x->t('Advanced Selection')).' href="javascript:void(0);"><img border="0" src="'.Base_ThemeCommon::get_template_file('Utils_RecordBrowser','icon_zoom.png').'"></a>');
+    		$x->display_module($rp, array('premium_ecommerce_products',$field,array('Premium_Warehouse_eCommerceCommon','automulti_format'),isset($x->record['id'])?array('!id'=>$x->record['id']):array(),array(),array(),array(),array(),array('item_name'=>array('type'=>'select','label'=>__('Category'),'args'=>$opts,'trans_callback'=>array('Premium_Warehouse_eCommerceCommon', 'category_filter')))));
+			$el->set_search_button('<a '.$rp->create_open_href().' '.Utils_TooltipCommon::open_tag_attrs(__('Advanced Selection')).' href="javascript:void(0);"><img border="0" src="'.Base_ThemeCommon::get_template_file('Utils_RecordBrowser','icon_zoom.png').'"></a>');
         } else {
             $form->addElement('static', $field, $label, self::display_related_product_name(array($field=>$default),false));
         }
@@ -989,12 +990,12 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
         if ($mode=='edit' || $mode=='add') {
             $el = $form->addElement('automulti', $field, $label, array('Premium_Warehouse_eCommerceCommon', 'automulti_search'), array($x->record), array('Premium_Warehouse_eCommerceCommon','automulti_format'));
             $form->setDefaults(array($field=>$default));
-            $form->addRule($field,Base_LangCommon::ts('Premium_Warehouse_eCommerce','You can select up to 6 items'),'callback',array('Premium_Warehouse_eCommerceCommon','check_related'));
+            $form->addRule($field,__('You can select up to 6 items'),'callback',array('Premium_Warehouse_eCommerceCommon','check_related'));
 
     		$opts = Premium_Warehouse_eCommerceCommon::get_categories();
 			$rp = $x->init_module('Utils/RecordBrowser/RecordPicker',array());
-    		$x->display_module($rp, array('premium_ecommerce_products',$field,array('Premium_Warehouse_eCommerceCommon','automulti_format'),array('!id'=>$x->record['id']),array(),array(),array(),array(),array('item_name'=>array('type'=>'select','label'=>Base_LangCommon::ts('Premium_Warehouse_eCommerce','Category'),'args'=>$opts,'trans_callback'=>array('Premium_Warehouse_eCommerceCommon', 'category_filter')))));
-			$el->set_search_button('<a '.$rp->create_open_href().' '.Utils_TooltipCommon::open_tag_attrs($x->t('Advanced Selection')).' href="javascript:void(0);"><img border="0" src="'.Base_ThemeCommon::get_template_file('Utils_RecordBrowser','icon_zoom.png').'"></a>');
+    		$x->display_module($rp, array('premium_ecommerce_products',$field,array('Premium_Warehouse_eCommerceCommon','automulti_format'),array('!id'=>$x->record['id']),array(),array(),array(),array(),array('item_name'=>array('type'=>'select','label'=>__('Category'),'args'=>$opts,'trans_callback'=>array('Premium_Warehouse_eCommerceCommon', 'category_filter')))));
+			$el->set_search_button('<a '.$rp->create_open_href().' '.Utils_TooltipCommon::open_tag_attrs(__('Advanced Selection')).' href="javascript:void(0);"><img border="0" src="'.Base_ThemeCommon::get_template_file('Utils_RecordBrowser','icon_zoom.png').'"></a>');
         } else {
             $form->addElement('static', $field, $label, self::display_popup_product_name(array($field=>$default),false));
         }

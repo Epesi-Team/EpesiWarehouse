@@ -17,7 +17,7 @@ class Premium_Warehouse_Items_KitCommon extends ModuleCommon {
 		if ($mode=='edit' || $mode=='add') {
 			$form->addElement('automulti', $field, $label, array('Premium_Warehouse_Items_KitCommon', 'automulti_search'), array(), array('Premium_Warehouse_Items_KitCommon', 'automulti_format'));
 			$form->setDefaults(array($field=>$default));
-			$form->addRule($field,Base_LangCommon::ts('Utils_RecordBrowser','Field required'),'required');
+			$form->addRule($field,__('Field required'),'required');
 		} else {
 			$def = array();
 			foreach ($default as $d) {
@@ -52,7 +52,7 @@ class Premium_Warehouse_Items_KitCommon extends ModuleCommon {
 	switch ($action) {
 		case 'browse_crits':
 		    if($first=='browse')
-			Base_ActionBarCommon::add('add','Add kit',Utils_RecordBrowserCommon::create_new_record_href('premium_warehouse_items',array('quantity_on_hand'=>'0','reorder_point'=>'0','weight'=>1,'item_type'=>'kit')));
+			Base_ActionBarCommon::add('add',__('Add kit'),Utils_RecordBrowserCommon::create_new_record_href('premium_warehouse_items',array('quantity_on_hand'=>'0','reorder_point'=>'0','weight'=>1,'item_type'=>'kit')));
 		    return $ret;
 	}
 	return $ret;

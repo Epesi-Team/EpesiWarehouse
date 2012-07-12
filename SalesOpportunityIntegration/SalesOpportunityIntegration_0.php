@@ -33,10 +33,10 @@ class Premium_Warehouse_SalesOpportunityIntegration extends Module {
 		$rb->set_header_properties(array(
 			'terms'=>array('width'=>10, 'wrapmode'=>'nowrap'),
 			'status'=>array('width'=>15, 'wrapmode'=>'nowrap'),
-			'transaction_id'=>array('width'=>10, 'wrapmode'=>'nowrap', 'name'=>'Trans. ID'),
-			'transaction_type'=>array('width'=>10, 'wrapmode'=>'nowrap', 'name'=>'Type'),
-			'invoice_number'=>array('width'=>10, 'wrapmode'=>'nowrap', 'name'=>'Invoice'),
-			'transaction_date'=>array('width'=>10, 'wrapmode'=>'nowrap', 'name'=>'Date')
+			'transaction_id'=>array('width'=>10, 'wrapmode'=>'nowrap', 'name'=>__('Trans. ID')),
+			'transaction_type'=>array('width'=>10, 'wrapmode'=>'nowrap', 'name'=>__('Type')),
+			'invoice_number'=>array('width'=>10, 'wrapmode'=>'nowrap', 'name'=>__('Invoice')),
+			'transaction_date'=>array('width'=>10, 'wrapmode'=>'nowrap', 'name'=>__('Date'))
 		));
 		$rb->set_defaults($defaults);
 		$this->display_module($rb,$order,'show_data');

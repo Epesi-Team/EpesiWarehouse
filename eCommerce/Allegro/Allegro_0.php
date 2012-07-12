@@ -37,8 +37,8 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 		
 		$qf = $this->init_module('Libs_QuickForm',null, 'allegro_p');
 		
-		$qf->addElement('text','title',$this->t('Tytuł'),array('style'=>'width:300px','maxlength'=>'50'));
-		$qf->addRule('title',$this->t('Field required'),'required');
+		$qf->addElement('text','title',__('Tytuł'),array('style'=>'width:300px','maxlength'=>'50'));
+		$qf->addRule('title',__('Field required'),'required');
 		$qf->addRule('title','Maksymalna długość tytułu to 50 znaków','maxlength',50);
 		$qf->addRule('title','Maksymalna długość tytułu to 50 znaków','callback',array($this,'check_auction_title'));
 		$title = '';
@@ -49,26 +49,26 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 		$qf->setDefaults(array('title'=>html_entity_decode($r['item_name'])));
 		
 		$qf->addElement('autoselect','category','Kategoria', array(), array(array($this->get_type().'Common', 'autoselect_category_search'),array()),array($this->get_type().'Common', 'autoselect_category_format'));
-//		$qf->addElement('select','category',$this->t('Kategoria'),$cats);
-		$qf->addRule('category',$this->t('Field required'),'required');
+//		$qf->addElement('select','category',__('Kategoria'),$cats);
+		$qf->addRule('category',__('Field required'),'required');
 		
-		$qf->addElement('select','days',$this->t('Dni'),array('3','5','7','10','14','30'));
-		$qf->addRule('days',$this->t('Field required'),'required');
+		$qf->addElement('select','days',__('Dni'),array('3','5','7','10','14','30'));
+		$qf->addRule('days',__('Field required'),'required');
 		$qf->setDefaults(array('days'=>4));
 		
-		$qf->addElement('text','qty',$this->t('Ilość'));
-		$qf->addRule('qty',$this->t('Field required'),'required');
-		$qf->addRule('qty',$this->t('Invalid number'),'regex','/^[1-9][0-9]*$/');
+		$qf->addElement('text','qty',__('Ilość'));
+		$qf->addRule('qty',__('Field required'),'required');
+		$qf->addRule('qty',__('Invalid number'),'regex','/^[1-9][0-9]*$/');
 		$qf->setDefaults(array('qty'=>1));
 		
-		$qf->addElement('text','initial_price',$this->t('Cena wywoławcza'));
-		$qf->addRule('initial_price',$this->t('Invalid price'),'regex','/^[1-9][0-9]*(\.[0-9]+)?$/');
+		$qf->addElement('text','initial_price',__('Cena wywoławcza'));
+		$qf->addRule('initial_price',__('Invalid price'),'regex','/^[1-9][0-9]*(\.[0-9]+)?$/');
 		
-		$qf->addElement('text','minimal_price',$this->t('Cena minimalna'));
-		$qf->addRule('minimal_price',$this->t('Invalid price'),'regex','/^[1-9][0-9]*(\.[0-9]+)?$/');
+		$qf->addElement('text','minimal_price',__('Cena minimalna'));
+		$qf->addRule('minimal_price',__('Invalid price'),'regex','/^[1-9][0-9]*(\.[0-9]+)?$/');
 		
-		$qf->addElement('text','buy_price',$this->t('Cena Kup Teraz'));
-		$qf->addRule('buy_price',$this->t('Invalid price'),'regex','/^[1-9][0-9]*(\.[0-9]+)?$/');
+		$qf->addElement('text','buy_price',__('Cena Kup Teraz'));
+		$qf->addRule('buy_price',__('Invalid price'),'regex','/^[1-9][0-9]*(\.[0-9]+)?$/');
 		if($r['net_price'] && $r['tax_rate']) {
 			$curr = Utils_CurrencyFieldCommon::get_values($r['net_price']);
 			if(Utils_CurrencyFieldCommon::get_code($curr[1])=='PLN')
@@ -77,28 +77,28 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 			$qf->setDefaults(array('buy_price'=>number_format($price)));
 		}
 		
-		$qf->addElement('select','stan',$this->t('Stan'),array('---','Nowy','Używany'));
+		$qf->addElement('select','stan',__('Stan'),array('---','Nowy','Używany'));
 		$qf->setDefaults(array('stan'=>1));
 		
-		$qf->addElement('select','transport',$this->t('Transport'),array('Sprzedający pokrywa koszty transportu','Kupujący pokrywa koszty transportu'));
-		$qf->addRule('transport',$this->t('Field required'),'required');
+		$qf->addElement('select','transport',__('Transport'),array('Sprzedający pokrywa koszty transportu','Kupujący pokrywa koszty transportu'));
+		$qf->addRule('transport',__('Field required'),'required');
 		$qf->setDefaults(array('transport'=>1));
 
-		$qf->addElement('checkbox','abroad',$this->t('Zgadzam się na wysyłkę za granicę'));
-		$qf->addElement('checkbox','in_shop',$this->t('Odbiór osobisty'));
-		$qf->addElement('checkbox','in_shop_trans',$this->t('Odbiór osobisty po przedpłacie'));
+		$qf->addElement('checkbox','abroad',__('Zgadzam się na wysyłkę za granicę'));
+		$qf->addElement('checkbox','in_shop',__('Odbiór osobisty'));
+		$qf->addElement('checkbox','in_shop_trans',__('Odbiór osobisty po przedpłacie'));
 		
-		$qf->addElement('text','post_service_price',$this->t('Cena paczki'));
-		$qf->addRule('post_service_price',$this->t('Invalid price'),'regex','/^[0-9][0-9]*(\.[0-9]+)?$/');
+		$qf->addElement('text','post_service_price',__('Cena paczki'));
+		$qf->addRule('post_service_price',__('Invalid price'),'regex','/^[0-9][0-9]*(\.[0-9]+)?$/');
 
-		$qf->addElement('text','post_service_price_p',$this->t('Cena paczki (pobranie)'));
-		$qf->addRule('post_service_price_p',$this->t('Invalid price'),'regex','/^[0-9][0-9]*(\.[0-9]+)?$/');
+		$qf->addElement('text','post_service_price_p',__('Cena paczki (pobranie)'));
+		$qf->addRule('post_service_price_p',__('Invalid price'),'regex','/^[0-9][0-9]*(\.[0-9]+)?$/');
 
-		$qf->addElement('text','ups_price',$this->t('Cena kuriera'));
-		$qf->addRule('ups_price',$this->t('Invalid price'),'regex','/^[0-9][0-9]*(\.[0-9]+)?$/');
+		$qf->addElement('text','ups_price',__('Cena kuriera'));
+		$qf->addRule('ups_price',__('Invalid price'),'regex','/^[0-9][0-9]*(\.[0-9]+)?$/');
 
-		$qf->addElement('text','ups_price_p',$this->t('Cena kuriera (pobranie)'));
-		$qf->addRule('ups_price_p',$this->t('Invalid price'),'regex','/^[0-9][0-9]*(\.[0-9]+)?$/');
+		$qf->addElement('text','ups_price_p',__('Cena kuriera (pobranie)'));
+		$qf->addRule('ups_price_p',__('Invalid price'),'regex','/^[0-9][0-9]*(\.[0-9]+)?$/');
 
 		$ship_cost = Utils_RecordBrowserCommon::get_records('premium_ecommerce_payments_carriers',array('shipment'=>1,'payment'=>9,'currency'=>Utils_CurrencyFieldCommon::get_id_by_code('PLN'), '>=max_weight'=>$r['weight'])); //poczta polska, pobranie
 		$ship_cost = array_merge($ship_cost,Utils_RecordBrowserCommon::get_records('premium_ecommerce_payments_carriers',array('shipment'=>1,'payment'=>9,'currency'=>Utils_CurrencyFieldCommon::get_id_by_code('PLN'), 'max_weight'=>''))); //poczta polska, pobranie
@@ -143,20 +143,20 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 		if($transport_description)
 		$qf->setDefaults(array('transport_description'=>$transport_description));
 
-		$qf->addElement('checkbox','add_auction_cost',$this->t('Dodaj koszt aukcji'));
+		$qf->addElement('checkbox','add_auction_cost',__('Dodaj koszt aukcji'));
 		$qf->setDefaults(array('add_auction_cost'=>1));
 		
 		$qf->addElement('header',null,'Wygląd aukcji');
-		$qf->addElement('select','template',$this->t('Szablon'),Premium_Warehouse_eCommerce_AllegroCommon::get_templates());
+		$qf->addElement('select','template',__('Szablon'),Premium_Warehouse_eCommerce_AllegroCommon::get_templates());
 		$qf->setDefaults(array('template'=>Base_User_SettingsCommon::get('Premium_Warehouse_eCommerce_Allegro','template')));
-		$qf->addElement('checkbox','pr_bold',$this->t('Pogrubienie'));
-		$qf->addElement('checkbox','pr_thumbnail',$this->t('Miniaturka'));
+		$qf->addElement('checkbox','pr_bold',__('Pogrubienie'));
+		$qf->addElement('checkbox','pr_thumbnail',__('Miniaturka'));
 		$qf->setDefaults(array('pr_thumbnail'=>1));
-		$qf->addElement('checkbox','pr_light',$this->t('Podświetlenie'));
-		$qf->addElement('checkbox','pr_bigger',$this->t('Wyróżnienie'));
-		$qf->addElement('checkbox','pr_catpage',$this->t('Strona kategorii'));
-		$qf->addElement('checkbox','pr_mainpage',$this->t('Strona główna Allegro'));
-		$qf->addElement('checkbox','pr_watermark',$this->t('Znak wodny'));
+		$qf->addElement('checkbox','pr_light',__('Podświetlenie'));
+		$qf->addElement('checkbox','pr_bigger',__('Wyróżnienie'));
+		$qf->addElement('checkbox','pr_catpage',__('Strona kategorii'));
+		$qf->addElement('checkbox','pr_mainpage',__('Strona główna Allegro'));
+		$qf->addElement('checkbox','pr_watermark',__('Znak wodny'));
 		
 		$qf->addElement('hidden','publish',0,array('id'=>'allegro_publish'));
 		

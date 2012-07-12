@@ -63,12 +63,12 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 		$ret = Utils_CurrencyFieldCommon::format(($price[0]*(100+Data_TaxRatesCommon::get_tax_rate($r['tax_rate'])))/100, $price[1]);
 		if (!$nolink) {
 			$htmlinfo = array();
-			$htmlinfo['Net Price'] = Utils_CurrencyFieldCommon::format($r['net_price']);
-			$htmlinfo['Tax'] = Data_TaxRatesCommon::get_tax_name($r['tax_rate']);
-			$htmlinfo['Tax Rate'] = Data_TaxRatesCommon::get_tax_rate($r['tax_rate']).'%';
-			$htmlinfo['Tax Value'] = Utils_CurrencyFieldCommon::format(($price[0]*Data_TaxRatesCommon::get_tax_rate($r['tax_rate']))/100, $price[1]);;
-			$htmlinfo['Gross Price'] = $ret;
-			$ret = Utils_TooltipCommon::create($ret, Utils_TooltipCommon::format_info_tooltip($htmlinfo,'Utils_RecordBrowser'), false);
+			$htmlinfo[__('Net Price')] = Utils_CurrencyFieldCommon::format($r['net_price']);
+			$htmlinfo[__('Tax')] = Data_TaxRatesCommon::get_tax_name($r['tax_rate']);
+			$htmlinfo[__('Tax Rate')] = Data_TaxRatesCommon::get_tax_rate($r['tax_rate']).'%';
+			$htmlinfo[__('Tax Value')] = Utils_CurrencyFieldCommon::format(($price[0]*Data_TaxRatesCommon::get_tax_rate($r['tax_rate']))/100, $price[1]);;
+			$htmlinfo[__('Gross Price')] = $ret;
+			$ret = Utils_TooltipCommon::create($ret, Utils_TooltipCommon::format_info_tooltip($htmlinfo), false);
 		}
 		return $ret;
 	}
@@ -217,12 +217,12 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
     public static function menu() {
 		$m = array();
 		if (Utils_RecordBrowserCommon::get_access('premium_warehouse_items','browse'))
-			$m['Items'] = array();
+			$m[_M('Items')] = array();
 		if (Utils_RecordBrowserCommon::get_access('premium_warehouse_items_categories','browse'))
-			$m['Items: Categories'] = array('recordset'=>'categories');
+			$m[_M('Items Categories')] = array('recordset'=>'categories');
 		if (empty($m)) return $m;
 		$m['__submenu__'] = 1;
-		return array('Inventory'=>$m);
+		return array(_M('Inventory')=>$m);
 	}
 
 	public static function generate_id($id) {
@@ -231,34 +231,34 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 	}
 
 	public static function applet_caption() {
-		return 'Not sold items';
+		return __('Not sold items');
 	}
 	public static function applet_info() {
-		return 'List of not sold items';
+		return __('List of not sold items');
 	}
 
 	public static function applet_info_format($r){
 		$arr = array(
-			'Item Name'=>$r['item_name'],
-			'Description'=>htmlspecialchars($r['description'])
+			__('Item Name')=>$r['item_name'],
+			__('Description')=>htmlspecialchars($r['description'])
 		);
-		$ret = array('notes'=>Utils_TooltipCommon::format_info_tooltip($arr,'Utils_RecordBrowser:premium_warehouse_items'));
+		$ret = array('notes'=>Utils_TooltipCommon::format_info_tooltip($arr));
 		return $ret;
 	}
 
 	public static function applet_settings() {
-		$opts = array(1209600=>'2 weeks', 2419200=>'4 weeks', 4838400=>'2 months', 10281600=>'4 months');
+		$opts = array(1209600=>__('2 weeks'), 2419200=>__('4 weeks'), 4838400=>__('2 months'), 10281600=>__('4 months'));
 		return array_merge(Utils_RecordBrowserCommon::applet_settings(),
 			array(
-				array('name'=>'settings_header','label'=>'Settings','type'=>'header'),
-				array('name'=>'older','label'=>'Items not sold for','type'=>'select','default'=>2419200,'rule'=>array(array('message'=>'Field required', 'type'=>'required')),'values'=>$opts)
+				array('name'=>'settings_header','label'=>__('Settings'),'type'=>'header'),
+				array('name'=>'older','label'=>__('Items not sold for'),'type'=>'select','default'=>2419200,'rule'=>array(array('message'=>__('Field required'), 'type'=>'required')),'values'=>$opts)
 				));
 	}
 
 	public static function watchdog_label($rid = null, $events = array(), $details = true) {
 		return Utils_RecordBrowserCommon::watchdog_label(
 				'premium_warehouse_items',
-				Base_LangCommon::ts('Premium_Warehouse_Items','Items'),
+				__('Items'),
 				$rid,
 				$events,
 				'item_name',
@@ -287,7 +287,7 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 							return;
 						}
 						$icon = Base_ThemeCommon::get_template_file('Premium_Warehouse_Items_Orders','deactivate.png');
-						$label = 'Add to my Trans.';
+						$label = __('Add to my Trans.');
 						$defaults = array(
 							'transaction_id'=>$my_trans,
 							'quantity'=>1,
@@ -321,7 +321,7 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 		$row = Utils_RecordBrowserCommon::get_records('premium_warehouse_items',array('id'=>$id));
 		if(!$row) return false;
 		$row = array_pop($row);
-		return Utils_RecordBrowserCommon::record_link_open_tag('premium_warehouse_items', $row['id']).Base_LangCommon::ts('Premium_Warehouse_Items', 'Item in warehouse (attachment) #%d, %s %s', array($row['sku'], $row['item_type'], $row['item_name'])).Utils_RecordBrowserCommon::record_link_close_tag();
+		return Utils_RecordBrowserCommon::record_link_open_tag('premium_warehouse_items', $row['id']).__( 'Item in warehouse (attachment) #%d, %s %s', array($row['sku'], $row['item_type'], $row['item_name'])).Utils_RecordBrowserCommon::record_link_close_tag();
 	}
 
 	public static function submit_position($values, $mode) {

@@ -21,17 +21,17 @@ class Premium_Warehouse_InvoiceCommon extends ModuleCommon {
 		if (isset($record['id']) && $record['transaction_type']==1 && (!isset($record['payment']) || $record['payment'])) {
 			$href = 'target="_blank" href="modules/Premium/Warehouse/Invoice/print_invoice.php?'.http_build_query(array('record_id'=>$record['id'], 'cid'=>CID)).'"';
 			if (!$record['invoice_number'] && $record['transaction_type']==1) {
-				$href .= ' '.Utils_TooltipCommon::open_tag_attrs(Base_LangCommon::ts('Premium_Warehouse_Invoice','Number is not defined<br>It will be assigned automatically upon print'), false);
+				$href .= ' '.Utils_TooltipCommon::open_tag_attrs(__('Number is not defined<br>It will be assigned automatically upon print'), false);
 			}
-			if (!$record['receipt']) Base_ActionBarCommon::add('print', 'Print Invoice', $href);
+			if (!$record['receipt']) Base_ActionBarCommon::add('print', __('Print Invoice'), $href);
 
 			if(isset($_GET['receipt_printed']) && $_GET['receipt_printed']==$record['id']) {
 				Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $record['id'], array('invoice_print_date'=>date('Y-m-d')));
 			} elseif(defined('ENABLE_RECEIPT_PRINTING') && ENABLE_RECEIPT_PRINTING) {
 				load_js('modules/Premium/Warehouse/Invoice/receipt.js');
-				Base_ActionBarCommon::add('print', 'Print Receipt', 'onClick="print_receipt('.$record['id'].')" href="javascript:void(0)"');
+				Base_ActionBarCommon::add('print', __('Print Receipt'), 'onClick="print_receipt('.$record['id'].')" href="javascript:void(0)"');
 			} elseif ($record['receipt']) {
-				Base_ActionBarCommon::add('print', 'Print Receipt', $href);
+				Base_ActionBarCommon::add('print', __('Print Receipt'), $href);
 			}
 		}
 		return array('show'=>false);
@@ -80,7 +80,7 @@ class Premium_Warehouse_InvoiceCommon extends ModuleCommon {
 					if ($msg) $msg .= ', ';
 					$msg .= $v['transaction_id'];
 				} 
-				$msg = Base_LangCommon::ts('Premium_Warehouse_Invoice','Warning: Found duplicate number, transaction'.(count($conflicts)==1?'':'s').': ').$msg;
+				$msg = __('Warning: Found duplicate number, transaction: ').$msg;
 				$postfix = Utils_TooltipCommon::create($postfix, $msg, false);
 			}
 		}
@@ -97,7 +97,7 @@ class Premium_Warehouse_InvoiceCommon extends ModuleCommon {
 	public static function check_number($data) {
 		if (Utils_RecordBrowser::$last_record['transaction_type']!=1) return true;
 		if (isset(Utils_RecordBrowser::$last_record['invoice_number']) && $data['invoice_number'] == Utils_RecordBrowser::$last_record['invoice_number']) return true;
-		if ($data['invoice_number'] && !is_numeric($data['invoice_number'])) return array('invoice_number'=>Base_LangCommon::ts('Premium_Warehouse_Invoice','Invalid format, number expected'));
+		if ($data['invoice_number'] && !is_numeric($data['invoice_number'])) return array('invoice_number'=>__('Invalid format, number expected'));
 		return true; // temporary solution - the whole duplicate mechanism is not used by UMT
 /*		if (isset($data['invoice_number']) && ($data['invoice_number'] == Utils_RecordBrowser::$last_record['invoice_number'] || !$data['invoice_number'])) return true;
 		if (!isset($data['warehouse'])) $data['warehouse'] = Utils_RecordBrowser::$last_record['warehouse'];
@@ -107,7 +107,7 @@ class Premium_Warehouse_InvoiceCommon extends ModuleCommon {
 		$warning = self::$rb_obj->get_module_variable('premium_invoice_warning', null);
 		if (!empty($other) && $warning!==$data['invoice_number']) {
 			self::$rb_obj->set_module_variable('premium_invoice_warning', $data['invoice_number']);
-			return array('invoice_number'=>Base_LangCommon::ts('Premium_Warehouse_Invoice','Warning: duplicate number found'));
+			return array('invoice_number'=>__('Warning: duplicate number found'));
 		}
 		return true;*/
 	}
@@ -117,11 +117,11 @@ class Premium_Warehouse_InvoiceCommon extends ModuleCommon {
 			eval_js('update_invoice_fields_label = function(){'.
 				'if($("receipt")) {'.
 					'if ($("receipt").checked){'.
-						'print_s="'.Base_LangCommon::ts('Premium_Warehouse_Invoice', 'Receipt Print Date').'";'.
-						'print_n="'.Base_LangCommon::ts('Premium_Warehouse_Invoice', 'Receipt Number').'";'.
+						'print_s="'.__( 'Receipt Print Date').'";'.
+						'print_n="'.__( 'Receipt Number').'";'.
 					'}else{'.
-						'print_s="'.Base_LangCommon::ts('Premium_Warehouse_Invoice', 'Invoice Print Date').'";'.
-						'print_n="'.Base_LangCommon::ts('Premium_Warehouse_Invoice', 'Invoice Number').'";'.
+						'print_s="'.__( 'Invoice Print Date').'";'.
+						'print_n="'.__( 'Invoice Number').'";'.
 					'}'.
 					'if($("_invoice_print_date__label"))$("_invoice_print_date__label").innerHTML=print_s;'.
 					'if($("_invoice_number__label"))$("_invoice_number__label").innerHTML=print_n;'.
@@ -135,8 +135,8 @@ class Premium_Warehouse_InvoiceCommon extends ModuleCommon {
 			$form->setDefaults(array($field=>$default));
 		} else {
 			if (Utils_RecordBrowser::$last_record['receipt']) {
-				eval_js('if($("_invoice_print_date__label"))$("_invoice_print_date__label").innerHTML="'.Base_LangCommon::ts('Premium_Warehouse_Invoice', 'Receipt Print Date').'";');
-				eval_js('if($("_invoice_number__label"))$("_invoice_number__label").innerHTML="'.Base_LangCommon::ts('Premium_Warehouse_Invoice', 'Receipt Number').'";');
+				eval_js('if($("_invoice_print_date__label"))$("_invoice_print_date__label").innerHTML="'.__( 'Receipt Print Date').'";');
+				eval_js('if($("_invoice_number__label"))$("_invoice_number__label").innerHTML="'.__( 'Receipt Number').'";');
 			}
 			$postfix = '';
 			if (Utils_RecordBrowser::$last_record['transaction_type']==1) {
@@ -145,7 +145,7 @@ class Premium_Warehouse_InvoiceCommon extends ModuleCommon {
 						$_REQUEST['assign_invoice_number'] == Utils_RecordBrowser::$last_record['id']) {
 						$default = self::generate_invoice_number(Utils_RecordBrowser::$last_record);
 					} else {
-						$postfix = '<a '.Module::create_href(array('assign_invoice_number'=>Utils_RecordBrowser::$last_record['id'])).'>'.Base_LangCommon::ts('Premium_Warehouse_Invoice','[assign automatically]').'</a>';
+						$postfix = '<a '.Module::create_href(array('assign_invoice_number'=>Utils_RecordBrowser::$last_record['id'])).'>'.__('[assign automatically]').'</a>';
 					}
 				} else {
 					$conflicts = self::get_conflict_invoices(Utils_RecordBrowser::$last_record);
@@ -156,7 +156,7 @@ class Premium_Warehouse_InvoiceCommon extends ModuleCommon {
 							if ($msg) $msg .= ', ';
 							$msg .= Utils_RecordBrowserCommon::create_linked_label('premium_warehouse_items_orders','transaction_id',$v['id']);
 						} 
-						$msg = Base_LangCommon::ts('Premium_Warehouse_Invoice','Warning: Found duplicate invoice number, transaction'.(count($conflicts)==1?'':'s').': ').$msg;
+						$msg = __('Warning: Found duplicate invoice number, transaction: ').$msg;
 						$postfix = $postfix.'&nbsp;'.$msg;
 					}
 				}
@@ -168,7 +168,7 @@ class Premium_Warehouse_InvoiceCommon extends ModuleCommon {
 	}
 	
 	public static function admin_caption() {
-		return 'Invoice Printing';
+		return __('Invoice Printing');
 	}
 }
 ?>

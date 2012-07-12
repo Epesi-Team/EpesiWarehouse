@@ -22,24 +22,24 @@ class Premium_WarehouseInstall extends ModuleInstall {
 		
 		Base_ThemeCommon::install_default_theme($this->get_type());
 		$fields = array(
-			array('name'=>'Warehouse', 		'type'=>'text', 'required'=>true, 'param'=>'128', 'extra'=>false, 'visible'=>true,'display_callback'=>array('Premium_WarehouseCommon', 'display_warehouse')),
-			array('name'=>'Address 1', 		'type'=>'text', 'required'=>true, 'param'=>'64', 'extra'=>false, 'display_callback'=>array('CRM_ContactsCommon','maplink')),
-			array('name'=>'Address 2', 		'type'=>'text', 'required'=>false, 'param'=>'64', 'extra'=>false, 'display_callback'=>array('CRM_ContactsCommon','maplink')),
-			array('name'=>'City', 			'type'=>'text', 'required'=>true, 'param'=>'64', 'extra'=>false, 'visible'=>true, 'display_callback'=>array('CRM_ContactsCommon','maplink')),
-			array('name'=>'Country', 		'type'=>'commondata', 'required'=>true, 'param'=>array('Countries'), 'extra'=>false, 'visible'=>false, 'QFfield_callback'=>array('Data_CountriesCommon', 'QFfield_country')),
-			array('name'=>'Zone', 			'type'=>'commondata', 'required'=>false, 'param'=>array('Countries','Country'), 'extra'=>false, 'visible'=>true, 'QFfield_callback'=>array('Data_CountriesCommon', 'QFfield_zone')),
-			array('name'=>'Phone', 			'type'=>'text', 'required'=>false, 'param'=>'64', 'extra'=>false, 'visible'=>true),
-			array('name'=>'Fax', 			'type'=>'text', 'required'=>false, 'param'=>'64', 'extra'=>false, 'visible'=>false),
-			array('name'=>'Tax ID', 		'type'=>'text', 'required'=>false, 'param'=>'64', 'extra'=>false, 'visible'=>false),
-			array('name'=>'Bank account', 	'type'=>'text', 'required'=>false, 'param'=>'255', 'extra'=>false, 'visible'=>false),
-			array('name'=>'Postal Code', 	'type'=>'text', 'required'=>false, 'param'=>'64', 'extra'=>false)
+			array('name' => _M('Warehouse'), 		'type'=>'text', 'required'=>true, 'param'=>'128', 'extra'=>false, 'visible'=>true,'display_callback'=>array('Premium_WarehouseCommon', 'display_warehouse')),
+			array('name' => _M('Address 1'), 		'type'=>'text', 'required'=>true, 'param'=>'64', 'extra'=>false, 'display_callback'=>array('CRM_ContactsCommon','maplink')),
+			array('name' => _M('Address 2'), 		'type'=>'text', 'required'=>false, 'param'=>'64', 'extra'=>false, 'display_callback'=>array('CRM_ContactsCommon','maplink')),
+			array('name' => _M('City'), 			'type'=>'text', 'required'=>true, 'param'=>'64', 'extra'=>false, 'visible'=>true, 'display_callback'=>array('CRM_ContactsCommon','maplink')),
+			array('name' => _M('Country'), 		'type'=>'commondata', 'required'=>true, 'param'=>array('Countries'), 'extra'=>false, 'visible'=>false, 'QFfield_callback'=>array('Data_CountriesCommon', 'QFfield_country')),
+			array('name' => _M('Zone'), 			'type'=>'commondata', 'required'=>false, 'param'=>array('Countries','Country'), 'extra'=>false, 'visible'=>true, 'QFfield_callback'=>array('Data_CountriesCommon', 'QFfield_zone')),
+			array('name' => _M('Phone'), 			'type'=>'text', 'required'=>false, 'param'=>'64', 'extra'=>false, 'visible'=>true),
+			array('name' => _M('Fax'), 			'type'=>'text', 'required'=>false, 'param'=>'64', 'extra'=>false, 'visible'=>false),
+			array('name' => _M('Tax ID'), 		'type'=>'text', 'required'=>false, 'param'=>'64', 'extra'=>false, 'visible'=>false),
+			array('name' => _M('Bank account'), 	'type'=>'text', 'required'=>false, 'param'=>'255', 'extra'=>false, 'visible'=>false),
+			array('name' => _M('Postal Code'), 	'type'=>'text', 'required'=>false, 'param'=>'64', 'extra'=>false)
 		);
 
 		Utils_RecordBrowserCommon::install_new_recordset('premium_warehouse', $fields);
 		
 		Utils_RecordBrowserCommon::set_quickjump('premium_warehouse', 'Warehouse');
 		Utils_RecordBrowserCommon::set_favorites('premium_warehouse', true);
-		Utils_RecordBrowserCommon::set_caption('premium_warehouse', 'Warehouse');
+		Utils_RecordBrowserCommon::set_caption('premium_warehouse', _M('Warehouse'));
 		Utils_RecordBrowserCommon::set_icon('premium_warehouse', Base_ThemeCommon::get_template_filename('Premium/Warehouse', 'icon.png'));
 		Utils_RecordBrowserCommon::enable_watchdog('premium_warehouse', array('Premium_WarehouseCommon','watchdog_label'));
 		
@@ -68,16 +68,13 @@ class Premium_WarehouseInstall extends ModuleInstall {
 	public static function post_install() {
 		$main_company = CRM_ContactsCommon::get_company(CRM_ContactsCommon::get_main_company());
 		return array(
-				 array('type'=>'text','name'=>'warehouse','label'=>'Warehouse','default'=>'','param'=>array('maxlength'=>128), 'rule'=>array(array('type'=>'required','message'=>'Field required'))),
-			     array('type'=>'text','name'=>'address1','label'=>'Address 1','default'=>$main_company['address_1'],'param'=>array('maxlength'=>64), 'rule'=>array(array('type'=>'required','message'=>'Field required'))),
-			     array('type'=>'text','name'=>'address2','label'=>'Address 2','default'=>$main_company['address_2'],'param'=>array('maxlength'=>64)),
+				 array('type'=>'text','name'=>'warehouse','label'=>__('Warehouse'),'default'=>'','param'=>array('maxlength'=>128), 'rule'=>array(array('type'=>'required','message'=>__('Field required')))),
+			     array('type'=>'text','name'=>'address1','label'=>__('Address 1'),'default'=>$main_company['address_1'],'param'=>array('maxlength'=>64), 'rule'=>array(array('type'=>'required','message'=>__('Field required')))),
+			     array('type'=>'text','name'=>'address2','label'=>__('Address 2'),'default'=>$main_company['address_2'],'param'=>array('maxlength'=>64)),
 			     array('type'=>'callback','name'=>'country','func'=>array('Premium_WarehouseInstall','country_element'),'default'=>$main_company['country']),
 			     array('type'=>'callback','name'=>'state','func'=>array('Premium_WarehouseInstall','state_element'),'default'=>$main_company['zone']),
-			     array('type'=>'text','name'=>'city','label'=>'City','default'=>$main_company['city'],'param'=>array('maxlength'=>64), 'rule'=>array(array('type'=>'required','message'=>'Field required'))),
-			     array('type'=>'text','name'=>'postal','label'=>'Postal Code','default'=>$main_company['postal_code'],'param'=>array('maxlength'=>64))
-//			     array('type'=>'text','name'=>'phone','label'=>'Phone','default'=>'','param'=>array('maxlength'=>64)),
-//			     array('type'=>'text','name'=>'fax','label'=>'Fax','default'=>'','param'=>array('maxlength'=>64)),
-//			     array('type'=>'text','name'=>'web','label'=>'Web address','default'=>'','param'=>array('maxlength'=>64))
+			     array('type'=>'text','name'=>'city','label'=>__('City'),'default'=>$main_company['city'],'param'=>array('maxlength'=>64), 'rule'=>array(array('type'=>'required','message'=>__('Field required')))),
+			     array('type'=>'text','name'=>'postal','label'=>__('Postal Code'),'default'=>$main_company['postal_code'],'param'=>array('maxlength'=>64))
 			     );
 	}
 	
@@ -125,7 +122,7 @@ class Premium_WarehouseInstall extends ModuleInstall {
 	}
 	
 	public static function simple_setup() {
-        return array('package'=>'Inventory Management', 'version'=>'1.0');
+        return array('package'=>__('Inventory Management'), 'version'=>'1.0');
 	}
 }
 

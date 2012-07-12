@@ -16,7 +16,7 @@ defined("_VALID_ACCESS") || die('Direct access forbidden');
 
 class Premium_WarehouseCommon extends ModuleCommon {
     public static function admin_caption() {
-		return 'Inventory';
+		return __('Inventory');
     }
 
     public static function get_warehouse($id) {
@@ -36,26 +36,26 @@ class Premium_WarehouseCommon extends ModuleCommon {
 		$warehouses = array(''=>'---');
 		foreach ($rec as $v)
 			$warehouses[$v['id']] = $v['warehouse'];
-		$ret = array('Inventory'=>array(
-			array('name'=>'my_warehouse','label'=>'My main Warehouse','type'=>'select','values'=>$warehouses,'default'=>'','translate'=>false)
+		$ret = array(__('Inventory')=>array(
+			array('name'=>'my_warehouse','label'=>__('My main Warehouse'),'type'=>'select','values'=>$warehouses,'default'=>'')
 			));
-		$ret['Subscriptions'] = array(
-                array('name'=>'new_online_order_header','label'=>'Other subscriptions','type'=>'header'),
-                array('name'=>'new_online_order_auto_subs','label'=>'New Online Orders','type'=>'select','values'=>array('Disabled', 'Enabled'),'default'=>0)
+		$ret[__('Subscriptions')] = array(
+                array('name'=>'new_online_order_header','label'=>__('Other subscriptions'),'type'=>'header'),
+                array('name'=>'new_online_order_auto_subs','label'=>__('New Online Orders'),'type'=>'select','values'=>array(__('Disabled'), __('Enabled')),'default'=>0)
 			);
 		return $ret;
 	}
 	
     public static function menu() {
 		if (Utils_RecordBrowserCommon::get_access('premium_warehouse','browse'))
-			return array('Inventory'=>array('__submenu__'=>1,'Warehouses'=>array()));
+			return array(_M('Inventory')=>array('__submenu__'=>1,_M('Warehouses')=>array()));
 		return array();
 	}
 
 	public static function watchdog_label($rid = null, $events = array(), $details = true) {
 		return Utils_RecordBrowserCommon::watchdog_label(
 				'premium_warehouse',
-				Base_LangCommon::ts('Premium_Warehouse','Warehouse'),
+				__('Warehouse'),
 				$rid,
 				$events,
 				'warehouse',
@@ -68,7 +68,7 @@ class Premium_WarehouseCommon extends ModuleCommon {
 		$row = Utils_RecordBrowserCommon::get_records('premium_warehouse',array('id'=>$id));
 		if(!$row) return false;
 		$row = array_pop($row);
-		return Utils_RecordBrowserCommon::record_link_open_tag('premium_warehouse', $row['id']).Base_LangCommon::ts('Premium_Warehouse', 'Warehouse (attachment) #%d, %s', array($row['id'], $row['warehouse'])).Utils_RecordBrowserCommon::record_link_close_tag();
+		return Utils_RecordBrowserCommon::record_link_open_tag('premium_warehouse', $row['id']).__( 'Warehouse (attachment) #%d, %s', array($row['id'], $row['warehouse'])).Utils_RecordBrowserCommon::record_link_close_tag();
 	}
 }
 ?>

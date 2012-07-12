@@ -27,48 +27,48 @@ class Premium_Warehouse_eCommerce extends Module {
 				location(array());
 			return;
 		}
-		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
+		Base_ActionBarCommon::add('back',__('Back'),$this->create_back_href());
 
 		$buttons = array();
 //		$icon = Base_ThemeCommon::get_template_file($name,'icon.png');
-		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'setup_3rd_party_plugins')).'>'.$this->t('3rd party info plugins').'</a>',
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'setup_3rd_party_plugins')).'>'.__('3rd party info plugins').'</a>',
 						'icon'=>null);
-		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'prices')).'>'.$this->t('Automatic prices').'</a>',
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'prices')).'>'.__('Automatic prices').'</a>',
 						'icon'=>null);
-		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'availability')).'>'.$this->t('Availability').'</a>',
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'availability')).'>'.__('Availability').'</a>',
 						'icon'=>null);
-		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'banners')).'>'.$this->t('Banners').'</a>',
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'banners')).'>'.__('Banners').'</a>',
 						'icon'=>null);
-		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'boxes')).'>'.$this->t('Boxes').'</a>',
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'boxes')).'>'.__('Boxes').'</a>',
 						'icon'=>null);
-		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'contactus_page')).'>'.$this->t('Contact us').'</a>',
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'contactus_page')).'>'.__('Contact us').'</a>',
 						'icon'=>null);
-		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'features')).'>'.$this->t('Features').'</a>',
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'features')).'>'.__('Features').'</a>',
 						'icon'=>null);
-		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'home_page')).'>'.$this->t('Home Page').'</a>',
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'home_page')).'>'.__('Home Page').'</a>',
 						'icon'=>null);
-		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'compare_services')).'>'.$this->t('Links for compare services').'</a>',
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'compare_services')).'>'.__('Links for compare services').'</a>',
 						'icon'=>null);
-		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'order_status_change_email_page')).'>'.$this->t('Order status change e-mails').'</a>',
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'order_status_change_email_page')).'>'.__('Order status change e-mails').'</a>',
 						'icon'=>null);
-		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'pages')).'>'.$this->t('Pages').'</a>',
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'pages')).'>'.__('Pages').'</a>',
 						'icon'=>null);
-		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'parameters')).'>'.$this->t('Parameters').'</a>',
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'parameters')).'>'.__('Parameters').'</a>',
 						'icon'=>null);
-		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'parameter_groups')).'>'.$this->t('Parameter Groups').'</a>',
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'parameter_groups')).'>'.__('Parameter Groups').'</a>',
 						'icon'=>null);
-		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'payments_carriers')).'>'.$this->t('Payments & Carriers').'</a>',
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'payments_carriers')).'>'.__('Payments & Carriers').'</a>',
 						'icon'=>null);
-		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'polls')).'>'.$this->t('Polls').'</a>',
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'polls')).'>'.__('Polls').'</a>',
 						'icon'=>null);
-		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'promotion_codes')).'>'.$this->t('Promotion Codes').'</a>',
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'promotion_codes')).'>'.__('Promotion Codes').'</a>',
 						'icon'=>null);
-		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'QC_dirs')).'>'.$this->t('Quickcart settings').'</a>',
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'QC_dirs')).'>'.__('Quickcart settings').'</a>',
 						'icon'=>null);
-		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'rules_page')).'>'.$this->t('Rules & Policies').'</a>',
+		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'rules_page')).'>'.__('Rules & Policies').'</a>',
 						'icon'=>null);
 		$theme =  & $this->pack_module('Base/Theme');
-		$theme->assign('header', $this->t('eCommerce settings'));
+		$theme->assign('header', __('eCommerce settings'));
 		$theme->assign('buttons', $buttons);
 		$theme->display();
 	}
@@ -82,7 +82,7 @@ class Premium_Warehouse_eCommerce extends Module {
 		$this->rb->force_order(array('position'=>'ASC'));
 
 		$opts = Premium_Warehouse_eCommerceCommon::get_categories();
-		$this->rb->set_custom_filter('item_name',array('type'=>'select','label'=>$this->t('Category'),'args'=>$opts,'trans_callback'=>array('Premium_Warehouse_eCommerceCommon', 'category_filter')));
+		$this->rb->set_custom_filter('item_name',array('type'=>'select','label'=>__('Category'),'args'=>$opts,'trans_callback'=>array('Premium_Warehouse_eCommerceCommon', 'category_filter')));
 
 //		$cols = array('item_name'=>array('name'=>'Item name')
 //		        );
@@ -91,12 +91,12 @@ class Premium_Warehouse_eCommerce extends Module {
 
 	public function compare_services() {
 		if($this->is_back()) return false;
-		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
+		Base_ActionBarCommon::add('back',__('Back'),$this->create_back_href());
 	
  		$m = & $this->init_module('Utils/GenericBrowser',null,'t1');
- 		$m->set_table_columns(array(array('name'=>$this->t('Site'),'width'=>30),
+ 		$m->set_table_columns(array(array('name'=>__('Site'),'width'=>30),
 							  array('name'=>'Link','width'=>70)));
-		$site = $this->t('http://replace.with.quickcart.url/');
+		$site = __('http://replace.with.quickcart.url/');
 		$a = array('Old Ceneo.pl XML'=>'ceneo',
 		        'Ceneo.pl'=>'ceneo2',
 			'Nokaut.pl'=>'nokaut',
@@ -107,13 +107,13 @@ class Premium_Warehouse_eCommerce extends Module {
 			'Zakupy.Onet.pl'=>'onet');
 		foreach($a as $k=>$url) {
 			$m->add_row($k,	$site.'?sLang=pl&p=compare-'.$url);
-			$m->add_row($k.' ('.$this->t('includes out of stock items').')',	$site.'?sLang=pl&p=compare-'.$url.'&outOfStock=1');
+			$m->add_row($k.' ('.__('includes out of stock items').')',	$site.'?sLang=pl&p=compare-'.$url.'&outOfStock=1');
 		}
 		$a = array('Froogle.com'=>'froogle',
 			'Shopping.com'=>'shopping');
 		foreach($a as $k=>$url) {
 			$m->add_row($k,	$site.'?sLang=en&p=compare-'.$url);
-			$m->add_row($k.' ('.$this->t('includes out of stock items').')',	$site.'?sLang=en&p=compare-'.$url.'&outOfStock=1');
+			$m->add_row($k.' ('.__('includes out of stock items').')',	$site.'?sLang=en&p=compare-'.$url.'&outOfStock=1');
 		}
  		$this->display_module($m);
 
@@ -122,7 +122,7 @@ class Premium_Warehouse_eCommerce extends Module {
 
 	public function parameters() {
 		if($this->is_back()) return false;
-		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
+		Base_ActionBarCommon::add('back',__('Back'),$this->create_back_href());
 	
 		$this->recordset = 'parameters';
 		$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_parameters');
@@ -135,7 +135,7 @@ class Premium_Warehouse_eCommerce extends Module {
 
 	public function parameter_groups() {
 		if($this->is_back()) return false;
-		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
+		Base_ActionBarCommon::add('back',__('Back'),$this->create_back_href());
 
 		$this->recordset = 'parameter_groups';
 		$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_parameter_groups');
@@ -148,7 +148,7 @@ class Premium_Warehouse_eCommerce extends Module {
 
 	public function boxes() {
 		if($this->is_back()) return false;
-		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
+		Base_ActionBarCommon::add('back',__('Back'),$this->create_back_href());
 	
 		$this->recordset = 'boxes';
 		$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_boxes');
@@ -162,7 +162,7 @@ class Premium_Warehouse_eCommerce extends Module {
 	
 	public function banners() {
 		if($this->is_back()) return false;
-		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
+		Base_ActionBarCommon::add('back',__('Back'),$this->create_back_href());
 	
 		$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_banners');
 		$this->rb->set_defaults(array('publish'=>1,'views_limit'=>0,'views'=>0,'clicks'=>0,'width'=>480,'height'=>80,'color'=>'#000000','language'=>Base_LangCommon::get_lang_code()));
@@ -173,9 +173,9 @@ class Premium_Warehouse_eCommerce extends Module {
 	
 	public function polls() {
 		if($this->is_back()) return false;
-		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
+		Base_ActionBarCommon::add('back',__('Back'),$this->create_back_href());
 		
-		print('<h2>'.$this->t('Last active poll is displayed.').'</h2>');
+		print('<h2>'.__('Last active poll is displayed.').'</h2>');
 	
 		$this->recordset = 'polls';
 		$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_polls');
@@ -189,7 +189,7 @@ class Premium_Warehouse_eCommerce extends Module {
 	
 	public function promotion_codes() {
 		if($this->is_back()) return false;
-		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
+		Base_ActionBarCommon::add('back',__('Back'),$this->create_back_href());
 		
 		$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_promotion_codes');
 		$this->rb->force_order(array('expiration'=>'DESC'));
@@ -203,7 +203,7 @@ class Premium_Warehouse_eCommerce extends Module {
 	}
 	
 	public function poll_answers_addon($arg) {
-		Base_ActionBarCommon::add('delete', 'Clear votes', $this->create_callback_href(array($this,'clear_votes'),array($arg['id'])));
+		Base_ActionBarCommon::add('delete', __('Clear votes'), $this->create_callback_href(array($this,'clear_votes'),array($arg['id'])));
 		
 		$rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_poll_answers');
 		$order = array(array('poll'=>$arg['id']), array('poll'=>false,'answer'=>true,'votes'=>true), array('answer'=>'ASC'));
@@ -217,7 +217,7 @@ class Premium_Warehouse_eCommerce extends Module {
 
 	public function availability() {
 		if($this->is_back()) return false;
-		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
+		Base_ActionBarCommon::add('back',__('Back'),$this->create_back_href());
 	
 		$this->recordset = 'availability';
 		$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_availability');
@@ -228,7 +228,7 @@ class Premium_Warehouse_eCommerce extends Module {
 
 	public function pages() {
 		if($this->is_back()) return false;
-		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
+		Base_ActionBarCommon::add('back',__('Back'),$this->create_back_href());
 	
 		$this->recordset = 'pages';
 		$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_pages');
@@ -242,7 +242,7 @@ class Premium_Warehouse_eCommerce extends Module {
 
 	public function payments_carriers() {
 		if($this->is_back()) return false;
-		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
+		Base_ActionBarCommon::add('back',__('Back'),$this->create_back_href());
 	
 		$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_payments_carriers');
 		$this->rb->set_defaults(array('percentage_of_amount'=>0));
@@ -269,7 +269,7 @@ class Premium_Warehouse_eCommerce extends Module {
     		    	Utils_RecordBrowserCommon::update_record($tab,$r['id'],array('position'=>$pos));
 		    	location(array());
 		    } else {
-		    	Epesi::alert($this->t('This item is already on top/bottom'));
+		    	Epesi::alert(__('This item is already on top/bottom'));
 		    }
 		}
 		if($r['position']>0)
@@ -397,7 +397,7 @@ class Premium_Warehouse_eCommerce extends Module {
 		$ord_id = Premium_Warehouse_eCommerceCommon::orders_get_record();
 		$this->display_module($rb,array('view',$ord_id,null,false),'view_entry');
 		if(Base_AclCommon::i_am_admin())
-    		Base_ActionBarCommon::add('edit', 'Edit ecommerce', $this->create_callback_href(array($this,'edit_ecommerce_order'),$ord_id));		
+    		Base_ActionBarCommon::add('edit', __('Edit ecommerce'), $this->create_callback_href(array($this,'edit_ecommerce_order'),$ord_id));		
 	}
 	
 	public function edit_ecommerce_order($id) {
@@ -412,7 +412,7 @@ class Premium_Warehouse_eCommerce extends Module {
 	
 	public function order_status_change_email_page() {
 		if($this->is_back()) return false;
-		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
+		Base_ActionBarCommon::add('back',__('Back'),$this->create_back_href());
 		
 		$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_emails');
 		$this->display_module($this->rb);		
@@ -430,9 +430,9 @@ class Premium_Warehouse_eCommerce extends Module {
 
 	private function edit_variable_with_lang($header,$v) {
 		if($this->is_back()) return false;
-		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
+		Base_ActionBarCommon::add('back',__('Back'),$this->create_back_href());
 		
-		print('<h1>'.$header.'</h1>'.$this->t('Choose language to edit:').'<ul>');
+		print('<h1>'.$header.'</h1>'.__('Choose language to edit:').'<ul>');
 
 		$langs = Utils_CommonDataCommon::get_array('Premium/Warehouse/eCommerce/Languages');
 		print('<li><a '.$this->create_callback_href(array($this,'edit_variable'),array($header,$v)).'>default (if translation is available)</a></li>');
@@ -445,24 +445,24 @@ class Premium_Warehouse_eCommerce extends Module {
 
 	public function edit_variable($header, $v) {
 		if($this->is_back()) return false;
-		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
+		Base_ActionBarCommon::add('back',__('Back'),$this->create_back_href());
 	
 		$f = $this->init_module('Libs/QuickForm');
 		
-		$f->addElement('header',null,$this->t($header));
+		$f->addElement('header',null,_V($header));
 		
-		$fck = & $f->addElement('ckeditor', 'content', $this->t('Content'));
+		$fck = & $f->addElement('ckeditor', 'content', __('Content'));
 		$fck->setFCKProps('800','300',true);
 		
 		$f->setDefaults(array('content'=>Variable::get($v,false)));
 
-		Base_ActionBarCommon::add('save','Save',$f->get_submit_form_href());
+		Base_ActionBarCommon::add('save',__('Save'),$f->get_submit_form_href());
 		
 		if($f->validate()) {
 			$ret = $f->exportValues();
 			$content = str_replace("\n",'',$ret['content']);
 			Variable::set($v,$content);
-			Base_StatusBarCommon::message($this->t('Page saved'));
+			Base_StatusBarCommon::message(__('Page saved'));
 			return false;
 		}
 		$f->display();	
@@ -471,27 +471,27 @@ class Premium_Warehouse_eCommerce extends Module {
 
 	public function edit_variable_mail($header, $v) {
 		if($this->is_back()) return false;
-		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
+		Base_ActionBarCommon::add('back',__('Back'),$this->create_back_href());
 	
 		$f = $this->init_module('Libs/QuickForm');
 		
-		$f->addElement('header',null,$this->t($header));
+		$f->addElement('header',null,_V($header));
 
-		$f->addElement('text', 'subject', $this->t('Subject'),array('maxlength'=>64));
+		$f->addElement('text', 'subject', __('Subject'),array('maxlength'=>64));
 		
-		$fck = & $f->addElement('ckeditor', 'content', $this->t('Content'));
+		$fck = & $f->addElement('ckeditor', 'content', __('Content'));
 		$fck->setFCKProps('800','300',true);
 		
 		$f->setDefaults(array('content'=>Variable::get($v,false),'subject'=>Variable::get($v.'S',false)));
 
-		Base_ActionBarCommon::add('save','Save',$f->get_submit_form_href());
+		Base_ActionBarCommon::add('save',__('Save'),$f->get_submit_form_href());
 		
 		if($f->validate()) {
 			$ret = $f->exportValues();
 			$content = str_replace("\n",'',$ret['content']);
 			Variable::set($v,$content);
 			Variable::set($v.'S',strip_tags($ret['subject']));
-			Base_StatusBarCommon::message($this->t('Page saved'));
+			Base_StatusBarCommon::message(__('Page saved'));
 			return false;
 		}
 		$f->display();	
@@ -500,12 +500,12 @@ class Premium_Warehouse_eCommerce extends Module {
 
 	public function QC_dirs() {
 		if($this->is_back()) return false;
-		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
-		Base_ActionBarCommon::add('add', 'Add', $this->create_callback_href(array($this,'add_quickcart')));
+		Base_ActionBarCommon::add('back',__('Back'),$this->create_back_href());
+		Base_ActionBarCommon::add('add',__('Add'), $this->create_callback_href(array($this,'add_quickcart')));
 	
 		$gb = & $this->init_module('Utils/GenericBrowser',null,'qc_list');
 
-		$gb->set_table_columns(array(array('name'=>$this->t('Path'), 'order'=>'path')));
+		$gb->set_table_columns(array(array('name'=>__('Path'), 'order'=>'path')));
 
 		$query = 'SELECT path FROM premium_ecommerce_quickcart';
 		$query_qty = 'SELECT count(*) FROM premium_ecommerce_quickcart';
@@ -516,7 +516,7 @@ class Premium_Warehouse_eCommerce extends Module {
 			while(($row=$ret->FetchRow())) {
 			    $r = $gb->get_new_row();
 			    $r->add_data($row['path']);
-			    $r->add_action($this->create_confirm_callback_href($this->t('Are you sure you want to delete this record?'),array($this,'delete_quickcart'),$row['path']),'delete');
+			    $r->add_action($this->create_confirm_callback_href(__('Are you sure you want to delete this record?'),array($this,'delete_quickcart'),$row['path']),'delete');
 			    $r->add_action($this->create_callback_href(array($this,'quickcart_settings'),$row['path']),'edit','Settings');
 			}
 
@@ -535,7 +535,7 @@ class Premium_Warehouse_eCommerce extends Module {
 
 		$form = & $this->init_module('Libs/QuickForm');
 
-		$form->addElement('header', null, $this->t('QuickCart settings: %s',array($path)));
+		$form->addElement('header', null, __('QuickCart settings: %s',array($path)));
 		
 		$files = scandir($path.'/config');
 		$langs = Utils_CommonDataCommon::get_array('Premium/Warehouse/eCommerce/Languages');
@@ -559,67 +559,67 @@ class Premium_Warehouse_eCommerce extends Module {
 			}
 		}
 
-		$form->addElement('select', 'default_lang', $this->t('Default language'),$langs);
-		$form->addRule('default_lang', $this->t('Field required'), 'required');
-		$form->addElement('multiselect', 'available_lang', $this->t('Available languages'),$langs);
-		$form->addRule('available_lang', $this->t('At least one language must be available'), 'required');
-		$form->addRule(array('default_lang','available_lang'), $this->t('Default language must be one of quickcart available languages'), 'callback',array($this,'quickcart_check_default_lang'));
+		$form->addElement('select', 'default_lang', __('Default language'),$langs);
+		$form->addRule('default_lang', __('Field required'), 'required');
+		$form->addElement('multiselect', 'available_lang', __('Available languages'),$langs);
+		$form->addRule('available_lang', __('At least one language must be available'), 'required');
+		$form->addRule(array('default_lang','available_lang'), __('Default language must be one of quickcart available languages'), 'callback',array($this,'quickcart_check_default_lang'));
 
-		$form->addElement('text', 'email', $this->t('Shop e-mail'));
-		$form->addRule('email', $this->t('This is not valid email address'), 'email');
+		$form->addElement('text', 'email', __('Shop e-mail'));
+		$form->addRule('email', __('Invalid e-mail address'), 'email');
 
-		$form->addElement('text', 'products_list', $this->t('Number of products displayed on page'));
-		$form->addRule('products_list', $this->t('This field should be numeric'), 'numeric');
-		$form->addRule('products_list', $this->t('Field required'), 'required');
+		$form->addElement('text', 'products_list', __('Number of products displayed on page'));
+		$form->addRule('products_list', __('This field should be numeric'), 'numeric');
+		$form->addRule('products_list', __('Field required'), 'required');
 
-		$form->addElement('text', 'news_list', $this->t('Number of news (subpages) displayed on page'));
-		$form->addRule('news_list', $this->t('This field should be numeric'), 'numeric');
-		$form->addRule('news_list', $this->t('Field required'), 'required');
+		$form->addElement('text', 'news_list', __('Number of news (subpages) displayed on page'));
+		$form->addRule('news_list', __('This field should be numeric'), 'numeric');
+		$form->addRule('news_list', __('Field required'), 'required');
 
-		$form->addElement('text', 'time_diff', $this->t('Difference between your local time and server time in hours'));
-		$form->addRule('time_diff', $this->t('This field should be numeric'), 'numeric');
-		$form->addRule('time_diff', $this->t('Field required'), 'required');
+		$form->addElement('text', 'time_diff', __('Difference between your local time and server time in hours'));
+		$form->addRule('time_diff', __('This field should be numeric'), 'numeric');
+		$form->addRule('time_diff', __('Field required'), 'required');
 
-		$form->addElement('select','default_image_size',$this->t('Thumbnails size'),array(0=>$this->t('100 x 100'),1=>$this->t('200 x 200')));
+		$form->addElement('select','default_image_size',__('Thumbnails size'),array(0=>__('100 x 100'),1=>__('200 x 200')));
 
-		$form->addElement('checkbox', 'text_size', $this->t('Text resize buttons'));
-		$form->addElement('checkbox', 'site_map_products', $this->t('Display products on sitemap page'));
+		$form->addElement('checkbox', 'text_size', __('Text resize buttons'));
+		$form->addElement('checkbox', 'site_map_products', __('Display products on sitemap page'));
 
-		$form->addElement('header',null,$this->t('External services settings'));
+		$form->addElement('header',null,__('External services settings'));
 
-		$form->addElement('text', 'skapiec_shop_id', $this->t('Skąpiec shop ID'));
-		$form->addRule('skapiec_shop_id', $this->t('This field should be numeric'), 'numeric');
+		$form->addElement('text', 'skapiec_shop_id', __('Skąpiec shop ID'));
+		$form->addRule('skapiec_shop_id', __('This field should be numeric'), 'numeric');
 
-		$form->addElement('text', 'allpay_id', $this->t('Allpay ID'));
-		$form->addRule('allpay_id', $this->t('This field should be numeric'), 'numeric');
+		$form->addElement('text', 'allpay_id', __('Allpay ID'));
+		$form->addRule('allpay_id', __('This field should be numeric'), 'numeric');
 
-		$form->addElement('text', 'przelewy24_id', $this->t('Przelewy24 ID'));
-		$form->addRule('przelewy24_id', $this->t('This field should be numeric'), 'numeric');
+		$form->addElement('text', 'przelewy24_id', __('Przelewy24 ID'));
+		$form->addRule('przelewy24_id', __('This field should be numeric'), 'numeric');
 
-		$form->addElement('text', 'platnosci_id', $this->t('Platnosci ID'));
-		$form->addRule('platnosci_id', $this->t('This field should be numeric'), 'numeric');
-		$form->addElement('text', 'platnosci_pos_auth_key', $this->t('Platnosci pos auth key'));
-		$form->addRule('platnosci_pos_auth_key', $this->t('This field should be numeric'), 'numeric');
-		$form->addElement('text', 'platnosci_key1', $this->t('Platnosci key 1'));
-		$form->addElement('text', 'platnosci_key2', $this->t('Platnosci key 2'));
-		$form->addElement('text', 'epesi_payments_url', $this->t('Epesi Payments module URL'));
+		$form->addElement('text', 'platnosci_id', __('Platnosci ID'));
+		$form->addRule('platnosci_id', __('This field should be numeric'), 'numeric');
+		$form->addElement('text', 'platnosci_pos_auth_key', __('Platnosci pos auth key'));
+		$form->addRule('platnosci_pos_auth_key', __('This field should be numeric'), 'numeric');
+		$form->addElement('text', 'platnosci_key1', __('Platnosci key 1'));
+		$form->addElement('text', 'platnosci_key2', __('Platnosci key 2'));
+		$form->addElement('text', 'epesi_payments_url', __('Epesi Payments module URL'));
 
-		$form->addElement('text', 'zagiel_id', $this->t('Zagiel ID'));
-		$form->addRule('zagiel_id', $this->t('This field should be numeric'), 'numeric');
-		$form->addElement('text', 'zagiel_min_price', $this->t('Zagiel minimal price'));
-		$form->addRule('zagiel_min_price', $this->t('This field should be numeric'), 'numeric');
+		$form->addElement('text', 'zagiel_id', __('Zagiel ID'));
+		$form->addRule('zagiel_id', __('This field should be numeric'), 'numeric');
+		$form->addElement('text', 'zagiel_min_price', __('Zagiel minimal price'));
+		$form->addRule('zagiel_min_price', __('This field should be numeric'), 'numeric');
 
-		$form->addElement('text', 'paypal_email', $this->t('Paypal email'));
-		$form->addRule('paypal_email', $this->t('This is not valid email address'), 'email');
+		$form->addElement('text', 'paypal_email', __('Paypal email'));
+		$form->addRule('paypal_email', __('Invalid e-mail address'), 'email');
 
-        $form->addElement('header', 'ups', $this->t('UPS rates fetching (please fill all fields to enable this feature)'));
-		$form->addElement('text', 'ups_accesskey', $this->t('UPS Access Key'));
-		$form->addElement('text', 'ups_username', $this->t('UPS Username'));
-		$form->addElement('password', 'ups_password', $this->t('UPS Password'));
-		$form->addElement('text', 'ups_shipper_number', $this->t('UPS Shipper Number'));
-		$form->addElement('commondata', 'ups_src_country', $this->t('Your Country'), 'Countries', array('empty_option'=>true));
-		$form->addElement('text', 'ups_src_zip', $this->t('Your ZIP'));
-		$form->addElement('select', 'ups_weight_unit', $this->t('Weight Unit'), array('KGS'=>'KGS','LBS'=>'LBS'));
+        $form->addElement('header', 'ups', __('UPS rates fetching (please fill all fields to enable this feature)'));
+		$form->addElement('text', 'ups_accesskey', __('UPS Access Key'));
+		$form->addElement('text', 'ups_username', __('UPS Username'));
+		$form->addElement('password', 'ups_password', __('UPS Password'));
+		$form->addElement('text', 'ups_shipper_number', __('UPS Shipper Number'));
+		$form->addElement('commondata', 'ups_src_country', __('Your Country'), 'Countries', array('empty_option'=>true));
+		$form->addElement('text', 'ups_src_zip', __('Your ZIP'));
+		$form->addElement('select', 'ups_weight_unit', __('Weight Unit'), array('KGS'=>'KGS','LBS'=>'LBS'));
 
 		$config = array();
 		@include_once($path.'/config/epesi.php');
@@ -627,21 +627,21 @@ class Premium_Warehouse_eCommerce extends Module {
 		
 		$currencies = DB::GetAssoc('SELECT code, code FROM utils_currency WHERE active=1');
 		foreach($langs as $code=>$l) {
-			$form->addElement('header',null,$this->t('Language: %s',array($l)));
-			$form->addElement('select',$code.'-currency_symbol',$this->t('Currency'),$currencies);
-			$form->addRule($code.'-currency_symbol',$this->t('Field required'),'required');
+			$form->addElement('header',null,__('Language: %s',array($l)));
+			$form->addElement('select',$code.'-currency_symbol',__('Currency'),$currencies);
+			$form->addRule($code.'-currency_symbol',__('Field required'),'required');
 			
-			$form->addElement('text', $code.'-delivery_free', $this->t('Price, after which the order gets sent for free to the customer'));
-			$form->addRule($code.'-delivery_free', $this->t('This field should be numeric'), 'numeric');
-			$form->addRule($code.'-delivery_free',$this->t('Field required'),'required');
+			$form->addElement('text', $code.'-delivery_free', __('Price, after which the order gets sent for free to the customer'));
+			$form->addRule($code.'-delivery_free', __('This field should be numeric'), 'numeric');
+			$form->addRule($code.'-delivery_free',__('Field required'),'required');
 			
-			$form->addElement('text', $code.'-title', $this->t('Title'));
-			$form->addRule($code.'-title',$this->t('Field required'),'required');
+			$form->addElement('text', $code.'-title', __('Title'));
+			$form->addRule($code.'-title',__('Field required'),'required');
 
-			$form->addElement('text', $code.'-slogan', $this->t('Slogan'));
-			$form->addElement('textarea', $code.'-description', $this->t('Description'));
-			$form->addElement('textarea', $code.'-keywords', $this->t('Keywords'));
-			$form->addElement('textarea', $code.'-foot_info', $this->t('Foot'));
+			$form->addElement('text', $code.'-slogan', __('Slogan'));
+			$form->addElement('textarea', $code.'-description', __('Description'));
+			$form->addElement('textarea', $code.'-keywords', __('Keywords'));
+			$form->addElement('textarea', $code.'-foot_info', __('Foot'));
 			
 			$config = array();
 			$config2 = array();
@@ -659,8 +659,8 @@ class Premium_Warehouse_eCommerce extends Module {
 			return false;
 		} else $form->display();
 	
-		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
-		Base_ActionBarCommon::add('save', 'Save', $form->get_submit_form_href());
+		Base_ActionBarCommon::add('back',__('Back'),$this->create_back_href());
+		Base_ActionBarCommon::add('save',__('Save'), $form->get_submit_form_href());
 		
     		return true;
 	}
@@ -674,21 +674,21 @@ class Premium_Warehouse_eCommerce extends Module {
 	
 		$form = & $this->init_module('Libs/QuickForm');
 
-		$form->addElement('header', null, $this->t('Add quickcart(epesi version) binding'));
+		$form->addElement('header', null, __('Add quickcart(epesi version) binding'));
 
-		$form->addElement('text', 'path', $this->t('Path'));
-		$form->addRule('path', $this->t('A path must be between 3 and 255 chars'), 'rangelength', array(3,255));
+		$form->addElement('text', 'path', __('Path'));
+		$form->addRule('path', __('A path must be between 3 and 255 chars'), 'rangelength', array(3,255));
 		$form->registerRule('check_path','callback','check_path','Premium_Warehouse_eCommerce');
-		$form->addRule('path', $this->t('Invalid path or files directory not writable'), 'check_path');
-		$form->addRule('path', $this->t('Field required'), 'required');
+		$form->addRule('path', __('Invalid path or files directory not writable'), 'check_path');
+		$form->addRule('path', __('Field required'), 'required');
 
 		if($form->validate()) {
 		    Premium_Warehouse_eCommerceCommon::register_qc($form->exportValue('path'));
 		    return false;
 		} else $form->display();
 
-		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
-		Base_ActionBarCommon::add('save', 'Save', $form->get_submit_form_href(true,$this->t('creating thumbnails, please wait')));
+		Base_ActionBarCommon::add('back',__('Back'),$this->create_back_href());
+		Base_ActionBarCommon::add('save',__('Save'), $form->get_submit_form_href(true,__('creating thumbnails, please wait')));
 		
     		return true;
 	}
@@ -698,22 +698,22 @@ class Premium_Warehouse_eCommerce extends Module {
 		$qf = $this->init_module('Libs/QuickForm');
 		$qf->addElement('hidden','id',null,array('id'=>'icecat_prod_id'));
 		$qf->addElement('hidden','item_name',null,array('id'=>'icecat_prod_nameh'));
-		$qf->addElement('static',null,$this->t('Item Name'),'<div id="icecat_prod_name" />');
-		$qf->addElement('text','upc',$this->t('UPC'),array('id'=>'icecat_prod_upc'));
-		$qf->addElement('text','product_code',$this->t('Product code'),array('id'=>'icecat_prod_code'));
-		$qf->addElement('text','manufacturer_part_number',$this->t('Part number'),array('id'=>'icecat_prod_part_num'));
+		$qf->addElement('static',null,__('Item Name'),'<div id="icecat_prod_name" />');
+		$qf->addElement('text','upc',__('UPC'),array('id'=>'icecat_prod_upc'));
+		$qf->addElement('text','product_code',__('Product Code'),array('id'=>'icecat_prod_code'));
+		$qf->addElement('text','manufacturer_part_number',__('Part Number'),array('id'=>'icecat_prod_part_num'));
 
 		$companies = CRM_ContactsCommon::get_companies(array('group'=>array('manufacturer')),array('company_name'),array('company_name'=>'ASC'));
 		$this->manufacturers = array(''=>'---');
 		foreach($companies as $c) {
 			$this->manufacturers[$c['id']] = $c['company_name'];
 		}
-		$qf->addElement('select','manufacturer',$this->t('Manufacturer'),$this->manufacturers,array('id'=>'icecat_prod_manuf'));
+		$qf->addElement('select','manufacturer',__('Manufacturer'),$this->manufacturers,array('id'=>'icecat_prod_manuf'));
 
-		$qf->addElement('checkbox','skip',$this->t('Publish without getting information data'),'',array('id'=>'icecat_prod_skip'));
-        $qf->addElement('static', '3rd party', $this->t('Available data'),'<iframe id="3rdp_info_frame" style="width:300px; height:100px;border:0px"></iframe>');
+		$qf->addElement('checkbox','skip',__('Publish without getting information data'),'',array('id'=>'icecat_prod_skip'));
+        $qf->addElement('static', '3rd party', __('Available data'),'<iframe id="3rdp_info_frame" style="width:300px; height:100px;border:0px"></iframe>');
 		
-		$qf->addElement('submit',null,$this->t('Zapisz'));
+		$qf->addElement('submit',null,__('Zapisz'));
 		$qf->addFormRule(array($this,'check_fast_fill'));
 		
 		if($qf->validate()) {
@@ -737,7 +737,7 @@ class Premium_Warehouse_eCommerce extends Module {
 			
 		$this->rb->set_header_properties(array(
 						'manufacturer'=>array('width'=>25, 'wrapmode'=>'nowrap'),
-						'manufacturer_part_number'=>array('name'=>'Part Number', 'width'=>15, 'wrapmode'=>'nowrap'),
+						'manufacturer_part_number'=>array('name'=>__('Part Number'), 'width'=>15, 'wrapmode'=>'nowrap'),
 						'product_code'=>array('width'=>15, 'wrapmode'=>'nowrap'),
 						'upc'=>array('width'=>20, 'wrapmode'=>'nowrap'),
 						'item_type'=>array('width'=>5, 'wrapmode'=>'nowrap'),
@@ -760,7 +760,7 @@ class Premium_Warehouse_eCommerce extends Module {
 		if(!isset($arg['product_code'])) $arg['product_code'] = '';
 		if(!isset($arg['item_name'])) $arg['item_name'] = '';
 		if(!isset($arg['manufacturer_part_number'])) $arg['manufacturer_part_number'] = '';
-		if(!isset($arg['id']) || !is_numeric($arg['id'])) return array('upc'=>$this->t('Invalid request without ID. Hacker?'));
+		if(!isset($arg['id']) || !is_numeric($arg['id'])) return array('upc'=>__('Invalid request without ID. Hacker?'));
 		if(empty($arg['upc']) && 
 		    (empty($arg['manufacturer']) || empty($arg['product_code'])) && 
 		    (empty($arg['manufacturer']) || empty($arg['manufacturer_part_number']))
@@ -773,13 +773,13 @@ class Premium_Warehouse_eCommerce extends Module {
 					'$(\'icecat_prod_part_num\').value=\''.addcslashes($arg['manufacturer_part_number'],'\'\\').'\';'.
 					'$(\'icecat_prod_manuf\').value=\''.addcslashes($arg['manufacturer'],'\'\\').'\';');
 
-			return array('upc'=>'<span id="icecat_prod_err">'.$this->t('Please fill manufacturer and product code, or manufacturer and part number, or UPC, or skip gettin information data.').'</span>');
+			return array('upc'=>'<span id="icecat_prod_err">'.__('Please fill manufacturer and product code, or manufacturer and part number, or UPC, or skip gettin information data.').'</span>');
 		}
 		return true;
 	}
 	
 	public function fast_fill_actions($r, $gb_row) {
-		$gb_row->add_action(Libs_LeightboxCommon::get_open_href('fast_fill_lb').' id="icecat_button_'.$r['id'].'"','edit',$this->t('Click here to fill required data'));
+		$gb_row->add_action(Libs_LeightboxCommon::get_open_href('fast_fill_lb').' id="icecat_button_'.$r['id'].'"','edit',__('Click here to fill required data'));
 		$gb_row->add_js('Event.observe(\'icecat_button_'.$r['id'].'\',\'click\',function() {'.
 					'$(\'icecat_prod_id\').value=\''.$r['id'].'\';'.
 					'$(\'icecat_prod_name\').innerHTML=\''.addcslashes($r['item_name'],'\'\\').'\';'.
@@ -799,15 +799,15 @@ class Premium_Warehouse_eCommerce extends Module {
 	
 		$form = & $this->init_module('Libs/QuickForm');
 
-		$form->addElement('header', null, $this->t('eCommerce item tabs'));
+		$form->addElement('header', null, __('eCommerce item tabs'));
 		
 		$form->setDefaults(array('prices'=>Variable::get('ecommerce_item_prices'),
 		            'parameters'=>Variable::get('ecommerce_item_parameters')
 				    ,'descriptions'=>Variable::get('ecommerce_item_descriptions')));
 
-		$form->addElement('checkbox', 'prices', $this->t('Prices'),'');
-		$form->addElement('checkbox', 'parameters', $this->t('Parameters'),'');
-		$form->addElement('checkbox', 'descriptions', $this->t('Descriptions'),'');
+		$form->addElement('checkbox', 'prices', __('Prices'),'');
+		$form->addElement('checkbox', 'parameters', __('Parameters'),'');
+		$form->addElement('checkbox', 'descriptions', __('Descriptions'),'');
 
 		if($form->validate()) {
 			$vals = $form->exportValues();
@@ -818,8 +818,8 @@ class Premium_Warehouse_eCommerce extends Module {
 			return false;
 		} else $form->display();
 
-		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
-		Base_ActionBarCommon::add('save', 'Save', $form->get_submit_form_href(true,$this->t('creating thumbnails, please wait')));
+		Base_ActionBarCommon::add('back',__('Back'),$this->create_back_href());
+		Base_ActionBarCommon::add('save', __('Save'), $form->get_submit_form_href(true,__('creating thumbnails, please wait')));
 		
     		return true;
 	}
@@ -829,7 +829,7 @@ class Premium_Warehouse_eCommerce extends Module {
 	
 		$form = & $this->init_module('Libs/QuickForm');
 
-		$form->addElement('header', null, $this->t('Automatic prices'));
+		$form->addElement('header', null, __('Automatic prices'));
 		
 		eval_js_once("ecommerce_autoprices = function(val) {
 			if(val) {
@@ -844,16 +844,16 @@ class Premium_Warehouse_eCommerce extends Module {
 		$form->setDefaults(array('enabled'=>Variable::get('ecommerce_autoprice'),'minimal'=>Variable::get('ecommerce_minimal_profit')
 				    ,'margin'=>Variable::get('ecommerce_percentage_profit')));
 
-		$form->addElement('checkbox', 'enabled', $this->t('Enabled'),'',array('onChange'=>'ecommerce_autoprices(this.checked)'));
+		$form->addElement('checkbox', 'enabled', __('Enabled'),'',array('onChange'=>'ecommerce_autoprices(this.checked)'));
 		$enabled = $form->exportValue('enabled');
 		eval_js('ecommerce_autoprices('.$enabled.')');
 
-		$form->addElement('text', 'minimal', $this->t('Minimal profit margin'),array('id'=>'ecommerce_minimal'));
-		$form->addElement('text', 'margin', $this->t('Percentage profit margin'),array('id'=>'ecommerce_margin'));
+		$form->addElement('text', 'minimal', __('Minimal profit margin'),array('id'=>'ecommerce_minimal'));
+		$form->addElement('text', 'margin', __('Percentage profit margin'),array('id'=>'ecommerce_margin'));
 		
 		if($enabled) {
-			$form->addRule('minimal', $this->t('This should be numeric value'),'numeric');
-			$form->addRule('margin', $this->t('This should be numeric value'),'numeric');
+			$form->addRule('minimal', __('This should be numeric value'),'numeric');
+			$form->addRule('margin', __('This should be numeric value'),'numeric');
 		}
 
 		if($form->validate()) {
@@ -864,8 +864,8 @@ class Premium_Warehouse_eCommerce extends Module {
 			return false;
 		} else $form->display();
 
-		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
-		Base_ActionBarCommon::add('save', 'Save', $form->get_submit_form_href(true,$this->t('creating thumbnails, please wait')));
+		Base_ActionBarCommon::add('back',__('Back'),$this->create_back_href());
+		Base_ActionBarCommon::add('save', __('Save'), $form->get_submit_form_href(true,__('creating thumbnails, please wait')));
 		
     		return true;
 	}
@@ -893,7 +893,7 @@ class Premium_Warehouse_eCommerce extends Module {
 	public function warehouse_item_addon($arg) {
 		$recs = Utils_RecordBrowserCommon::get_records('premium_ecommerce_products',array('item_name'=>$arg['id']));
 		if(empty($recs)) {
-		    print('<h1><a '.$this->create_callback_href(array('Premium_Warehouse_eCommerceCommon','publish_warehouse_item'),$arg['id']).'>'.$this->t('Publish').'</a></h1>');
+		    print('<h1><a '.$this->create_callback_href(array('Premium_Warehouse_eCommerceCommon','publish_warehouse_item'),$arg['id']).'>'.__('Publish').'</a></h1>');
 		    return;
 		}
 		$rec = array_pop($recs);
@@ -901,24 +901,24 @@ class Premium_Warehouse_eCommerce extends Module {
 		$on = '<span class="checkbox_on" />';
 		$off = '<span class="checkbox_off" />';
 		
-		print('<h1>'.Utils_RecordBrowserCommon::record_link_open_tag('premium_ecommerce_products',$rec['id']).$this->t('Go to item').Utils_RecordBrowserCommon::record_link_close_tag().'</h1>');
+		print('<h1>'.Utils_RecordBrowserCommon::record_link_open_tag('premium_ecommerce_products',$rec['id']).__('Go to item').Utils_RecordBrowserCommon::record_link_close_tag().'</h1>');
 
 		//opts
  		$m = & $this->init_module('Utils/GenericBrowser',null,'t0');
  		$m->set_table_columns(array(
-				array('name'=>$this->t('Option')),
-				array('name'=>$this->t('Value')),
-				array('name'=>$this->t('Actions'))
+				array('name'=>__('Option')),
+				array('name'=>__('Value')),
+				array('name'=>__('Actions'))
 					    ));
- 		$m->add_row($this->t('Published'),($rec['publish']?$on:$off),'<a '.$this->create_callback_href(array('Premium_Warehouse_eCommerceCommon','toggle_publish'),array($rec['id'],!$rec['publish'])).'>'.$this->t('toggle').'</a>');
- 		$m->add_row($this->t('Recommended'),($rec['recommended']?$on:$off),'<a '.$this->create_callback_href(array('Premium_Warehouse_eCommerceCommon','toggle_recommended'),array($rec['id'],!$rec['recommended'])).'>'.$this->t('toggle').'</a>');
- 		$m->add_row($this->t('Exclude compare services'),($rec['exclude_compare_services']?$on:$off),'<a '.$this->create_callback_href(array('Premium_Warehouse_eCommerceCommon','toggle_exclude_compare_services'),array($rec['id'],!$rec['exclude_compare_services'])).'>'.$this->t('toggle').'</a>');
- 		$m->add_row($this->t('Always on stock'),($rec['always_on_stock']?$on:$off),'<a '.$this->create_callback_href(array('Premium_Warehouse_eCommerceCommon','toggle_always_on_stock'),array($rec['id'],!$rec['always_on_stock'])).'>'.$this->t('toggle').'</a>');
- 		$m->add_row($this->t('Assigned category'),($arg['category']?$on:$off),'');
+ 		$m->add_row(__('Published'),($rec['publish']?$on:$off),'<a '.$this->create_callback_href(array('Premium_Warehouse_eCommerceCommon','toggle_publish'),array($rec['id'],!$rec['publish'])).'>'.__('Toggle').'</a>');
+ 		$m->add_row(__('Recommended'),($rec['recommended']?$on:$off),'<a '.$this->create_callback_href(array('Premium_Warehouse_eCommerceCommon','toggle_recommended'),array($rec['id'],!$rec['recommended'])).'>'.__('Toggle').'</a>');
+ 		$m->add_row(__('Exclude compare services'),($rec['exclude_compare_services']?$on:$off),'<a '.$this->create_callback_href(array('Premium_Warehouse_eCommerceCommon','toggle_exclude_compare_services'),array($rec['id'],!$rec['exclude_compare_services'])).'>'.__('Toggle').'</a>');
+ 		$m->add_row(__('Always on stock'),($rec['always_on_stock']?$on:$off),'<a '.$this->create_callback_href(array('Premium_Warehouse_eCommerceCommon','toggle_always_on_stock'),array($rec['id'],!$rec['always_on_stock'])).'>'.__('Toggle').'</a>');
+ 		$m->add_row(__('Assigned category'),($arg['category']?$on:$off),'');
 		$quantity = Utils_RecordBrowserCommon::get_records('premium_warehouse_location',array('item_sku'=>$arg['id'],'>quantity'=>0));
- 		$m->add_row($this->t('Available in warehouse'),(empty($quantity)?$off:$on),'');
- 		$m->add_row($this->t('Common attachments'),Utils_AttachmentCommon::count('premium_ecommerce_products/'.$arg['id']),'');
-//		$m->add_row('Related,recommended',Utils_RecordBrowserCommon::record_link_open_tag('premium_ecommerce_products',$rec['id'],false,'edit').$this->t('Edit item').Utils_RecordBrowserCommon::record_link_close_tag());
+ 		$m->add_row(__('Available in warehouse'),(empty($quantity)?$off:$on),'');
+ 		$m->add_row(__('Common attachments'),Utils_AttachmentCommon::count('premium_ecommerce_products/'.$arg['id']),'');
+//		$m->add_row('Related,recommended',Utils_RecordBrowserCommon::record_link_open_tag('premium_ecommerce_products',$rec['id'],false,'edit').__('Edit item').Utils_RecordBrowserCommon::record_link_close_tag());
 		
  		$this->display_module($m);
 
@@ -926,12 +926,12 @@ class Premium_Warehouse_eCommerce extends Module {
         if(Variable::get('ecommerce_item_descriptions')) {
      		$m = & $this->init_module('Utils/GenericBrowser',null,'t1');
  	    	$m->set_table_columns(array(
-				array('name'=>$this->t('Language')),
-				array('name'=>$this->t('Name')),
-				array('name'=>$this->t('Description')),
-				array('name'=>$this->t('Parameters')),
-				array('name'=>$this->t('Attachments')),
-				array('name'=>$this->t('Actions'))
+				array('name'=>__('Language')),
+				array('name'=>__('Name')),
+				array('name'=>__('Description')),
+				array('name'=>__('Parameters')),
+				array('name'=>__('Attachments')),
+				array('name'=>__('Actions'))
 					    ));
     		$langs = Utils_CommonDataCommon::get_array('Premium/Warehouse/eCommerce/Languages');
 	    	foreach($langs as $code=>$name) {
@@ -940,7 +940,7 @@ class Premium_Warehouse_eCommerce extends Module {
     		    $params = Utils_RecordBrowserCommon::get_records('premium_ecommerce_products_parameters',array('item_name'=>$rec['item_name'],'language'=>$code));
 	    	    $attachments = Utils_AttachmentCommon::count('premium_ecommercedescriptions/'.$code.'/'.$arg['id']);
  		        $m->add_row($name,($descs && isset($descs['display_name']) && $descs['display_name'])?$on:$off,($descs && isset($descs['short_description']) && $descs['short_description'])?$on:$off,empty($params)?$off:$on,$attachments,
- 		        		$descs?Utils_RecordBrowserCommon::record_link_open_tag('premium_ecommerce_descriptions',$descs['id'],false,'edit').$this->t('Edit').Utils_RecordBrowserCommon::record_link_close_tag():'<a '.Utils_RecordBrowserCommon::create_new_record_href('premium_ecommerce_descriptions',array('language'=>$code,'item_name'=>$arg['id'])).'>'.$this->t('Add').'</a>');
+ 		        		$descs?Utils_RecordBrowserCommon::record_link_open_tag('premium_ecommerce_descriptions',$descs['id'],false,'edit').__('Edit').Utils_RecordBrowserCommon::record_link_close_tag():'<a '.Utils_RecordBrowserCommon::create_new_record_href('premium_ecommerce_descriptions',array('language'=>$code,'item_name'=>$arg['id'])).'>'.__('Add').'</a>');
     		}
  	    	$this->display_module($m);
         }
@@ -949,10 +949,10 @@ class Premium_Warehouse_eCommerce extends Module {
         if(Variable::get('ecommerce_item_prices')) {
      		$m = & $this->init_module('Utils/GenericBrowser',null,'t2');
  	    	$m->set_table_columns(array(
-				array('name'=>$this->t('Currency')),
-				array('name'=>$this->t('Gross Price')),
-				array('name'=>$this->t('Tax Rate')),
-				array('name'=>$this->t('Actions'))
+				array('name'=>__('Currency')),
+				array('name'=>__('Gross Price')),
+				array('name'=>__('Tax Rate')),
+				array('name'=>__('Actions'))
 					    ));
     		$curr_opts = Premium_Warehouse_eCommerceCommon::get_currencies();
 	    	foreach($curr_opts as $id=>$code) {
@@ -961,10 +961,10 @@ class Premium_Warehouse_eCommerce extends Module {
     		    if($prices && isset($prices['gross_price'])) {
     			    $tax = Utils_RecordBrowserCommon::get_record('data_tax_rates',$prices['tax_rate']);
     			    $m->add_row($code,$prices['gross_price'],$tax['name'],
- 		    		Utils_RecordBrowserCommon::record_link_open_tag('premium_ecommerce_prices',$prices['id'],false,'edit').$this->t('Edit').Utils_RecordBrowserCommon::record_link_close_tag());
+ 		    		Utils_RecordBrowserCommon::record_link_open_tag('premium_ecommerce_prices',$prices['id'],false,'edit').__('Edit').Utils_RecordBrowserCommon::record_link_close_tag());
 	    	    } else {
          		    $m->add_row($code,$off,$off,
-         		    	'<a '.Utils_RecordBrowserCommon::create_new_record_href('premium_ecommerce_prices',array('currency'=>$id,'item_name'=>$arg['id'])).'>'.$this->t('Add').'</a>');
+         		    	'<a '.Utils_RecordBrowserCommon::create_new_record_href('premium_ecommerce_prices',array('currency'=>$id,'item_name'=>$arg['id'])).'>'.__('Add').'</a>');
     		    }
 	    	}
  		    $this->display_module($m);
@@ -980,9 +980,9 @@ class Premium_Warehouse_eCommerce extends Module {
 
 		$form = $this->init_module('Libs/QuickForm',null,'reports_frm');
 
-		$form->addElement('datepicker', 'start', $this->t('From'));
-		$form->addElement('datepicker', 'end', $this->t('To'));
-		$form->addElement('submit', 'submit_button', $this->t('Show'));
+		$form->addElement('datepicker', 'start', __('From'));
+		$form->addElement('datepicker', 'end', __('To'));
+		$form->addElement('submit', 'submit_button', __('Show'));
 		$form->addRule('start', 'Field required', 'required');
 		$form->addRule('end', 'Field required', 'required');
 		$form->setDefaults(array('start'=>$start,'end'=>$end));
@@ -996,10 +996,10 @@ class Premium_Warehouse_eCommerce extends Module {
 		$form->display();
 
 		$tb = & $this->init_module('Utils/TabbedBrowser');
-		$tb->set_tab($this->t("Products"), array($this,'stats_tab'),array('products',$start,$end));
-		$tb->set_tab($this->t("Pages"), array($this,'stats_tab'),array('pages',$start,$end));
-		$tb->set_tab($this->t("Categories"), array($this,'stats_tab'),array('categories',$start,$end));
-		$tb->set_tab($this->t("Searched Words"), array($this,'stats_tab'),array('searched',$start,$end));
+		$tb->set_tab(__("Products"), array($this,'stats_tab'),array('products',$start,$end));
+		$tb->set_tab(__("Pages"), array($this,'stats_tab'),array('pages',$start,$end));
+		$tb->set_tab(__("Categories"), array($this,'stats_tab'),array('categories',$start,$end));
+		$tb->set_tab(__("Searched Words"), array($this,'stats_tab'),array('searched',$start,$end));
 		$this->display_module($tb);
 		$this->tag();
 	}
@@ -1030,7 +1030,7 @@ class Premium_Warehouse_eCommerce extends Module {
 		}
 
 		$f = $this->init_module('Libs/OpenFlashChart');
-		$title = new OFC_Elements_Title( $this->t($tab) );
+		$title = new OFC_Elements_Title( _V($tab) );
 		$f->set_title( $title );
 
 		$av_colors = array('#339933','#999933', '#993333', '#336699', '#808080','#339999','#993399');
@@ -1046,7 +1046,7 @@ class Premium_Warehouse_eCommerce extends Module {
 			$i++;
 		}
 		if($max==-1) {
-		    print($this->t("No stats available"));
+		    print(__("No stats available"));
 		    return;
 		}
 		$y_ax = new OFC_Elements_Axis_Y();
@@ -1075,12 +1075,12 @@ class Premium_Warehouse_eCommerce extends Module {
 		$gb = & $this->init_module('Utils/GenericBrowser',null,'stats');
 
 		$gb->set_table_columns(array(
-			array('name'=>$this->t('Time'), 'order'=>'visited_on')));
+			array('name'=>__('Time'), 'order'=>'visited_on')));
 
 		$query = 'SELECT visited_on FROM premium_ecommerce_'.$tab.'_stats WHERE obj='.$id;
 		$query_qty = 'SELECT count(*) FROM premium_ecommerce_'.$tab.'_stats WHERE obj='.$id;
 
-		$gb->set_default_order(array($this->t('Time')=>'DESC'));
+		$gb->set_default_order(array(__('Time')=>'DESC'));
 		$ret = $gb->query_order_limit($query, $query_qty);
 		
 		while(($row=$ret->FetchRow())) {
@@ -1139,14 +1139,14 @@ class Premium_Warehouse_eCommerce extends Module {
 	public function caption(){
 		if (isset($this->caption)) return $this->caption;
 		if (isset($this->rb)) return $this->rb->caption();
-		return 'eCommerce administration';
+		return __('eCommerce administration');
 	}
 	
 	public function applet($conf, & $opts) {
 		//available applet options: toggle,href,title,go,go_function,go_arguments,go_contruct_arguments
 		$opts['go'] = false; // enable/disable full screen
 		$xxx = array(-2=>'New Online Order (with payment)', -1=>'New Online Order', 2=>'Order Received', 3=>'Payment Confirmed', 4=>'Order Confirmed', 5=>'On Hold', 6=>'Order Ready to Ship', 7=>'Shipped', 20=>'Delivered', 21=>'Canceled', 22=>'Missing','active'=>'Active');
-		$opts['title'] = $this->t('eCommerce - %s',array(Base_LangCommon::ts('Base_Dashboard',$xxx[$conf['status']])));
+		$opts['title'] = __('eCommerce - %s',array(_V($xxx[$conf['status']])));
 		
 		$crits = array('online_order'=>1);
 		if($conf['status']=='active')
@@ -1176,9 +1176,9 @@ class Premium_Warehouse_eCommerce extends Module {
 	
 	public function setup_3rd_party_plugins() {
 		if($this->is_back()) return false;
-		Base_ActionBarCommon::add('back', 'Back', $this->create_back_href());
+		Base_ActionBarCommon::add('back',__('Back'),$this->create_back_href());
 	
-	    Base_ActionBarCommon::add('search','Scan plugins', $this->create_callback_href(array('Premium_Warehouse_eCommerceCommon','scan_for_3rdp_info_plugins')));
+	    Base_ActionBarCommon::add('search',__('Scan plugins'), $this->create_callback_href(array('Premium_Warehouse_eCommerceCommon','scan_for_3rdp_info_plugins')));
         $this->recordset = '3rdp_info';
         $this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_3rdp_info','premium_ecommerce_3rdp_info');
 		$this->rb->set_additional_actions_method(array($this, 'actions_for_position'));

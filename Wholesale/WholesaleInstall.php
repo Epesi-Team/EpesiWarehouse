@@ -20,26 +20,26 @@ class Premium_Warehouse_WholesaleInstall extends ModuleInstall {
 		$this->create_data_dir();
 
 		$fields = array(
-			array('name'=>'Name', 			'type'=>'text', 'required'=>true, 'param'=>'128', 'extra'=>false, 'visible'=>true,'display_callback'=>array('Premium_Warehouse_WholesaleCommon', 'display_distributor')),
-			array('name'=>'Plugin', 		'type'=>'select', 'required'=>true, 'extra'=>false, 'QFfield_callback'=>array('Premium_Warehouse_WholesaleCommon','QFfield_plugin')),
-			array('name'=>'Company', 		'type'=>'crm_company', 'param'=>array('field_type'=>'select'), 'required'=>false, 'extra'=>false, 'visible'=>true),
-			array('name'=>'Last update', 	'type'=>'timestamp', 'required'=>false, 'extra'=>false, 'visible'=>true),
-			array('name'=>'Tax Rate', 	'type'=>'select', 'required'=>false, 'extra'=>false, 'visible'=>true, 'param'=>'data_tax_rates::Name', 'style'=>'integer'),
-			array('name'=>'Minimal profit', 	'type'=>'integer', 'required'=>false, 'extra'=>false, 'visible'=>true, 'style'=>'integer'),
-			array('name'=>'Percentage profit', 	'type'=>'integer', 'required'=>false, 'extra'=>false, 'visible'=>true, 'style'=>'integer'),
-			array('name'=>'Param1', 		'type'=>'text', 'required'=>false, 'param'=>'128', 'extra'=>true, 'visible'=>false),
-			array('name'=>'Param2', 		'type'=>'text', 'required'=>false, 'param'=>'128', 'extra'=>true, 'visible'=>false),
-			array('name'=>'Param3', 		'type'=>'text', 'required'=>false, 'param'=>'128', 'extra'=>true, 'visible'=>false),
-			array('name'=>'Param4', 		'type'=>'text', 'required'=>false, 'param'=>'128', 'extra'=>true, 'visible'=>false),
-			array('name'=>'Param5', 		'type'=>'text', 'required'=>false, 'param'=>'128', 'extra'=>true, 'visible'=>false),
-			array('name'=>'Param6', 		'type'=>'text', 'required'=>false, 'param'=>'128', 'extra'=>true, 'visible'=>false),
+			array('name' => _M('Name'), 			'type'=>'text', 'required'=>true, 'param'=>'128', 'extra'=>false, 'visible'=>true,'display_callback'=>array('Premium_Warehouse_WholesaleCommon', 'display_distributor')),
+			array('name' => _M('Plugin'), 		'type'=>'select', 'required'=>true, 'extra'=>false, 'QFfield_callback'=>array('Premium_Warehouse_WholesaleCommon','QFfield_plugin')),
+			array('name' => _M('Company'), 		'type'=>'crm_company', 'param'=>array('field_type'=>'select'), 'required'=>false, 'extra'=>false, 'visible'=>true),
+			array('name' => _M('Last update'), 	'type'=>'timestamp', 'required'=>false, 'extra'=>false, 'visible'=>true),
+			array('name' => _M('Tax Rate'), 	'type'=>'select', 'required'=>false, 'extra'=>false, 'visible'=>true, 'param'=>'data_tax_rates::Name', 'style'=>'integer'),
+			array('name' => _M('Minimal profit'), 	'type'=>'integer', 'required'=>false, 'extra'=>false, 'visible'=>true, 'style'=>'integer'),
+			array('name' => _M('Percentage profit'), 	'type'=>'integer', 'required'=>false, 'extra'=>false, 'visible'=>true, 'style'=>'integer'),
+			array('name' => _M('Param1'), 		'type'=>'text', 'required'=>false, 'param'=>'128', 'extra'=>true, 'visible'=>false),
+			array('name' => _M('Param2'), 		'type'=>'text', 'required'=>false, 'param'=>'128', 'extra'=>true, 'visible'=>false),
+			array('name' => _M('Param3'), 		'type'=>'text', 'required'=>false, 'param'=>'128', 'extra'=>true, 'visible'=>false),
+			array('name' => _M('Param4'), 		'type'=>'text', 'required'=>false, 'param'=>'128', 'extra'=>true, 'visible'=>false),
+			array('name' => _M('Param5'), 		'type'=>'text', 'required'=>false, 'param'=>'128', 'extra'=>true, 'visible'=>false),
+			array('name' => _M('Param6'), 		'type'=>'text', 'required'=>false, 'param'=>'128', 'extra'=>true, 'visible'=>false),
 		);
 
 		Utils_RecordBrowserCommon::install_new_recordset('premium_warehouse_distributor', $fields);
 		
 		Utils_RecordBrowserCommon::set_quickjump('premium_warehouse_distributor', 'Name');
 		Utils_RecordBrowserCommon::set_favorites('premium_warehouse_distributor', true);
-		Utils_RecordBrowserCommon::set_caption('premium_warehouse_distributor', 'Distributors');
+		Utils_RecordBrowserCommon::set_caption('premium_warehouse_distributor', _M('Distributors'));
 		Utils_RecordBrowserCommon::set_icon('premium_warehouse_distributor', Base_ThemeCommon::get_template_filename('Premium/Warehouse/Wholesale', 'icon.png'));
 		Utils_RecordBrowserCommon::register_processing_callback('premium_warehouse_distributor', array('Premium_Warehouse_WholesaleCommon', 'submit_distributor'));
 		Utils_RecordBrowserCommon::enable_watchdog('premium_warehouse_distributor', array('Premium_Warehouse_WholesaleCommon','watchdog_label'));
@@ -52,7 +52,7 @@ class Premium_Warehouse_WholesaleInstall extends ModuleInstall {
 // ************ other ************** //	
 		Utils_RecordBrowserCommon::set_display_callback('premium_warehouse_items', 'Quantity on Hand', array('Premium_Warehouse_WholesaleCommon', 'display_item_quantity'));
 		Utils_RecordBrowserCommon::set_display_callback('premium_warehouse_items', 'Available Qty', array('Premium_Warehouse_WholesaleCommon', 'display_available_qty'));
-		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items', 'Dist Qty', 'calculated', true, false, '', 'integer', false, false, 'Reserved Qty');
+		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items', _M('Dist Qty'), 'calculated', true, false, '', 'integer', false, false, 'Reserved Qty');
 		Utils_RecordBrowserCommon::set_display_callback('premium_warehouse_items', 'Dist Qty', array('Premium_Warehouse_WholesaleCommon','display_distributor_qty'));
 
 		DB::CreateTable('premium_warehouse_wholesale_plugin',
@@ -84,15 +84,15 @@ class Premium_Warehouse_WholesaleInstall extends ModuleInstall {
 		DB::Execute('UPDATE premium_warehouse_distributor_field SET param = 1 WHERE field = %s', array('Details'));
 
 		$fields = array(
-			array('name'=>'Distributor', 			'type'=>'select','param'=>'premium_warehouse_distributor::Name', 'required'=>true, 'extra'=>false, 'visible'=>true, 'QFfield_callback'=>array('Premium_Warehouse_WholesaleCommon', 'QFfield_distributor_name')),
-			array('name'=>'Foreign Category Name', 	'type'=>'text', 'required'=>true, 'param'=>'128', 'extra'=>false, 'visible'=>true, 'QFfield_callback'=>array('Premium_Warehouse_WholesaleCommon', 'QFfield_category_name')),
-			array('name'=>'Epesi Category',			'type'=>'multiselect', 'required'=>false, 'visible'=>true, 'extra'=>false,  'param'=>'premium_warehouse_items_categories::Category Name', 'QFfield_callback'=>array('Premium_Warehouse_ItemsCommon', 'QFfield_item_category'), 'display_callback'=>array('Premium_Warehouse_WholesaleCommon','display_epesi_cat_name'))
+			array('name' => _M('Distributor'), 			'type'=>'select','param'=>'premium_warehouse_distributor::Name', 'required'=>true, 'extra'=>false, 'visible'=>true, 'QFfield_callback'=>array('Premium_Warehouse_WholesaleCommon', 'QFfield_distributor_name')),
+			array('name' => _M('Foreign Category Name'), 	'type'=>'text', 'required'=>true, 'param'=>'128', 'extra'=>false, 'visible'=>true, 'QFfield_callback'=>array('Premium_Warehouse_WholesaleCommon', 'QFfield_category_name')),
+			array('name' => _M('Epesi Category'),			'type'=>'multiselect', 'required'=>false, 'visible'=>true, 'extra'=>false,  'param'=>'premium_warehouse_items_categories::Category Name', 'QFfield_callback'=>array('Premium_Warehouse_ItemsCommon', 'QFfield_item_category'), 'display_callback'=>array('Premium_Warehouse_WholesaleCommon','display_epesi_cat_name'))
 		);
 
 		Utils_RecordBrowserCommon::install_new_recordset('premium_warehouse_distr_categories', $fields);
 		Utils_RecordBrowserCommon::set_favorites('premium_warehouse_distr_categories', false);
 		Utils_RecordBrowserCommon::new_addon('premium_warehouse_distributor', 'Premium/Warehouse/Wholesale', 'categories_addon', 'Categories');
-		Utils_RecordBrowserCommon::set_caption('premium_warehouse_distr_categories', 'Distributor Categories');
+		Utils_RecordBrowserCommon::set_caption('premium_warehouse_distr_categories', _M('Distributor Categories'));
 
 		Utils_RecordBrowserCommon::add_access('premium_warehouse_distributor', 'view', 'ACCESS:employee');
 		Utils_RecordBrowserCommon::add_access('premium_warehouse_distributor', 'add', 'ACCESS:employee', array(), array('last_update'));
@@ -144,7 +144,7 @@ class Premium_Warehouse_WholesaleInstall extends ModuleInstall {
 	}
 	
 	public static function simple_setup() {
-        return array('package'=>'Inventory Management', 'option'=>'Wholesale data sync');
+        return array('package'=>__('Inventory Management'), 'option'=>__('Wholesale data sync'));
 	}
 }
 

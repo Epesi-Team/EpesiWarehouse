@@ -62,7 +62,7 @@ class Premium_Warehouse_Wholesale__Plugin_asbis implements Premium_Warehouse_Who
 		$output = curl_exec($c);
 
 		if (!$output) {
-			Premium_Warehouse_WholesaleCommon::file_download_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Authentication failure, aborting.'), 2, true);
+			Premium_Warehouse_WholesaleCommon::file_download_message(__('Authentication failure, aborting.'), 2, true);
 			return false;
 		}
 
@@ -72,7 +72,7 @@ class Premium_Warehouse_Wholesale__Plugin_asbis implements Premium_Warehouse_Who
 	    $filename = $dir.'asbis_'.$time.'.tmp';
 		file_put_contents($filename, $output);
 
-		Premium_Warehouse_WholesaleCommon::file_download_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','File downloaded.'), 1, true);
+		Premium_Warehouse_WholesaleCommon::file_download_message(__('File downloaded.'), 1, true);
 	    
 	    return $filename;
 	}
@@ -81,7 +81,7 @@ class Premium_Warehouse_Wholesale__Plugin_asbis implements Premium_Warehouse_Who
 		ini_set("memory_limit","1024M");
 		$xls = @simplexml_load_file($filename);
 		if(!$xls) {
-			Premium_Warehouse_WholesaleCommon::file_scan_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Unable to parse uploaded file, invalid XML.'), 2, true);
+			Premium_Warehouse_WholesaleCommon::file_scan_message(__('Unable to parse uploaded file, invalid XML.'), 2, true);
 			return false;
 		}
 
@@ -120,7 +120,7 @@ class Premium_Warehouse_Wholesale__Plugin_asbis implements Premium_Warehouse_Who
 		
 		$pln_id = Utils_CurrencyFieldCommon::get_id_by_code('PLN');
 		if ($pln_id===false || $pln_id===null) {
-			Premium_Warehouse_WholesaleCommon::file_scan_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Unable to find required currency (%s), aborting.', array('PLN')), 2, true);
+			Premium_Warehouse_WholesaleCommon::file_scan_message(__('Unable to find required currency (%s), aborting.', array('PLN')), 2, true);
 			return false;
 		}
 
@@ -130,7 +130,7 @@ class Premium_Warehouse_Wholesale__Plugin_asbis implements Premium_Warehouse_Who
 		$categories = DB::GetAssoc('SELECT f_foreign_category_name,id FROM premium_warehouse_distr_categories_data_1 WHERE active=1 AND f_distributor=%d',array($distributor['id']));
 		$categories_to_del = $categories;
 
-		Premium_Warehouse_WholesaleCommon::file_scan_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Scanning...'));
+		Premium_Warehouse_WholesaleCommon::file_scan_message(__('Scanning...'));
 		foreach ($uploaded_data as $row) {
 			if(!isset($row['Waluta']) || $row['Waluta']!='PLN') continue;
 			Premium_Warehouse_WholesaleCommon::update_scan_status($total, $scanned, $available, $item_exist, $link_exist, $new_items, $new_categories);
@@ -225,7 +225,7 @@ class Premium_Warehouse_Wholesale__Plugin_asbis implements Premium_Warehouse_Who
 		foreach($categories_to_del as $name=>$id) {
 			Utils_RecordBrowserCommon::delete_record('premium_warehouse_distr_categories',$id);
 		}
-		Premium_Warehouse_WholesaleCommon::file_scan_message(Base_LangCommon::ts('Premium_Warehouse_Wholesale','Scan complete.'), 1);
+		Premium_Warehouse_WholesaleCommon::file_scan_message(__('Scan complete.'), 1);
 		Premium_Warehouse_WholesaleCommon::update_scan_status($scanned, $scanned, $available, $item_exist, $link_exist, $new_items, $new_categories);
 		return true;
 	}

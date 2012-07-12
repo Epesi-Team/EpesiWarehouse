@@ -20,17 +20,17 @@ class Premium_Warehouse_InvoiceInstall extends ModuleInstall {
 		Base_ThemeCommon::install_default_theme($this->get_type());
 
 		Utils_RecordBrowserCommon::new_addon('premium_warehouse_items_orders', 'Premium_Warehouse_Invoice', 'invoice', 'Premium_Warehouse_InvoiceCommon::invoice_addon_parameters');
-		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items_orders','Invoice Print Date','date', false, false, '', '', false, false);
-		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items_orders','Invoice Number','text', true, false, '32', 'integer', false, false);
+		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items_orders',_M('Invoice Print Date'),'date', false, false, '', '', false, false);
+		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items_orders',_M('Invoice Number'),'text', true, false, '32', 'integer', false, false);
 		Utils_RecordBrowserCommon::set_display_callback('premium_warehouse_items_orders','Invoice Number',array('Premium_Warehouse_InvoiceCommon', 'display_invoice_number'));
 		Utils_RecordBrowserCommon::set_QFfield_callback('premium_warehouse_items_orders','Invoice Number',array('Premium_Warehouse_InvoiceCommon', 'QFfield_invoice_number'));
 
-		Utils_RecordBrowserCommon::new_record_field('premium_warehouse','Invoice Display Name','text', false, false, '64', '', false, false);
-		Utils_RecordBrowserCommon::new_record_field('premium_warehouse','Invoice Number Code','text', false, false, '16', '', false, false);
+		Utils_RecordBrowserCommon::new_record_field('premium_warehouse',_M('Invoice Display Name'),'text', false, false, '64', '', false, false);
+		Utils_RecordBrowserCommon::new_record_field('premium_warehouse',_M('Invoice Number Code'),'text', false, false, '16', '', false, false);
 
-		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items_orders_details','SWW','text', true, false, '32', 'integer', false, false, 12);
+		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items_orders_details',_M('SWW'),'text', true, false, '32', 'integer', false, false, 12);
 
-		Utils_RecordBrowserCommon::new_record_field('data_tax_rates','Tax Code','text', true, false, '8', '', false, false);
+		Utils_RecordBrowserCommon::new_record_field('data_tax_rates',_M('Tax Code'),'text', true, false, '8', '', false, false);
 
 		Variable::set('premium_warehouse_invoice_style', 'US');
 
@@ -73,7 +73,7 @@ class Premium_Warehouse_InvoiceInstall extends ModuleInstall {
 	}
 	
 	public static function simple_setup() {
-        return array('package'=>'Inventory Management', 'option'=>'Invoice Print');
+        return array('package'=>__('Inventory Management'), 'option'=>__('Invoice Print'));
 	}
 }
 

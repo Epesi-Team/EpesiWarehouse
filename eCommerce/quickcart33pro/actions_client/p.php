@@ -331,13 +331,13 @@ if( isset( $iContent ) && is_numeric( $iContent ) ){
 	  $states_ret = DB::Execute('SELECT p.akey, p.value, p.parent_id FROM utils_commondata_tree p where p.parent_id in ('.implode(',',array_keys($countries_with_states)).') ORDER BY value');
 	  while($row = $states_ret->FetchRow()) {
 		if(!isset($states[$countries_with_states[$row['parent_id']]])) $states[$countries_with_states[$row['parent_id']]] = array();
-		$states[$countries_with_states[$row['parent_id']]][$row['akey']] = Base_LangCommon::ts('Utils_CommonData',$row['value']);
+		$states[$countries_with_states[$row['parent_id']]][$row['akey']] = _V($row['value']);
 	  }
 	  $statesJS = json_encode($states);
 	  
 	  $countries = DB::GetAssoc('SELECT p.akey, p.value FROM utils_commondata_tree p WHERE p.parent_id=%d ORDER BY value',array($countries_id));
 	  foreach($countries as $k=>$v) {
-		$countries[$k] = Base_LangCommon::ts('Utils_CommonData',$v);
+		$countries[$k] = _V($v);
 	  }
 
 	  $was_default = 0;

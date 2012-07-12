@@ -40,7 +40,7 @@ class Premium_Warehouse_Items_LocationCommon extends ModuleCommon {
 		}
 		if (isset($r['rental_item']) && $r['rental_item']) $ret = 'Yes';
 		else $ret = 'No';
-		return '<a '.Module::create_href(array('warehouse_change_rental_status'=>$r['id'])).'>'.Base_LangCommon::ts('Premium_Warehouse_Items_Location',$ret).'</a>';
+		return '<a '.Module::create_href(array('warehouse_change_rental_status'=>$r['id'])).'>'._V($ret).'</a>';
 		//return false;
 	}
 
@@ -107,7 +107,7 @@ class Premium_Warehouse_Items_LocationCommon extends ModuleCommon {
 		);
 		if (!$nolink)
 			$tooltip = '<b>'.
-				Base_LangCommon::ts('Premium_Warehouse_Items_Location',$custom_label['main'].':').
+				_V($custom_label['main'].':').
 				'</b><HR>'.
 				'<table border=0>';
 				
@@ -147,7 +147,7 @@ class Premium_Warehouse_Items_LocationCommon extends ModuleCommon {
 				if ($v['warehouse']==$warehouse) $warehouse_label = '<b>'.$warehouse_label.'</b>';
 				if ($quantities[$v['warehouse']])
 					$tooltip .= '<tr><td>'.
-						Base_LangCommon::ts('Premium_Warehouse_Items_Location',$custom_label['in_one'], array($warehouse_label)).
+						_V($custom_label['in_one'], array($warehouse_label)).
 						'</td><td bgcolor="#FFFFFF" WIDTH=50 style="text-align:right;">'.
 						$quantities[$v['warehouse']].
 						'</td></tr>';
@@ -158,7 +158,7 @@ class Premium_Warehouse_Items_LocationCommon extends ModuleCommon {
 			}
 			if (!$nolink)
 				$tooltip .= '<tr><td><b>'.
-					Base_LangCommon::ts('Premium_Warehouse_Items_Location',$custom_label['in_all']).
+					_V($custom_label['in_all']).
 					'</b></td><td bgcolor="#FFFFCC" style="text-align:right;"><b>'.
 					$total.
 					'</b></td></tr></table>';
@@ -173,17 +173,17 @@ class Premium_Warehouse_Items_LocationCommon extends ModuleCommon {
 				if ($k!=-1)
 					$warehouse_label = $warehouses[$k];
 				else
-					$warehouse_label = Base_LangCommon::ts('Premium_Warehouse_Items_Location','--');
+					$warehouse_label = '---';
 				if ($k==$warehouse) $warehouse_label = '<b>'.$warehouse_label.'</b>';
 				$tooltip .= '<tr><td>'.
-					Base_LangCommon::ts('Premium_Warehouse_Items_Location',$custom_label['in_one'], array($warehouse_label)).
+					_V($custom_label['in_one'], array($warehouse_label)).
 					'</td><td bgcolor="#FFFFFF" WIDTH=50 style="text-align:right;">'.
 					$quantities[$k].
 					'</td></tr>';
 			}
 			if (!$nolink)
 				$tooltip .= '<tr><td><b>'.
-					Base_LangCommon::ts('Premium_Warehouse_Items_Location',$custom_label['in_all']).
+					_V($custom_label['in_all']).
 					'</b></td><td bgcolor="#FFFFCC" style="text-align:right;"><b>'.
 					$total.
 					'</b></td></tr></table>';
@@ -199,20 +199,20 @@ class Premium_Warehouse_Items_LocationCommon extends ModuleCommon {
 	
 	public static function location_addon_parameters($record) {
 		if ($record['item_type']=='0' || $record['item_type']=='1')
-		    return array('show'=>true, 'label'=>'Items Locations');
+		    return array('show'=>true, 'label'=>__('Items Locations'));
 		 return array('show'=>false);
 	}
 
 	public static function location_serial_addon_parameters($record) {
 		if ($record['item_type']!=1) return array('show'=>false);
-		return array('show'=>true, 'label'=>'Items Serials');
+		return array('show'=>true, 'label'=>__('Items Serials'));
 	}
 
 	public static function company_items_addon_parameters($record) {
 		if (!isset($record['id'])) return array();
 	    $items = DB::GetOne('SELECT count(location_id) FROM premium_warehouse_location_serial WHERE owner=%s', array('C:'.$record['id']));
 		if (!$items) return array('show'=>false);
-		return array('show'=>true, 'label'=>'Warehouse Items');
+		return array('show'=>true, 'label'=>__('Warehouse Items'));
 	}
 }
 

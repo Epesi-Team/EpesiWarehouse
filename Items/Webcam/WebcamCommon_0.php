@@ -32,10 +32,10 @@ class Premium_Warehouse_Items_WebcamCommon extends ModuleCommon {
        type="application/x-shockwave-flash"
        pluginspage="http://www.macromedia.com/go/getflashplayer"
 />
-</object><a style="margin:20px auto 0px auto;width:512px;padding:10px;display:block;border:1px solid gray;font-size:16px;background-color:#EEEEEE" href="javascript:leightbox_deactivate(\'webcam\')">'.Base_LangCommon::ts('Premium_Warehouse_Items_Webcam','Close').'</a></div>','Webcam',1);
+</object><a style="margin:20px auto 0px auto;width:512px;padding:10px;display:block;border:1px solid gray;font-size:16px;background-color:#EEEEEE" href="javascript:leightbox_deactivate(\'webcam\')">'.__('Close').'</a></div>','Webcam',1);
         
 			$icon = Base_ThemeCommon::get_template_file('Premium_Warehouse_Items_Webcam','photo.png');
-			$label = Base_LangCommon::ts('Premium_Warehouse_Items_Webcam','Webcam');
+			$label = __('Webcam');
 			Base_ActionBarCommon::add($icon,$label,Libs_LeightboxCommon::get_open_href('webcam'));
         }
     }
