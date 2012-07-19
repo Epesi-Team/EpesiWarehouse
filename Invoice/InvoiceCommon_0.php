@@ -18,12 +18,12 @@ class Premium_Warehouse_InvoiceCommon extends ModuleCommon {
 	private static $rb_obj=null;
 	
 	public static function invoice_addon_parameters($record) {
-		if (isset($record['id']) && $record['transaction_type']==1 && (!isset($record['payment']) || $record['payment'])) {
+		if (isset($record['id']) && (!isset($record['payment']) || $record['payment'])) {
 			$href = 'target="_blank" href="modules/Premium/Warehouse/Invoice/print_invoice.php?'.http_build_query(array('record_id'=>$record['id'], 'cid'=>CID)).'"';
 			if (!$record['invoice_number'] && $record['transaction_type']==1) {
 				$href .= ' '.Utils_TooltipCommon::open_tag_attrs(__('Number is not defined<br>It will be assigned automatically upon print'), false);
 			}
-			if (!$record['receipt']) Base_ActionBarCommon::add('print', __('Print Invoice'), $href);
+			if (!$record['receipt']) Base_ActionBarCommon::add('print', __('Print'), $href);
 
 			if(isset($_GET['receipt_printed']) && $_GET['receipt_printed']==$record['id']) {
 				Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $record['id'], array('invoice_print_date'=>date('Y-m-d')));
@@ -48,8 +48,11 @@ class Premium_Warehouse_InvoiceCommon extends ModuleCommon {
 	public static function generate_invoice_number($order) {
 		if (!Utils_RecordBrowserCommon::get_access('premium_warehouse_items_orders','edit', $order)) return '';
 		if (!$order['warehouse']) return '';
+		if ($order['status']<2) return '';
 		$t = strtotime(date('Y-m-d'));//strtotime($order['transaction_date']);
-		$invoice_number = DB::GetOne('SELECT MAX(CONVERT(f_invoice_number,UNSIGNED)) FROM premium_warehouse_items_orders_data_1 WHERE f_warehouse=%d AND f_transaction_type=%d AND f_receipt=%d AND f_invoice_print_date>=%D AND f_invoice_print_date<=%D AND active=1', array($order['warehouse'], $order['transaction_type'], $order['receipt']?1:0, date('Y-m-01',$t), date('Y-m-t',$t)));
+		$field = 'CONVERT(f_invoice_number,UNSIGNED)';
+		if (DATABASE_DRIVER=='postgres') $field = 'f_invoice_number::integer';
+		$invoice_number = DB::GetOne('SELECT MAX('.$field.') FROM premium_warehouse_items_orders_data_1 WHERE f_warehouse=%d AND f_transaction_type=%d AND f_receipt=%d AND f_invoice_print_date>=%D AND f_invoice_print_date<=%D AND active=1', array($order['warehouse'], $order['transaction_type'], $order['receipt']?1:0, date('Y-m-01',$t), date('Y-m-t',$t)));
 		if (!is_numeric($invoice_number)) $invoice_number = 0;
 		$order['invoice_number'] = $invoice_number+1;
 		Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $order['id'], array('invoice_number'=>$order['invoice_number'],'invoice_print_date'=>$t));

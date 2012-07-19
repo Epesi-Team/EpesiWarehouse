@@ -300,6 +300,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 			$rb->enable_quick_new_records();
 		$rb->set_defaults(array('transaction_id'=>$arg['id']));
 		$rb->set_header_properties($header_prop);
+		$rb->disable_pdf();
 		$this->display_module($rb,$order,'show_data');
 	}
 	
