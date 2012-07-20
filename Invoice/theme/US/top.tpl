@@ -275,7 +275,7 @@
 			</td>
 			<td width="45px">
 				<font size="7"><b>
-					{$labels.gorss_value}
+					{$labels.gross_value}
 				</b></font>
 			</td>
 		</tr>

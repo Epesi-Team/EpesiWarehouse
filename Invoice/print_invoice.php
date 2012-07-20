@@ -19,7 +19,7 @@ define('READ_ONLY_SESSION',true);
 require_once('../../../../include.php');
 ModuleManager::load_modules();
 
-//Base_ThemeCommon::install_default_theme('Premium_Warehouse_Invoice');
+Base_ThemeCommon::install_default_theme('Premium_Warehouse_Invoice');
 
 $order = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $order_id);
 $style = Variable::get('premium_warehouse_invoice_style', false);
@@ -47,7 +47,7 @@ if ($order['transaction_type']==0) {
 //	$header = 'Zamówienie '.$order['po_id'];
 }
 
-if (!$order['invoice_print_date']) {
+if (!$order['invoice_print_date'] && $order['status']>2) {
 	$order['invoice_print_date'] = date('Y-m-d');
 	Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $order['id'], array('invoice_print_date'=>$order['invoice_print_date']));
 }
@@ -66,7 +66,22 @@ if (ModuleManager::is_installed('Premium_Warehouse_eCommerce')>=0) {
 	}
 }
 
-Libs_TCPDFCommon::prepare_header($tcpdf,null, '', false);
+$theme = Base_ThemeCommon::init_smarty();
+$theme->assign('order', $order);
+
+ob_start();
+@Base_ThemeCommon::display_smarty($theme,'Premium_Warehouse_Invoice',$style.'/footer');
+$footer = ob_get_clean();
+
+$tcpdf->setPrintHeader(false);
+preg_match('/footer_height[\s]?=[\s]?([0-9]+)/i', $footer, $matches);
+if (isset($matches[1])) {
+	$tcpdf->setFooterMargin($matches[1]);
+	$tcpdf->SetAutoPageBreak(true, $matches[1]);
+}
+$tcpdf->set_footer_border('');
+
+Libs_TCPDFCommon::prepare_header($tcpdf,null, '', false, null);
 Libs_TCPDFCommon::add_page($tcpdf);
 
 $buffer = '';
@@ -106,7 +121,7 @@ $labels = array(
 	'units' => 'units',
 	'net_price' => 'Net Price',
 	'tax_rate' => 'Tax Rate',
-	'gorss_value' => 'Gross value',
+	'gross_value' => 'Gross value',
 	'net_value' => 'Net value',
 	'tax_value' => 'Tax Value',
 	'sku' => 'SKU',
@@ -141,7 +156,7 @@ Base_ThemeCommon::display_smarty($theme,'Premium_Warehouse_Invoice',$style.'/top
 $html = ob_get_clean();
 
 $html = Libs_TCPDFCommon::stripHTML($html);
-Libs_TCPDFCommon::writeHTML($tcpdf, $html);
+Libs_TCPDFCommon::writeHTML($tcpdf, $html, false);
 
 $items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$order_id));
 $lp = 1;
@@ -190,12 +205,13 @@ foreach ($items as $k=>$v) {
 	$theme = Base_ThemeCommon::init_smarty();
 	$theme->assign('details', $items[$k]);
 	$theme->assign('lp', $lp);
+	$theme->assign('order', $order);
 	ob_start();
 	Base_ThemeCommon::display_smarty($theme,'Premium_Warehouse_Invoice',$style.'/table_row');
 	$html = ob_get_clean();
 	
 	$html = Libs_TCPDFCommon::stripHTML($html);
-	Libs_TCPDFCommon::writeHTML($tcpdf, $html);
+	Libs_TCPDFCommon::writeHTML($tcpdf, $html, false);
 	$lp++;
 }
 
@@ -253,7 +269,7 @@ foreach (array('shipment'=>__('Shipment'), 'handling'=>__('Handling')) as $k=>$v
 		$html = ob_get_clean();
 		
 		$html = Libs_TCPDFCommon::stripHTML($html);
-		Libs_TCPDFCommon::writeHTML($tcpdf, $html);
+		Libs_TCPDFCommon::writeHTML($tcpdf, $html, false);
 		$lp++;
 	}
 }
@@ -289,19 +305,20 @@ $theme = Base_ThemeCommon::init_smarty();
 $theme->assign('gross_total', $gross_total_sum_f);
 $theme->assign('net_total', $net_total_sum_f);
 $theme->assign('tax_total', $tax_total_sum_f);
+$theme->assign('order', $order);
 ob_start();
 Base_ThemeCommon::display_smarty($theme,'Premium_Warehouse_Invoice',$style.'/summary');
 $html = ob_get_clean();
 
 $html = Libs_TCPDFCommon::stripHTML($html);
-Libs_TCPDFCommon::writeHTML($tcpdf, $html);
+Libs_TCPDFCommon::writeHTML($tcpdf, $html, false);
 
 /******************** bottom *************************/
-function cash2word ($arg) {
+function cash2word_pl ($arg, $thsd_0=null, $thsd_cents=null) {
 	$word_xxx = array('','sto','dwieście','trzysta','czterysta','pięćset','sześćset','siedemset','osiemset','dziewięćset');
 	$word_xx = array('','dziesięć','dwadzieścia','trzydzieści','czterdzieści','pięćdziesiąt','sześćdziesiąt','siedemdziesiąt','osiemdziesiąt','dziewięćdziesiąt');
 	$word_x = array('','jeden','dwa','trzy','cztery','pięć','sześć','siedem','osiem','dziewięć');
-	$word_1x = array('dziesięć','jedenaście','dwanaście','trzynaście','czternaście','piętnaście','szesnaście','siednaście','osiemnaście','dziewiętnaście');
+	$word_1x = array('dziesięć','jedenaście','dwanaście','trzynaście','czternaście','piętnaście','szesnaście','siedemnaście','osiemnaście','dziewiętnaście');
 	
 	$thsd_8 = array('kwadrylion','kwadrylionów','kwadryliony');
 	$thsd_7 = array('tryliard','tryliardów','tryliardy');
@@ -311,8 +328,10 @@ function cash2word ($arg) {
 	$thsd_3 = array('miliard','miliardów','miliardy');
 	$thsd_2 = array('milion','milionów','miliony');
 	$thsd_1 = array('tysiąc','tysięcy','tysiące');
-	$thsd_0 = array('złoty','złotych','złote');
-	$thsd_cents = array('grosz','groszy','grosze');
+	if ($thsd_0===null)
+		$thsd_0 = array('złoty','złotych','złote');
+	if ($thsd_cents===null)
+		$thsd_cents = array('grosz','groszy','grosze');
 
 	$parts=explode('.',(string)$arg);
 	if (intval($parts[0])!=0) {
@@ -351,6 +370,192 @@ function cash2word ($arg) {
 	return $text;
 }
 
+function cash2word_en ($number, $thsd_0=null, $thsd_cents=null) {
+/*****
+     * A recursive function to turn digits into words
+     * Numbers must be integers from -999,999,999,999 to 999,999,999,999 inclussive.    
+     *
+     *  (C) 2010 Peter Ajtai
+     *    This program is free software: you can redistribute it and/or modify
+     *    it under the terms of the GNU General Public License as published by
+     *    the Free Software Foundation, either version 3 of the License, or
+     *    (at your option) any later version.
+     *
+     *    This program is distributed in the hope that it will be useful,
+     *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+     *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     *    GNU General Public License for more details.
+     *
+     *    See the GNU General Public License: <http://www.gnu.org/licenses/>.
+     *
+     */
+    // zero is a special case, it cause problems even with typecasting if we don't deal with it here
+    $max_size = pow(10,18);
+	$number = (float)($number);
+	$decimals = $number - floor($number);
+	$number = (int)($number);
+	$curr = $thsd_0[1];
+    if (!$number) $string = "zero";
+	elseif (is_int($number) && $number < abs($max_size)) 
+   {            
+        switch ($number) 
+        {
+            // set up some rules for converting digits to words
+            case $number < 0:
+                $prefix = "negative";
+                $suffix = cash2word_en(-1*$number);
+                $string = $prefix . " " . $suffix;
+                break;
+            case 1:
+                $string = "one";
+				$curr = $thsd_0[0];
+                break;
+            case 2:
+                $string = "two";
+                break;
+            case 3:
+                $string = "three";
+                break;
+            case 4: 
+                $string = "four";
+                break;
+            case 5:
+                $string = "five";
+                break;
+            case 6:
+                $string = "six";
+                break;
+            case 7:
+                $string = "seven";
+                break;
+            case 8:
+                $string = "eight";
+                break;
+            case 9:
+                $string = "nine";
+                break;                
+            case 10:
+                $string = "ten";
+                break;            
+            case 11:
+                $string = "eleven";
+                break;            
+            case 12:
+                $string = "twelve";
+                break;            
+            case 13:
+                $string = "thirteen";
+                break;            
+            // fourteen handled later
+            case 15:
+                $string = "fifteen";
+                break;            
+            case $number < 20:
+                $string = cash2word_en($number%10);
+                // eighteen only has one "t"
+                if ($number == 18)
+                {
+                $suffix = "een";
+                } else 
+                {
+                $suffix = "teen";
+                }
+                $string .= $suffix;
+                break;            
+            case 20:
+                $string = "twenty";
+                break;            
+            case 30:
+                $string = "thirty";
+                break;            
+            case 40:
+                $string = "forty";
+                break;            
+            case 50:
+                $string = "fifty";
+                break;            
+            case 60:
+                $string = "sixty";
+                break;            
+            case 70:
+                $string = "seventy";
+                break;            
+            case 80:
+                $string = "eighty";
+                break;            
+            case 90:
+                $string = "ninety";
+                break;                
+            case $number < 100:
+                $prefix = cash2word_en($number-$number%10);
+                $suffix = cash2word_en($number%10);
+                $string = $prefix . "-" . $suffix;
+                break;
+            // handles all number 100 to 999
+            case $number < pow(10,3):   
+                // floor return a float not an integer
+                $prefix = cash2word_en(intval(floor($number/pow(10,2)))) . " hundred";
+                if ($number%pow(10,2)) {
+					$suffix = " and " . cash2word_en($number%pow(10,2));
+					$string = $prefix . $suffix;
+				} else $string = $prefix;
+                break;
+            case $number < pow(10,6):
+                // floor return a float not an integer
+                $prefix = cash2word_en(intval(floor($number/pow(10,3)))) . " thousand";
+                if ($number%pow(10,3)) {
+					$suffix = cash2word_en($number%pow(10,3));
+					$string = $prefix . " " . $suffix;
+				} else $string = $prefix;
+                break;
+            case $number < pow(10,9):
+                // floor return a float not an integer
+                $prefix = cash2word_en(intval(floor($number/pow(10,6)))) . " million";
+                if ($number%pow(10,6)) {
+					$suffix = cash2word_en($number%pow(10,6));
+					$string = $prefix . " " . $suffix;
+				} else $string = $prefix;
+                break;                    
+            case $number < pow(10,12):
+                // floor return a float not an integer
+                $prefix = cash2word_en(intval(floor($number/pow(10,9)))) . " billion";
+                if ($number%pow(10,9)) {
+					$suffix = cash2word_en($number%pow(10,9));
+					$string = $prefix . " " . $suffix;    
+				} else $string = $prefix;
+                break;
+            case $number < pow(10,15):
+                // floor return a float not an integer
+                $prefix = cash2word_en(intval(floor($number/pow(10,12)))) . " trillion";
+                if ($number%pow(10,12)) {
+					$suffix = cash2word_en($number%pow(10,12));
+					$string = $prefix . " " . $suffix;    
+				}
+                break;        
+            // Be careful not to pass default formatted numbers in the quadrillions+ into this function
+            // Default formatting is float and causes errors
+            case $number < pow(10,18):
+                // floor return a float not an integer
+                $prefix = cash2word_en(intval(floor($number/pow(10,15)))) . " quadrillion";
+                if ($number%pow(10,15)) {
+					$suffix = cash2word_en($number%pow(10,15));
+					$string = $prefix . " " . $suffix;    
+				} else $string = $prefix;
+                break;                    
+        }
+    } else
+    {
+        return "ERROR with - $number<br/> Number must be an integer between -" . number_format($max_size, 0, ".", ",") . " and " . number_format($max_size, 0, ".", ",") . " exclussive.";
+    }
+	if ($thsd_0!==null) {
+		$string .= ' '.$curr;
+	}
+	if ($thsd_cents!==null) {
+		$string .= ' '.cash2word_en(floor($decimals*100), $thsd_cents);
+	}
+    return $string;
+}
+
 $theme = Base_ThemeCommon::init_smarty();
 $theme->assign('order', $order);
 $total = array();
@@ -361,13 +566,29 @@ foreach($amount_due as $k=>$v) {
 	$amount_due[$k] = Utils_CurrencyFieldCommon::format($v, $k);
 }
 foreach($paid as $k=>$v) $paid[$k] = Utils_CurrencyFieldCommon::format($v, $k);
-$theme->assign('total', implode(', ',$total));
-$theme->assign('paid', implode(', ',$paid));
+$theme->assign('total', implode('<br/>',$total));
+$theme->assign('paid', implode('<br/>',$paid));
 $theme->assign('amount_due', implode(', ',$amount_due));
 $PLN = DB::GetOne('SELECT id FROM utils_currency WHERE code=%s', array('PLN'));
-if (is_numeric($PLN) && isset($gross_total_sum[$PLN]['x'])) $wording = cash2word($gross_total_sum[$PLN]['x']);
-else $wording = '';
-$theme->assign('total_word', $wording);
+$USD = DB::GetOne('SELECT id FROM utils_currency WHERE code=%s', array('USD'));
+$EUR = DB::GetOne('SELECT id FROM utils_currency WHERE code=%s', array('EUR'));
+$wording = array();
+$wording_en = array();
+
+if (is_numeric($PLN) && isset($gross_total_sum[$PLN]['x'])) {
+	$wording[] = cash2word_pl($gross_total_sum[$PLN]['x']);
+	$wording_en[] = cash2word_en($gross_total_sum[$PLN]['x'], array('zloty', 'zlote'), array('grosz', 'groszy'));
+}
+if (is_numeric($USD) && isset($gross_total_sum[$USD]['x'])) {
+	$wording[] = cash2word_pl($gross_total_sum[$USD]['x'], array('dolar','dolarów','dolary'), array('cent','centów','centy'));
+	$wording_en[] = cash2word_en($gross_total_sum[$USD]['x'], array('dolar', 'dolars'), array('cent', 'cents'));
+}
+if (is_numeric($EUR) && isset($gross_total_sum[$EUR]['x'])) {
+	$wording[] = cash2word_pl($gross_total_sum[$EUR]['x'], array('euro','euro','euro'), array('cent','centów','centy'));
+	$wording_en[] = cash2word_en($gross_total_sum[$EUR]['x'], array('euro', 'euro'), array('cent', 'cent'));
+}
+$theme->assign('total_word', implode('<br/>',$wording));
+$theme->assign('total_word_en', implode('<br/>',$wording_en));
 
 $labels = array(
 	'amount_due'=>'AMOUNT DUE:',
@@ -397,14 +618,19 @@ Base_ThemeCommon::display_smarty($theme,'Premium_Warehouse_Invoice',$style.'/bot
 $html = ob_get_clean();
 
 $html = Libs_TCPDFCommon::stripHTML($html);
-Libs_TCPDFCommon::writeHTML($tcpdf, $html);
+Libs_TCPDFCommon::writeHTML($tcpdf, $html, false);
+
+$footer_y = $tcpdf->getPageHeight() - $tcpdf->getFooterMargin();
+$margins = $tcpdf->getOriginalMargins();
+$tcpdf->SetAutoPageBreak(false);
+$tcpdf->SetXY($margins['left'], $footer_y);
+Libs_TCPDFCommon::writeHTML($tcpdf, $footer, false);
 
 $buffer = Libs_TCPDFCommon::output($tcpdf);
 
 header('Content-Type: application/pdf');
 header('Content-Length: '.strlen($buffer));
-//header('Content-disposition: attachement; filename="'.__('Invoice').'_'.$order['invoice_id'].'.pdf"');
-header('Content-disposition: filename="'.__('Invoice').'_'.$order['invoice_id'].'.pdf"');
+header('Content-disposition: filename="'.($order['transaction_type']==0?__('Purchase_Order'):($order['status']>2?__('Invoice'):__('Sales_Quote'))).'_'.$order['id'].'.pdf"');
 
 print($buffer);
 ?>

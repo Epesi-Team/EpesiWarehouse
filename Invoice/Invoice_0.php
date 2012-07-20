@@ -54,7 +54,7 @@ class Premium_Warehouse_Invoice extends Module {
 		}
 		
 		$form = $this->init_module('Libs/QuickForm');
-		$form->addElement('select', 'invoice_style', __('Invoice Style'), array('US'=>'US', 'PL'=>'PL'));
+		$form->addElement('select', 'invoice_style', __('Invoice Style'), array('US'=>'US', 'PL'=>'PL', 'Drillmec1'=>'Drillmec1'));
 
 		$style = Variable::get('premium_warehouse_invoice_style', false);
 		if (!$style) $style = 'US';
