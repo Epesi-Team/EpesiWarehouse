@@ -263,6 +263,7 @@ foreach (array('shipment'=>__('Shipment'), 'handling'=>__('Handling')) as $k=>$v
 				'units'=>__( 'ea.'),
 			);
 		$theme->assign('details', $details);
+		$theme->assign('order', $order);
 		$theme->assign('lp', $lp);
 		ob_start();
 		Base_ThemeCommon::display_smarty($theme,'Premium_Warehouse_Invoice',$style.'/table_row');

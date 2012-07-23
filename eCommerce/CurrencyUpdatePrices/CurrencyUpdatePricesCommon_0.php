@@ -13,7 +13,7 @@ defined("_VALID_ACCESS") || die('Direct access forbidden');
 class Premium_Warehouse_eCommerce_CurrencyUpdatePricesCommon extends ModuleCommon {
 
 	public static function admin_caption() {
-		return __('eCommerce - prices');
+		return array('label'=>__('eCommerce - prices'), 'section'=>__('Features Configuration'));
 	}
 	
 	public static function update($data = null) {

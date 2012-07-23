@@ -16,7 +16,7 @@ defined("_VALID_ACCESS") || die('Direct access forbidden');
 
 class Premium_WarehouseCommon extends ModuleCommon {
     public static function admin_caption() {
-		return __('Inventory');
+		return array('label'=>__('Inventory'), 'section'=>__('Features Configuration'));
     }
 
     public static function get_warehouse($id) {

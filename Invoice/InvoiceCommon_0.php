@@ -171,7 +171,7 @@ class Premium_Warehouse_InvoiceCommon extends ModuleCommon {
 	}
 	
 	public static function admin_caption() {
-		return __('Invoice Printing');
+		return array('label'=>__('Invoice Printing'), 'section'=>__('Features Configuration'));
 	}
 }
 ?>

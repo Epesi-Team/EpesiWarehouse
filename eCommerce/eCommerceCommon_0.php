@@ -835,7 +835,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
     }
 
     public static function admin_caption() {
-        return __('eCommerce');
+		return array('label'=>__('eCommerce'), 'section'=>__('Features Configuration'));
     }
 
     public static function applet_caption() {

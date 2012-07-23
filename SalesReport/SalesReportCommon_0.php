@@ -14,7 +14,7 @@ defined("_VALID_ACCESS") || die('Direct access forbidden');
 
 class Premium_Warehouse_SalesReportCommon extends ModuleCommon {
 	public static function admin_caption() {
-		return __("Sales Report");
+		return array('label'=>__("Sales Report"), 'section'=>__('Features Configuration'));
 	}
 	public static function currency_exchange_addon_access() {
 		return Utils_RecordBrowserCommon::get_access('premium_warehouse_items_orders','edit',Utils_RecordBrowser::$last_record);
