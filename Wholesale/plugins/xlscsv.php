@@ -30,12 +30,12 @@ class Premium_Warehouse_Wholesale__Plugin_xlscsv implements Premium_Warehouse_Wh
 	 */
 	public function get_parameters() {
 		return array(
-			'ID'=>'text',
-			'Nazwa produktu'=>'text',
-                        'Stan magazynu'=>'text',
-                        'Cena netto'=>'text',
-                        'Producent'=>'text',
-                        'Kod producenta'=>'text'
+			__('ID')=>'text',
+			__('Nazwa produktu')=>'text',
+			__('Stan magazynu')=>'text',
+			__('Cena netto')=>'text',
+			__('Producent')=>'text',
+			__('Kod producenta')=>'text'
 		);
 	}
 

@@ -38,9 +38,9 @@ class Premium_Warehouse_Items_LocationCommon extends ModuleCommon {
 			$r['rental_item'] = $r['rental_item']?0:1;
 			Utils_RecordBrowserCommon::update_record('premium_warehouse_location', $r['id'], array('rental_item'=>$r['rental_item']));
 		}
-		if (isset($r['rental_item']) && $r['rental_item']) $ret = 'Yes';
-		else $ret = 'No';
-		return '<a '.Module::create_href(array('warehouse_change_rental_status'=>$r['id'])).'>'._V($ret).'</a>';
+		if (isset($r['rental_item']) && $r['rental_item']) $ret = __('Yes');
+		else $ret = __('No');
+		return '<a '.Module::create_href(array('warehouse_change_rental_status'=>$r['id'])).'>'.$ret.'</a>';
 		//return false;
 	}
 
@@ -101,13 +101,13 @@ class Premium_Warehouse_Items_LocationCommon extends ModuleCommon {
 		if ($r['item_type']==2 || $r['item_type']==3) return '---';
 		if (!isset($r['id'])) return '0';
 		if ($custom_label===null) $custom_label = array(
-			'main'=>'Quantity on hand',
+			'main'=>__('Quantity on Hand'),
 			'in_one'=>'%s',
-			'in_all'=>'Total',
+			'in_all'=>__('Total'),
 		);
 		if (!$nolink)
 			$tooltip = '<b>'.
-				_V($custom_label['main'].':').
+				$custom_label['main'].':'.
 				'</b><HR>'.
 				'<table border=0>';
 				
@@ -147,7 +147,7 @@ class Premium_Warehouse_Items_LocationCommon extends ModuleCommon {
 				if ($v['warehouse']==$warehouse) $warehouse_label = '<b>'.$warehouse_label.'</b>';
 				if ($quantities[$v['warehouse']])
 					$tooltip .= '<tr><td>'.
-						_V($custom_label['in_one'], array($warehouse_label)).
+						sprintf($custom_label['in_one'], $warehouse_label).
 						'</td><td bgcolor="#FFFFFF" WIDTH=50 style="text-align:right;">'.
 						$quantities[$v['warehouse']].
 						'</td></tr>';
@@ -158,7 +158,7 @@ class Premium_Warehouse_Items_LocationCommon extends ModuleCommon {
 			}
 			if (!$nolink)
 				$tooltip .= '<tr><td><b>'.
-					_V($custom_label['in_all']).
+					$custom_label['in_all'].
 					'</b></td><td bgcolor="#FFFFCC" style="text-align:right;"><b>'.
 					$total.
 					'</b></td></tr></table>';
@@ -176,14 +176,14 @@ class Premium_Warehouse_Items_LocationCommon extends ModuleCommon {
 					$warehouse_label = '---';
 				if ($k==$warehouse) $warehouse_label = '<b>'.$warehouse_label.'</b>';
 				$tooltip .= '<tr><td>'.
-					_V($custom_label['in_one'], array($warehouse_label)).
+					sprintf($custom_label['in_one'], $warehouse_label).
 					'</td><td bgcolor="#FFFFFF" WIDTH=50 style="text-align:right;">'.
 					$quantities[$k].
 					'</td></tr>';
 			}
 			if (!$nolink)
 				$tooltip .= '<tr><td><b>'.
-					_V($custom_label['in_all']).
+					$custom_label['in_all'].
 					'</b></td><td bgcolor="#FFFFCC" style="text-align:right;"><b>'.
 					$total.
 					'</b></td></tr></table>';

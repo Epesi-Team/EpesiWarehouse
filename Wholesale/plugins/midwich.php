@@ -30,8 +30,8 @@ class Premium_Warehouse_Wholesale__Plugin_midwich implements Premium_Warehouse_W
 	 */
 	public function get_parameters() {
 		return array(
-			'Login'=>'text',
-			'Password'=>'password'
+			__('Login')=>'text',
+			__('Password')=>'password'
 		);
 	}
 

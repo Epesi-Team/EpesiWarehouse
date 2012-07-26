@@ -93,42 +93,41 @@ $theme->assign('company', $company);
 $theme->assign('date', $order['invoice_print_date']);
 
 $labels = array(
-	'po' => 'Purchase Order no.',
-	'receipt' => 'Receipt no.',
-	'invoice' => 'Invoice no.',
-	'order' => 'Order no.',
-	'copy' => 'ORIGINAL | COPY',
-	'tel' => 'tel.',
-	'fax' => 'fax.',
-	'sale_date' => 'Date:',
-	'seller' => 'Sold from:',
-	'seller_address' => 'Address:',
-	'seller_id_number' => 'TIN:',
-	'buyer' => 'Sold to:',
-	'buyer_address' => 'Address:',
-	'buyer_id_number' => 'SSN:',
-	'shipment_type' => 'Shipment Type:',
-	'shipping_to' => 'Shipping to:',
-	'shipping_address' => 'Address:',
-	'payment_method' => 'Payment method:',
-	'due_date' => 'due date:',
-	'bank' => 'BANK:',
-	'cc_info' => 'Payment info:',
-	'no' => 'Item No.',
-	'item_name' => 'Item/service name',
-	'classification' => 'NAPCS',
-	'quantity' => 'qty',
-	'units' => 'units',
-	'net_price' => 'Net Price',
-	'tax_rate' => 'Tax Rate',
-	'gross_value' => 'Gross value',
-	'net_value' => 'Net value',
-	'tax_value' => 'Tax Value',
-	'sku' => 'SKU',
-	'comments' => 'Comments'
+	'po' => __('Purchase Order no.'),
+	'receipt' => __('Receipt no.'),
+	'invoice' => __('Invoice no.'),
+	'order' => __('Order no.'),
+	'copy' => __('ORIGINAL | COPY'),
+	'tel' => __('Tel'),
+	'fax' => __('Fax'),
+	'sale_date' => __('Date'),
+	'seller' => __('Sold from'),
+	'seller_address' => __('Address'),
+	'seller_id_number' => __('TIN'),
+	'buyer' => __('Sold to'),
+	'buyer_address' => __('Address'),
+	'buyer_id_number' => __('SSN'),
+	'shipment_type' => __('Shipment Type'),
+	'shipping_to' => __('Shipping to'),
+	'shipping_address' => __('Address'),
+	'payment_method' => __('Payment method'),
+	'due_date' => __('Due Date'),
+	'bank' => __('BANK'),
+	'cc_info' => __('Payment info'),
+	'no' => __('Item No.'),
+	'item_name' => __('Item/service name'),
+	'classification' => __('NAPCS'),
+	'quantity' => __('Qty'),
+	'units' => __('Units'),
+	'net_price' => __('Net Price'),
+	'tax_rate' => __('Tax Rate'),
+	'gross_value' => __('Gross value'),
+	'net_value' => __('Net value'),
+	'tax_value' => __('Tax Value'),
+	'sku' => __('SKU'),
+	'comments' => __('Comments')
 );
-foreach ($labels as $k=>$v)
-	$labels[$k] = _V( $v);
+
 $theme->assign('labels', $labels);
 
 $file = Libs_TCPDFCommon::get_logo_filename();
@@ -592,22 +591,18 @@ $theme->assign('total_word', implode('<br/>',$wording));
 $theme->assign('total_word_en', implode('<br/>',$wording_en));
 
 $labels = array(
-	'amount_due'=>'AMOUNT DUE:',
-	'amount_paid'=>'AMOUNT PAID:',
-	'total_price'=>'TOTAL PRICE:',
-	'in_words'=>'IN WORDS:',
-	'receiver_sig'=>'',
-	'employee_sig'=>'Employee signature',
-	'legal_notice'=>'legal_notice'
+	'amount_due'=>__('AMOUNT DUE'),
+	'amount_paid'=>__('AMOUNT PAID'),
+	'total_price'=>__('TOTAL PRICE'),
+	'in_words'=>__('IN WORDS'),
+	'employee_sig'=>__('Employee signature'),
+	'legal_notice'=>__('legal_notice'),
+	'receiver_sig'=>''
 );
 if (!$order['receipt']) {
-	$labels['receiver_sig'] = 'Receiver signature';
-	$labels['employee_sig'] .= '<br/>Issuing invoice';
+	$labels['receiver_sig'] = __('Receiver signature');
+	$labels['employee_sig'] = __('Employee signature<br/>Issuing invoice');
 }
-
-foreach ($labels as $k=>$v)
-	if ($v) $labels[$k] = _V( $v);
-	else $labels[$k] = '';
 
 if ($labels['legal_notice'] == 'legal_notice') $labels['legal_notice'] = '';
 
@@ -631,7 +626,7 @@ $buffer = Libs_TCPDFCommon::output($tcpdf);
 
 header('Content-Type: application/pdf');
 header('Content-Length: '.strlen($buffer));
-header('Content-disposition: filename="'.($order['transaction_type']==0?__('Purchase_Order'):($order['status']>2?__('Invoice'):__('Sales_Quote'))).'_'.$order['id'].'.pdf"');
+header('Content-disposition: filename="'.($order['transaction_type']==0?__('Purchase Order'):($order['status']>2?__('Invoice'):__('Sales Quote'))).'_'.$order['id'].'.pdf"');
 
 print($buffer);
 ?>

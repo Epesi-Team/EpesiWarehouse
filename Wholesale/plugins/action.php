@@ -30,9 +30,9 @@ class Premium_Warehouse_Wholesale__Plugin_action implements Premium_Warehouse_Wh
 	 */
 	public function get_parameters() {
 		return array(
-			'ID'=>'text',
-			'Login'=>'text',
-			'Password'=>'password'
+			__('ID')=>'text',
+			__('Login')=>'text',
+			__('Password')=>'password'
 		);
 	}
 

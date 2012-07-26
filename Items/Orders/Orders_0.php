@@ -663,7 +663,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 					$ship_received->setDefaults(array('shipment_date'=>date('Y-m-d'), 'shipment_employee'=>$my_id));
 					$lp->add_option('received', __('Items Received'), null, $ship_received);
 					$lp->add_option('onhold', __('Put On Hold'), null, null);
-					$this->display_module($lp, array(__('Shipment Received?')));
+					$this->display_module($lp, array(__('Was the shipment received?')));
 					$this->href = $lp->get_href();
 					$vals = $lp->export_values();
 					if ($vals!==null) {
@@ -776,7 +776,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 						$the_one_warehouse = $v['id'];
 					$new_form->setDefaults(array('warehouse'=>!$trans['warehouse']?Base_User_SettingsCommon::get('Premium_Warehouse', 'my_warehouse'):$trans['warehouse']));
 					$new_form->setDefaults(array('employee'=>$me['id']));
-					$lp->add_option('new', __('Order received'), null, $new_form);
+					$lp->add_option('new', __('Order Received'), null, $new_form);
 					$lp->add_option('cancel', __('Cancel'), null, null);
 					$items_availability_table = $this->get_items_availability_table($trans);
 					$this->display_module($lp, array(__('Recieve Online Order'), array(), $items_availability_table));
@@ -824,7 +824,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 					}
 					$so_form->setDefaults(array('employee'=>$def_employee,'warehouse'=>$def_warehouse));
 
-					$lp->add_option('so', __('Order received'), null, $so_form);
+					$lp->add_option('so', __('Order Received'), null, $so_form);
 
 					$quote_form = $this->init_module('Libs/QuickForm');
 					$quote_form->addElement('datepicker', 'expiration_date', __('Expiration Date'));

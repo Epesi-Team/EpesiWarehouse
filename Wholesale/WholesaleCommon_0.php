@@ -166,17 +166,17 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
     	
 		$theme = Base_ThemeCommon::init_smarty();
 		$fields = array(
-			'total'=>'Items in file:',
-			'scanned'=>'Items scanned:',
-			'available'=>'Items available:',
-			'item_exist'=>'Items found in the system:',
-			'link_exist'=>'Items scanned in the past:',
-			'new_items_added'=>'New items:',
-			'new_categories_added'=>'New categories:',
-			'unknown'=>'Unknown'
+			'total'=>__('Items in file'),
+			'scanned'=>__('Items Scanned'),
+			'available'=>__('Items Available'),
+			'item_exist'=>__('Items found in the system'),
+			'link_exist'=>__('Items scanned in the past'),
+			'new_items_added'=>__('New Items'),
+			'new_categories_added'=>__('New Categories'),
+			'unknown'=>__('Unknown')
 		);
 		foreach ($fields as $k=>$v) 
-			$theme->assign($k, _V( $v));
+			$theme->assign($k, $v);
 		
 		load_js('modules/Premium/Warehouse/Wholesale/scan_file_progress_reporting.js');
 		load_js('modules/Premium/Warehouse/Wholesale/process_file.js');
@@ -271,7 +271,7 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 			foreach ($params as $k=>$v) {
 				$js .= 	'if($("param'.$i.'"))$("param'.$i.'").type="'.$v.'";'.
 						'if($("_param'.$i.'__label")){'.
-							'$("_param'.$i.'__label").innerHTML="'._V($k).'";'.
+							'$("_param'.$i.'__label").innerHTML="'.$k.'";'.
 							'$("_param'.$i.'__label").up("tr").style.display="";'.
 						'}';
 				$i++;

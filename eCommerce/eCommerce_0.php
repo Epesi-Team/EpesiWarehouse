@@ -407,7 +407,7 @@ class Premium_Warehouse_eCommerce extends Module {
 	}
 	
 	public function contactus_page() {
-		return $this->edit_variable_with_lang('Contact us','ecommerce_contactus');
+		return $this->edit_variable_with_lang(__('Contact us'),'ecommerce_contactus');
 	}
 	
 	public function order_status_change_email_page() {
@@ -421,11 +421,11 @@ class Premium_Warehouse_eCommerce extends Module {
 	}
 	
 	public function rules_page() {
-		return $this->edit_variable_with_lang('Rules and policies','ecommerce_rules');
+		return $this->edit_variable_with_lang(__('Rules and policies'),'ecommerce_rules');
 	}
 
 	public function home_page() {
-		return $this->edit_variable_with_lang('Home','ecommerce_home');
+		return $this->edit_variable_with_lang(__('Home'),'ecommerce_home');
 	}
 
 	private function edit_variable_with_lang($header,$v) {
@@ -449,7 +449,7 @@ class Premium_Warehouse_eCommerce extends Module {
 	
 		$f = $this->init_module('Libs/QuickForm');
 		
-		$f->addElement('header',null,_V($header));
+		$f->addElement('header',null,$header);
 		
 		$fck = & $f->addElement('ckeditor', 'content', __('Content'));
 		$fck->setFCKProps('800','300',true);
@@ -475,7 +475,7 @@ class Premium_Warehouse_eCommerce extends Module {
 	
 		$f = $this->init_module('Libs/QuickForm');
 		
-		$f->addElement('header',null,_V($header));
+		$f->addElement('header',null,$header);
 
 		$f->addElement('text', 'subject', __('Subject'),array('maxlength'=>64));
 		
@@ -1009,19 +1009,23 @@ class Premium_Warehouse_eCommerce extends Module {
 		$end_reg = Base_RegionalSettingsCommon::reg2time($end,false);
 		
 		if($tab=='searched') {
+			$label = __('Searched');
 			$ret = DB::Execute('SELECT obj,count(visited_on) as num, obj as name FROM premium_ecommerce_'.$tab.'_stats WHERE visited_on>=%T AND visited_on<%T GROUP BY obj ORDER BY num DESC LIMIT 10',array($start_reg,$end_reg+3600*24));
 		} else {
 			$aj = '';
 			switch($tab) {
 			    case 'categories':
+				$label = __('Categories');
 				$jf = 'j.f_category_name';
 				$j = 'premium_warehouse_items_categories_data_1 j';
 				break;
 			    case 'pages':
+				$label = __('Pages');
 				$jf = 'j.f_page_name';
 				$j = 'premium_ecommerce_pages_data_1 j';
 				break;
 			    case 'products':
+				$label = __('Products');
 				$jf = 'j.f_item_name';
 				$j = 'premium_warehouse_items_data_1 j';
 				break;
@@ -1030,7 +1034,7 @@ class Premium_Warehouse_eCommerce extends Module {
 		}
 
 		$f = $this->init_module('Libs/OpenFlashChart');
-		$title = new OFC_Elements_Title( _V($tab) );
+		$title = new OFC_Elements_Title( $label );
 		$f->set_title( $title );
 
 		$av_colors = array('#339933','#999933', '#993333', '#336699', '#808080','#339999','#993399');
@@ -1145,8 +1149,9 @@ class Premium_Warehouse_eCommerce extends Module {
 	public function applet($conf, & $opts) {
 		//available applet options: toggle,href,title,go,go_function,go_arguments,go_contruct_arguments
 		$opts['go'] = false; // enable/disable full screen
-		$xxx = array(-2=>'New Online Order (with payment)', -1=>'New Online Order', 2=>'Order Received', 3=>'Payment Confirmed', 4=>'Order Confirmed', 5=>'On Hold', 6=>'Order Ready to Ship', 7=>'Shipped', 20=>'Delivered', 21=>'Canceled', 22=>'Missing','active'=>'Active');
-		$opts['title'] = __('eCommerce - %s',array(_V($xxx[$conf['status']])));
+		$xxx = Premium_Warehouse_eCommerceCommon::$order_statuses;
+		$xxx['active'] = __('Active');
+		$opts['title'] = __('eCommerce - %s',array($xxx[$conf['status']]));
 		
 		$crits = array('online_order'=>1);
 		if($conf['status']=='active')

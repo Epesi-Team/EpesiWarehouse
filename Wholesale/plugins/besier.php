@@ -29,7 +29,7 @@ class Premium_Warehouse_Wholesale__Plugin_besier implements Premium_Warehouse_Wh
 	 * @return array parameters list 
 	 */
 	public function get_parameters() {
-		return array('POP3 server'=>'text','User'=>'text','Password'=>'password');
+		return array(__('POP3 server')=>'text',__('User')=>'text',__('Password')=>'password');
 	}
 
 	/**

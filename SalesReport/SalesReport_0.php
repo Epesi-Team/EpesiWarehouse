@@ -111,7 +111,7 @@ class Premium_Warehouse_SalesReport extends Module {
 		$form->addElement('hidden', 'exch_rate', '', array('id'=>'exch_rate'));
 		$form->addElement('hidden', 'prompt_header', '', array('id'=>'prompt_header'));
 		$form->addElement('hidden', 'submit_form_js', '', array('id'=>'submit_form_js'));
-		$form->setDefaults(array('prompt_header'=>_V('Enter the amount in '.$cur_code)));
+		$form->setDefaults(array('prompt_header'=>__('Enter the amount in %s',array($cur_code))));
 		$form->setDefaults(array('submit_form_js'=>$form->get_submit_form_js()));
 		$form->display();
 		if ($form->validate()) {

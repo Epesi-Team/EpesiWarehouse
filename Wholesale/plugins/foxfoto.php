@@ -30,8 +30,8 @@ class Premium_Warehouse_Wholesale__Plugin_foxfoto implements Premium_Warehouse_W
 	 */
 	public function get_parameters() {
 		return array(
-			'URL'=>'text',
-			'Cennik'=>'text'
+			__('URL')=>'text',
+			__('Cennik')=>'text'
 			
 		);
 	}

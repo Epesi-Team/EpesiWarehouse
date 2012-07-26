@@ -30,7 +30,7 @@ class Premium_Warehouse_Wholesale__Plugin_asbis implements Premium_Warehouse_Who
 	 */
 	public function get_parameters() {
 		return array(
-			'Price URL'=>'text'
+			__('Price URL')=>'text'
 		);
 	}
 

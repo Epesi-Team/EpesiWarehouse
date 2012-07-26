@@ -30,9 +30,9 @@ class Premium_Warehouse_Wholesale__Plugin_epesi_with_tax implements Premium_Ware
 	 */
 	public function get_parameters() {
 		return array(
-			'URL'=>'text',
-			'Login'=>'text',
-			'Password'=>'password'
+			__('URL')=>'text',
+			__('Login')=>'text',
+			__('Password')=>'password'
 		);
 	}
 

@@ -31,8 +31,8 @@ class Premium_Warehouse_Wholesale__Plugin_incom implements Premium_Warehouse_Who
 	 */
 	public function get_parameters() {
 		return array(
-			'ID'=>'text',
-			'Password'=>'password'
+			__('ID')=>'text',
+			__('Password')=>'password'
 		);
 	}
 

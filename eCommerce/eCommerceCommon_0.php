@@ -136,24 +136,24 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
         return $values;
     }
 
-    private static $order_statuses = array(-1=>'New Online Order', -2=>'New Online Order (with payment)', 2=>'Order Received', 3=>'Payment Confirmed', 4=>'Order Confirmed', 5=>'On Hold', 6=>'Order Ready to Ship', 7=>'Shipped', 20=>'Delivered', 21=>'Canceled', 22=>'Missing');
+    private static $order_statuses;
 
     public static function QFfield_order_status(&$form, $field, $label, $mode, $default) {
         if ($mode=='add' || $mode=='edit') {
             $statuses = array();
             foreach(self::$order_statuses as $k=>$v)
-                $statuses[$k] = _V($v);
+                $statuses[$k] = $v;
             $form->addElement('select', $field, $label, $statuses, array('id'=>$field));
             $form->addRule($field,'Field required','required');
             if ($mode=='edit') $form->setDefaults(array($field=>$default));
         } else {
             $form->addElement('static', $field, $label);
-            $form->setDefaults(array($field=>_V(self::$order_statuses[$default])));
+            $form->setDefaults(array($field=>self::$order_statuses[$default]));
         }
     }
 
     public static function display_order_status($r, $nolink=false) {
-        return _V(self::$order_statuses[$r['type']]);
+        return self::$order_statuses[$r['type']];
     }
 
     private static $page_opts = array(''=>'---','1'=>'Top menu above logo','2'=>'Top menu under logo','5'=>'Hidden');
@@ -367,7 +367,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 			foreach ($params as $k=>$v) {
 				$js .= 	'if($("param'.$i.'"))$("param'.$i.'").type="'.$v.'";'.
 						'if($("_param'.$i.'__label")){'.
-							'$("_param'.$i.'__label").innerHTML="'._V($k).'";'.
+							'$("_param'.$i.'__label").innerHTML="'.$k.'";'.
 							'$("_param'.$i.'__label").parentNode.parentNode.style.display="";'.
 						'}';
 				$i++;
@@ -1171,5 +1171,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 		}
 	}
 }
+
+Premium_Warehouse_eCommerceCommon::$order_statuses = Premium_Warehouse_Items_OrdersCommon::get_status_array(array('transaction_type'=>1),true);
 
 ?>

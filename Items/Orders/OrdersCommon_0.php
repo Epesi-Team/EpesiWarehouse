@@ -321,7 +321,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	public static function display_reserved_qty($r, $nolink) {
 		$qty = self::get_reserved_qty($r['id']);
 		$my_warehouse = Base_User_SettingsCommon::get('Premium_Warehouse','my_warehouse');
-		$ret = Premium_Warehouse_Items_LocationCommon::display_item_quantity_in_warehouse_and_total($r,$my_warehouse,$nolink,$qty['per_warehouse'],array('main'=>'Reserved Qty', 'in_one'=>'In %s', 'in_all'=>'Total'));
+		$ret = Premium_Warehouse_Items_LocationCommon::display_item_quantity_in_warehouse_and_total($r,$my_warehouse,$nolink,$qty['per_warehouse'],array('main'=>__('Reserved Qty'), 'in_one'=>__('In %s'), 'in_all'=>__('Total')));
 		return $ret;
 	}
 	
@@ -347,7 +347,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			}
 		}
 		$my_warehouse = Base_User_SettingsCommon::get('Premium_Warehouse','my_warehouse');
-		$ret = Premium_Warehouse_Items_LocationCommon::display_item_quantity_in_warehouse_and_total($r,$my_warehouse,$nolink,$qty['per_warehouse'],array('main'=>'Available Qty', 'in_one'=>'In %s', 'in_all'=>'Total'));
+		$ret = Premium_Warehouse_Items_LocationCommon::display_item_quantity_in_warehouse_and_total($r,$my_warehouse,$nolink,$qty['per_warehouse'],array('main'=>__('Available Qty'), 'in_one'=>__('In %s'), 'in_all'=>__('Total')));
 		return $ret;
 	}
 	
@@ -372,7 +372,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			$en_route_qty[$warehouse] += $i['quantity'];
 			$qty+=$i['quantity'];
 		}
-		return Premium_Warehouse_Items_LocationCommon::display_item_quantity_in_warehouse_and_total($r,$my_warehouse,$nolink,$en_route_qty,array('main'=>'Quantity En Route', 'in_one'=>'to %s', 'in_all'=>'Total'));
+		return Premium_Warehouse_Items_LocationCommon::display_item_quantity_in_warehouse_and_total($r,$my_warehouse,$nolink,$en_route_qty,array('main'=>__('Quantity En Route'), 'in_one'=>__('to %s'), 'in_all'=>__('Total')));
 	}
 
 	public static function get_status_array($trans, $payment=null) {
@@ -380,34 +380,32 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		if (!isset($trans['transaction_type'])) $trans['transaction_type'] = null;
 		switch ($trans['transaction_type']) {
 			// PURCHASE
-			case 0: $opts = array(''=>'New', 1=>'Purchase Quote', 2=>'Purchase Order', 3=>'New Shipment', 4=>'Shipment Received', 5=>'On Hold', 20=>'Delivered', 21=>'Canceled');
+			case 0: $opts = array(''=>__('New'), 1=>__('Purchase Quote'), 2=>__('Purchase Order'), 3=>__('New Shipment'), 4=>__('Shipment Received'), 5=>__('On Hold'), 20=>__('Delivered'), 21=>__('Canceled'));
 					break;
 			// SALE
 			case 1: if (!$payment)
-						$opts = array(''=>'Check-out Received', 4=>'Check-out confirmed', 5=>'On Hold', 6=>'Ready to Ship', 7=>'Shipped', 20=>'Delivered', 21=>'Canceled', 22=>'Missing');
+						$opts = array(''=>__('Check-out Received'), 4=>__('Check-out confirmed'), 5=>__('On Hold'), 6=>__('Ready to Ship'), 7=>__('Shipped'), 20=>__('Delivered'), 21=>__('Canceled'), 22=>__('Missing'));
 					else {
-						$payment_ack = 'Payment Confirmed';
-						if (isset($trans['terms']) && $trans['terms']>0) $payment_ack = 'Payment Approved';
-						$opts = array(''=>'New', -1=>'New Online Order',-2=>'New Online Order (with payment)', 1=>'Sales Quote', 2=>'Order Received', 3=>$payment_ack, 4=>'Order Ready for Packing', 5=>'On Hold', 6=>'Order Ready to Ship', 7=>'Shipped', 20=>'Delivered', 21=>'Canceled', 22=>'Missing');
+						$payment_ack = __('Payment Confirmed');
+						if (isset($trans['terms']) && $trans['terms']>0) $payment_ack = __('Payment Approved');
+						$opts = array(''=>__('New'), -1=>__('New Online Order'), -2=>__('New Online Order (with payment)'), 2=>__('Order Received'), 3=>$payment_ack, 4=>__('Order Confirmed'), 5=>__('On Hold'), 6=>__('Order Ready to Ship'), 7=>__('Shipped'), 20=>__('Delivered'), 21=>__('Canceled'), 22=>__('Missing'));
 					}
 					break;
 			// INV. ADJUSTMENT
-			case 2: $opts = array(''=>'Active', 20=>'Completed'); 
+			case 2: $opts = array(''=>__('Active'), 20=>__('Completed')); 
 					break;
 			// RENTAL
 			case 3: if ($payment===true || ($payment===null && isset($trans['payment']) && $trans['payment']))
-						$opts = array(''=>'Rental order', 1=>'Create picklist', 2=>'Check payment', 3=>'Process picklist', 4=>'Payment', 5=>'Items rented', 6=>'Partially returned', 20=>'Completed', 21=>'Completed (Items lost)');
+						$opts = array(''=>__('Rental order'), 1=>__('Create picklist'), 2=>__('Check payment'), 3=>__('Process picklist'), 4=>__('Payment'), 5=>__('Items rented'), 6=>__('Partially returned'), 20=>__('Completed'), 21=>__('Completed (Items lost)'));
 					else
-						$opts = array(''=>'Create picklist', 1=>'Items rented', 2=>'Partially returned', 20=>'Completed', 21=>'Completed (Items lost)');
+						$opts = array(''=>__('Create picklist'), 1=>__('Items rented'), 2=>__('Partially returned'), 20=>__('Completed'), 21=>__('Completed (Items lost)'));
 					break;
 			// WAREHOUSE TRANSFER
-			case 4: $opts = array(''=>'New', 1=>'Transfer Quote', 2=>'Pending', 3=>'Order Fullfilment', 4=>'On Hold', 5=>'Ready to Ship', 6=>'Shipped', 20=>'Delivered', 21=>'Canceled', 22=>'Missing'); break;
+			case 4: $opts = array(''=>__('New'), 1=>__('Transfer Quote'), 2=>__('Pending'), 3=>__('Order Fullfilment'), 4=>__('On Hold'), 5=>__('Ready to Ship'), 6=>__('Shipped'), 20=>__('Delivered'), 21=>__('Canceled'), 22=>__('Missing')); break;
 			default:
 				// FIXME
-				$opts = array(''=>'New', 20=>'Delivered', 21=>'Canceled');
+				$opts = array(''=>__('New'), 20=>__('Delivered'), 21=>__('Canceled'));
 		}
-		foreach ($opts as $k=>$v)
-			$opts[$k] = _V($v);
 		return $opts;
 	}
 
@@ -427,22 +425,21 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		}*/
 		return true;
 	}
-	
+
 	public static function check_no_empty_invoice($data) {
 		if (isset($data['receipt']) && $data['receipt']) return true;
 		if (Utils_RecordBrowser::$last_record['transaction_type']==4 || Utils_RecordBrowser::$last_record['transaction_type']==2) return true;
 		$ret = array();
 		if (!isset($data['company_name']) || !$data['company_name']) {
-			if (!isset($data['last_name']) || !$data['last_name']) $ret['last_name'] = 'Field required for non-receipt transactions'; 
-			if (!isset($data['first_name']) || !$data['first_name']) $ret['first_name'] = 'Field required for non-receipt transactions'; 
+			if (!isset($data['last_name']) || !$data['last_name']) $ret['last_name'] = __('Field required for non-receipt transactions'); 
+			if (!isset($data['first_name']) || !$data['first_name']) $ret['first_name'] = __('Field required for non-receipt transactions'); 
 		}
-		if (!isset($data['address_1']) || !$data['address_1']) $ret['address_1'] = 'Field required for non-receipt transactions'; 
-		if (!isset($data['city']) || !$data['city']) $ret['city'] = 'Field required for non-receipt transactions'; 
-		if (!isset($data['country']) || !$data['country']) $ret['country'] = 'Field required for non-receipt transactions'; 
-		foreach ($ret as $k=>$v) $ret[$k] = _V($v);
+		if (!isset($data['address_1']) || !$data['address_1']) $ret['address_1'] = __('Field required for non-receipt transactions'); 
+		if (!isset($data['city']) || !$data['city']) $ret['city'] = __('Field required for non-receipt transactions'); 
+		if (!isset($data['country']) || !$data['country']) $ret['country'] = __('Field required for non-receipt transactions'); 
 		return empty($ret)?true:$ret;
 	}
-	
+
 	public static function QFfield_receipt(&$form, $field, $label, $mode, $default, $desc, $rb_obj) {
 		if ($mode!='view') {
 			$form->addElement('checkbox', $field, $label, null, array('id'=>$field));

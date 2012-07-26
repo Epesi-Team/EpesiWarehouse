@@ -30,9 +30,9 @@ class Premium_Warehouse_Wholesale__Plugin_techdata implements Premium_Warehouse_
 	 */
 	public function get_parameters() {
 		return array(
-			'Client number'=>'text',
-			'Login'=>'text',
-			'Password'=>'password'
+			__('Client number')=>'text',
+			__('Login')=>'text',
+			__('Password')=>'password'
 		);
 	}
 
