@@ -5,13 +5,13 @@
  * @subpackage lt
  */
 global $translations;
-$translations['Quantity']='';
 $translations['Item Name']='';
+$translations['Quantity']='';
 $translations['Total']='';
 $translations['n/a']='';
 $translations['Inventory Management']='';
-$translations['Warehouse']='';
 $translations['Quantity on Hand']='';
+$translations['Warehouse']='';
 $translations['Items Locations']='';
 $translations['Items Serials']='';
 $translations['Warehouse Items']='';
