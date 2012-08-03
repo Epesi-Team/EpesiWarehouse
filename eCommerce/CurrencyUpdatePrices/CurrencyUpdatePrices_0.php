@@ -27,7 +27,7 @@ class Premium_Warehouse_eCommerce_CurrencyUpdatePrices extends Module {
 			}
 		}
 		
-		$form = & $this->init_module('Libs/QuickForm',null,'currency_setup');
+		$form = $this->init_module('Libs/QuickForm',null,'currency_setup');
 
 		$rates = Variable::get('ecommerce_price_updater_rates',false);
 		$dater = Variable::get('ecommerce_price_updater_last_upd',false);

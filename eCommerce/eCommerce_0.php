@@ -67,7 +67,7 @@ class Premium_Warehouse_eCommerce extends Module {
 						'icon'=>null);
 		$buttons[]= array('link'=>'<a '.$this->create_callback_href(array($this,'rules_page')).'>'.__('Rules & Policies').'</a>',
 						'icon'=>null);
-		$theme =  & $this->pack_module('Base/Theme');
+		$theme = $this->pack_module('Base/Theme');
 		$theme->assign('header', __('eCommerce settings'));
 		$theme->assign('buttons', $buttons);
 		$theme->display();
@@ -93,7 +93,7 @@ class Premium_Warehouse_eCommerce extends Module {
 		if($this->is_back()) return false;
 		Base_ActionBarCommon::add('back',__('Back'),$this->create_back_href());
 	
- 		$m = & $this->init_module('Utils/GenericBrowser',null,'t1');
+ 		$m = $this->init_module('Utils/GenericBrowser',null,'t1');
  		$m->set_table_columns(array(array('name'=>__('Site'),'width'=>30),
 							  array('name'=>'Link','width'=>70)));
 		$site = __('http://replace.with.quickcart.url/');
@@ -503,7 +503,7 @@ class Premium_Warehouse_eCommerce extends Module {
 		Base_ActionBarCommon::add('back',__('Back'),$this->create_back_href());
 		Base_ActionBarCommon::add('add',__('Add'), $this->create_callback_href(array($this,'add_quickcart')));
 	
-		$gb = & $this->init_module('Utils/GenericBrowser',null,'qc_list');
+		$gb = $this->init_module('Utils/GenericBrowser',null,'qc_list');
 
 		$gb->set_table_columns(array(array('name'=>__('Path'), 'order'=>'path')));
 
@@ -533,7 +533,7 @@ class Premium_Warehouse_eCommerce extends Module {
 			return false;
 		}			
 
-		$form = & $this->init_module('Libs/QuickForm');
+		$form = $this->init_module('Libs/QuickForm');
 
 		$form->addElement('header', null, __('QuickCart settings: %s',array($path)));
 		
@@ -672,7 +672,7 @@ class Premium_Warehouse_eCommerce extends Module {
 	public function add_quickcart() {
 		if($this->is_back()) return false;
 	
-		$form = & $this->init_module('Libs/QuickForm');
+		$form = $this->init_module('Libs/QuickForm');
 
 		$form->addElement('header', null, __('Add quickcart(epesi version) binding'));
 
@@ -797,7 +797,7 @@ class Premium_Warehouse_eCommerce extends Module {
 	public function features() {
 		if($this->is_back()) return false;
 	
-		$form = & $this->init_module('Libs/QuickForm');
+		$form = $this->init_module('Libs/QuickForm');
 
 		$form->addElement('header', null, __('eCommerce item tabs'));
 		
@@ -827,7 +827,7 @@ class Premium_Warehouse_eCommerce extends Module {
 	public function prices() {
 		if($this->is_back()) return false;
 	
-		$form = & $this->init_module('Libs/QuickForm');
+		$form = $this->init_module('Libs/QuickForm');
 
 		$form->addElement('header', null, __('Automatic prices'));
 		
@@ -904,7 +904,7 @@ class Premium_Warehouse_eCommerce extends Module {
 		print('<h1>'.Utils_RecordBrowserCommon::record_link_open_tag('premium_ecommerce_products',$rec['id']).__('Go to item').Utils_RecordBrowserCommon::record_link_close_tag().'</h1>');
 
 		//opts
- 		$m = & $this->init_module('Utils/GenericBrowser',null,'t0');
+ 		$m = $this->init_module('Utils/GenericBrowser',null,'t0');
  		$m->set_table_columns(array(
 				array('name'=>__('Option')),
 				array('name'=>__('Value')),
@@ -924,7 +924,7 @@ class Premium_Warehouse_eCommerce extends Module {
 
 		//langs
         if(Variable::get('ecommerce_item_descriptions')) {
-     		$m = & $this->init_module('Utils/GenericBrowser',null,'t1');
+     		$m = $this->init_module('Utils/GenericBrowser',null,'t1');
  	    	$m->set_table_columns(array(
 				array('name'=>__('Language')),
 				array('name'=>__('Name')),
@@ -947,7 +947,7 @@ class Premium_Warehouse_eCommerce extends Module {
         
 		//currencies
         if(Variable::get('ecommerce_item_prices')) {
-     		$m = & $this->init_module('Utils/GenericBrowser',null,'t2');
+     		$m = $this->init_module('Utils/GenericBrowser',null,'t2');
  	    	$m->set_table_columns(array(
 				array('name'=>__('Currency')),
 				array('name'=>__('Gross Price')),
@@ -995,7 +995,7 @@ class Premium_Warehouse_eCommerce extends Module {
 		}
 		$form->display();
 
-		$tb = & $this->init_module('Utils/TabbedBrowser');
+		$tb = $this->init_module('Utils/TabbedBrowser');
 		$tb->set_tab(__("Products"), array($this,'stats_tab'),array('products',$start,$end));
 		$tb->set_tab(__("Pages"), array($this,'stats_tab'),array('pages',$start,$end));
 		$tb->set_tab(__("Categories"), array($this,'stats_tab'),array('categories',$start,$end));
@@ -1076,7 +1076,7 @@ class Premium_Warehouse_eCommerce extends Module {
 	}
 	
 	private function stats_addon($tab,$id) {
-		$gb = & $this->init_module('Utils/GenericBrowser',null,'stats');
+		$gb = $this->init_module('Utils/GenericBrowser',null,'stats');
 
 		$gb->set_table_columns(array(
 			array('name'=>__('Time'), 'order'=>'visited_on')));

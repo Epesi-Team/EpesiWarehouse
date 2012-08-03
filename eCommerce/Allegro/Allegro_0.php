@@ -776,7 +776,7 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 		Libs_LeightboxCommon::display('new_auction_leightbox',$this->get_html_of_module($qf),'Wystaw aukcję');
 		
 		
-		$gb = & $this->init_module('Utils/GenericBrowser',null,'t1');
+		$gb = $this->init_module('Utils/GenericBrowser',null,'t1');
 		print('<div style="text-align:left;padding:10px"><a '.Libs_LeightboxCommon::get_open_href('new_auction_leightbox').'><span class="search_button">Nowa aukcja</span></a></div>');
 		$gb->set_table_columns(array(
 		array('name'=>'Aukcja','width'=>50,'order'=>'a.auction_id'),
@@ -811,7 +811,7 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 	public function applet($conf, & $opts) {
 		$opts['title'] = 'Allegro - ostatnio zakończone aukcje';
 		
-		$gb = & $this->init_module('Utils/GenericBrowser',null,'t1');
+		$gb = $this->init_module('Utils/GenericBrowser',null,'t1');
 		$gb->set_table_columns(array(
 		array('name'=>'Przedmiot','width'=>50),
 		array('name'=>'Koniec','width'=>50),

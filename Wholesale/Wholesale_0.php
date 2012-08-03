@@ -18,7 +18,7 @@ class Premium_Warehouse_Wholesale extends Module {
     public function body() {
         if(!DB::GetOne('SELECT 1 FROM premium_warehouse_distributor_data_1 WHERE active=1'))
             return $this->dists();
-        $tb = & $this->init_module('Utils/TabbedBrowser');
+        $tb = $this->init_module('Utils/TabbedBrowser');
         $tb->set_tab(__('Items'), array($this,'items'));
         $tb->set_tab(__('Distributors'), array($this,'dists'));
         $this->display_module($tb);

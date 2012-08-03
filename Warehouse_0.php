@@ -34,7 +34,7 @@ class Premium_Warehouse extends Module {
 		}
 		$orders = (ModuleManager::is_installed('Premium_Warehouse_Items_Orders')>-1);
 	
-		$form = & $this->init_module('Libs/QuickForm');
+		$form = $this->init_module('Libs/QuickForm');
 
 		$form->addElement('header', null, __('Warehouse'));
 
