@@ -367,6 +367,7 @@ function cash2word_pl ($arg, $thsd_0=null, $thsd_cents=null) {
 		else $cents.=' '.$thsd_cents[1];
 	}
 	$text = $result.'  '.$cents;
+	$text = str_replace('  ', ' ', $text);
 	return $text;
 }
 
@@ -560,6 +561,8 @@ $theme = Base_ThemeCommon::init_smarty();
 $theme->assign('order', $order);
 $total = array();
 foreach($gross_total_sum_f as $gr) $total[] = $gr['x'];
+$total_net = array();
+foreach($net_total_sum_f as $gr) $total_net[] = $gr['x'];
 foreach($amount_due as $k=>$v) {
 	if (!isset($paid[$k])) $paid[$k] = 0;
 	$v -= $paid[$k];
@@ -567,6 +570,7 @@ foreach($amount_due as $k=>$v) {
 }
 foreach($paid as $k=>$v) $paid[$k] = Utils_CurrencyFieldCommon::format($v, $k);
 $theme->assign('total', implode('<br/>',$total));
+$theme->assign('net_total', implode('<br/>',$total_net));
 $theme->assign('paid', implode('<br/>',$paid));
 $theme->assign('amount_due', implode(', ',$amount_due));
 $PLN = DB::GetOne('SELECT id FROM utils_currency WHERE code=%s', array('PLN'));
