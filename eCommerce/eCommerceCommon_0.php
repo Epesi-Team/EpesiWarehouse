@@ -136,7 +136,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
         return $values;
     }
 
-    private static $order_statuses;
+    public static $order_statuses;
 
     public static function QFfield_order_status(&$form, $field, $label, $mode, $default) {
         if ($mode=='add' || $mode=='edit') {
