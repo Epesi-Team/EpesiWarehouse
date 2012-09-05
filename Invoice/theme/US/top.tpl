@@ -1,11 +1,13 @@
 <table>
 	<tr>
 		{if isset($logo)}
-			<td width="65">
+			<td width="10%">
 				{$logo}
 			</td>
 		{/if}
-		<td width="230">
+		<td width="1%">
+		</td>
+		<td width="44%">
 			<font size=8>
 				{if isset($warehouse.invoice_display_name) && $warehouse.invoice_display_name}{$warehouse.invoice_display_name}{else}{$company.company_name}{/if}<br/>
 				{$warehouse.address_1}<br/>
@@ -16,11 +18,11 @@
 			</font>
 		</td>
 		{if !isset($logo)}
-			<td width="65">
+			<td width="10%">
 				&nbsp;
 			</td>
 		{/if}
-		<td align="right" width="230">
+		<td align="right" width="45%">
 			{if $warehouse.city}{$warehouse.city}, {/if}{$date}<br/>
 		</td>
 	</tr>
@@ -228,52 +230,52 @@
 <center>
 	<table border="1">
 		<tr>
-			<td width="40px">
+			<td width="9%" style="text-align:center;">
 				<font size="7"><b>
 					{$labels.no}
 				</b></font>
 			</td>
-			<td width="172px">
+			<td width="27%" style="text-align:center;">
 				<font size="7"><b>
 					{$labels.item_name}
 				</b></font>
 			</td>
-			<td width="45px">
+			<td width="9%" style="text-align:center;">
 				<font size="7"><b>
 					{$labels.sku}
 				</b></font>
 			</td>
-			<td width="35px">
+			<td width="7%" style="text-align:center;">
 				<font size="7"><b>
 					{$labels.quantity}
 				</b></font>
 			</td>
-			<td width="20px">
+			<td width="5%" style="text-align:center;">
 				<font size="7"><b>
 					{$labels.units}
 				</b></font>
 			</td>
-			<td width="45px">
+			<td width="9%" style="text-align:center;">
 				<font size="7"><b>
 					{$labels.net_price}
 				</b></font>
 			</td>
-			<td width="45px">
+			<td width="9%" style="text-align:center;">
 				<font size="7"><b>
 					{$labels.net_value}
 				</b></font>
 			</td>
-			<td width="32px">
+			<td width="7%" style="text-align:center;">
 				<font size="7"><b>
 					{$labels.tax_rate}
 				</b></font>
 			</td>
-			<td width="45px">
+			<td width="9%" style="text-align:center;">
 				<font size="7"><b>
 					{$labels.tax_value}
 				</b></font>
 			</td>
-			<td width="45px">
+			<td width="9%" style="text-align:center;">
 				<font size="7"><b>
 					{$labels.gross_value}
 				</b></font>
