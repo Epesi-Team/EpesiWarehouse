@@ -74,12 +74,12 @@ class Premium_Warehouse_Items_Orders extends Module {
 		$this->rb->set_additional_actions_method(array($this,'orders_actions'));
 
 		$this->rb->set_header_properties(array(
-			'terms'=>array('width'=>100, 'wrapmode'=>'nowrap'),
-			'status'=>array('width'=>150, 'wrapmode'=>'nowrap'),
-			'transaction_id'=>array('width'=>100, 'wrapmode'=>'nowrap', 'name'=>__('Trans. ID')),
-			'transaction_type'=>array('width'=>100, 'wrapmode'=>'nowrap', 'name'=>__('Type')),
-			'invoice_number'=>array('width'=>100, 'wrapmode'=>'nowrap', 'name'=>__('Invoice')),
-			'transaction_date'=>array('width'=>100, 'wrapmode'=>'nowrap', 'name'=>__('Date'))
+			'terms'=>array('width'=>10, 'wrapmode'=>'nowrap'),
+			'status'=>array('width'=>15, 'wrapmode'=>'nowrap'),
+			'transaction_id'=>array('width'=>10, 'wrapmode'=>'nowrap', 'name'=>__('Trans. ID')),
+			'transaction_type'=>array('width'=>10, 'wrapmode'=>'nowrap', 'name'=>__('Type')),
+			'invoice_number'=>array('width'=>10, 'wrapmode'=>'nowrap', 'name'=>__('Invoice')),
+			'transaction_date'=>array('width'=>10, 'wrapmode'=>'nowrap', 'name'=>__('Date'))
 		));
 		
 		$this->display_module($this->rb);
