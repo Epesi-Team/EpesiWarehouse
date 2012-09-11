@@ -7,10 +7,10 @@
 global $translations;
 $translations['Weight']='';
 $translations['Price']='';
+$translations['Service']='';
 $translations['Cost']='';
 $translations['Items']='Teile';
 $translations['Item Name']='';
-$translations['Service']='';
 $translations['Settings']='';
 $translations['4 weeks']='';
 $translations['4 months']='';

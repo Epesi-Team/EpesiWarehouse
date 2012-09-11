@@ -7,10 +7,10 @@
 global $translations;
 $translations['Weight']='Вес';
 $translations['Price']='Цена';
+$translations['Service']='Услуга';
 $translations['Cost']='Стоимость';
 $translations['Items']='Товары';
 $translations['Item Name']='Наименование товара';
-$translations['Service']='Услуга';
 $translations['Settings']='';
 $translations['4 weeks']='';
 $translations['4 months']='';
