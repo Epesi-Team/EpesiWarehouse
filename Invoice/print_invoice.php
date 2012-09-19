@@ -311,7 +311,9 @@ Base_ThemeCommon::display_smarty($theme,'Premium_Warehouse_Invoice',$style.'/sum
 $html = ob_get_clean();
 
 $html = Libs_TCPDFCommon::stripHTML($html);
-Libs_TCPDFCommon::writeHTML($tcpdf, $html, false);
+$html = explode('<!-- BREAK -->', $html);
+foreach ($html as $h)
+    Libs_TCPDFCommon::writeHTML($tcpdf, $h);
 
 /******************** bottom *************************/
 function cash2word_pl ($arg, $thsd_0=null, $thsd_cents=null) {
@@ -618,7 +620,9 @@ Base_ThemeCommon::display_smarty($theme,'Premium_Warehouse_Invoice',$style.'/bot
 $html = ob_get_clean();
 
 $html = Libs_TCPDFCommon::stripHTML($html);
-Libs_TCPDFCommon::writeHTML($tcpdf, $html, false);
+$html = explode('<!-- BREAK -->', $html);
+foreach ($html as $h)
+    Libs_TCPDFCommon::writeHTML($tcpdf, $h);
 
 $footer_y = $tcpdf->getPageHeight() - $tcpdf->getFooterMargin();
 $margins = $tcpdf->getOriginalMargins();
