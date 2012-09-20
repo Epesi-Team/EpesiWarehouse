@@ -540,7 +540,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 		if ($this->isset_module_variable('split_transaction_id')) {
 			$id = $this->get_module_variable('split_transaction_id');
 			$this->unset_module_variable('split_transaction_id');
-			print(__('<b>The transaction was split succesfully.<br>The ID of newly created transaction is: %s', array(Utils_RecordBrowserCommon::create_linked_label('premium_warehouse_items_orders', 'transaction_id', $id))));
+			print('<b>'.__('The transaction was split succesfully.<br>The ID of newly created transaction is: %s', array(Utils_RecordBrowserCommon::create_linked_label('premium_warehouse_items_orders', 'transaction_id', $id))).'</b>');
 		}
 		$p = $trans['payment'];
 		$lp = $this->init_module('Utils/LeightboxPrompt');
