@@ -714,7 +714,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 	}
 	
 	public static function simple_setup() {
-        return array('package'=>__('eCommerce'), 'version'=>'0.8');
+        return array('package'=>__('eCommerce'), 'version'=>'1.3.1');
 	}
 
 	public static function post_install() {

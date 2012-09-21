@@ -17,7 +17,7 @@ class Premium_Warehouse_EmpSalesReport extends Module {
 	private static $format = '';
 	private static $dates = array();
 	private static $range_type = '';
-	private $currency = 1;
+	private $currency = null;
 	private $rbr = null;
 
 	public function construct() {
@@ -46,7 +46,7 @@ class Premium_Warehouse_EmpSalesReport extends Module {
 		$header = array('Employee');
 		$this->dates = $date_range['dates'];
 		$this->range_type = $date_range['type'];
-		$this->rbr->set_currency($this->currency); // TODO: this method was removed
+		//$this->rbr->set_currency($this->currency); // TODO: this method was removed
 		switch ($date_range['type']) {
 			case 'day': $this->format ='d M Y'; break;
 			case 'week': $this->format ='W Y'; break;
@@ -113,6 +113,11 @@ class Premium_Warehouse_EmpSalesReport extends Module {
 						if ($v['status']==7 || $v['status']==20) {
 							$result[$hash[$d]][self::$cats[0]]++;
 							$sale_amount=Premium_Warehouse_Items_OrdersCommon::calculate_tax_and_total_value($v,'total');
+							if ($this->currency===null) foreach($sale_amount as $c=>$v)
+								if ($v) {
+									$this->currency=$c;
+									break;
+								}
 							if (!isset($sale_amount[$this->currency])) break;
 							$result[$hash[$d]][self::$cats[1]]+=$sale_amount[$this->currency];
 						}
