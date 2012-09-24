@@ -65,7 +65,7 @@ class Premium_Warehouse_eCommerce_CurrencyUpdatePrices extends Module {
 				return;
 			}
 		} 
-		$form->display();
+		$form->display_as_column();
     }
     
     public function submit_admin($data) {
