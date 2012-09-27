@@ -1095,8 +1095,8 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 					$debts = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$values['id'], '<quantity'=>0));
 					if (empty($debts)) {
 						Base_ActionBarCommon::add('attach',__('Turn into Purchase'),Module::create_href(array('premium_warehouse_turn_into_purchase'=>$values['id'])));
-						if (isset($_REQUEST['premium_warehouse_turn_into_purchase']) && $_REQUEST['premium_warehouse_turn_into_purchase']===$values['id']) {
-							Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $values['id'], array('transaction_type'=>0, 'status'=>20, 'receipt'=>1));
+						if (isset($_REQUEST['premium_warehouse_turn_into_purchase']) && $_REQUEST['premium_warehouse_turn_into_purchase']==$values['id']) {
+							Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $values['id'], array('transaction_type'=>0, 'status'=>20, 'receipt'=>1, 'payment'=>1));
 							unset($_REQUEST['premium_warehouse_turn_into_purchase']);
 							location(array());
 						}
