@@ -7,7 +7,7 @@
 global $translations;
 $translations['Auto update']='';
 $translations['Last update']='';
-$translations['eCommerce']='';
+$translations['eCommerce']='Sklep internetowy';
 $translations['eCommerce - prices']='';
 $translations['Rates']='';
 $translations['eCommerce Prices Auto Updater']='';

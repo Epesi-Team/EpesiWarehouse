@@ -7,7 +7,7 @@
 global $translations;
 $translations['Total']='';
 $translations['Employee Sales']='Sprzedaż pracownika';
-$translations['Inventory Management']='';
+$translations['Inventory Management']='Menadżer Inwentarza';
 $translations['You don\'t have permission to access this module']='';
 $translations['Employee Sales Report, %s']='';
 $translations['Emp_Sales_Report_%s']='';

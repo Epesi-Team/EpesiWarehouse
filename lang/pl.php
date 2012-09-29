@@ -6,8 +6,8 @@
  */
 global $translations;
 $translations['Bank account']='Konto bankowe';
-$translations['Inventory Management']='';
-$translations['Inventory']='';
+$translations['Inventory Management']='Menadżer Inwentarza';
+$translations['Inventory']='Inwentarz';
 $translations['Warehouse']='Magazyn';
 $translations['Check-in']='';
 $translations['Check-out']='';

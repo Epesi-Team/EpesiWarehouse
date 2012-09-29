@@ -6,6 +6,6 @@
  */
 global $translations;
 $translations['Invoice']='';
-$translations['Inventory Management']='';
+$translations['Inventory Management']='Menadżer Inwentarza';
 $translations['Trans. ID']='';
 $translations['Sales Opportunity Integration']='';
