@@ -9,6 +9,7 @@ $translations['Weight']='';
 $translations['Price']='Kaina';
 $translations['Service']='';
 $translations['Cost']='';
+$translations['Allegro']='';
 $translations['Items']='';
 $translations['Item Name']='';
 $translations['Settings']='';
