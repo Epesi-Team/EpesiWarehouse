@@ -1050,7 +1050,7 @@ class Premium_Warehouse_eCommerce extends Module {
 			$i++;
 		}
 		if($max==-1) {
-		    print(__("No stats available"));
+		    print(__('No stats available'));
 		    return;
 		}
 		$y_ax = new OFC_Elements_Axis_Y();
