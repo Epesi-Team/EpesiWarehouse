@@ -996,10 +996,10 @@ class Premium_Warehouse_eCommerce extends Module {
 		$form->display();
 
 		$tb = $this->init_module('Utils/TabbedBrowser');
-		$tb->set_tab(__("Products"), array($this,'stats_tab'),array('products',$start,$end));
-		$tb->set_tab(__("Pages"), array($this,'stats_tab'),array('pages',$start,$end));
-		$tb->set_tab(__("Categories"), array($this,'stats_tab'),array('categories',$start,$end));
-		$tb->set_tab(__("Searched Words"), array($this,'stats_tab'),array('searched',$start,$end));
+		$tb->set_tab(__('Products'), array($this,'stats_tab'),array('products',$start,$end));
+		$tb->set_tab(__('Pages'), array($this,'stats_tab'),array('pages',$start,$end));
+		$tb->set_tab(__('Categories'), array($this,'stats_tab'),array('categories',$start,$end));
+		$tb->set_tab(__('Searched Words'), array($this,'stats_tab'),array('searched',$start,$end));
 		$this->display_module($tb);
 		$this->tag();
 	}

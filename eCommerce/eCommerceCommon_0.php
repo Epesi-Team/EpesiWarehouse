@@ -839,11 +839,11 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
     }
 
     public static function applet_caption() {
-        return __("eCommerce - Orders");
+        return __('eCommerce - Orders');
     }
 
     public static function applet_info() {
-        return __("Displays eCommerce orders.");
+        return __('Displays eCommerce orders.');
     }
 
     public static function applet_settings() {

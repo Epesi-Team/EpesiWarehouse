@@ -242,11 +242,11 @@ class Premium_Warehouse_eCommerce_AllegroCommon extends ModuleCommon {
 
 
 	public static function applet_caption() {
-		return __("Allegro");
+		return __('Allegro');
 	}
 
 	public static function applet_info() {
-		return __("Ostatnio zakończone aukcje na allegro");
+		return __('Ostatnio zakończone aukcje na allegro');
 	}
 }
 
