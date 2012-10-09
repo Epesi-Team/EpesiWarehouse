@@ -25,7 +25,8 @@ class Premium_Warehouse_Items_Orders extends Module {
 							'zone'=>Base_User_SettingsCommon::get('Base_RegionalSettings','default_state'),
 							'transaction_date'=>date('Y-m-d'),
 							'employee'=>$me['id'],
-							'warehouse'=>Base_User_SettingsCommon::get('Premium_Warehouse','my_warehouse')
+							'warehouse'=>Base_User_SettingsCommon::get('Premium_Warehouse','my_warehouse'),
+							'tax_calculation'=>1
 							);
 		if(Utils_RecordBrowserCommon::get_access('premium_warehouse_items_orders','add')) {
 
@@ -210,10 +211,11 @@ class Premium_Warehouse_Items_Orders extends Module {
 	public function order_details_addon($arg){
 		$rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items_orders_details');
 		$cols = array('transaction_id'=>false);
-		$cols['transaction_type'] = false;			
-		$cols['transaction_date'] = false;			
-		$cols['transaction_status'] = false;			
-		$cols['warehouse'] = false;			
+		$cols['transaction_type'] = false;
+		$cols['transaction_date'] = false;
+		$cols['transaction_status'] = false;
+		$cols['warehouse'] = false;
+		if ($arg['tax_calculation']==1) $cols['gross_price'] = false;	
 		$header_prop = array(
 			'item_name'=>array('width'=>'150px', 'wrapmode'=>'nowrap'),
 			'description'=>array('width'=>30, 'wrapmode'=>'nowrap'),

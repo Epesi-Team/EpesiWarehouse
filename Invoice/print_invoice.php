@@ -172,9 +172,16 @@ foreach ($items as $k=>$v) {
 	$items[$k]['gross_price'][1] = $items[$k]['net_price'][1];
 	$items[$k]['gross_price'][0] = round((100+$tax)*$items[$k]['net_price'][0]/100, Utils_CurrencyFieldCommon::get_precission($items[$k]['net_price'][1])); 
 
-	$gross_total = $items[$k]['gross_price'][0]*$items[$k]['quantity'];
-	$net_total = $items[$k]['net_price'][0]*$items[$k]['quantity'];
-	$tax_total = $gross_total - $net_total;
+	if ($order['tax_calculation']==0) {
+		$gross_total = $items[$k]['gross_price'][0]*$items[$k]['quantity'];
+		$net_total = $items[$k]['net_price'][0]*$items[$k]['quantity'];
+		$tax_total = $gross_total - $net_total;
+	} else {
+		$gross_total = round((100+$tax)*$items[$k]['net_price'][0]*$items[$k]['quantity']/100, Utils_CurrencyFieldCommon::get_precission($items[$k]['net_price'][1]));
+		$net_total = $items[$k]['net_price'][0]*$items[$k]['quantity'];
+		$tax_total = $gross_total - $net_total;
+	}
+
 
 	$items[$k]['gross_total'] = Utils_CurrencyFieldCommon::format($gross_total, $items[$k]['gross_price'][1]);
 	$items[$k]['net_total'] = Utils_CurrencyFieldCommon::format($net_total, $items[$k]['gross_price'][1]);

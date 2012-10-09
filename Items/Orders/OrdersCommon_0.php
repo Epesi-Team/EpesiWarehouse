@@ -129,7 +129,10 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		foreach($recs as $rr){
 			$price = Utils_CurrencyFieldCommon::get_values($rr['net_price']);
 			$net_total = round($price[0],Utils_CurrencyFieldCommon::get_precission($price[1]))*$rr['quantity'];
-			$tax_value = round(Data_TaxRatesCommon::get_tax_rate($rr['tax_rate'])*$price[0]/100, Utils_CurrencyFieldCommon::get_precission($price[1]))*$rr['quantity'];
+			if ($r['tax_calculation']==0)
+				$tax_value = round(Data_TaxRatesCommon::get_tax_rate($rr['tax_rate'])*$price[0]/100, Utils_CurrencyFieldCommon::get_precission($price[1]))*$rr['quantity'];
+			else
+				$tax_value = round(Data_TaxRatesCommon::get_tax_rate($rr['tax_rate'])*$price[0]*$rr['quantity']/100, Utils_CurrencyFieldCommon::get_precission($price[1]));
 			if (!isset($res[$r['id']]['tax'][$price[1]]) && $tax_value)
 				$res[$r['id']]['tax'][$price[1]] = 0;
 			if (!isset($res[$r['id']]['total'][$price[1]]) && $net_total)
@@ -281,13 +284,19 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 
 	public static function display_order_details_tax_value($r, $nolink) {
 		$price = Utils_CurrencyFieldCommon::get_values($r['net_price']);
-		$ret = round(Data_TaxRatesCommon::get_tax_rate($r['tax_rate'])*$price[0]/100, Utils_CurrencyFieldCommon::get_precission($price[1]))*$r['quantity'];
+		if ($tax==0)
+			$ret = round(Data_TaxRatesCommon::get_tax_rate($r['tax_rate'])*$price[0]/100, Utils_CurrencyFieldCommon::get_precission($price[1]))*$r['quantity'];
+		else
+			$ret = round(Data_TaxRatesCommon::get_tax_rate($r['tax_rate'])*$price[0]*$r['quantity']/100, Utils_CurrencyFieldCommon::get_precission($price[1]));
 		return Utils_CurrencyFieldCommon::format($ret, $price[1]);
 	}
 
 	public static function display_order_details_gross_price($r, $nolink) {
 		$price = Utils_CurrencyFieldCommon::get_values($r['net_price']);
-		$ret = round((100+Data_TaxRatesCommon::get_tax_rate($r['tax_rate']))*$price[0]/100, Utils_CurrencyFieldCommon::get_precission($price[1]))*$r['quantity'];
+		if ($tax==0)
+			$ret = round((100+Data_TaxRatesCommon::get_tax_rate($r['tax_rate']))*$price[0]/100, Utils_CurrencyFieldCommon::get_precission($price[1]))*$r['quantity'];
+		else
+			$ret = round((100+Data_TaxRatesCommon::get_tax_rate($r['tax_rate']))*$price[0]*$r['quantity']/100, Utils_CurrencyFieldCommon::get_precission($price[1]));
 		return Utils_CurrencyFieldCommon::format($ret, $price[1]);
 	}
 	
