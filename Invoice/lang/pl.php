@@ -6,7 +6,7 @@
  */
 global $translations;
 $translations['SSN']='';
-$translations['Units']='';
+$translations['Units']='Jednostki';
 $translations['Comments']='Komentarze';
 $translations['Invoice Number']='';
 $translations['Due Date']='Termin';
