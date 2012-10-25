@@ -351,7 +351,7 @@ class Products
     	foreach($aWords as $w) {
 	    	$query .= ' AND (it.f_sku '.DB::like().' \'%%'.DB::addq($w).'\' OR it.f_product_code '.DB::like().' \''.DB::addq($w).'\' OR it.f_upc '.DB::like().' \''.DB::addq($w).'\' OR it.f_item_name '.DB::like().' \'%%'.DB::addq($w).'%%\' OR d.f_display_name '.DB::like().' \'%%'.DB::addq($w).'%%\' OR d_en.f_display_name '.DB::like().' \'%%'.DB::addq($w).'%%\' OR d.f_short_description '.DB::like().' \'%%'.DB::addq($w).'%%\' OR d_en.f_short_description '.DB::like().' \'%%'.DB::addq($w).'%%\')';
     	}
-    $sUrlExt .= ((defined( 'FRIENDLY_LINKS' ) && FRIENDLY_LINKS == true)?null:'&amp;').'sPhrase='.$GLOBALS['sPhrase'];
+    $sUrlExt .= ((defined( 'FRIENDLY_LINKS' ) && FRIENDLY_LINKS == true)?null:'&amp;').'sPhrase='.urlencode($GLOBALS['sPhrase']);
   }else{
 	if($iContent==23) {
     	    $query .= 'it.f_category is null OR it.f_category=\'\'';
