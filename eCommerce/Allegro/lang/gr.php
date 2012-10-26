@@ -5,8 +5,8 @@
  * @subpackage gr
  */
 global $translations;
-$translations['Allegro']='';
 $translations['Invalid number']='';
+$translations['Allegro']='';
 $translations['Invoice']='';
 $translations['Invalid price']='';
 $translations['WEBAPI Key']='';
