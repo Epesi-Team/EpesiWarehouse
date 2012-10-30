@@ -445,9 +445,9 @@ class Premium_Warehouse_Items_Orders extends Module {
 		$po_form->setDefaults(array('item_header'=>__('Please revise items quantity, price and tax rate')));
 		foreach ($items as $v) {
 			$elements = array();
-			$elements[] = $po_form->createElement('text', 'quantity', __('Price'));
+			$elements[] = $po_form->createElement('text', 'quantity', __('Price'), array('style'=>'width:auto;'));
 			$elements[] = $po_form->createElement('currency', 'net_price', __('Price'));
-			$elements[] = $po_form->createElement('select', 'tax_rate', __('Tax'), $taxes);
+			$elements[] = $po_form->createElement('select', 'tax_rate', __('Tax'), $taxes, array('style'=>'width:auto;'));
 			$po_form->addGroup($elements, 'item__'.$v['id'], Premium_Warehouse_Items_OrdersCommon::display_item_name($v, true));
 			$po_form->setDefaults(array('item__'.$v['id']=>array('quantity'=>$v['quantity'], 'net_price'=>$v['net_price'], 'tax_rate'=>$v['tax_rate'])));
 		}
