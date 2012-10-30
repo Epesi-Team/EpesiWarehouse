@@ -89,7 +89,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_payments_carriers', $fields);
 
 		Utils_RecordBrowserCommon::set_favorites('premium_ecommerce_payments_carriers', false);
-		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_payments_carriers', _M('eCommerce - Payments and Carriers'));
+		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_payments_carriers', _M('eCommerce - Payments & Carriers'));
 
 		//product prices
 		$fields = array(
