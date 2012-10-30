@@ -215,7 +215,6 @@ class Premium_Warehouse_Items_Orders extends Module {
 		$cols['transaction_date'] = false;
 		$cols['transaction_status'] = false;
 		$cols['warehouse'] = false;
-		if ($arg['tax_calculation']==1) $cols['gross_price'] = false;	
 		$header_prop = array(
 			'item_name'=>array('width'=>'150px', 'wrapmode'=>'nowrap'),
 			'description'=>array('width'=>30, 'wrapmode'=>'nowrap'),
@@ -238,6 +237,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 //				$cols['serial'] = false;
 //			}
 		}
+		if ($arg['tax_calculation']==1) $header_prop['gross_price'] = array('width'=>'0px');
 		if ($arg['payment']!=1) {
 			$cols['tax_rate'] = false;
 			$cols['net_total'] = false;
