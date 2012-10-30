@@ -194,7 +194,7 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders_details', 'delete', 'ACCESS:employee', array(':Created_by'=>'USER_ID'));
 		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders_details', 'delete', array('ACCESS:employee','ACCESS:manager'));
 
-		Base_AclCommon::add_permission('Inventory - Sell at loss',array('ACCESS:employee','ACCESS:manager'));
+		Base_AclCommon::add_permission(_M('Inventory - Sell at loss'),array('ACCESS:employee','ACCESS:manager'));
 
 		return true;
 	}

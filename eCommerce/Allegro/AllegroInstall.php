@@ -65,7 +65,7 @@ class Premium_Warehouse_eCommerce_AllegroInstall extends ModuleInstall {
 		
 		$this->create_data_dir();
 		
-		Base_AclCommon::add_permission('Inventory - Allegro Settings',array('ACCESS:employee'));
+		Base_AclCommon::add_permission(_M('Inventory - Allegro Settings'),array('ACCESS:employee'));
 		Variable::set('ecommerce_allegro_cats_up', null);
 		
 		return true;
