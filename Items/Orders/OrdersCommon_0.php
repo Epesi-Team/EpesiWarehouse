@@ -284,6 +284,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 
 	public static function display_order_details_tax_value($r, $nolink) {
 		$price = Utils_CurrencyFieldCommon::get_values($r['net_price']);
+		$tax = Utils_RecordBrowserCommon::get_value('premium_warehouse_items_orders', $r['transaction_id'], 'tax_calculation');
 		if ($tax==0)
 			$ret = round(Data_TaxRatesCommon::get_tax_rate($r['tax_rate'])*$price[0]/100, Utils_CurrencyFieldCommon::get_precission($price[1]))*$r['quantity'];
 		else
@@ -293,6 +294,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 
 	public static function display_order_details_gross_price($r, $nolink) {
 		$price = Utils_CurrencyFieldCommon::get_values($r['net_price']);
+		$tax = Utils_RecordBrowserCommon::get_value('premium_warehouse_items_orders', $r['transaction_id'], 'tax_calculation');
 		if ($tax==0)
 			$ret = round((100+Data_TaxRatesCommon::get_tax_rate($r['tax_rate']))*$price[0]/100, Utils_CurrencyFieldCommon::get_precission($price[1]))*$r['quantity'];
 		else
