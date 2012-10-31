@@ -176,6 +176,7 @@ $translations['Courier']='';
 $translations['Due on Receipt']='';
 $translations['Net 15']='';
 $translations['Net 30']='';
+$translations['Inventory - Sell at loss']='';
 $translations['Warehouse Transfer']='';
 $translations['Trans. ID']='';
 $translations['Invalid transaction type, please go to applet options and select different one.']='';

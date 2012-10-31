@@ -13,6 +13,7 @@ $translations['WEBAPI Key']='';
 $translations['Additional info on shipment and payment']='';
 $translations['Template']='';
 $translations['Ostatnio zakończone aukcje na allegro']='';
+$translations['Inventory - Allegro Settings']='';
 $translations['Tytuł']='';
 $translations['Kategoria']='';
 $translations['Dni']='';
