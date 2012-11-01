@@ -892,6 +892,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	 */
 
 	public static function change_quantity($item_id, $warehouse, $quantity) {
+		if (!$warehouse) return;
 		$location_id = Utils_RecordBrowserCommon::get_id('premium_warehouse_location',array('item_sku','warehouse'),array($item_id,$warehouse));
 		if ($location_id===false || $location_id===null) {
 			$location_id = Utils_RecordBrowserCommon::new_record('premium_warehouse_location', array('item_sku'=>$item_id, 'warehouse'=>$warehouse, 'quantity'=>$quantity));
@@ -1252,7 +1253,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		if (in_array($mode, array('view', 'editing', 'adding'))) {
 			load_js('modules/Premium/Warehouse/Items/Orders/field_control.js');
 			eval_js('order_details_trans_type = '.$trans['transaction_type'].';');
-			eval_js('order_details_trans_payment = '.$trans['payment'].';');
+			if ($trans['payment']) eval_js('order_details_trans_payment = '.$trans['payment'].';');
 			eval_js('warehouse_order_details_hide_fields();');
 		}
 		switch ($mode) {
