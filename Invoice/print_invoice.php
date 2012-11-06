@@ -614,7 +614,7 @@ $labels = array(
 );
 if (!$order['receipt']) {
 	$labels['receiver_sig'] = __('Receiver signature');
-	$labels['employee_sig'] = __('Employee signature<br/>Issuing invoice');
+	$labels['employee_sig'] = __('Employee signature').'<br/>'.__('Issuing invoice');
 }
 
 if ($labels['legal_notice'] == 'legal_notice') $labels['legal_notice'] = '';

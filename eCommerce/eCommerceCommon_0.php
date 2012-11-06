@@ -37,7 +37,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
         $id = Utils_RecordBrowserCommon::get_id('premium_ecommerce_parameter_labels', array('parameter', 'language'), array($r['id'], $lang_code));
         if (!is_numeric($id)) {
             $lan = Utils_CommonDataCommon::get_value('Premium/Warehouse/eCommerce/Languages/'.$lang_code);
-            return __('Description in <b>%s</b> missing', array($lan?$lan:$lang_code));
+            return __('Description in %s is missing', array('<b>'.($lan?$lan:$lang_code).'</b>'));
         }
         return Utils_RecordBrowserCommon::get_value('premium_ecommerce_parameter_labels',$id,'label');
     }
@@ -47,7 +47,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
         $id = Utils_RecordBrowserCommon::get_id('premium_ecommerce_param_group_labels', array('group', 'language'), array($r['id'], $lang_code));
         if (!is_numeric($id)) {
             $lan = Utils_CommonDataCommon::get_value('Premium/Warehouse/eCommerce/Languages/'.$lang_code);
-            return __('Description in <b>%s</b> missing', array($lan?$lan:$lang_code));
+            return __('Description in %s is missing', array('<b>'.($lan?$lan:$lang_code).'</b>'));
         }
         return Utils_RecordBrowserCommon::get_value('premium_ecommerce_param_group_labels',$id,'label');
     }
@@ -57,7 +57,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
         $id = Utils_RecordBrowserCommon::get_id('premium_ecommerce_descriptions', array('item_name', 'language'), array($r['item_name'], $lang_code));
         if (!is_numeric($id)) {
             $lan = Utils_CommonDataCommon::get_value('Premium/Warehouse/eCommerce/Languages/'.$lang_code);
-            return __('Description in <b>%s</b> is missing', array($lan?$lan:$lang_code));
+            return __('Description in %s is missing', array('<b>'.($lan?$lan:$lang_code).'</b>'));
         }
         return Utils_RecordBrowserCommon::get_value('premium_ecommerce_descriptions',$id,'short_description');
     }
@@ -67,7 +67,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
         $id = Utils_RecordBrowserCommon::get_id('premium_ecommerce_descriptions', array('item_name', 'language'), array($r['item_name'], $lang_code));
         if (!is_numeric($id)) {
             $lan = Utils_CommonDataCommon::get_value('Premium/Warehouse/eCommerce/Languages/'.$lang_code);
-            return __('Product name in <b>%s</b> is missing', array($lan?$lan:$lang_code));
+            return __('Product name in %s is missing', array('<b>'.($lan?$lan:$lang_code).'</b>'));
         }
         return  Utils_RecordBrowserCommon::record_link_open_tag('premium_ecommerce_products',$r['id'],$nolink).
                 Utils_RecordBrowserCommon::get_value('premium_ecommerce_descriptions',$id,'display_name').

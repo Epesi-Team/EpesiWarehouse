@@ -1284,11 +1284,9 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 				if (round($net[0]*(100+$tax_rate)/100,2)!=$gross[0]) {
 					$values['gross_price'] = round($net[0]*(100+$tax_rate)/100,2).'__'.$net[1];
 					$new_gross = Utils_CurrencyFieldCommon::get_values($values['gross_price']);
-					$notice = __( '<font color="red"><b>Notice:</b></font> No gross price is worth %s including %s%% tax.<br />Gross price was adjusted to %s, based on net price', array(
-						Utils_CurrencyFieldCommon::format($gross[0], $gross[1]),
-						$tax_rate,
-						Utils_CurrencyFieldCommon::format($new_gross[0], $new_gross[1]),
-						));
+					$notice = '<font color="red"><b>'.__('Notice:').'</b></font> '.
+							__('No gross price is worth %s including %s%% tax.', array(Utils_CurrencyFieldCommon::format($gross[0], $gross[1]),$tax_rate)).'<br />'.
+							__('Gross price was adjusted to %s, based on net price', array(Utils_CurrencyFieldCommon::format($new_gross[0], $new_gross[1])));
 				}
 				if ($trans['transaction_type']<2) {
 					Utils_RecordBrowserCommon::update_record('premium_warehouse_items', $values['item_name'], array($trans['transaction_type']==0?'last_purchase_price':'last_sale_price'=>$values['net_price']));
