@@ -116,7 +116,7 @@ class Premium_Warehouse_Items_KitCommon extends ModuleCommon {
                 }
             }
             
-	    $old_photos = Utils_AttachmentCommon::get('premium_ecommerce_products/'.$kit['id']);
+	    $old_photos = Utils_AttachmentCommon::get_files('premium_ecommerce_products/'.$kit['id']);
 	    $update_photos = false;
 	    $num_old = 0;
 	    $old_ids = array();

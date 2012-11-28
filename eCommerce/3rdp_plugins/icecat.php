@@ -214,15 +214,13 @@ class Premium_Warehouse_eCommerce_3rdp__Plugin_icecat implements Premium_Warehou
                 }
             $old_pics = array();
             $old_ver_pics = array();
-            $ooo = Utils_AttachmentCommon::get('premium_ecommerce_products/'.$item['id']);
+            $ooo = Utils_AttachmentCommon::get_files('premium_ecommerce_products/'.$item['id']);
             if(is_array($ooo))
                 foreach($ooo as $oo) {
-                    if(!$oo['text']) {
-                        if(preg_match('/^ice_/',$oo['original']))
-                            $old_pics[$oo['original']] = $oo['id'];
-                        else
-                            $old_ver_pics[$oo['original']] = $oo['id']; //collect all images
-                    }
+					if(preg_match('/^ice_/',$oo['original']))
+						$old_pics[$oo['original']] = $oo['id'];
+					else
+						$old_ver_pics[$oo['original']] = $oo['id']; //collect all images
                 }
             foreach($pic as $pp) {
                 $base_pp = 'ice_'.basename($pp);

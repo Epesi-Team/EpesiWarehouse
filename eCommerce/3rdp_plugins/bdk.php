@@ -148,10 +148,10 @@ class Premium_Warehouse_eCommerce_3rdp__Plugin_bdk implements Premium_Warehouse_
             $pictures = $pret->value();
             foreach($pictures as $p) {
                 $old_pics = array();
-                $ooo = Utils_AttachmentCommon::get('premium_ecommerce_products/'.$item['id']);
+                $ooo = Utils_AttachmentCommon::get_files('premium_ecommerce_products/'.$item['id']);
                 if(is_array($ooo))
                     foreach($ooo as $oo) {
-                        if(!$oo['text'] && preg_match('/^bdk_/',$oo['original']))
+                        if(preg_match('/^bdk_/',$oo['original']))
                             $old_pics[$oo['original']] = $oo['id'];
                     }
                 foreach($pictures as $pp) {
