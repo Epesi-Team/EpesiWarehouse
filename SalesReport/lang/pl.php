@@ -5,9 +5,9 @@
  * @subpackage pl
  */
 global $translations;
+$translations['Sales Report']='Raport sprzedaży';
 $translations['Total']='';
 $translations['Unknown mode']='';
-$translations['Sales Report']='Raport sprzedaży';
 $translations['Inventory Management']='Menadżer Inwentarza';
 $translations['You don\'t have permission to access this module']='';
 $translations['Warehouse']='Magazyn';
