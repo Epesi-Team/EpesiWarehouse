@@ -206,7 +206,7 @@
 	</tr>
 </table>
 
-{if isset($order.comments)}
+{if isset($order.comments) && !empty($order.comments)}
 <br>
 <table>
 	{assign var=label value=true}
