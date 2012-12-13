@@ -122,7 +122,7 @@ class Premium_WarehouseInstall extends ModuleInstall {
 	}
 	
 	public static function simple_setup() {
-        return array('package'=>__('Inventory Management'), 'version'=>'1.4.1');
+        return array('package'=>__('Inventory Management'), 'version'=>'1.4.2');
 	}
 }
 

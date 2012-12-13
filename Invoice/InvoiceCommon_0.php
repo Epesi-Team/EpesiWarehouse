@@ -52,7 +52,11 @@ class Premium_Warehouse_InvoiceCommon extends ModuleCommon {
 		$t = strtotime(date('Y-m-d'));//strtotime($order['transaction_date']);
 		$field = 'CONVERT(f_invoice_number,UNSIGNED)';
 		if (DATABASE_DRIVER=='postgres') $field = 'f_invoice_number::integer';
-		$invoice_number = DB::GetOne('SELECT MAX('.$field.') FROM premium_warehouse_items_orders_data_1 WHERE f_warehouse=%d AND f_transaction_type=%d AND f_receipt=%d AND f_invoice_print_date>=%D AND f_invoice_print_date<=%D AND active=1', array($order['warehouse'], $order['transaction_type'], $order['receipt']?1:0, date('Y-m-01',$t), date('Y-m-t',$t)));
+		if ($order['receipt'])
+			$receipt = 'AND f_receipt=1';
+		else
+			$receipt = 'AND (f_receipt IS NULL OR f_receipt=0)';
+		$invoice_number = DB::GetOne('SELECT MAX('.$field.') FROM premium_warehouse_items_orders_data_1 WHERE f_warehouse=%d AND f_transaction_type=%d AND f_invoice_print_date>=%D AND f_invoice_print_date<=%D AND active=1 '.$receipt, array($order['warehouse'], $order['transaction_type'], date('Y-m-01',$t), date('Y-m-t',$t)));
 		if (!is_numeric($invoice_number)) $invoice_number = 0;
 		$order['invoice_number'] = $invoice_number+1;
 		Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $order['id'], array('invoice_number'=>$order['invoice_number'],'invoice_print_date'=>$t));
