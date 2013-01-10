@@ -1042,7 +1042,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 					Utils_RecordBrowserCommon::new_record('premium_warehouse_items_orders_details',$r);
 				}
 				Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders',$values['clone'],array('status'=>''));
-				return;
+				return $values['clone'];
 			case 'adding':
 				if ($mode!='view' && ($values['transaction_type']==0 || $values['transaction_type']==1)) {
 					load_js('modules/Premium/Warehouse/Items/Orders/contractor_update.js');
