@@ -19,8 +19,6 @@ define('READ_ONLY_SESSION',true);
 require_once('../../../../include.php');
 ModuleManager::load_modules();
 
-//Base_ThemeCommon::install_default_theme('Premium_Warehouse_Invoice');
-
 $order = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $order_id);
 $style = Variable::get('premium_warehouse_invoice_style', false);
 if (!$style) $style = 'US';
