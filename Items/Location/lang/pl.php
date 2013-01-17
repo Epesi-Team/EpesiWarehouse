@@ -5,9 +5,9 @@
  * @subpackage pl
  */
 global $translations;
+$translations['Total']='';
 $translations['Item Name']='';
 $translations['Quantity']='Ilość';
-$translations['Total']='';
 $translations['n/a']='';
 $translations['Inventory Management']='Menadżer Inwentarza';
 $translations['Quantity on Hand']='';

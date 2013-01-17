@@ -6,10 +6,10 @@
  */
 global $translations;
 $translations['Weight']='';
-$translations['Price']='';
+$translations['Price']='Pret';
 $translations['Items']='';
 $translations['Item Name']='';
-$translations['Quantity']='';
+$translations['Quantity']='Cantitate';
 $translations['Item']='';
 $translations['Plugin']='';
 $translations['Param1']='';

@@ -6,7 +6,7 @@
  */
 global $translations;
 $translations['Weight']='';
-$translations['Price']='';
+$translations['Price']='Pret';
 $translations['Service']='';
 $translations['Cost']='';
 $translations['Allegro']='';
