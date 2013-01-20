@@ -2,7 +2,7 @@
 /**
  * Translation file.
  * @package epesi-translations
- * @subpackage tr
+ * @subpackage no
  */
 global $translations;
 $translations['Height']='';

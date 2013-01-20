@@ -183,7 +183,6 @@ $translations['Automatic prices']='';
 $translations['Banners']='';
 $translations['Boxes']='';
 $translations['Features']='';
-$translations['Home Page']='';
 $translations['Links for compare services']='';
 $translations['Order status change e-mails']='';
 $translations['Parameter Groups']='';
