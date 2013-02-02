@@ -1120,7 +1120,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 					if ($active) Base_User_SettingsCommon::save('Premium_Warehouse_Items_Orders','my_transaction','');
 					return $values;
 				}
-				if (isset($_REQUEST['premium_warehouse_change_active_order']) && $_REQUEST['premium_warehouse_change_active_order']===$values['id']) {
+				if (isset($_REQUEST['premium_warehouse_change_active_order']) && $_REQUEST['premium_warehouse_change_active_order']==$values['id']) {
 					Base_User_SettingsCommon::save('Premium_Warehouse_Items_Orders','my_transaction',$active?'':$values['id']);
 					unset($_REQUEST['premium_warehouse_change_active_order']);
 					$active = !$active;
@@ -1246,7 +1246,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		static $notice='';
    		if($mode!='adding') unset($_SESSION['client']['warehouse_transaction_new_item_id']);
 		if ($notice!=='') print($notice);
-		if (isset($values['item_name']) && !is_numeric($values['item_name']) && $mode!='adding')
+		if (isset($values['item_name']) && !is_numeric($values['item_name']))
 			$values['item_name'] = Utils_RecordBrowserCommon::get_id('premium_warehouse_items', 'item_name', $values['item_name']);
 		if (isset($values['item_name'])) $item_type = Utils_RecordBrowserCommon::get_value('premium_warehouse_items', $values['item_name'], 'item_type');
 		$trans = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $values['transaction_id']);
@@ -1272,9 +1272,9 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 				if ($trans['transaction_type']==2) {
 					if ($values['debit']) $values['quantity']=-$values['debit'];
 					else $values['quantity']=$values['credit'];
-					unset($values['credit']);
-					unset($values['debit']);
 				}
+				unset($values['credit']);
+				unset($values['debit']);
 				break;
 			case 'clone':
 			case 'added':
