@@ -2,7 +2,7 @@
 /**
  * Translation file.
  * @package epesi-translations
- * @subpackage vi
+ * @subpackage fa
  */
 global $translations;
 $translations['SSN']='';
@@ -10,7 +10,7 @@ $translations['Units']='';
 $translations['Comments']='';
 $translations['Warning: Found duplicate invoice number, transaction: ']='';
 $translations['Invoice Number']='';
-$translations['Due Date']='Kết thúc';
+$translations['Due Date']='موعد مقرر';
 $translations['Number is not defined']='';
 $translations['It will be assigned automatically upon print']='';
 $translations['[assign automatically]']='';
@@ -45,7 +45,7 @@ $translations['Employee signature']='';
 $translations['Issuing invoice']='';
 $translations['legal_notice']='';
 $translations['Receiver signature']='';
-$translations['Inventory Management']='';
+$translations['Inventory Management']='مدیریت موجودی';
 $translations['Print Receipt']='';
 $translations['Warning: Found duplicate number, transaction: ']='';
 $translations['Invalid format, number expected']='';

@@ -2,10 +2,10 @@
 /**
  * Translation file.
  * @package epesi-translations
- * @subpackage vi
+ * @subpackage fa
  */
 global $translations;
-$translations['Completed']='Hoàn thành';
+$translations['Completed']='تکمیل شده';
 $translations['Pending']='';
 $translations['Weight']='';
 $translations['Create Bill']='';
@@ -46,7 +46,7 @@ $translations['Cash']='';
 $translations['Qty']='';
 $translations['Shipment Type']='';
 $translations['SKU']='';
-$translations['Inventory Management']='';
+$translations['Inventory Management']='مدیریت موجودی';
 $translations['Purchase Order']='';
 $translations['Sales Quote']='';
 $translations['Tax']='';

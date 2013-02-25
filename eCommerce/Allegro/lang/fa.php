@@ -2,12 +2,12 @@
 /**
  * Translation file.
  * @package epesi-translations
- * @subpackage pl
+ * @subpackage fa
  */
 global $translations;
 $translations['Invalid number']='';
 $translations['Allegro']='';
-$translations['Invoice']='Faktura';
+$translations['Invoice']='';
 $translations['Invalid price']='';
 $translations['WEBAPI Key']='';
 $translations['Additional info on shipment and payment']='';

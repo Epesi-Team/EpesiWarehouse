@@ -2,10 +2,10 @@
 /**
  * Translation file.
  * @package epesi-translations
- * @subpackage vi
+ * @subpackage ko
  */
 global $translations;
-$translations['Completed']='Hoàn thành';
+$translations['Completed']='';
 $translations['Pending']='';
 $translations['Weight']='';
 $translations['Create Bill']='';

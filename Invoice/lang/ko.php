@@ -2,7 +2,7 @@
 /**
  * Translation file.
  * @package epesi-translations
- * @subpackage vi
+ * @subpackage ko
  */
 global $translations;
 $translations['SSN']='';
@@ -10,7 +10,7 @@ $translations['Units']='';
 $translations['Comments']='';
 $translations['Warning: Found duplicate invoice number, transaction: ']='';
 $translations['Invoice Number']='';
-$translations['Due Date']='Kết thúc';
+$translations['Due Date']='';
 $translations['Number is not defined']='';
 $translations['It will be assigned automatically upon print']='';
 $translations['[assign automatically]']='';

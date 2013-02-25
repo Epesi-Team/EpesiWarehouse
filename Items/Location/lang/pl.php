@@ -5,16 +5,16 @@
  * @subpackage pl
  */
 global $translations;
-$translations['Total']='';
-$translations['Item Name']='';
+$translations['Total']='Suma';
+$translations['Item Name']='Nazwa produktu';
 $translations['Quantity']='Ilość';
 $translations['n/a']='';
 $translations['Inventory Management']='Menadżer Inwentarza';
-$translations['Quantity on Hand']='';
+$translations['Quantity on Hand']='Ilość dostępna';
 $translations['Warehouse']='Magazyn';
-$translations['Items Locations']='';
-$translations['Items Serials']='';
-$translations['Warehouse Items']='';
-$translations['Item SKU']='';
-$translations['Item Location']='';
-$translations['Item List']='';
+$translations['Items Locations']='Lokalizacja produktów';
+$translations['Items Serials']='Produkty z nr. seryjnym';
+$translations['Warehouse Items']='Produkty magazynowe';
+$translations['Item SKU']='SKU Produktu';
+$translations['Item Location']='Lokalizacja Produktu';
+$translations['Item List']='Lista Produktów';
