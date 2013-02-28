@@ -26,6 +26,6 @@ $translations['LIFO']='';
 $translations['Prices']='Ceny';
 $translations['Net']='';
 $translations['Sales Report, %s']='Raport sprzedaży, %s';
-$translations['Sales_Report_%s']='';
+$translations['Sales_Report_%s']='Sales_Report_%s';
 $translations['Numbers in brackets indicate items sold that were omitted in earning calculation.']='Liczby w nawiasach oznaczają produkty sprzedane pominięte w obliczeniach';
 $translations['Item Search']='Szukanie produktu';

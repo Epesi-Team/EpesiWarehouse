@@ -5,7 +5,7 @@
  * @subpackage bg
  */
 global $translations;
-$translations['Total']='';
+$translations['Total']='Suma';
 $translations['Item Name']='';
 $translations['Quantity']='';
 $translations['n/a']='';
