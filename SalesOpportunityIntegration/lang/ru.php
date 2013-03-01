@@ -5,7 +5,7 @@
  * @subpackage ru
  */
 global $translations;
-$translations['Invoice']='';
 $translations['Inventory Management']='';
+$translations['Invoice']='';
 $translations['Trans. ID']='Номер сделки';
 $translations['Sales Opportunity Integration']='';

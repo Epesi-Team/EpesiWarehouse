@@ -5,8 +5,8 @@
  * @subpackage zh
  */
 global $translations;
-$translations['Bank account']='';
 $translations['Inventory Management']='库存管理';
+$translations['Bank account']='';
 $translations['Inventory']='';
 $translations['Warehouse']='';
 $translations['Check-in']='';

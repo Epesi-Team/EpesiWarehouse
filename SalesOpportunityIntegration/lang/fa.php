@@ -5,7 +5,7 @@
  * @subpackage fa
  */
 global $translations;
-$translations['Invoice']='';
 $translations['Inventory Management']='مدیریت موجودی';
+$translations['Invoice']='';
 $translations['Trans. ID']='';
 $translations['Sales Opportunity Integration']='';

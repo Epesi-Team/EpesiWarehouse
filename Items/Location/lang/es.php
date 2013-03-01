@@ -6,10 +6,10 @@
  */
 global $translations;
 $translations['Total']='';
+$translations['Inventory Management']='';
 $translations['Item Name']='';
 $translations['Quantity']='';
 $translations['n/a']='';
-$translations['Inventory Management']='';
 $translations['Quantity on Hand']='';
 $translations['Warehouse']='Depósito';
 $translations['Items Locations']='';

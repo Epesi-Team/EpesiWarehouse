@@ -7,6 +7,7 @@
 global $translations;
 $translations['Weight']='';
 $translations['Price']='';
+$translations['Inventory Management']='مدیریت موجودی';
 $translations['Items']='';
 $translations['Item Name']='';
 $translations['Quantity']='';
@@ -19,7 +20,6 @@ $translations['Param4']='';
 $translations['Param5']='';
 $translations['Param6']='';
 $translations['Tax Rate']='';
-$translations['Inventory Management']='مدیریت موجودی';
 $translations['Inventory']='';
 $translations['Item Type']='';
 $translations['Product Code']='';

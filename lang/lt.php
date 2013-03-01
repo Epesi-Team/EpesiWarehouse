@@ -5,8 +5,8 @@
  * @subpackage lt
  */
 global $translations;
-$translations['Bank account']='Banko sąskaita';
 $translations['Inventory Management']='';
+$translations['Bank account']='Banko sąskaita';
 $translations['Inventory']='';
 $translations['Warehouse']='';
 $translations['Check-in']='';

@@ -5,8 +5,8 @@
  * @subpackage ru
  */
 global $translations;
-$translations['Bank account']='Р/с';
 $translations['Inventory Management']='';
+$translations['Bank account']='Р/с';
 $translations['Inventory']='';
 $translations['Warehouse']='Склад';
 $translations['Check-in']='';

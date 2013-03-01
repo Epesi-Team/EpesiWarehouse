@@ -7,6 +7,7 @@
 global $translations;
 $translations['Weight']='Вес';
 $translations['Price']='Цена';
+$translations['Inventory Management']='';
 $translations['Items']='Товары';
 $translations['Item Name']='Наименование товара';
 $translations['Quantity']='Количество';
@@ -19,7 +20,6 @@ $translations['Param4']='Парам4';
 $translations['Param5']='Парам5';
 $translations['Param6']='Парам6';
 $translations['Tax Rate']='Ставка налога';
-$translations['Inventory Management']='';
 $translations['Inventory']='';
 $translations['Item Type']='Тип элемента';
 $translations['Product Code']='Код продукции';

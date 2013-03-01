@@ -5,8 +5,8 @@
  * @subpackage sr
  */
 global $translations;
-$translations['Bank account']='';
 $translations['Inventory Management']='';
+$translations['Bank account']='';
 $translations['Inventory']='';
 $translations['Warehouse']='';
 $translations['Check-in']='';
