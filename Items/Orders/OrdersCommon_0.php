@@ -1442,9 +1442,12 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		}
 		foreach ($words as $w) {
 			$str = DB::Concat(DB::qstr('%'), '%s', DB::qstr('%'));
-			$qry[] = '(f_item_name '.DB::like().' '.$str.' OR f_sku '.DB::like().' '.$str.')';
-			$vals[] = $w;
-			$vals[] = $w;
+            $fields_to_search = array('item_name', 'sku', 'manufacturer_part_number');
+            foreach ($fields_to_search as & $field_name) {
+                $field_name = "f_{$field_name} " . DB::like() . ' ' . $str;  // make f_name LIKE %%s% stmt
+                $vals[] = $w;  // put value for every %s - yes we know that it's the same for all
+            }
+			$qry[] = '(' . implode(' OR ', $fields_to_search) . ')';  // merge with OR stmts
 		}
 
 		$my_warehouse = $trans['warehouse'];
