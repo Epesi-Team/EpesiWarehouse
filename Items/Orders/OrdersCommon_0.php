@@ -1442,7 +1442,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		}
 		foreach ($words as $w) {
 			$str = DB::Concat(DB::qstr('%'), '%s', DB::qstr('%'));
-            $fields_to_search = array('item_name', 'sku', 'manufacturer_part_number');
+            $fields_to_search = array('item_name', 'sku', 'product_code', 'manufacturer_part_number');
             foreach ($fields_to_search as & $field_name) {
                 $field_name = "f_{$field_name} " . DB::like() . ' ' . $str;  // make f_name LIKE %%s% stmt
                 $vals[] = $w;  // put value for every %s - yes we know that it's the same for all
@@ -1455,13 +1455,16 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 
 		$ret = DB::SelectLimit('SELECT * FROM premium_warehouse_items_data_1 AS pwi WHERE '.implode(' AND ',$qry).' AND active=1', 10, 0, $vals);
         
-		$header = '<table style="width: 600px;" class="informal">'.
+		$header = '<table style="width: 800px;" class="informal">'.
 				'<tr>'.
-					'<th width="300px;" align="center">'.
+					'<th width="350px;" align="center">'.
 						__('Item Name').
 					'</th>'.
 					'<th align="center">'.
 						__('Item SKU').
+					'</th>'.
+					'<th width="100px;" align="center">'.
+						__('Product Code').
 					'</th>'.
 					'<th width="60px;" align="center">'.
 						__('QoH').
@@ -1481,13 +1484,16 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
         $result = array();
 		while ($row = $ret->FetchRow()) {
 			if ($empty) $result[''] = $header;
-			$l = '<span style="display:none;">'.$row['id'].'__'.$row['f_item_name'].'</span><table style="width: 600px;" class="informal">'.
+			$l = '<span style="display:none;">'.$row['id'].'__'.$row['f_item_name'].'</span><table style="width: 800px;" class="informal">'.
 				'<tr>'.
-				'<td width="300px;">'.
+				'<td width="350px;">'.
 					$row['f_item_name'].
 				'</td>'.
 				'<td>'.
 					$row['f_sku'].
+				'</td>'.
+				'<td width="100px;">'.
+					$row['f_product_code'].
 				'</td>'.
 				'<td width="60px;" align="right">'.
 					Premium_Warehouse_Items_LocationCommon::display_item_quantity_in_warehouse_and_total(array('id'=>$row['id'], 'item_type'=>$row['f_item_type']), $my_warehouse, true).
@@ -1506,7 +1512,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			$result[$row['id']] = $l;
 		}
 		if (!empty($result))
-			$result = '<ul style="width: 600px;"><li>'.implode('</li><li>',$result).'</li></ul>';
+			$result = '<ul style="width: 800px;"><li>'.implode('</li><li>',$result).'</li></ul>';
         return $result;
     }
     
