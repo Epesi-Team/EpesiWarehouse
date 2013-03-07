@@ -1457,13 +1457,16 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
         
 		$header = '<table style="width: 800px;" class="informal">'.
 				'<tr>'.
-					'<th width="350px;" align="center">'.
+					'<th width="300px;" align="center">'.
 						__('Item Name').
 					'</th>'.
-					'<th align="center">'.
+					'<th  width="80px;" align="center">'.
 						__('Item SKU').
 					'</th>'.
-					'<th width="100px;" align="center">'.
+                    '<th  width="80px;" align="center">'.
+                        __('Man.Part.No.').
+                    '</th>'.
+					'<th width="80px;" align="center">'.
 						__('Product Code').
 					'</th>'.
 					'<th width="60px;" align="center">'.
@@ -1475,7 +1478,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			
 		if ($trans_type==0 || $trans_type==1)
 			$header .= 	'<th width="90px;" align="center">'.
-						$trans_type==0?__('Cost'):__('Net Price').
+						($trans_type==0?__('Cost'):__('Net Price')).
 					'</th>';
 		$header .= 	'</tr>'.
 			'</table>';
@@ -1486,13 +1489,16 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			if ($empty) $result[''] = $header;
 			$l = '<span style="display:none;">'.$row['id'].'__'.$row['f_item_name'].'</span><table style="width: 800px;" class="informal">'.
 				'<tr>'.
-				'<td width="350px;">'.
+				'<td width="300px;">'.
 					$row['f_item_name'].
 				'</td>'.
-				'<td>'.
+				'<td width="80px;">'.
 					$row['f_sku'].
 				'</td>'.
-				'<td width="100px;">'.
+                '<td width="80px;">'.
+                    $row['f_manufacturer_part_number'].
+                '</td>'.
+				'<td width="80px;">'.
 					$row['f_product_code'].
 				'</td>'.
 				'<td width="60px;" align="right">'.
