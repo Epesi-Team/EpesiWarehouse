@@ -19,7 +19,7 @@ class Premium_Warehouse_InvoiceCommon extends ModuleCommon {
 	
 	public static function invoice_addon_parameters($record) {
 		if (isset($record['id']) && (!isset($record['payment']) || $record['payment'])) {
-			$href = 'target="_blank" href="modules/Premium/Warehouse/Invoice/print_invoice.php?'.http_build_query(array('record_id'=>$record['id'], 'cid'=>CID)).'"';
+			$href = 'target="_blank" target="_blank" href="modules/Premium/Warehouse/Invoice/print_invoice.php?'.http_build_query(array('record_id'=>$record['id'], 'cid'=>CID)).'"';
 			if (!$record['invoice_number'] && $record['transaction_type']==1) {
 				$href .= ' '.Utils_TooltipCommon::open_tag_attrs(__('Number is not defined').'<br>'.__('It will be assigned automatically upon print'), false);
 			}

@@ -205,7 +205,14 @@ foreach ($items as $k=>$v) {
 	$items[$k]['net_price'] = Utils_CurrencyFieldCommon::format($items[$k]['net_price'][0], $items[$k]['net_price'][1]);
 	$items[$k]['tax_name'] = $tax.'%';
 	$items[$k]['units'] = __( 'ea.');
+}
 
+function cmp_items($a,$b) {
+    return strcasecmp($a['item_details']['item_name'],$b['item_details']['item_name']);
+}
+uasort($items,'cmp_items');
+
+foreach($items as $k=>$v) {
 	$theme = Base_ThemeCommon::init_smarty();
 	$theme->assign('details', $items[$k]);
 	$theme->assign('lp', $lp);
@@ -639,7 +646,7 @@ $buffer = Libs_TCPDFCommon::output($tcpdf);
 
 header('Content-Type: application/pdf');
 header('Content-Length: '.strlen($buffer));
-header('Content-disposition: filename="'.($order['transaction_type']==0?__('Purchase Order'):($order['status']>2?__('Invoice'):__('Sales Quote'))).'_'.$order['id'].'.pdf"');
+header('Content-disposition: inline; filename="'.($order['transaction_type']==0?__('Purchase Order'):($order['status']>2?__('Invoice'):__('Sales Quote'))).'_'.$order['id'].'.pdf"');
 
 print($buffer);
 ?>
