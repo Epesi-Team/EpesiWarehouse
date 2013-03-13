@@ -21,20 +21,20 @@ class Premium_Warehouse_SalesReportCommon extends ModuleCommon {
 	}
 	public static function menu() {
 		if (!Base_AclCommon::i_am_admin()) return;
-		return array(_M('Reports')=>array('__submenu__'=>1, 
-			_M('Sales by Warehouse')=>array('mode'=>'sales_by_warehouse'), 
-			_M('Sales by Transaction')=>array('mode'=>'sales_by_transaction'),	
+		return array(_M('Reports')=>array('__submenu__'=>1,
+			_M('Sales by Warehouse')=>array('mode'=>'sales_by_warehouse'),
+			_M('Sales by Transaction')=>array('mode'=>'sales_by_transaction'),
 			_M('Sales by Item')=>array('mode'=>'sales_by_item'),
-			_M('Stock Value by Warehouse')=>array('mode'=>'value_by_warehouse')	
-		));	
+			_M('Stock Value by Warehouse')=>array('mode'=>'value_by_warehouse')
+		));
 	}
-	
+
 	public static function currency_exchange($val, $cur, $order_id) {
 		$rate = DB::GetOne('SELECT exchange_rate FROM premium_warehouse_sales_report_exchange WHERE order_id=%d AND currency=%d', array($order_id, $cur));
 		if (!$rate) $rate = 0;
 		return $val*$rate;
-	} 
-	
+	}
+
 	public static function recalculate() {
 		set_time_limit(0);
 		$currency = Variable::get('premium_warehouse_ex_currency');
@@ -58,11 +58,11 @@ class Premium_Warehouse_SalesReportCommon extends ModuleCommon {
 				$sale['f_price'] = Utils_CurrencyFieldCommon::get_values($sale['f_net_price']);
 				$net_price = $sale['f_price'][0];
 				if ($sale['f_price'][1]!=$currency)
-					$net_price = self::currency_exchange($net_price, $sale['f_price'][1], $currency);
+					$net_price = self::currency_exchange($net_price, $sale['f_price'][1], $sale['premium_warehouse_items_orders_idf_transaction_id']);
 				$gross_price = round((100+Data_TaxRatesCommon::get_tax_rate($sale['f_tax_rate']))*$net_price/100, $prec);
 				$net_price *= $multip;
 				$gross_price *= $multip;
-	
+
 				$earnings = array('g_lifo'=>0, 'g_fifo'=>0, 'n_lifo'=>0, 'n_fifo'=>0);
 				$item = Utils_RecordBrowserCommon::get_record('premium_warehouse_items', $sale['f_item_name']);
 				if ($item['item_type']>1) {
@@ -71,7 +71,7 @@ class Premium_Warehouse_SalesReportCommon extends ModuleCommon {
 					$sale = $sales->FetchRow();
 					continue;
 				}
-				
+
 				$sold_qty = $sale['f_quantity'];
 				$items = DB::Execute('SELECT * FROM premium_warehouse_sales_report_purchase_fifo_tmp WHERE item_id=%d AND warehouse=%d ORDER BY id ASC', array($sale['f_item_name'], $sale['f_warehouse']));
 				while ($sold_qty>0 && $item=$items->FetchRow()) {
@@ -98,7 +98,7 @@ class Premium_Warehouse_SalesReportCommon extends ModuleCommon {
 						DB::Execute('DELETE FROM premium_warehouse_sales_report_purchase_lifo_tmp WHERE id=%d', array($item['id']));
 				}
 				$qty_lifo = $sale['f_quantity']-$sold_qty;
-				
+
 				DB::Execute('INSERT INTO premium_warehouse_sales_report_earning VALUES(%d,%d,%d,%d,%d,%d,%d)', array($sale['od_id'], $qty_lifo, $qty_fifo, $earnings['g_lifo'], $earnings['g_fifo'], $earnings['n_lifo'], $earnings['n_fifo']));
 			    } else {
  				$trans_qty = $sale['f_quantity'];
@@ -143,7 +143,7 @@ class Premium_Warehouse_SalesReportCommon extends ModuleCommon {
 			DB::Execute('INSERT INTO premium_warehouse_sales_report_purchase_lifo_tmp VALUES (%d, %d, %d, %d, %d, %d)', array($id, $trans['f_item_name'], $trans['f_quantity'], $trans['f_warehouse'], $net_price*$multip, $gross_price*$multip));
 			$id++;
 		} while (true);
-	}  
+	}
 }
 
 ?>
