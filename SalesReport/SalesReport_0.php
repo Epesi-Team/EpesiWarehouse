@@ -109,9 +109,10 @@ class Premium_Warehouse_SalesReport extends Module {
 		$form = $this->init_module('Libs/QuickForm');
 		$form->addElement('hidden', 'currency_id', '', array('id'=>'currency_id'));
 		$form->addElement('hidden', 'exch_rate', '', array('id'=>'exch_rate'));
+        $form->addRule('exch_rate', __('Use dot to delimit decimal part.'), 'numeric');
 		$form->addElement('hidden', 'prompt_header', '', array('id'=>'prompt_header'));
 		$form->addElement('hidden', 'submit_form_js', '', array('id'=>'submit_form_js'));
-		$form->setDefaults(array('prompt_header'=>__('Enter the amount in %s',array($cur_code))));
+		$form->setDefaults(array('prompt_header'=> __('Use dot to delimit decimal part.') . "\n" . __('Enter the amount in %s',array($cur_code))));
 		$form->setDefaults(array('submit_form_js'=>$form->get_submit_form_js()));
 		$form->display();
 		if ($form->validate()) {
