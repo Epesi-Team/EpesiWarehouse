@@ -213,7 +213,8 @@
 	{foreach item=com from=$order.comments}
 	<tr>
 		<td align="right" width="90px">
-			{if $label}<b>{$labels.comments}</b>{/if}
+			{if $label}<b>{$labels.comments}</b>
+{/if}
 		</td>
 		<td width="10px">
 		</td>
@@ -230,52 +231,62 @@
 <center>
 	<table border="1">
 		<tr>
-			<td width="9%" style="text-align:center;">
+			<td width="6%" style="text-align:center;">
 				<font size="7"><b>
 					{$labels.no}
 				</b></font>
 			</td>
-			<td width="27%" style="text-align:center;">
+			<td width="22%" style="text-align:center;">
 				<font size="7"><b>
 					{$labels.item_name}
 				</b></font>
 			</td>
-			<td width="9%" style="text-align:center;">
+			<td width="8%" style="text-align:center;">
 				<font size="7"><b>
 					{$labels.sku}
 				</b></font>
 			</td>
-			<td width="7%" style="text-align:center;">
+			<td width="6%" style="text-align:center;">
 				<font size="7"><b>
 					{$labels.quantity}
 				</b></font>
 			</td>
-			<td width="5%" style="text-align:center;">
+			<td width="4%" style="text-align:center;">
 				<font size="7"><b>
 					{$labels.units}
 				</b></font>
 			</td>
-			<td width="9%" style="text-align:center;">
+            <td width="8%" style="text-align:center;">
+                <font size="7"><b>
+                        {$labels.unit_price}
+                    </b></font>
+            </td>
+            <td width="8%" style="text-align:center;">
+                <font size="7"><b>
+                        {$labels.discount_rate}
+                    </b></font>
+            </td>
+			<td width="8%" style="text-align:center;">
 				<font size="7"><b>
 					{$labels.net_price}
 				</b></font>
 			</td>
-			<td width="9%" style="text-align:center;">
+			<td width="8%" style="text-align:center;">
 				<font size="7"><b>
 					{$labels.net_value}
 				</b></font>
 			</td>
-			<td width="7%" style="text-align:center;">
+			<td width="6%" style="text-align:center;">
 				<font size="7"><b>
 					{$labels.tax_rate}
 				</b></font>
 			</td>
-			<td width="9%" style="text-align:center;">
+			<td width="8%" style="text-align:center;">
 				<font size="7"><b>
 					{$labels.tax_value}
 				</b></font>
 			</td>
-			<td width="9%" style="text-align:center;">
+			<td width="8%" style="text-align:center;">
 				<font size="7"><b>
 					{$labels.gross_value}
 				</b></font>

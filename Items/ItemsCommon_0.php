@@ -125,7 +125,7 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 		}
     }
     
-    public static function init_net_gross_js_calculation(&$form, $tax_rate_field, $net_field, $gross_field) {
+    public static function init_net_gross_js_calculation(&$form, $tax_rate_field, $net_field, $gross_field, $unit_field='', $discount_field='') {
 		$tax_rates = Data_TaxRatesCommon::get_tax_details();
 		$js = 'var tax_values=new Array();';
 		foreach ($tax_rates as $k=>$v)
@@ -135,11 +135,19 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 		$decp = Utils_CurrencyFieldCommon::get_decimal_point();
 		$switch_field = 'switch_net_gross_'.md5($form->getAttribute('name').$tax_rate_field.$net_field.$gross_field);
 		load_js('modules/Premium/Warehouse/Items/net_gross.js');
-		eval_js('Event.observe("'.$net_field.'","keyup",function(){update_gross("'.$decp.'","'.$net_field.'","'.$gross_field.'","'.$tax_rate_field.'","'.$switch_field.'");});');
-		eval_js('Event.observe("'.$gross_field.'","keyup",function(){update_net("'.$decp.'","'.$net_field.'","'.$gross_field.'","'.$tax_rate_field.'","'.$switch_field.'");});');
+        eval_js('Event.observe("'.$net_field.'","keyup",function(){update_gross("'.$decp.'","'.$net_field.'","'.$gross_field.'","'.$tax_rate_field.'","'.$switch_field.'");});');
+        eval_js('Event.observe("'.$gross_field.'","keyup",function(){update_net("'.$decp.'","'.$net_field.'","'.$gross_field.'","'.$tax_rate_field.'","'.$switch_field.'");});');
 		eval_js('Event.observe("'.$tax_rate_field.'","change",function(){if($("'.$switch_field.'").value==1)update_gross("'.$decp.'","'.$net_field.'","'.$gross_field.'","'.$tax_rate_field.'","'.$switch_field.'");else update_net("'.$decp.'","'.$net_field.'","'.$gross_field.'","'.$tax_rate_field.'","'.$switch_field.'");});');
-		eval_js('Event.observe("__'.$gross_field.'__currency","change",function(){switch_currencies($("__'.$gross_field.'__currency").selectedIndex,"'.$net_field.'","'.$gross_field.'");});');
-		eval_js('Event.observe("__'.$net_field.'__currency","change",function(){switch_currencies($("__'.$net_field.'__currency").selectedIndex,"'.$net_field.'","'.$gross_field.'");});');
+		eval_js('Event.observe("__'.$gross_field.'__currency","change",function(){switch_currencies($("__'.$gross_field.'__currency").selectedIndex,"'.$net_field.'","'.$gross_field.'","'.$unit_field.'");});');
+		eval_js('Event.observe("__'.$net_field.'__currency","change",function(){switch_currencies($("__'.$net_field.'__currency").selectedIndex,"'.$net_field.'","'.$gross_field.'","'.$unit_field.'");});');
+        if($unit_field && $discount_field) {
+            eval_js('Event.observe("'.$unit_field.'","keyup",function(){update_net_discount("'.$decp.'","'.$unit_field.'","'.$net_field.'","'.$discount_field.'");update_gross("'.$decp.'","'.$net_field.'","'.$gross_field.'","tax_rate")});');
+            eval_js('Event.observe("'.$net_field.'","keyup",function(){update_unit("'.$decp.'","'.$unit_field.'","'.$net_field.'","'.$discount_field.'");});');
+            eval_js('Event.observe("'.$gross_field.'","keyup",function(){update_unit("'.$decp.'","'.$unit_field.'","'.$net_field.'","'.$discount_field.'");});');
+            eval_js('Event.observe("'.$discount_field.'","keyup",function(){update_net_discount("'.$decp.'","'.$unit_field.'","'.$net_field.'","'.$discount_field.'");update_gross("'.$decp.'","'.$net_field.'","'.$gross_field.'","tax_rate")});');
+            eval_js('Event.observe("__'.$unit_field.'__currency","change",function(){switch_currencies($("__'.$unit_field.'__currency").selectedIndex,"'.$net_field.'","'.$gross_field.'");});');
+            eval_js('Event.observe("'.$tax_rate_field.'","change",function(){if($("'.$switch_field.'").value==0) update_unit("'.$decp.'","'.$unit_field.'","'.$net_field.'","'.$discount_field.'","'.$switch_field.'");});');
+        }
 		$form->addElement('hidden', $switch_field, '', array('id'=>$switch_field));
 		$form->setDefaults(array($switch_field=>1));
     }

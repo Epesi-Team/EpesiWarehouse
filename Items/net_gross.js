@@ -18,7 +18,18 @@ update_gross=function(decp,net,gross,tax,switch_field){
 	val=$(net).value.split(decp).join(".");
 	$(gross).value=format_currency(parseFloat(val)+parseFloat(val*tax_values[$(tax).value])/100,decp);
 }
-switch_currencies=function(val,net,gross){
+update_unit=function(decp,net,gross,discount){
+    if (!$(gross).value) return;
+    val=$(gross).value.split(decp).join(".");
+    $(net).value=format_currency(100*parseFloat(val)/(100-parseFloat(1*$(discount).value)),decp);
+}
+update_net_discount=function(decp,net,gross,discount){
+    if (!$(net).value) return;
+    val=$(net).value.split(decp).join(".");
+    $(gross).value=format_currency(parseFloat(val)-parseFloat(val*$(discount).value)/100,decp);
+}
+switch_currencies=function(val,net,gross,unit){
 	$("__"+net+"__currency").selectedIndex=val;
 	$("__"+gross+"__currency").selectedIndex=val;
+    if(unit) $("__"+unit+"__currency").selectedIndex=val;
 }

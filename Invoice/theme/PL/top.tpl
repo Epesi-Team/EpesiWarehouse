@@ -139,52 +139,62 @@
 <center>
 	<table border="1">
 		<tr>
-			<td width="9%" style="text-align:center;">
+			<td width="6%" style="text-align:center;">
 				<font size="7"><b>
 					{$labels.no}
 				</b></font>
 			</td>
-			<td width="23%" style="text-align:center;">
+			<td width="20%" style="text-align:center;">
 				<font size="7"><b>
 					{$labels.item_name}
 				</b></font>
 			</td>
-			<td width="9%" style="text-align:center;">
+			<td width="8%" style="text-align:center;">
 				<font size="7"><b>
 					{$labels.classification}
 				</b></font>
 			</td>
-			<td width="9%" style="text-align:center;">
+			<td width="8%" style="text-align:center;">
 				<font size="7"><b>
 					{$labels.quantity}
 				</b></font>
 			</td>
-			<td width="7%" style="text-align:center;">
+			<td width="6%" style="text-align:center;">
 				<font size="7"><b>
 					{$labels.units}
 				</b></font>
 			</td>
-			<td width="9%" style="text-align:center;">
+            <td width="8%" style="text-align:center;">
+                <font size="7"><b>
+                        {$labels.unit_price}
+                    </b></font>
+            </td>
+            <td width="6%" style="text-align:center;">
+                <font size="7"><b>
+                        {$labels.discount_rate}
+                    </b></font>
+            </td>
+			<td width="8%" style="text-align:center;">
 				<font size="7"><b>
 					{$labels.net_price}
 				</b></font>
 			</td>
-			<td width="7%" style="text-align:center;">
+			<td width="6%" style="text-align:center;">
 				<font size="7"><b>
 					{$labels.tax_rate}
 				</b></font>
 			</td>
-			<td width="9%" style="text-align:center;">
+			<td width="8%" style="text-align:center;">
 				<font size="7"><b>
-					{$labels.gorss_value}
+					{$labels.gross_value}
 				</b></font>
 			</td>
-			<td width="9%" style="text-align:center;">
+			<td width="8%" style="text-align:center;">
 				<font size="7"><b>
 					{$labels.net_value}
 				</b></font>
 			</td>
-			<td width="9%" style="text-align:center;">
+			<td width="8%" style="text-align:center;">
 				<font size="7"><b>
 					{$labels.tax_value}
 				</b></font>

@@ -53,11 +53,12 @@ if ($trans['transaction_type']<2) {
 	$price = ($trans['transaction_type']==0?(isset($rec['last_purchase_price'])&&$rec['last_purchase_price']?$rec['last_purchase_price']:$rec['cost']):(isset($rec['last_sale_price'])&&$rec['last_sale_price']?$rec['last_sale_price']:$rec['net_price']));
 	$price = Utils_CurrencyFieldCommon::get_values($price);
 	$gross_price = Utils_CurrencyFieldCommon::get_values(Utils_CurrencyFieldCommon::format_default($price[0]*(100+Data_TaxRatesCommon::get_tax_rate($rec['tax_rate']))/100, $price[1]));
-	$js .= 	'if($("net_price")){'.
-				'obj=$("__net_price__currency");for(i=0;i<obj.options.length;i++)if(obj.options[i].value=='.$price[1].'){cur_key=i;break;}'.
-				'$("net_price").value="'.implode(Utils_currencyFieldCommon::get_decimal_point(),explode('.',$price[0])).'";'.
+	$js .= 	'if($("unit_price")){'.
+				'obj=$("__unit_price__currency");for(i=0;i<obj.options.length;i++)if(obj.options[i].value=='.$price[1].'){cur_key=i;break;}'.
+				'$("unit_price").value=$("net_price").value="'.implode(Utils_currencyFieldCommon::get_decimal_point(),explode('.',$price[0])).'";'.
 				'$("gross_price").value="'.implode(Utils_currencyFieldCommon::get_decimal_point(),explode('.',$gross_price[0])).'";'.
-				'switch_currencies(cur_key,"net_price","gross_price");'.
+                '$("discount_rate").value=0;'.
+				'switch_currencies(cur_key,"net_price","gross_price","unit_price");'.
 			'}';
 
 	$js .= 'if($("quantity"))$("quantity").style.display="inline";';

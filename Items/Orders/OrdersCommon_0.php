@@ -524,14 +524,39 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			$form->addElement('static', $field, $label, $label2);
 		}
 	}
-	
-	public static function QFfield_net_price(&$form, $field, $label, $mode, $default, $desc, $rb_obj){
+
+    public static function QFfield_unit_price(&$form, $field, $label, $mode, $default, $desc, $rb_obj){
+        if ($mode!=='view') {
+            if ($default) {
+                $default = explode('__',$default);
+                $default = Utils_CurrencyFieldCommon::format_default($default[0], $default[1]);
+            }
+            $form->addElement('currency', $field, $label, array('id'=>$field));
+            $form->setDefaults(array($field=>$default));
+            $form->setDefaults(array($field=>$default));
+        } else {
+            $form->addElement('currency', $field, $label, array('id'=>$field));
+            $form->setDefaults(array($field=>$default));
+        }
+    }
+
+    public static function QFfield_discount_rate(&$form, $field, $label, $mode, $default, $desc, $rb_obj){
+        if ($mode!=='view') {
+            $form->addElement('text', $field, $label, array('id'=>$field));
+            $form->setDefaults(array($field=>$default?$default:0));
+        } else {
+            $form->addElement('text', $field, $label, array('id'=>$field));
+            $form->setDefaults(array($field=>$default));
+        }
+    }
+
+    public static function QFfield_net_price(&$form, $field, $label, $mode, $default, $desc, $rb_obj){
 		if ($mode!=='view') {
 			if ($default) {
 				$default = explode('__',$default);
 				$default = Utils_CurrencyFieldCommon::format_default($default[0], $default[1]);
 			}
-			Premium_Warehouse_ItemsCommon::init_net_gross_js_calculation($form, 'tax_rate', 'net_price', 'gross_price');
+			Premium_Warehouse_ItemsCommon::init_net_gross_js_calculation($form, 'tax_rate', 'net_price', 'gross_price','unit_price','discount_rate');
 			$form->addElement('currency', $field, $label, array('id'=>$field));
 			$form->setDefaults(array($field=>$default, 'use_net_price'=>1));
 			if ($default) {
@@ -1256,6 +1281,17 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			if ($trans['payment']) eval_js('order_details_trans_payment = '.$trans['payment'].';');
 			eval_js('warehouse_order_details_hide_fields();');
 		}
+        if($mode=='add' || $mode=='edit') {
+            if(Utils_CurrencyFieldCommon::is_empty($values['gross_price']) ||
+                Utils_CurrencyFieldCommon::is_empty($values['net_price'])) {
+                $values['unit_price'] = $values['gross_price'] = $values['net_price'] = '';
+            } elseif(!Utils_CurrencyFieldCommon::is_empty($values['net_price'])) {
+                if(Utils_CurrencyFieldCommon::is_empty($values['unit_price']) || $values['discount_rate']==='' || !isset($values['discount_rate'])) {
+                    $values['unit_price'] = $values['net_price'];
+                    $values['discount_rate'] = 0;
+                }
+            }
+        }
 		switch ($mode) {
 			case 'adding':
 				return $values;
@@ -1315,7 +1351,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 					unset($values['credit']);
 					unset($values['debit']);
 				}
-				$old_values = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders_details', $values['id']); 
+				$old_values = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders_details', $values['id']);
 				self::remove_transaction($trans, $old_values);
 				self::add_transaction($trans, $values);
 				if (isset($_REQUEST['serial_1']) && $item_type==1)

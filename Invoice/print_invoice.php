@@ -117,6 +117,8 @@ $labels = array(
 	'classification' => __('NAPCS'),
 	'quantity' => __('Qty'),
 	'units' => __('Units'),
+    'unit_price' => __('Unit Price'),
+    'discount_rate'=> __('Discount Rate'),
 	'net_price' => __('Net Price'),
 	'tax_rate' => __('Tax Rate'),
 	'gross_value' => __('Gross value'),
@@ -166,6 +168,7 @@ foreach ($items as $k=>$v) {
 	$tax = Data_TaxRatesCommon::get_tax_rate($items[$k]['tax_rate']);
 	$items[$k]['item_details'] = Utils_RecordBrowserCommon::get_record('premium_warehouse_items', $v['item_name']);
 	$items[$k]['net_price'] = Utils_CurrencyFieldCommon::get_values($items[$k]['net_price']);
+    $items[$k]['unit_price'] = Utils_CurrencyFieldCommon::get_values($items[$k]['unit_price']);
 	$items[$k]['gross_price'] = array();
 	$items[$k]['gross_price'][1] = $items[$k]['net_price'][1];
 	$items[$k]['gross_price'][0] = round((100+$tax)*$items[$k]['net_price'][0]/100, Utils_CurrencyFieldCommon::get_precission($items[$k]['net_price'][1])); 
@@ -203,6 +206,8 @@ foreach ($items as $k=>$v) {
 	
 	$items[$k]['gross_price'] = Utils_CurrencyFieldCommon::format($items[$k]['gross_price'][0], $items[$k]['gross_price'][1]);
 	$items[$k]['net_price'] = Utils_CurrencyFieldCommon::format($items[$k]['net_price'][0], $items[$k]['net_price'][1]);
+    $items[$k]['unit_price'] = Utils_CurrencyFieldCommon::format($items[$k]['unit_price'][0], $items[$k]['unit_price'][1]);
+    $items[$k]['discount_rate'] .= '%';
 	$items[$k]['tax_name'] = $tax.'%';
 	$items[$k]['units'] = __( 'ea.');
 }
