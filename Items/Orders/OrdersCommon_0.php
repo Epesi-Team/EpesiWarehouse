@@ -544,6 +544,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
         if ($mode!=='view') {
             $form->addElement('text', $field, $label, array('id'=>$field));
             $form->setDefaults(array($field=>$default?$default:0));
+            $form->addRule($field,__('Invalid discount'),'regex','/^[0-9]{1,2}(\.[0-9]+)?$/');
         } else {
             $form->addElement('text', $field, $label, array('id'=>$field));
             $form->setDefaults(array($field=>$default));
@@ -1290,6 +1291,8 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
                     $values['unit_price'] = $values['net_price'];
                     $values['discount_rate'] = 0;
                 }
+            } elseif($values['discount_rate']==='') {
+                $values['discount_rate']=0;
             }
         }
 		switch ($mode) {
