@@ -544,7 +544,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
         if ($mode!=='view') {
             $form->addElement('text', $field, $label, array('id'=>$field));
             $form->setDefaults(array($field=>$default?$default:0));
-            $form->addRule($field,__('Invalid discount'),'regex','/^[0-9]{1,2}(\.[0-9]+)?$/');
+            $form->addRule($field,__('Invalid discount'),'regex','/^-?[0-9]{1,2}(\.[0-9]+)?$/');
         } else {
             $form->addElement('text', $field, $label, array('id'=>$field));
             $form->setDefaults(array($field=>$default));
@@ -557,7 +557,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 				$default = explode('__',$default);
 				$default = Utils_CurrencyFieldCommon::format_default($default[0], $default[1]);
 			}
-			Premium_Warehouse_ItemsCommon::init_net_gross_js_calculation($form, 'tax_rate', 'net_price', 'gross_price','unit_price','discount_rate');
+			Premium_Warehouse_ItemsCommon::init_net_gross_js_calculation($form, 'tax_rate', 'net_price', 'gross_price','unit_price','markup_discount_rate');
 			$form->addElement('currency', $field, $label, array('id'=>$field));
 			$form->setDefaults(array($field=>$default, 'use_net_price'=>1));
 			if ($default) {
@@ -1287,12 +1287,12 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
                 Utils_CurrencyFieldCommon::is_empty($values['net_price'])) {
                 $values['unit_price'] = $values['gross_price'] = $values['net_price'] = '';
             } elseif(!Utils_CurrencyFieldCommon::is_empty($values['net_price'])) {
-                if(Utils_CurrencyFieldCommon::is_empty($values['unit_price']) || $values['discount_rate']==='' || !isset($values['discount_rate'])) {
+                if(Utils_CurrencyFieldCommon::is_empty($values['unit_price']) || $values['markup_discount_rate']==='' || !isset($values['markup_discount_rate'])) {
                     $values['unit_price'] = $values['net_price'];
-                    $values['discount_rate'] = 0;
+                    $values['markup_discount_rate'] = 0;
                 }
-            } elseif($values['discount_rate']==='') {
-                $values['discount_rate']=0;
+            } elseif($values['markup_discount_rate']==='') {
+                $values['markup_discount_rate']=0;
             }
         }
 		switch ($mode) {

@@ -74,7 +74,7 @@ warehouse_order_details_hide_fields = function() {
 	warehouse_orders_hide_field('returned', (order_details_trans_type!=3));
 
     warehouse_orders_hide_field('unit_price', (order_details_trans_type==4 || !order_details_trans_payment));
-    warehouse_orders_hide_field('discount_rate', (order_details_trans_type==4 || !order_details_trans_payment));
+    warehouse_orders_hide_field('markup_discount_rate', (order_details_trans_type==4 || !order_details_trans_payment));
 	warehouse_orders_hide_field('net_price', (order_details_trans_type==4 || !order_details_trans_payment));
 	warehouse_orders_hide_field('net_total', (order_details_trans_type==4 || !order_details_trans_payment));
 	warehouse_orders_hide_field('tax_rate', (order_details_trans_type==4 || !order_details_trans_payment));
@@ -88,7 +88,7 @@ warehouse_order_details_hide_fields = function() {
 	warehouse_orders_hide_field('debit', (order_details_trans_type==3));
 	warehouse_orders_hide_field('credit', (order_details_trans_type==3));
     warehouse_orders_hide_field('unit_price', (order_details_trans_type==3));
-    warehouse_orders_hide_field('discount_rate', (order_details_trans_type==3));
+    warehouse_orders_hide_field('markup_discount_rate', (order_details_trans_type==3));
 	warehouse_orders_hide_field('net_price', (order_details_trans_type==3));
 	warehouse_orders_hide_field('net_total', (order_details_trans_type==3));
 	warehouse_orders_hide_field('tax_rate', (order_details_trans_type==3));
@@ -101,7 +101,7 @@ warehouse_order_details_hide_fields = function() {
 	warehouse_orders_hide_field('debit', (order_details_trans_type!=2));
 
     warehouse_orders_hide_field('unit_price', (order_details_trans_type==2));
-    warehouse_orders_hide_field('discount_rate', (order_details_trans_type==2));
+    warehouse_orders_hide_field('markup_discount_rate', (order_details_trans_type==2));
 	warehouse_orders_hide_field('net_price', (order_details_trans_type==2));
 	warehouse_orders_hide_field('net_total', (order_details_trans_type==2));
 	warehouse_orders_hide_field('tax_rate', (order_details_trans_type==2));

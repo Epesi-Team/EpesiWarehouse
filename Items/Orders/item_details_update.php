@@ -57,7 +57,7 @@ if ($trans['transaction_type']<2) {
 				'obj=$("__unit_price__currency");for(i=0;i<obj.options.length;i++)if(obj.options[i].value=='.$price[1].'){cur_key=i;break;}'.
 				'$("unit_price").value=$("net_price").value="'.implode(Utils_currencyFieldCommon::get_decimal_point(),explode('.',$price[0])).'";'.
 				'$("gross_price").value="'.implode(Utils_currencyFieldCommon::get_decimal_point(),explode('.',$gross_price[0])).'";'.
-                '$("discount_rate").value=0;'.
+                '$("markup_discount_rate").value=0;'.
 				'switch_currencies(cur_key,"net_price","gross_price","unit_price");'.
 			'}';
 

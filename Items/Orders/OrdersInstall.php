@@ -112,7 +112,7 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 			array('name' => _M('Returned'), 			'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>false),
 
             array('name' => _M('Unit Price'), 			'type'=>'currency', 'required'=>false, 'extra'=>false, 'visible'=>true, 'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_unit_price')),
-            array('name' => _M('Discount Rate'), 			'type'=>'float', 'required'=>false, 'extra'=>false, 'visible'=>true, 'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_discount_rate')),
+            array('name' => _M('Markup/Discount Rate'), 			'type'=>'float', 'required'=>false, 'extra'=>false, 'visible'=>true, 'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_discount_rate')),
 
 			array('name' => _M('Net Price'), 			'type'=>'currency', 'required'=>false, 'extra'=>false, 'visible'=>true, 'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_net_price')),
 			array('name' => _M('Gross Price'), 		'type'=>'currency', 'required'=>false, 'extra'=>false, 'visible'=>true, 'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_gross_price'), 'display_callback'=>array($this->get_type().'Common', 'display_gross_price')),
