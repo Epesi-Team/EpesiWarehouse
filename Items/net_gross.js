@@ -33,3 +33,4 @@ switch_currencies=function(val,net,gross,unit){
 	$("__"+gross+"__currency").selectedIndex=val;
     if(unit) $("__"+unit+"__currency").selectedIndex=val;
 }
+// test of PHPStorm SVN
