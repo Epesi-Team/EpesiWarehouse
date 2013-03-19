@@ -58,7 +58,7 @@ class Premium_Warehouse_SalesReportCommon extends ModuleCommon {
 				$sale['f_price'] = Utils_CurrencyFieldCommon::get_values($sale['f_net_price']);
 				$net_price = $sale['f_price'][0];
 				if ($sale['f_price'][1]!=$currency)
-					$net_price = self::currency_exchange($net_price, $sale['f_price'][1], $sale['premium_warehouse_items_orders_idf_transaction_id']);
+					$net_price = self::currency_exchange($net_price, $sale['f_price'][1], $sale['premium_warehouse_items_orders_id']);
 				$gross_price = round((100+Data_TaxRatesCommon::get_tax_rate($sale['f_tax_rate']))*$net_price/100, $prec);
 				$net_price *= $multip;
 				$gross_price *= $multip;
