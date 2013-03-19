@@ -22,7 +22,7 @@ update_net=function(decp,net,gross,tax,switch_field){
       jq('#'+net).val('');
     }
   }
-  update_total(net_val,val);
+  update_total(net_val,val,decp);
 }
 update_gross=function(decp,net,gross,tax,switch_field){
   var net_field = jq('#'+net);
