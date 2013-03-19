@@ -171,7 +171,7 @@
             </td>
             <td width="6%" style="text-align:center;">
                 <font size="7"><b>
-                        {$labels.discount_rate}
+                        {$labels.markup_discount_rate}
                     </b></font>
             </td>
 			<td width="8%" style="text-align:center;">

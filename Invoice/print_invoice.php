@@ -118,7 +118,7 @@ $labels = array(
 	'quantity' => __('Qty'),
 	'units' => __('Units'),
     'unit_price' => __('Unit Price'),
-    'discount_rate'=> __('Discount Rate'),
+    'markup_discount_rate'=> __('Markup/Discount'),
 	'net_price' => __('Net Price'),
 	'tax_rate' => __('Tax Rate'),
 	'gross_value' => __('Gross value'),
@@ -207,7 +207,7 @@ foreach ($items as $k=>$v) {
 	$items[$k]['gross_price'] = Utils_CurrencyFieldCommon::format($items[$k]['gross_price'][0], $items[$k]['gross_price'][1]);
 	$items[$k]['net_price'] = Utils_CurrencyFieldCommon::format($items[$k]['net_price'][0], $items[$k]['net_price'][1]);
     $items[$k]['unit_price'] = Utils_CurrencyFieldCommon::format($items[$k]['unit_price'][0], $items[$k]['unit_price'][1]);
-    $items[$k]['discount_rate'] .= '%';
+    $items[$k]['markup_discount_rate'] .= '%';
 	$items[$k]['tax_name'] = $tax.'%';
 	$items[$k]['units'] = __( 'ea.');
 }

@@ -141,10 +141,10 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 		eval_js('Event.observe("__'.$gross_field.'__currency","change",function(){switch_currencies($("__'.$gross_field.'__currency").selectedIndex,"'.$net_field.'","'.$gross_field.'","'.$unit_field.'");});');
 		eval_js('Event.observe("__'.$net_field.'__currency","change",function(){switch_currencies($("__'.$net_field.'__currency").selectedIndex,"'.$net_field.'","'.$gross_field.'","'.$unit_field.'");});');
         if($unit_field && $discount_field) {
-            eval_js('Event.observe("'.$unit_field.'","keyup",function(){update_net_discount("'.$decp.'","'.$unit_field.'","'.$net_field.'","'.$discount_field.'");update_gross("'.$decp.'","'.$net_field.'","'.$gross_field.'","tax_rate")});');
+            eval_js('Event.observe("'.$unit_field.'","keyup",function(){update_net_discount("'.$decp.'","'.$unit_field.'","'.$net_field.'","'.$gross_field.'","'.$discount_field.'");update_gross("'.$decp.'","'.$net_field.'","'.$gross_field.'","tax_rate")});');
             eval_js('Event.observe("'.$net_field.'","keyup",function(){update_unit("'.$decp.'","'.$unit_field.'","'.$net_field.'","'.$discount_field.'");});');
             eval_js('Event.observe("'.$gross_field.'","keyup",function(){update_unit("'.$decp.'","'.$unit_field.'","'.$net_field.'","'.$discount_field.'");});');
-            eval_js('Event.observe("'.$discount_field.'","keyup",function(){update_net_discount("'.$decp.'","'.$unit_field.'","'.$net_field.'","'.$discount_field.'");update_gross("'.$decp.'","'.$net_field.'","'.$gross_field.'","tax_rate")});');
+            eval_js('Event.observe("'.$discount_field.'","keyup",function(){update_net_discount("'.$decp.'","'.$unit_field.'","'.$net_field.'","'.$gross_field.'","'.$discount_field.'");update_gross("'.$decp.'","'.$net_field.'","'.$gross_field.'","tax_rate")});');
             eval_js('Event.observe("__'.$unit_field.'__currency","change",function(){switch_currencies($("__'.$unit_field.'__currency").selectedIndex,"'.$net_field.'","'.$gross_field.'");});');
             eval_js('Event.observe("'.$tax_rate_field.'","change",function(){if($("'.$switch_field.'").value==0) update_unit("'.$decp.'","'.$unit_field.'","'.$net_field.'","'.$discount_field.'","'.$switch_field.'");});');
         }

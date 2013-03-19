@@ -222,6 +222,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 			'tax_value'=>array('width'=>'70px', 'wrapmode'=>'nowrap'),
 			'tax_rate'=>array('width'=>'60px', 'wrapmode'=>'nowrap'),
 			'sww'=>array('width'=>4, 'wrapmode'=>'nowrap'),
+			'markup_discount_rate'=>array('name'=>__('Markup'),'width'=>'80px', 'wrapmode'=>'nowrap'),
 			'net_total'=>array('width'=>'80px', 'wrapmode'=>'nowrap'),
 			'net_price'=>array('width'=>'100px', 'wrapmode'=>'nowrap'),
 			'gross_price'=>array('width'=>'100px', 'wrapmode'=>'nowrap'),

@@ -277,12 +277,14 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	}
 
 	public static function display_order_details_total($r, $nolink) {
+	    if($r['net_price']===null) return '---';
 		$price = Utils_CurrencyFieldCommon::get_values($r['net_price']);
 		$ret = $r['quantity']*$price[0];
 		return Utils_CurrencyFieldCommon::format($ret, $price[1]);
 	}
 
 	public static function display_order_details_tax_value($r, $nolink) {
+	    if($r['net_price']===null) return '---';
 		$price = Utils_CurrencyFieldCommon::get_values($r['net_price']);
 		$tax = Utils_RecordBrowserCommon::get_value('premium_warehouse_items_orders', $r['transaction_id'], 'tax_calculation');
 		if ($tax==0)
@@ -293,6 +295,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	}
 
 	public static function display_order_details_gross_price($r, $nolink) {
+	    if($r['net_price']===null) return '---';
 		$price = Utils_CurrencyFieldCommon::get_values($r['net_price']);
 		$tax = Utils_RecordBrowserCommon::get_value('premium_warehouse_items_orders', $r['transaction_id'], 'tax_calculation');
 		if ($tax==0)
@@ -543,8 +546,11 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
     public static function QFfield_discount_rate(&$form, $field, $label, $mode, $default, $desc, $rb_obj){
         if ($mode!=='view') {
             $form->addElement('text', $field, $label, array('id'=>$field));
-            $form->setDefaults(array($field=>$default?$default:0));
-            $form->addRule($field,__('Invalid discount'),'regex','/^-?[0-9]{1,2}(\.[0-9]+)?$/');
+            $form->setDefaults(array($field=>$default?$default:0));;
+            $form->addRule($field,__('Invalid markup/discount rate'),'regex','/^(-[0-9]{1,2}|[0-9]+)(\.[0-9]+)?$/');
+            $curr_format = '-?[0-9]*\.?[0-9]*';
+			eval_js('Event.observe(\''.$field.'\',\'keypress\',Utils_CurrencyField.validate.bindAsEventListener(Utils_CurrencyField,\''.Epesi::escapeJS($curr_format,false).'\'))');
+			eval_js('Event.observe(\''.$field.'\',\'blur\',Utils_CurrencyField.validate_blur.bindAsEventListener(Utils_CurrencyField,\''.Epesi::escapeJS($curr_format,false).'\'))');
         } else {
             $form->addElement('text', $field, $label, array('id'=>$field));
             $form->setDefaults(array($field=>$default));
@@ -725,6 +731,10 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		if ($mode=='add' || $mode=='edit') {
 			$form->addElement('text', $field, $label, array('id'=>$field));
 			if ($mode=='edit') $form->setDefaults(array($field=>$default));
+            $curr_format = '-?[0-9]*\.?[0-9]*';
+			eval_js('Event.observe(\''.$field.'\',\'keypress\',Utils_CurrencyField.validate.bindAsEventListener(Utils_CurrencyField,\''.Epesi::escapeJS($curr_format,false).'\'))');
+			eval_js('Event.observe(\''.$field.'\',\'blur\',Utils_CurrencyField.validate_blur.bindAsEventListener(Utils_CurrencyField,\''.Epesi::escapeJS($curr_format,false).'\'))');
+            eval_js('Event.observe("'.$field.'","keyup",function(){update_total(jq("#net_price").val(),jq("#gross_price").val(),"'.Utils_CurrencyFieldCommon::get_decimal_point().'");});');
 		} else {
 			$form->addElement('static', $field, $label);
 			$form->setDefaults(array($field=>$default));

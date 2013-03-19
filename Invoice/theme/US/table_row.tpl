@@ -32,7 +32,7 @@
         </td>
         <td width="8%" align="center">
             <font size="7">
-                {$details.discount_rate}
+                {$details.markup_discount_rate}
             </font>
         </td>
 		<td width="8%" align="right">
