@@ -5,8 +5,8 @@
  * @subpackage ro
  */
 global $translations;
-$translations['Total']='';
 $translations['Inventory Management']='';
+$translations['Total']='';
 $translations['Item Name']='';
 $translations['Quantity']='Cantitate';
 $translations['n/a']='';

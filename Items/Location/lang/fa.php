@@ -5,8 +5,8 @@
  * @subpackage fa
  */
 global $translations;
-$translations['Total']='';
 $translations['Inventory Management']='مدیریت موجودی';
+$translations['Total']='';
 $translations['Item Name']='';
 $translations['Quantity']='';
 $translations['n/a']='';

@@ -6,9 +6,13 @@
  */
 global $translations;
 $translations['Weight']='';
+$translations['Inventory Management']='库存管理';
+$translations['Net Price']='';
+$translations['Tax Rate']='';
+$translations['Tax Value']='';
+$translations['SKU']='';
 $translations['Price']='';
 $translations['Service']='';
-$translations['Inventory Management']='库存管理';
 $translations['Cost']='';
 $translations['Allegro']='';
 $translations['Items']='';
@@ -18,11 +22,7 @@ $translations['Category Name']='';
 $translations['Parent Category']='';
 $translations['4 weeks']='';
 $translations['4 months']='';
-$translations['Tax Value']='';
-$translations['Net Price']='';
-$translations['Tax Rate']='';
 $translations['Gross Price']='';
-$translations['SKU']='';
 $translations['Tax']='';
 $translations['Items Categories']='';
 $translations['Inventory']='';

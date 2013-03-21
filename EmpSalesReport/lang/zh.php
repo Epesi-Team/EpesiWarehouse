@@ -5,8 +5,8 @@
  * @subpackage zh
  */
 global $translations;
-$translations['Total']='';
 $translations['Inventory Management']='库存管理';
+$translations['Total']='';
 $translations['Employee Sales']='';
 $translations['You don\'t have permission to access this module']='';
 $translations['Employee Sales Report, %s']='';

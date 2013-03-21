@@ -5,8 +5,8 @@
  * @subpackage ro
  */
 global $translations;
-$translations['Total']='';
 $translations['Inventory Management']='';
+$translations['Total']='';
 $translations['Employee Sales']='';
 $translations['You don\'t have permission to access this module']='';
 $translations['Employee Sales Report, %s']='';

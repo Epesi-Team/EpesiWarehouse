@@ -6,8 +6,8 @@
  */
 global $translations;
 $translations['Sales Report']='';
-$translations['Total']='';
 $translations['Inventory Management']='';
+$translations['Total']='';
 $translations['Unknown mode']='';
 $translations['You don\'t have permission to access this module']='';
 $translations['Warehouse']='Depósito';
@@ -17,6 +17,7 @@ $translations['Sales by Transaction']='';
 $translations['Sales by Item']='';
 $translations['Stock Value by Warehouse']='';
 $translations['Enter new exchange rate']='';
+$translations['Use dot to delimit decimal part.']='';
 $translations['Enter the amount in %s']='';
 $translations['Fix amounts']='';
 $translations['Scan']='';

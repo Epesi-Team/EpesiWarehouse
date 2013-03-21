@@ -5,9 +5,9 @@
  * @subpackage pl
  */
 global $translations;
+$translations['Invoice']='Faktura';
 $translations['Invalid number']='';
 $translations['Allegro']='';
-$translations['Invoice']='Faktura';
 $translations['Invalid price']='';
 $translations['WEBAPI Key']='';
 $translations['Additional info on shipment and payment']='';

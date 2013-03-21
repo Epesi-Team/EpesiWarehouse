@@ -6,9 +6,13 @@
  */
 global $translations;
 $translations['Weight']='Вес';
+$translations['Inventory Management']='';
+$translations['Net Price']='Чистая цена';
+$translations['Tax Rate']='Ставка налога';
+$translations['Tax Value']='НДС';
+$translations['SKU']='Ед.склад.учета';
 $translations['Price']='Цена';
 $translations['Service']='Услуга';
-$translations['Inventory Management']='';
 $translations['Cost']='Стоимость';
 $translations['Allegro']='';
 $translations['Items']='Товары';
@@ -18,11 +22,7 @@ $translations['Category Name']='Название категории';
 $translations['Parent Category']='Родительская категория';
 $translations['4 weeks']='';
 $translations['4 months']='';
-$translations['Tax Value']='НДС';
-$translations['Net Price']='Чистая цена';
-$translations['Tax Rate']='Ставка налога';
 $translations['Gross Price']='Валовая цена';
-$translations['SKU']='Ед.склад.учета';
 $translations['Tax']='Налог';
 $translations['Items Categories']='Категории элементов';
 $translations['Inventory']='';

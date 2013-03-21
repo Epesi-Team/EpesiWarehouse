@@ -6,17 +6,18 @@
  */
 global $translations;
 $translations['Sales Report']='Raport sprzedaży';
-$translations['Total']='Suma';
 $translations['Inventory Management']='Menadżer Inwentarza';
+$translations['Total']='Suma';
 $translations['Unknown mode']='';
 $translations['You don\'t have permission to access this module']='';
 $translations['Warehouse']='Magazyn';
 $translations['Gross']='';
 $translations['Sales by Warehouse']='Raport Sprzedaży - Hurtownia';
-$translations['Sales by Transaction']='Raport Sprzedaży - Tranzakcja';
+$translations['Sales by Transaction']='Raport Sprzedaży - Transakcja';
 $translations['Sales by Item']='Raport Sprzedaży - Produkt';
 $translations['Stock Value by Warehouse']='Kwota w towarze';
 $translations['Enter new exchange rate']='Wprowadź nowy kurs';
+$translations['Use dot to delimit decimal part.']='';
 $translations['Enter the amount in %s']='';
 $translations['Fix amounts']='';
 $translations['Scan']='';
