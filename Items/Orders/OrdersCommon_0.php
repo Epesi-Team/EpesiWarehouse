@@ -546,7 +546,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
     public static function QFfield_discount_rate(&$form, $field, $label, $mode, $default, $desc, $rb_obj){
         if ($mode!=='view') {
             $form->addElement('text', $field, $label, array('id'=>$field));
-            $form->setDefaults(array($field=>$default?$default:0));;
+            $form->setDefaults(array($field=>$default?$default:0));
             $form->addRule($field,__('Invalid markup/discount rate'),'regex','/^(-[0-9]{1,2}|[0-9]+)(\.[0-9]+)?$/');
             $curr_format = '-?[0-9]*\.?[0-9]*';
 			eval_js('Event.observe(\''.$field.'\',\'keypress\',Utils_CurrencyField.validate.bindAsEventListener(Utils_CurrencyField,\''.Epesi::escapeJS($curr_format,false).'\'))');
@@ -1270,8 +1270,8 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			$htmlinfo[$label] = Utils_CurrencyFieldCommon::format($r[$desc['id']]);
 			$htmlinfo[__('Tax')] = Data_TaxRatesCommon::get_tax_name($r['tax_rate']);
 			$htmlinfo[__('Tax Rate')] = Data_TaxRatesCommon::get_tax_rate($r['tax_rate']).'%';
-			$htmlinfo[__('Tax Value')] = Utils_CurrencyFieldCommon::format(($price[0]*Data_TaxRatesCommon::get_tax_rate($r['tax_rate']))/100, $price[1]);;
-			$htmlinfo[$label.' ('.__('Gross').')'] = Utils_CurrencyFieldCommon::format(($price[0]*(100+Data_TaxRatesCommon::get_tax_rate($r['tax_rate'])))/100, $price[1]);;
+			$htmlinfo[__('Tax Value')] = Utils_CurrencyFieldCommon::format(($price[0]*Data_TaxRatesCommon::get_tax_rate($r['tax_rate']))/100, $price[1]);
+			$htmlinfo[$label.' ('.__('Gross').')'] = Utils_CurrencyFieldCommon::format(($price[0]*(100+Data_TaxRatesCommon::get_tax_rate($r['tax_rate'])))/100, $price[1]);
 			$ret = Utils_TooltipCommon::create($ret, Utils_TooltipCommon::format_info_tooltip($htmlinfo), false);
 		}
 		return $ret;
