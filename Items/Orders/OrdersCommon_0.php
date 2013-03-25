@@ -1293,10 +1293,18 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			eval_js('warehouse_order_details_hide_fields();');
 		}
         if($mode=='add' || $mode=='edit') {
-            if(Utils_CurrencyFieldCommon::is_empty($values['gross_price']) ||
-                Utils_CurrencyFieldCommon::is_empty($values['net_price'])) {
+            if(Utils_CurrencyFieldCommon::is_empty($values['gross_price']) && !Utils_CurrencyFieldCommon::is_empty($values['net_price'])) {
+                $net = Utils_CurrencyFieldCommon::get_values($values['net_price']);
+                $tax_rate = Data_TaxRatesCommon::get_tax_rate($values['tax_rate']);
+                $values['gross_price'] = Utils_CurrencyFieldCommon::format_default($net[0]*(100+$tax_rate)/100,$net[1]);
+            } elseif(!Utils_CurrencyFieldCommon::is_empty($values['gross_price']) && Utils_CurrencyFieldCommon::is_empty($values['net_price'])) {
+                $gross = Utils_CurrencyFieldCommon::get_values($values['gross_price']);
+                $tax_rate = Data_TaxRatesCommon::get_tax_rate($values['tax_rate']);
+                $values['unit_price'] = $values['net_price'] = Utils_CurrencyFieldCommon::format_default($gross[0]*100/(100+$tax_rate),$gross[1]);
+            } elseif(Utils_CurrencyFieldCommon::is_empty($values['gross_price']) && Utils_CurrencyFieldCommon::is_empty($values['net_price'])) {
                 $values['unit_price'] = $values['gross_price'] = $values['net_price'] = '';
-            } elseif(!Utils_CurrencyFieldCommon::is_empty($values['net_price'])) {
+            }
+            if(!Utils_CurrencyFieldCommon::is_empty($values['net_price'])) {
                 if(Utils_CurrencyFieldCommon::is_empty($values['unit_price']) || $values['markup_discount_rate']==='' || !isset($values['markup_discount_rate'])) {
                     $values['unit_price'] = $values['net_price'];
                     $values['markup_discount_rate'] = 0;
