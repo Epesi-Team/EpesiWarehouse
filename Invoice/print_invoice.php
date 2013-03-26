@@ -21,6 +21,9 @@ ModuleManager::load_modules();
 
 $order = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $order_id);
 $style = Variable::get('premium_warehouse_invoice_style', false);
+if (isset($_REQUEST['print_template'])) {
+    $style = $_REQUEST['print_template'];
+}
 if (!$style) $style = 'US';
 
 if (!Acl::is_user() || !Utils_RecordBrowserCommon::get_access('premium_warehouse_items_orders', 'view', $order)) die('Unauthorized access');
@@ -649,9 +652,10 @@ Libs_TCPDFCommon::writeHTML($tcpdf, $footer, false);
 
 $buffer = Libs_TCPDFCommon::output($tcpdf);
 
+$print_filename = ($order['transaction_type']==0?__('Purchase Order'):($order['status']>2?__('Invoice'):__('Sales Quote'))).'_'.$order['id'].'.pdf';
 header('Content-Type: application/pdf');
 header('Content-Length: '.strlen($buffer));
-header('Content-disposition: inline; filename="'.($order['transaction_type']==0?__('Purchase Order'):($order['status']>2?__('Invoice'):__('Sales Quote'))).'_'.$order['id'].'.pdf"');
+header('Content-disposition: inline; filename="'.$print_filename.'"');
 
 print($buffer);
 ?>

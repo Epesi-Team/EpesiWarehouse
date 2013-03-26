@@ -16,10 +16,15 @@ defined("_VALID_ACCESS") || die('Direct access forbidden');
 
 class Premium_Warehouse_InvoiceCommon extends ModuleCommon {
 	private static $rb_obj=null;
-	
-	public static function invoice_addon_parameters($record) {
+
+    /**
+     * Addon label callback used to add print button
+     * @param $record
+     * @return array
+     */
+    public static function invoice_addon_parameters($record) {
 		if (isset($record['id']) && (!isset($record['payment']) || $record['payment'])) {
-			$href = 'target="_blank" target="_blank" href="modules/Premium/Warehouse/Invoice/print_invoice.php?'.http_build_query(array('record_id'=>$record['id'], 'cid'=>CID)).'"';
+            $href = self::print_action_href($record);
 			if (!$record['invoice_number'] && $record['transaction_type']==1) {
 				$href .= ' '.Utils_TooltipCommon::open_tag_attrs(__('Number is not defined').'<br>'.__('It will be assigned automatically upon print'), false);
 			}
@@ -36,6 +41,56 @@ class Premium_Warehouse_InvoiceCommon extends ModuleCommon {
 		}
 		return array('show'=>false);
 	}
+
+    private static function template_print_href($record_id, $template) {
+        $data = array('record_id' => $record_id, 'print_template' => $template, 'cid' => CID);
+        $href = 'modules/Premium/Warehouse/Invoice/print_invoice.php?' . http_build_query($data) . '"';
+        return 'target="_blank" target="_blank" href="' . $href . '';
+    }
+
+    private static function print_action_href($items_order) {
+        $templates = self::enabled_templates($items_order);
+        if (count($templates) == 1) {
+            return self::template_print_href($items_order['id'], $templates[0]);
+        }
+        // multiple templates
+        $popup_id = 'print_choice_popup';
+        $header = __('Select document template to print');
+        $launchpad = array();
+        foreach ($templates as $template => $label) {
+            $href = self::template_print_href($items_order['id'], $template);
+            $href .= " onclick=\"leightbox_deactivate('$popup_id')\"";
+            $launchpad[] = array(
+                'href' => $href,
+                'label' => $label
+            );
+        }
+        $th = Base_ThemeCommon::init_smarty();
+        $th->assign('icons', $launchpad);
+        ob_start();
+        Base_ThemeCommon::display_smarty($th, self::Instance()->get_type(), 'launchpad');
+        $content = ob_get_clean();
+        Libs_LeightboxCommon::display($popup_id, $content, $header);
+        return Libs_LeightboxCommon::get_open_href($popup_id);
+    }
+
+    private static function enabled_templates($items_order) {
+        $templates = Variable::get('premium_warehouse_invoice_style', false);
+        if (!is_array($templates)) {
+            return array($templates => $templates);
+        }
+        return $templates;
+    }
+
+    public static function available_templates() {
+        $templates_dir = Base_ThemeCommon::get_template_dir() . str_replace('_', '/', self::Instance()->get_type());
+        $templates = array();
+        foreach (scandir($templates_dir) as $file) {
+            if ($file != '.' && $file != '..' && is_dir($templates_dir . '/' . $file))
+                $templates[] = $file;
+        }
+        return $templates;
+    }
 
 	public static function submit_warehouse_order($values, $mode) {
 		if (($mode=='edit' || $mode=='add') && $values['status']==4 && $values['transaction_type']==1 && (!isset($values['invoice_number']) || !$values['invoice_number'])) {
@@ -100,7 +155,7 @@ class Premium_Warehouse_InvoiceCommon extends ModuleCommon {
 		$recs = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders',array('transaction_type'=>$order['transaction_type'], '!id'=>$order['id'], 'invoice_number'=>$order['invoice_number'], 'warehouse'=>$order['warehouse'], 'receipt'=>$order['receipt'], '>=transaction_date'=>date('Y-m-01',$t), '<=transaction_date'=>date('Y-m-t',$t)));
 		return $recs;
 	}
-	
+
 	public static function check_number($data) {
 		if (Utils_RecordBrowser::$last_record['transaction_type']!=1) return true;
 		if (isset(Utils_RecordBrowser::$last_record['invoice_number']) && $data['invoice_number'] == Utils_RecordBrowser::$last_record['invoice_number']) return true;

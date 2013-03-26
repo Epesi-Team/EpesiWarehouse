@@ -52,23 +52,47 @@ class Premium_Warehouse_Invoice extends Module {
 			$this->parent->reset();
 			return;
 		}
-		
-		$form = $this->init_module('Libs/QuickForm');
-		$form->addElement('select', 'invoice_style', __('Invoice Style'), array('US'=>'US', 'PL'=>'PL', 'Drillmec1'=>'Drillmec1'));
+
+        Base_ActionBarCommon::add('scan', __('Refresh templates'), $this->create_callback_href(array($this, 'refresh_templates')));
+        $templates = Premium_Warehouse_InvoiceCommon::available_templates();
+
+        print __('Put your template directory to %s', array('<i>' . $this->get_module_dir() . 'theme</i>')) .
+            '<br /><br />' . __('Below you can manage enabled templates.') .
+            '<br />' . __('Enter display name for template to enable it or leave empty to disable.') .
+            '<br />' . __('If several templates will be enabled, then choose form will be displayed upon print button.');
+        $form = $this->init_module('Libs/QuickForm');
+        foreach ($templates as $template_name) {
+            $form->addElement('text', $template_name, $template_name);
+        }
 
 		$style = Variable::get('premium_warehouse_invoice_style', false);
 		if (!$style) $style = 'US';
+        if (!is_array($style)) $style = array($style => $style);
 		
-		$form->setDefaults(array('invoice_style'=>$style));
+		$form->setDefaults($style);
 		
 		Base_ActionBarCommon::add('save', __('Save'), $form->get_submit_form_href());
 		Base_ActionBarCommon::add('back',__('Back'),$this->create_back_href());
 		
 		if ($form->validate()) {
-			Variable::set('premium_warehouse_invoice_style', $form->exportValue('invoice_style'));
+            $values = $form->exportValues();
+            $save_templates = array();
+            foreach ($templates as $template_name) {
+                if (isset($values[$template_name])) {
+                    $label = trim($values[$template_name]);
+                    if ($label)
+                        $save_templates[$template_name] = $label;
+                }
+            }
+			Variable::set('premium_warehouse_invoice_style', $save_templates);
 			$this->parent->reset();
-		}
-		$form->display();
+		} else {
+            $form->display();
+        }
 	}
+
+    public function refresh_templates() {
+        Base_ThemeCommon::themeup();
+    }
 }
 ?>
