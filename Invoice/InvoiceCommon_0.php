@@ -51,7 +51,9 @@ class Premium_Warehouse_InvoiceCommon extends ModuleCommon {
     private static function print_action_href($items_order) {
         $templates = self::enabled_templates($items_order);
         if (count($templates) == 1) {
-            return self::template_print_href($items_order['id'], $templates[0]);
+            reset($templates);
+            $tpl = key($templates);
+            return self::template_print_href($items_order['id'], $tpl);
         }
         // multiple templates
         $popup_id = 'print_choice_popup';
