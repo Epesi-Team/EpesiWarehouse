@@ -1511,8 +1511,10 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		if (!$my_warehouse) $my_warehouse = Base_User_SettingsCommon::get('Premium_Warehouse','my_warehouse');
 
 		$ret = DB::SelectLimit('SELECT * FROM premium_warehouse_items_data_1 AS pwi WHERE '.implode(' AND ',$qry).' AND active=1', 10, 0, $vals);
-        
-		$header = '<table style="width: 800px;" class="informal">'.
+
+        $use_last_sale_or_purchase_price = Variable::get('premium_warehouse_use_last_price', false);
+        $table_width = ($use_last_sale_or_purchase_price ? "900" : "800") . "px;";
+		$header = '<table style="width: ' . $table_width . '" class="informal">'.
 				'<tr>'.
 					'<th width="300px;" align="center">'.
 						__('Item Name').
@@ -1533,10 +1535,16 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 						__('Qty. Res.').
 					'</th>';
 			
-		if ($trans_type==0 || $trans_type==1)
+		if ($trans_type==0 || $trans_type==1) {
 			$header .= 	'<th width="90px;" align="center">'.
 						($trans_type==0?__('Cost'):__('Net Price')).
 					'</th>';
+            if ($use_last_sale_or_purchase_price) {
+                $header .= '<th width="90px;" align="center">' .
+                    ($trans_type == 0 ? __('Last Purchase Price') : __('Last Sale Price')) .
+                    '</th>';
+            }
+        }
 		$header .= 	'</tr>'.
 			'</table>';
 
@@ -1544,7 +1552,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
         $result = array();
 		while ($row = $ret->FetchRow()) {
 			if ($empty) $result[''] = $header;
-			$l = '<span style="display:none;">'.$row['id'].'__'.$row['f_item_name'].'</span><table style="width: 800px;" class="informal">'.
+			$l = '<span style="display:none;">'.$row['id'].'__'.$row['f_item_name'].'</span><table style="width: ' . $table_width . '" class="informal">'.
 				'<tr>'.
 				'<td width="300px;">'.
 					$row['f_item_name'].
@@ -1565,17 +1573,23 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 					Premium_Warehouse_Items_OrdersCommon::display_reserved_qty(array('id'=>$row['id'], 'item_type'=>$row['f_item_type']), true).
 				'</td>';
 						
-			if ($trans_type==0 || $trans_type==1)
+			if ($trans_type==0 || $trans_type==1) {
 				$l .= 	'<td width="90px;" align="right">'.
 							Utils_CurrencyFieldCommon::format($trans_type==0?$row['f_cost']:$row['f_net_price']).
 						'</td>';
+                if ($use_last_sale_or_purchase_price) {
+                    $l .= '<td width="90px;" align="right">' .
+                        Utils_CurrencyFieldCommon::format($trans_type == 0 ? $row['f_last_purchase_price'] : $row['f_last_sale_price']) .
+                        '</td>';
+                }
+            }
 				$l .= '</tr>'.
 					'</table>';
 			$empty = false;
 			$result[$row['id']] = $l;
 		}
 		if (!empty($result))
-			$result = '<ul style="width: 800px;"><li>'.implode('</li><li>',$result).'</li></ul>';
+			$result = '<ul style="width: ' . $table_width . '"><li>'.implode('</li><li>',$result).'</li></ul>';
         return $result;
     }
     

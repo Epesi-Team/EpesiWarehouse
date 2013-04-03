@@ -50,8 +50,28 @@ $js .= '$("description").value="'.Epesi::escapeJS($rec['description']).'";';
 if ($trans['transaction_type']<2) {
 	$js .= 'if($("last_item_price"))$("last_item_price").value="'.$rec['last_purchase_price'].'";';
 	$js .= 'if($("tax_rate"))$("tax_rate").value="'.$rec['tax_rate'].'";';
-	$price = ($trans['transaction_type']==0?(isset($rec['last_purchase_price'])&&$rec['last_purchase_price']?$rec['last_purchase_price']:$rec['cost']):(isset($rec['last_sale_price'])&&$rec['last_sale_price']?$rec['last_sale_price']:$rec['net_price']));
-	$price = Utils_CurrencyFieldCommon::get_values($price);
+
+    $price = '';
+    $use_sales_or_purchase_price = Variable::get('premium_warehouse_use_last_price', false);
+    if ($use_sales_or_purchase_price) {
+        if ($trans['transaction_type'] == 0) { // purchase
+            $price = & $rec['last_purchase_price'];
+        } else { // sale
+            $price = & $rec['last_sale_price'];
+        }
+    }
+    $price = Utils_CurrencyFieldCommon::get_values($price);
+    if (!$price[0]) {
+        if ($trans['transaction_type'] == 0) { // purchase
+            $price = & $rec['cost'];
+        } else { // sale
+            $price = & $rec['net_price'];
+        }
+    }
+    $price_p = $price;
+    unset($price); // destroy reference
+	$price = Utils_CurrencyFieldCommon::get_values($price_p);
+
 	$gross_price = Utils_CurrencyFieldCommon::get_values(Utils_CurrencyFieldCommon::format_default($price[0]*(100+Data_TaxRatesCommon::get_tax_rate($rec['tax_rate']))/100, $price[1]));
 	$js .= 	'if($("unit_price")){'.
 				'obj=$("__unit_price__currency");for(i=0;i<obj.options.length;i++)if(obj.options[i].value=='.$price[1].'){cur_key=i;break;}'.
