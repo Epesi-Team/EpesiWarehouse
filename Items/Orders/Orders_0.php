@@ -26,7 +26,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 							'transaction_date'=>date('Y-m-d'),
 							'employee'=>$me['id'],
 							'warehouse'=>Base_User_SettingsCommon::get('Premium_Warehouse','my_warehouse'),
-							'tax_calculation'=>1
+							'tax_calculation'=> Variable::get('premium_warehouse_def_tax_calc', false)
 							);
 		if(Utils_RecordBrowserCommon::get_access('premium_warehouse_items_orders','add')) {
 

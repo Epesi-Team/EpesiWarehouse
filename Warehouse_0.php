@@ -48,9 +48,14 @@ class Premium_Warehouse extends Module {
 		$form->addElement('static', 'notice', __('Notice'), 'You can use upper indexing.<br />Example: "dm^3" will be displayed as "dm<sup>3</sup>"');
 
 		if ($orders) {
-            $form->addElement('header', 'transaction_items_price_settings_header', __('Transaction Items Price Settings'));
-            $form->addElement('select', 'use_last_sale_or_purchase_price', __('Use last sale or purchase price instead of net/cost'), array(0 => __('No'), 1 => __('Yes')));
+            $form->addElement('header', 'transactions_settings_header', __('Transactions Settings'));
+            // default price
+            $form->addElement('select', 'use_last_sale_or_purchase_price', __('Autofill item unit price'), array(0 => __('net price / cost'), 1 => __('last sale / purchase price')));
             $form->setDefaults(array('use_last_sale_or_purchase_price' => Variable::get('premium_warehouse_use_last_price', false)));
+            // default tax calculation
+            $tax_calculation_values = Utils_CommonDataCommon::get_translated_array('Premium_Items_Orders_TaxCalc');
+            $form->addElement('select', 'tax_calculation', __('Default tax calculation'), $tax_calculation_values);
+            $form->setDefaults(array('tax_calculation' => Variable::get('premium_warehouse_def_tax_calc', false)));
 			$form->addElement('header', 'disable_trans_types_header', __('Disable Transaction Types'));
 			$form->addElement('checkbox', 'disable_purchase', __('Disable Purchase'));
 			$form->addElement('checkbox', 'disable_sales_quote', __('Disable Sales Quote'));
@@ -82,6 +87,8 @@ class Premium_Warehouse extends Module {
 			if ($orders) {
                 $use_last_sale_or_purchase_price = & $vals['use_last_sale_or_purchase_price'];
                 Variable::set('premium_warehouse_use_last_price', $use_last_sale_or_purchase_price);
+                $tax_calculation = & $vals['tax_calculation'];
+                Variable::set('premium_warehouse_def_tax_calc', $tax_calculation);
 				$result = array();
 				foreach ($vals as $k=>$v) {
 					if (strpos($k, 'disable_')!==false && $v==true) $result[] = $k;
