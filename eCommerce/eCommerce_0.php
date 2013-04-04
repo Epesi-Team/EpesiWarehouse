@@ -542,8 +542,8 @@ class Premium_Warehouse_eCommerce extends Module {
 		foreach($files as $f) {
 			if(!preg_match('/^(.{2,3})\.php$/i',$f,$reqs))
 				continue;
-			if(in_array($reqs[1].'.gif',$files) && in_array('epesi_'.$reqs[1].'.php',$files)) {
-				$code = $reqs[1];
+            $code = $reqs[1];
+			if(in_array($code.'.gif',$files) && in_array('epesi_'.$code.'.php',$files)) {
 				if(!is_writable($path.'/config/epesi_'.$code.'.php')) {
 					Epesi::alert('Config file not writable: '.$path.'/config/epesi_'.$code.'.php');
 					unset($langs[$code]);
