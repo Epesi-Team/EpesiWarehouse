@@ -87,7 +87,8 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 
     public static function display_warehouse($v, $nolink=false, $desc=null) {
 		$ret = Utils_RecordBrowserCommon::create_linked_label('premium_warehouse', 'warehouse', $v[$desc['id']], $nolink);
-		if ($v['target_warehouse'] && $desc['id']!='target_warehouse') {
+		if (isset($v['target_warehouse']) && $v['target_warehouse']
+		    && $desc['id']!='target_warehouse') {
 			if (!$ret) $ret = '?';
 			$ret .= '&nbsp;-> '.Utils_RecordBrowserCommon::create_linked_label('premium_warehouse', 'warehouse', $v['target_warehouse'], $nolink);
 		}
