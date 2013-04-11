@@ -15,5 +15,5 @@ warehouse_items_hide_fields = function(item_type) {
 	$('_quantity_en_route__data').parentNode.style.display=countable?"":"none";
 	$('_weight__data').parentNode.style.display=countable?"":"none";
 	$('_volume__data').parentNode.style.display=countable?"":"none";
-	$('_quantity_sold__data').parentNode.style.display=countable?"none":"";
+	$('_quantity_sold__data').parentNode.style.display=countable?"":"none";
 }

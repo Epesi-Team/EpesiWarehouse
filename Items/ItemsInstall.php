@@ -28,7 +28,7 @@ class Premium_Warehouse_ItemsInstall extends ModuleInstall {
 			array('name' => _M('Product Code'), 	'type'=>'text', 'required'=>false, 'param'=>'32', 'extra'=>false, 'visible'=>false),
 			array('name' => _M('UPC'), 			'type'=>'text', 'required'=>false, 'param'=>'128', 'extra'=>false, 'visible'=>false),
 			array('name' => _M('Quantity on Hand'),'type'=>'integer', 'required'=>true, 'extra'=>false, 'visible'=>true),
-			array('name' => _M('Quantity Sold'),	'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>false, 'display_callback'=>array('Premium_Warehouse_ItemsCommon', 'display_quantity_sold')),
+			array('name' => _M('Quantity Sold'),	'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>false, 'display_callback'=>array('Premium_Warehouse_ItemsCommon', 'display_quantity_sold'), 'QFfield_callback' => array('Premium_Warehouse_ItemsCommon', 'QFfield_quantity_sold')),
 			array('name' => _M('Reorder point'), 	'type'=>'integer', 'required'=>true, 'extra'=>false, 'visible'=>false),
 			array('name' => _M('Weight'), 		'type'=>'float', 'required'=>true, 'extra'=>false, 'visible'=>false, 'display_callback'=>array('Premium_Warehouse_ItemsCommon', 'display_weight')),
 			array('name' => _M('Volume'),	 		'type'=>'float', 'required'=>false, 'extra'=>false, 'visible'=>false, 'display_callback'=>array('Premium_Warehouse_ItemsCommon', 'display_volume')),
