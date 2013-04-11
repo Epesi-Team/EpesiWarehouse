@@ -76,7 +76,22 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 	public static function display_serials() {}
 	
 	public static function display_quantity_sold($r, $nolink) {
-		return '--';
+        static $transactions_ids = null;
+        if (ModuleManager::is_installed('Premium/Warehouse/Items/Orders') < 0)
+            return '--'; // transactions module not installed
+
+        if ($transactions_ids === null) { // cache transaction ids for browse mode - it will be called every row
+            $transactions = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders',
+                array('transaction_type' => 1, 'status' => 20), array('id')); // sale transactions with status = delivered
+            $transactions_ids = array_keys($transactions);
+        }
+        $crits = array('item_name' => $r['id'], 'transaction_id' => $transactions_ids);
+        $details = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', $crits, array('quantity'));
+        $qty = 0;
+        foreach ($details as $det) {
+            $qty += $det['quantity'];
+        }
+		return $qty;
 	}
 	
     public static function build_category_tree(&$opts, $root='', $prefix='', $count=0) {
