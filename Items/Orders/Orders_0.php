@@ -82,9 +82,59 @@ class Premium_Warehouse_Items_Orders extends Module {
 			'invoice_number'=>array('width'=>10, 'wrapmode'=>'nowrap', 'name'=>__('Invoice')),
 			'transaction_date'=>array('width'=>10, 'wrapmode'=>'nowrap', 'name'=>__('Date'))
 		));
-		
-		$this->display_module($this->rb);
+
+        $possible_types_labels = Premium_Warehouse_Items_OrdersCommon::get_possible_transaction_type_labels();
+        $transaction_type_filter_opts = array('__NULL__' => '---');
+        foreach ($possible_types_labels as $val) {
+            $transaction_type_filter_opts[serialize($val['crits'])] = $val['label'];
+        }
+        $this->rb->set_custom_filter('transaction_type',
+            array(
+                'type' => 'select',
+                'label' => __('Transaction Type'),
+                'args' => $transaction_type_filter_opts,
+                'args_2' => array('id'=>'filter__transaction_type'),
+                'trans_callback' => array($this, 'transaction_type_filter')
+            )
+        );
+
+        $this->display_module($this->rb);
 	}
+
+    // callback for custom status filter
+    public function browse_mode_details(& $form, & $external_filters, & $vals, & $crits, & $next_dont_hide, $rb_obj) {
+        $transaction_type = isset($vals['filter__transaction_type']) ? $vals['filter__transaction_type'] : false;
+        if ($transaction_type == '__NULL__')
+            $transaction_type = false;
+
+        if ($transaction_type === false)
+            return;
+
+        $transaction_type_crits = @unserialize($transaction_type);
+        if (isset($transaction_type_crits['status']))
+            return;
+
+        $last_submited_defaults = $rb_obj->get_module_variable('def_filter', array());
+
+        $args = array('__NULL__' => '---') + Premium_Warehouse_Items_OrdersCommon::get_status_array($transaction_type_crits);
+        $form->addElement('select', 'filter__status', __('Transaction Status'), $args, array('id' => 'filter__status'));
+        $external_filters[] = 'status';
+
+        if (isset($last_submited_defaults['filter__transaction_type'])
+            && $last_submited_defaults['filter__transaction_type'] == $transaction_type
+        ) {
+            $form->setDefaults($last_submited_defaults);
+
+            $status_selected = $form->exportValue('filter__status');
+            $vals['filter__status'] = $status_selected;
+            if ($status_selected != '__NULL__') {
+                $crits = Utils_RecordBrowserCommon::merge_crits($crits, array('status' => $status_selected));
+            }
+        } else {
+            $form->setDefaults(array('filter__status' => '__NULL__'));
+        }
+        eval_js('jq("#filter__transaction_type").change(function(){jq("#filter__status option").remove();})');
+    }
 	
 	public function orders_actions($r, $gb_row) {
 		
@@ -97,6 +147,12 @@ class Premium_Warehouse_Items_Orders extends Module {
 		}
 		$gb_row->set_attrs('style="background:'.$bg_color.';"');
 	}
+
+    public function transaction_type_filter($choice) {
+        if ($choice == '__NULL__')
+            return array();
+        return @unserialize($choice);
+    }
 
 	public function warehouse_filter($choice) {
 		if ($choice=='__NULL__') return array();

@@ -22,7 +22,7 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 		Base_ThemeCommon::install_default_theme($this->get_type());
 		$fields = array(
 			array('name' => _M('Transaction ID'), 'type'=>'calculated', 'required'=>false, 'param'=>Utils_RecordBrowserCommon::actual_db_type('text',16), 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon','display_transaction_id')),
-			array('name' => _M('Transaction Type'),'type'=>'commondata', 'required'=>true, 'extra'=>false, 'visible'=>true, 'param'=>array('order_by_key'=>true,'Premium_Items_Orders_Trans_Types'), 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon','display_transaction_type_order')),
+			array('name' => _M('Transaction Type'),'type'=>'commondata', 'required'=>true, 'extra'=>false, 'visible'=>true, 'filter'=>true, 'param'=>array('order_by_key'=>true,'Premium_Items_Orders_Trans_Types'), 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon','display_transaction_type_order')),
 			array('name' => _M('Warehouse'), 		'type'=>'select', 'required'=>false, 'extra'=>false, 'filter'=>true, 'visible'=>true, 'param'=>'premium_warehouse::Warehouse;::', 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_warehouse')),
 			array('name' => _M('Target Warehouse'),'type'=>'select', 'required'=>false, 'extra'=>false, 'visible'=>false, 'param'=>'premium_warehouse::Warehouse;::', 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_warehouse')),
 			array('name' => _M('Ref No'), 		'type'=>'text', 'param'=>'64', 'required'=>false, 'extra'=>false, 'visible'=>true),

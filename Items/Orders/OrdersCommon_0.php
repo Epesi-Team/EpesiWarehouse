@@ -209,6 +209,8 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			if ($r['transaction_type']==0) return __('Check-in');
 			if ($r['transaction_type']==1) return __('Check-out');
 		}
+        if ($r['transaction_type'] == 1 && isset($r['status']) && $r['status'] == '1')
+            return __('Sales Quote');
 		return Utils_CommonDataCommon::get_value('Premium_Items_Orders_Trans_Types/'.$r['transaction_type'],true);	
 	}
 
@@ -389,6 +391,39 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		}
 		return Premium_Warehouse_Items_LocationCommon::display_item_quantity_in_warehouse_and_total($r,$my_warehouse,$nolink,$en_route_qty,array('main'=>__('Quantity En Route'), 'in_one'=>__('to %s'), 'in_all'=>__('Total')));
 	}
+
+    /**
+     * @return array array of associative arrays ['crits' => crits_array, 'label' => type_label]
+     */
+    public static function get_possible_transaction_type_labels() {
+        // 'Premium_Items_Orders_Trans_Types' array(0=>_M('Purchase'),1=>_M('Sale'),2=>_M('Inventory Adjustment'),3=>_M('Rental'),4=>_M('Transfer'))
+        $types = array();
+        $crits = array();
+        $tt = 'transaction_type';
+        $p = 'payment';
+        $status = 'status';
+        $crits[$p] = 0;
+        $crits[$tt] = 0;
+        $types[] = array('crits' => $crits, 'label' => self::display_transaction_type_order($crits));
+        $crits[$tt] = 1;
+        $types[] = array('crits' => $crits, 'label' => self::display_transaction_type_order($crits));
+        $crits[$p] = 1;
+        $crits[$tt] = 0;
+        $types[] = array('crits' => $crits, 'label' => self::display_transaction_type_order($crits));
+        $crits[$tt] = 1;
+        $types[] = array('crits' => $crits, 'label' => self::display_transaction_type_order($crits));
+        $crits[$tt] = 2;
+        $types[] = array('crits' => $crits, 'label' => self::display_transaction_type_order($crits));
+        $crits[$tt] = 3;
+        $types[] = array('crits' => $crits, 'label' => self::display_transaction_type_order($crits));
+        $crits[$tt] = 4;
+        $types[] = array('crits' => $crits, 'label' => self::display_transaction_type_order($crits));
+        $crits[$p] = 1;
+        $crits[$tt] = 1;
+        $crits[$status] = 1;
+        $types[] = array('crits' => $crits, 'label' => self::display_transaction_type_order($crits));
+        return $types;
+    }
 
 	public static function get_status_array($trans, $payment=null) {
 		if ($payment==null) $payment = isset($trans['payment'])?$trans['payment']:null;
