@@ -5,7 +5,7 @@
  * @subpackage it
  */
 global $translations;
-$translations['Inventory Management']='';
+$translations['Inventory Management']='Gestione inventario';
 $translations['Bank account']='';
 $translations['Inventory']='';
 $translations['Warehouse']='';
@@ -34,6 +34,11 @@ $translations['Warehouse (attachment) #%d, %s']='';
 $translations['Weight units']='';
 $translations['Must be between 1 and 10 chars']='';
 $translations['Volume units']='';
+$translations['Transactions Settings']='';
+$translations['Autofill item unit price']='';
+$translations['net price / cost']='';
+$translations['last sale / purchase price']='';
+$translations['Default tax calculation']='';
 $translations['Disable Transaction Types']='';
 $translations['Disable Purchase']='';
 $translations['Disable Sales Quote']='';

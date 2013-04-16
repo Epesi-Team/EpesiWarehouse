@@ -5,7 +5,7 @@
  * @subpackage it
  */
 global $translations;
-$translations['Inventory Management']='';
+$translations['Inventory Management']='Gestione inventario';
 $translations['Total']='';
 $translations['Item Name']='';
 $translations['Quantity']='';

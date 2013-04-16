@@ -5,7 +5,7 @@
  * @subpackage it
  */
 global $translations;
-$translations['Inventory Management']='';
+$translations['Inventory Management']='Gestione inventario';
 $translations['Total']='';
 $translations['Employee Sales']='';
 $translations['You don\'t have permission to access this module']='';

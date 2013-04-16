@@ -6,7 +6,7 @@
  */
 global $translations;
 $translations['Weight']='';
-$translations['Inventory Management']='';
+$translations['Inventory Management']='Gestione inventario';
 $translations['Net Price']='';
 $translations['Tax Rate']='';
 $translations['Tax Value']='';

@@ -6,7 +6,7 @@
  */
 global $translations;
 $translations['Weight']='';
-$translations['Inventory Management']='';
+$translations['Inventory Management']='Gestione inventario';
 $translations['Tax Rate']='';
 $translations['Price']='';
 $translations['Items']='';
@@ -61,7 +61,7 @@ $translations['Search for new candidates']='';
 $translations['Change Item']='';
 $translations['Create New Manufacturer']='';
 $translations['Create a new manufacturer company']='';
-$translations['eCommerce']='';
+$translations['eCommerce']='Commercio elettronico';
 $translations['You need to select an item first.']='';
 $translations['Scan plugins']='';
 $translations['eCommerce publish']='';

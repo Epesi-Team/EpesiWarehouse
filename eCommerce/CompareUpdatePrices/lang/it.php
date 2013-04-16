@@ -13,6 +13,6 @@ $translations['Plugin']='';
 $translations['Gross Price']='';
 $translations['Compare Services']='';
 $translations['Auto update']='';
-$translations['eCommerce']='';
+$translations['eCommerce']='Commercio elettronico';
 $translations['URL']='';
 $translations['eCommerce - compare prices']='';
