@@ -607,7 +607,7 @@ if (is_numeric($PLN) && isset($gross_total_sum[$PLN]['x'])) {
 }
 if (is_numeric($USD) && isset($gross_total_sum[$USD]['x'])) {
 	$wording[] = cash2word_pl($gross_total_sum[$USD]['x'], array('dolar','dolarów','dolary'), array('cent','centów','centy'));
-	$wording_en[] = cash2word_en($gross_total_sum[$USD]['x'], array('dolar', 'dolars'), array('cent', 'cents'));
+	$wording_en[] = cash2word_en($gross_total_sum[$USD]['x'], array('dollar', 'dollars'), array('cent', 'cents'));
 }
 if (is_numeric($EUR) && isset($gross_total_sum[$EUR]['x'])) {
 	$wording[] = cash2word_pl($gross_total_sum[$EUR]['x'], array('euro','euro','euro'), array('cent','centów','centy'));
