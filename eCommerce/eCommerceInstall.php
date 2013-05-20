@@ -15,6 +15,7 @@
 defined("_VALID_ACCESS") || die('Direct access forbidden');
 
 class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
+    const version = '1.5.0';
 
 	public function install() {
 		set_time_limit(0);
@@ -686,7 +687,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 	}
 	
 	public function version() {
-		return array("0.9");
+		return array(self::version);
 	}
 	
 	public function requires($v) {
@@ -714,7 +715,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 	}
 	
 	public static function simple_setup() {
-        return array('package'=>__('eCommerce'), 'version'=>'1.4.1');
+        return array('package'=>__('eCommerce'), 'version' => self::version);
 	}
 
 	public static function post_install() {

@@ -16,6 +16,7 @@
 defined("_VALID_ACCESS") || die('Direct access forbidden');
 
 class Premium_Warehouse_ItemsInstall extends ModuleInstall {
+    const version = '1.5.0';
 
 	public function install() {
 		Base_LangCommon::install_translations($this->get_type());
@@ -99,7 +100,7 @@ class Premium_Warehouse_ItemsInstall extends ModuleInstall {
 	}
 	
 	public function version() {
-		return array("0.9");
+		return array(self::version);
 	}
 	
 	public function requires($v) {

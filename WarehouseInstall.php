@@ -15,6 +15,7 @@
 defined("_VALID_ACCESS") || die('Direct access forbidden');
 
 class Premium_WarehouseInstall extends ModuleInstall {
+    const version = '1.5.0';
 
 	public function install() {
 		set_time_limit(0);
@@ -104,7 +105,7 @@ class Premium_WarehouseInstall extends ModuleInstall {
 	}
 
 	public function version() {
-		return array("0.9");
+		return array(self::version);
 	}
 	
 	public function requires($v) {
@@ -122,7 +123,7 @@ class Premium_WarehouseInstall extends ModuleInstall {
 	}
 	
 	public static function simple_setup() {
-        return array('package'=>__('Inventory Management'), 'version'=>'1.4.2');
+        return array('package'=>__('Inventory Management'), 'version'=> self::version);
 	}
 }
 

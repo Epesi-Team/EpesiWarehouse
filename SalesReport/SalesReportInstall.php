@@ -13,6 +13,7 @@
 defined("_VALID_ACCESS") || die('Direct access forbidden');
 
 class Premium_Warehouse_SalesReportInstall extends ModuleInstall {
+    const version = '1.5.0';
 
 	public function install() {
 		DB::CreateTable('premium_warehouse_sales_report_earning',
@@ -64,7 +65,7 @@ class Premium_Warehouse_SalesReportInstall extends ModuleInstall {
 	}
 	
 	public function version() {
-		return array("1.0");
+		return array(self::version);
 	}
 	
 	public function requires($v) {

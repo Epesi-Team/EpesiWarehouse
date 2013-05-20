@@ -2,6 +2,7 @@
 defined("_VALID_ACCESS") || die('Direct access forbidden');
 
 class Premium_Warehouse_Items_WebcamInstall extends ModuleInstall {
+    const version = '1.5.0';
 
 	public function install() {
 		$this->create_data_dir();
@@ -17,7 +18,7 @@ class Premium_Warehouse_Items_WebcamInstall extends ModuleInstall {
 	}
 	
 	public function version() {
-		return array("0.9");
+		return array(self::version);
 	}
 	
 	public function requires($v) {

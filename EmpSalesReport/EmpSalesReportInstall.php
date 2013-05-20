@@ -13,6 +13,7 @@
 defined("_VALID_ACCESS") || die('Direct access forbidden');
 
 class Premium_Warehouse_EmpSalesReportInstall extends ModuleInstall {
+    const version = '1.5.0';
 
 	public function install() {
 		return true;
@@ -23,7 +24,7 @@ class Premium_Warehouse_EmpSalesReportInstall extends ModuleInstall {
 	}
 	
 	public function version() {
-		return array("1.0");
+		return array(self::version);
 	}
 	
 	public function requires($v) {
