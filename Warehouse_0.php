@@ -33,7 +33,8 @@ class Premium_Warehouse extends Module {
 			return;
 		}
 		$orders = (ModuleManager::is_installed('Premium_Warehouse_Items_Orders')>-1);
-	
+        $invoices = (ModuleManager::is_installed('Premium_Warehouse_Invoice')>-1);
+
 		$form = $this->init_module('Libs/QuickForm');
 
 		$form->addElement('header', null, __('Warehouse'));
@@ -71,6 +72,12 @@ class Premium_Warehouse extends Module {
 				$form->setDefaults(array($d=>true));
 		}
 
+        if ($invoices) {
+            $form->addElement('header', 'invoice_settings_header', __('Invoice Settings'));
+            $form->addElement('select', 'invoice_print_order', __('Items order on invoice'), array(0 => __('do not change'), 1 => __('sort by name')));
+            $form->setDefaults(array('invoice_print_order' => Variable::get('premium_warehouse_invoice_sort', false)));
+        }
+
 		
 		$form->setDefaults(array(
 			'weight_units'=>preg_replace('/\<sup\>([0-9]+)\<\/sup\>/', '^$1', Variable::get('premium_warehouse_weight_units')),
@@ -95,6 +102,11 @@ class Premium_Warehouse extends Module {
 				}
 				Variable::set('premium_warehouse_trans_types', $result);
 			}
+
+            if ($invoices) {
+                $invoice_items_sort_order = & $vals['invoice_print_order'];
+                Variable::set('premium_warehouse_invoice_sort', $invoice_items_sort_order);
+            }
 
 			if($this->parent->get_type()=='Base_Admin')
 				$this->parent->reset();

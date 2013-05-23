@@ -218,7 +218,9 @@ foreach ($items as $k=>$v) {
 function cmp_items($a,$b) {
     return strcasecmp($a['item_details']['item_name'],$b['item_details']['item_name']);
 }
-uasort($items,'cmp_items');
+
+if (Variable::get('premium_warehouse_invoice_sort', false))
+    uasort($items,'cmp_items');
 
 foreach($items as $k=>$v) {
 	$theme = Base_ThemeCommon::init_smarty();
