@@ -646,11 +646,15 @@ $html = explode('<!-- BREAK -->', $html);
 foreach ($html as $h)
     Libs_TCPDFCommon::writeHTML($tcpdf, $h);
 
-$footer_y = $tcpdf->getPageHeight() - $tcpdf->getFooterMargin();
 $margins = $tcpdf->getOriginalMargins();
-$tcpdf->SetAutoPageBreak(false);
-$tcpdf->SetXY($margins['left'], $footer_y);
-Libs_TCPDFCommon::writeHTML($tcpdf, $footer, false);
+$pages_total = $tcpdf->getNumPages();
+for ($page = 1; $page <= $pages_total; $page++) {
+    $tcpdf->SetPage($page);
+    $tcpdf->SetAutoPageBreak(false);
+    $footer_y = $tcpdf->getPageHeight() - $tcpdf->getFooterMargin();
+    $tcpdf->SetXY($margins['left'], $footer_y);
+    Libs_TCPDFCommon::writeHTML($tcpdf, $footer, false);
+}
 
 $buffer = Libs_TCPDFCommon::output($tcpdf);
 
