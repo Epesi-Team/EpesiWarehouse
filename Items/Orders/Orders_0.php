@@ -127,7 +127,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 
             $status_selected = $form->exportValue('filter__status');
             $vals['filter__status'] = $status_selected;
-            if ($status_selected != '__NULL__') {
+            if ($status_selected != '__NULL__' && $status_selected != null) {
                 $crits = Utils_RecordBrowserCommon::merge_crits($crits, array('status' => $status_selected));
             }
         } else {

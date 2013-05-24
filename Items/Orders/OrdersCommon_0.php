@@ -402,25 +402,36 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
         $tt = 'transaction_type';
         $p = 'payment';
         $status = 'status';
+        // check-in
         $crits[$p] = 0;
         $crits[$tt] = 0;
         $types[] = array('crits' => $crits, 'label' => self::display_transaction_type_order($crits));
+        // check-out
         $crits[$tt] = 1;
         $types[] = array('crits' => $crits, 'label' => self::display_transaction_type_order($crits));
+        // purchase
         $crits[$p] = 1;
         $crits[$tt] = 0;
         $types[] = array('crits' => $crits, 'label' => self::display_transaction_type_order($crits));
+        // sale
         $crits[$tt] = 1;
+        $crits["!$status"] = 1;
         $types[] = array('crits' => $crits, 'label' => self::display_transaction_type_order($crits));
-        $crits[$tt] = 2;
-        $types[] = array('crits' => $crits, 'label' => self::display_transaction_type_order($crits));
-        $crits[$tt] = 3;
-        $types[] = array('crits' => $crits, 'label' => self::display_transaction_type_order($crits));
-        $crits[$tt] = 4;
-        $types[] = array('crits' => $crits, 'label' => self::display_transaction_type_order($crits));
+        unset($crits["!$status"]);
+        // sales quote
         $crits[$p] = 1;
         $crits[$tt] = 1;
         $crits[$status] = 1;
+        $types[] = array('crits' => $crits, 'label' => self::display_transaction_type_order($crits));
+        unset($crits[$status]);
+        // inv adjustment
+        $crits[$tt] = 2;
+        $types[] = array('crits' => $crits, 'label' => self::display_transaction_type_order($crits));
+        // rental
+        $crits[$tt] = 3;
+        $types[] = array('crits' => $crits, 'label' => self::display_transaction_type_order($crits));
+        // transfer
+        $crits[$tt] = 4;
         $types[] = array('crits' => $crits, 'label' => self::display_transaction_type_order($crits));
         return $types;
     }
