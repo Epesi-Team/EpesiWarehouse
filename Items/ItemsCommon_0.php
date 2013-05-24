@@ -94,12 +94,6 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 		return $qty;
 	}
 
-    public static function QFfield_quantity_sold($form, $field, $label, $mode, $default, $params, $rb_obj) {
-        if ($mode == 'view') {
-            $form->addElement('static', $field, $label, self::display_quantity_sold($rb_obj->record));
-        }
-    }
-	
     public static function build_category_tree(&$opts, $root='', $prefix='', $count=0) {
 		$cats = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_categories', array('parent_category'=>$root),array('category_name'),array('position'=>'ASC'));
 		foreach($cats as $v) {
