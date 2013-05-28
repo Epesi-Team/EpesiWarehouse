@@ -22,22 +22,28 @@ class Premium_Warehouse_InvoiceCommon extends ModuleCommon {
      * @param $record
      * @return array
      */
-    public static function invoice_addon_parameters($record) {
+    public static function invoice_addon_parameters($record, $rb_obj) {
 		if (isset($record['id']) && (!isset($record['payment']) || $record['payment'])) {
-            $href = self::print_action_href($record);
-			if (!$record['invoice_number'] && $record['transaction_type']==1) {
-				$href .= ' '.Utils_TooltipCommon::open_tag_attrs(__('Number is not defined').'<br>'.__('It will be assigned automatically upon print'), false);
-			}
-			if (!$record['receipt']) Base_ActionBarCommon::add('print', __('Print'), $href);
-
+            // POSNET printing
+            $print_receipt_as_invoice = true;
 			if(isset($_GET['receipt_printed']) && $_GET['receipt_printed']==$record['id']) {
 				Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $record['id'], array('invoice_print_date'=>date('Y-m-d')));
 			} elseif(defined('ENABLE_RECEIPT_PRINTING') && ENABLE_RECEIPT_PRINTING) {
 				load_js('modules/Premium/Warehouse/Invoice/receipt.js');
 				Base_ActionBarCommon::add('print', __('Print Receipt'), 'onClick="print_receipt('.$record['id'].')" href="javascript:void(0)"');
-			} elseif ($record['receipt']) {
-				Base_ActionBarCommon::add('print', __('Print Receipt'), $href);
+                $print_receipt_as_invoice = false;
 			}
+            // Standard print
+            if (!$record['receipt'] || $print_receipt_as_invoice) {
+                $tooltip = (!$record['invoice_number'] && $record['transaction_type']==1) ?
+                    ' '.Utils_TooltipCommon::open_tag_attrs(__('Number is not defined').'<br>'.__('It will be assigned automatically upon print'), false)
+                    : '';
+                $href = self::print_action_href($record) . $tooltip;
+                Base_ActionBarCommon::add('print', __('Print'), $href);
+
+                $href_to_note = self::print_to_note_action_href($record, $rb_obj) . $tooltip;
+                Base_ActionBarCommon::add('print', __('Print to note'), $href_to_note);
+            }
 		}
 		return array('show'=>false);
 	}
@@ -49,7 +55,7 @@ class Premium_Warehouse_InvoiceCommon extends ModuleCommon {
     }
 
     private static function print_action_href($items_order) {
-        $templates = self::enabled_templates($items_order);
+        $templates = self::enabled_templates();
         if (count($templates) == 1) {
             reset($templates);
             $tpl = key($templates);
@@ -76,7 +82,56 @@ class Premium_Warehouse_InvoiceCommon extends ModuleCommon {
         return Libs_LeightboxCommon::get_open_href($popup_id);
     }
 
-    private static function enabled_templates($items_order) {
+    public static function print_to_note($order_id, $template) {
+        Libs_LeightboxCommon::close('print_to_note_choice_popup');
+        $printer = new Premium_Warehouse_Invoice_Printer();
+        $invoice_content = $printer->print_pdf($order_id, $template);
+        $file = tempnam(DATA_DIR, 'note_print_');
+        if ($file === false) {
+            // fail creating file
+            Base_StatusBarCommon::message(__("Cannot create temporary file for print output"), 'error');
+        } else if (false === file_put_contents($file, $invoice_content)) {
+            // fail writing to file
+            Base_StatusBarCommon::message(__("Error writing to temporary file"), 'error');
+            @unlink($file);
+        } else {
+            $group = "premium_warehouse_items_orders/$order_id";
+            $permission = Base_User_SettingsCommon::get('Utils_Attachment','default_permission');
+            $user = Base_AclCommon::get_user();
+            $note = '';
+            $origin_filename = $printer->get_printed_filename();
+            Utils_AttachmentCommon::add($group, $permission, $user, $note, $origin_filename, $file);
+        }
+    }
+
+    private static function print_to_note_action_href($items_order, $rb_obj) {
+        $templates = self::enabled_templates();
+        if (count($templates) == 1) {
+            reset($templates);
+            $tpl = key($templates);
+            return $rb_obj->create_callback_href(array(__CLASS__, 'print_to_note'), array($items_order['id'], $tpl));
+        }
+        // multiple templates
+        $popup_id = 'print_to_note_choice_popup';
+        $header = __('Select document template to print');
+        $launchpad = array();
+        foreach ($templates as $template => $label) {
+            $href = $rb_obj->create_callback_href(array(__CLASS__, 'print_to_note'), array($items_order['id'], $template));
+            $launchpad[] = array(
+                'href' => $href,
+                'label' => $label
+            );
+        }
+        $th = Base_ThemeCommon::init_smarty();
+        $th->assign('icons', $launchpad);
+        ob_start();
+        Base_ThemeCommon::display_smarty($th, self::Instance()->get_type(), 'launchpad');
+        $content = ob_get_clean();
+        Libs_LeightboxCommon::display($popup_id, $content, $header);
+        return Libs_LeightboxCommon::get_open_href($popup_id);
+    }
+
+    private static function enabled_templates() {
         $templates = Variable::get('premium_warehouse_invoice_style', false);
         if (!is_array($templates)) {
             return array($templates => $templates);
