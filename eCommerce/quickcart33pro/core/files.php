@@ -146,11 +146,11 @@ class Files
     	$where = 'ual.local=CONCAT(\'premium_ecommerce_products/\',%d) OR ual.local=CONCAT(\'premium_ecommerce_descriptions/\',%s,\'/\',%d)';
     }
     
-    $ret = DB::Execute('SELECT ual.id,ual.local, f.original, ual.sticky, f.revision, d.text
+    $ret = DB::Execute('SELECT f.id,ual.local, f.original, ual.sticky, d.text
 			FROM utils_attachment_link ual 
-			INNER JOIN utils_attachment_file f ON (f.attach_id=ual.id AND f.revision=(SELECT max(revision) FROM utils_attachment_file WHERE attach_id=ual.id)) 
+			INNER JOIN utils_attachment_file f ON (f.attach_id=ual.id) 
 			INNER JOIN utils_attachment_note d ON (d.attach_id=ual.id AND d.revision=(SELECT max(revision) FROM utils_attachment_note WHERE attach_id=ual.id)) 
-			WHERE ual.deleted=0 AND ('.$where.')',array($id,LANGUAGE,$id));
+			WHERE ual.deleted=0 AND f.deleted=0 AND ('.$where.')',array($id,LANGUAGE,$id));
     $th_size = $config['default_image_size'];
     
     $isDuplicateFile = array();
@@ -159,10 +159,10 @@ class Files
     		continue;
     	$isDuplicateFile[$row['original']] = 1;
 	$ext = strrchr($row['original'],'.');
-	if(!file_exists('files/epesi/'.$row['id'].'_'.$row['revision'].$ext)) continue;
+	if(!file_exists('files/epesi/'.$row['id'].$ext)) continue;
 	$photo = preg_match('/^\.(jpg|jpeg|gif|png|bmp)$/i',$ext);
 	$type = 2; // ??????????
-	$this->aFilesImages[$iKey][$row['id']] = array( 'iFile' => $row['id'], 'iProduct' => $product, 'sFileName' => 'epesi/'.$row['id'].'_'.$row['revision'].$ext, 'sDescription' => $row['original']!=$row['text']?$row['text']:'', 'iPhoto' => $photo, 'iPosition' => 0, 'iType' =>$type, 'iSize1' => $th_size, 'iSize2' => $th_size );
+	$this->aFilesImages[$iKey][$row['id']] = array( 'iFile' => $row['id'], 'iProduct' => $product, 'sFileName' => 'epesi/'.$row['id'].$ext, 'sDescription' => $row['original']!=$row['text']?$row['text']:'', 'iPhoto' => $photo, 'iPosition' => 0, 'iType' =>$type, 'iSize1' => $th_size, 'iSize2' => $th_size );
 
 	if( $photo ){
 	    //sticky image is default one

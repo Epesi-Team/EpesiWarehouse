@@ -36,12 +36,6 @@
 
   <style type="text/css">@import "$config[dir_templates]$config[template]";</style>
   $sBanner
-  <script language="javascript" type="text/javascript">
-    //<![CDATA[
-    var cot_loc0=(window.location.protocol == "https:")? "https://secure.comodo.net/trustlogo/javascript/cot.js":'http://www.trustlogo.com/trustlogo/javascript/cot.js';
-    document.write("<script language='javascript' type='text/javascript' src='"+cot_loc0+"'><\/sc" + "ript>");
-    //]]>
-  </script>
 <!-- END HEAD -->
 <!-- BEGIN MOBILE_HEAD -->
 <?xml version="1.0" encoding="$config[charset]"?>
@@ -69,12 +63,6 @@
   </script>
 
   <style type="text/css">@import "$config[dir_templates]$config[template]";</style>
-  <script language="javascript" type="text/javascript">
-    //<![CDATA[
-    var cot_loc0=(window.location.protocol == "https:")? "https://secure.comodo.net/trustlogo/javascript/cot.js":"http://www.trustlogo.com/trustlogo/javascript/cot.js";
-    document.write("<script language='javascript' type='text/javascript' src='"+cot_loc0+"'><\/sc" + "ript>");
-    //]]>
-  </script>
 <!-- END MOBILE_HEAD -->
 
 <!-- BEGIN BANNER_NORMAL --><div class="banner"><a href="$aData[sBannerLink]"><img src="$config[dir_files]$aData[sFile]" alt="$aData[sLink]" title="$aData[sLink]" style="width:$aData[iWidth]px;height:$aData[iHeight]px;" /></a></div><!-- END BANNER_NORMAL -->
@@ -174,6 +162,7 @@
           $sSearchForm
           $sMenu3
         <img alt="" title="" src="$config[dir_templates]img/credit_card_logos_11.gif" width="235" height="35" border="0" style="padding-left:5px" />
+		<img alt="" title="" src="$config[dir_templates]img/RapidSSL_SEAL.gif" width="90" height="50" border="0" style="padding-left:75px; padding-top:40px;" />
         </div>
         <div id="content">
 <!-- END BODY -->
@@ -207,10 +196,6 @@
   <div class="clear">&nbsp;</div>
 </div>
 
-<a href="http://www.instantssl.com" id="comodoTL">Trusted SSL Certificate</a>
-<script language="JavaScript" type="text/javascript">
-COT("http://www.vikingimporting.com/templates/img/secure_site.gif", "SC2", "none");
-</script>
 </body>
 </html>
 <!-- END FOOT -->

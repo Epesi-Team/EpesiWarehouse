@@ -268,7 +268,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
         return $qcs;
     }
 
-    public static function copy_attachment($id,$rev,$file,$original) {
+    public static function copy_attachment($id,$file,$original) {
         $qcs = self::get_quickcarts();
         $ext = strrchr($original,'.');
         if(preg_match('/^\.(jpg|jpeg|gif|png|bmp)$/i',$ext)) {
@@ -278,10 +278,10 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
             $file = $file['thumb'];
         }
         foreach($qcs as $q) {
-            copy($file,$q.'/files/epesi/'.$id.'_'.$rev.$ext);
+            copy($file,$q.'/files/epesi/'.$id.$ext);
             if(isset($th1)) {
-                copy($th1['thumb'],$q.'/files/100/epesi/'.$id.'_'.$rev.$ext);
-                copy($th2['thumb'],$q.'/files/200/epesi/'.$id.'_'.$rev.$ext);
+                copy($th1['thumb'],$q.'/files/100/epesi/'.$id.$ext);
+                copy($th2['thumb'],$q.'/files/200/epesi/'.$id.$ext);
             }
         }
         if(isset($th1)) {
