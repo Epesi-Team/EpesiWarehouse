@@ -142,9 +142,19 @@ class Premium_Warehouse_InvoiceCommon extends ModuleCommon {
     public static function available_templates() {
         $templates_dir = Base_ThemeCommon::get_template_dir() . str_replace('_', '/', self::Instance()->get_type());
         $templates = array();
+        $required_files_in_template = array('top', 'bottom', 'table_row', 'summary');
         foreach (scandir($templates_dir) as $file) {
-            if ($file != '.' && $file != '..' && is_dir($templates_dir . '/' . $file))
-                $templates[] = $file;
+            if ($file != '.' && $file != '..' && is_dir($templates_dir . '/' . $file)) {
+                $required_file_missing = false;
+                foreach ($required_files_in_template as $required_file) {
+                    if (!file_exists("$templates_dir/$file/$required_file.tpl")) {
+                        $required_file_missing = true;
+                        break;
+                    }
+                }
+                if (!$required_file_missing)
+                    $templates[] = $file;
+            }
         }
         return $templates;
     }
