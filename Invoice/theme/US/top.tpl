@@ -165,6 +165,7 @@
 			{$order.payment_type_label}
 		</td>
 		{if $order.terms_label}
+            {assign var="payment_colspan" value="1"}
 			<td width="90px" align="right">
 				{$labels.due_date}
 			</td>
@@ -182,12 +183,12 @@
 		{foreach from=$payments item=payment}
 			<td width="10px">
 			</td>
-			<td align="left" colspan="4">
+			<td align="left"{if $payment_colspan} colspan="4"{/if}>
 				{$payment.card_number}, {$payment.expiration_date}, {$payment.cvc_cvv}, {$payment.amount_label}
 			</td>
 		</tr>
 		<tr>
-			<td width="90">
+			<td width="90px">
 			</td>
 		{/foreach}
 	</tr>
