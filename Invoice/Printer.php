@@ -10,7 +10,7 @@ class Premium_Warehouse_Invoice_Printer {
 
     function print_pdf($order_id, $template = null) {
         $order = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $order_id);
-        $style = Variable::get('premium_warehouse_invoice_style', false);
+        $style = '';
         if ($template)
             $style = $template;
         if (!$style) $style = 'US';

@@ -1,5 +1,7 @@
 <center>
 
+    {if $form_html}{$form_html}{/if}
+
     <table id="Premium_Warehouse_Invoice" cellspacing="0" cellpadding="0" style="margin: 10px;">
         <tr>
 

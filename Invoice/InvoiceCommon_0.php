@@ -82,8 +82,7 @@ class Premium_Warehouse_InvoiceCommon extends ModuleCommon {
         return Libs_LeightboxCommon::get_open_href($popup_id);
     }
 
-    public static function print_to_note($order_id, $template) {
-        Libs_LeightboxCommon::close('print_to_note_choice_popup');
+    private static function print_to_note($order_id, $template, $note_text) {
         $printer = new Premium_Warehouse_Invoice_Printer();
         $invoice_content = $printer->print_pdf($order_id, $template);
         $file = tempnam(DATA_DIR, 'note_print_');
@@ -98,31 +97,38 @@ class Premium_Warehouse_InvoiceCommon extends ModuleCommon {
             $group = "premium_warehouse_items_orders/$order_id";
             $permission = Base_User_SettingsCommon::get('Utils_Attachment','default_permission');
             $user = Base_AclCommon::get_user();
-            $note = '';
             $origin_filename = $printer->get_printed_filename();
-            Utils_AttachmentCommon::add($group, $permission, $user, $note, $origin_filename, $file);
+            Utils_AttachmentCommon::add($group, $permission, $user, $note_text, $origin_filename, $file);
+            Base_StatusBarCommon::message(__("Note attached!"));
         }
     }
 
     private static function print_to_note_action_href($items_order, $rb_obj) {
         $templates = self::enabled_templates();
-        if (count($templates) == 1) {
-            reset($templates);
-            $tpl = key($templates);
-            return $rb_obj->create_callback_href(array(__CLASS__, 'print_to_note'), array($items_order['id'], $tpl));
-        }
-        // multiple templates
         $popup_id = 'print_to_note_choice_popup';
         $header = __('Select document template to print');
+        $form = $rb_obj->init_module('Libs/QuickForm');
+//        $form->addElement('textarea', 'note', __('Note'), array('rows' => '4', 'cols' => '60'));
+        $ck = $form->addElement('ckeditor', 'note', __('Note'), array('id' => 'note'));
+        $ck->setFCKProps(400, 100);
+        $form->addElement('hidden', 'template', '');
+        $form_html = $rb_obj->get_html_of_module($form);
+        if ($form->validate()) {
+            Libs_LeightboxCommon::close($popup_id);
+            self::print_to_note($items_order['id'], $form->exportValue('template'), $form->exportValue('note'));
+        }
         $launchpad = array();
         foreach ($templates as $template => $label) {
-            $href = $rb_obj->create_callback_href(array(__CLASS__, 'print_to_note'), array($items_order['id'], $template));
+            $template_change_js = "document.{$form->get_name()}.template.value=" . str_replace('"', "'", json_encode($template));
+            $submit_js = $form->get_submit_form_js();
+            $href = "href=\"javascript:void(0);\" onclick=\"$template_change_js;$submit_js\"";
             $launchpad[] = array(
                 'href' => $href,
                 'label' => $label
             );
         }
         $th = Base_ThemeCommon::init_smarty();
+        $th->assign('form_html', $form_html);
         $th->assign('icons', $launchpad);
         ob_start();
         Base_ThemeCommon::display_smarty($th, self::Instance()->get_type(), 'launchpad');
