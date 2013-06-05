@@ -108,9 +108,7 @@ class Premium_Warehouse_InvoiceCommon extends ModuleCommon {
         $popup_id = 'print_to_note_choice_popup';
         $header = __('Select document template to print');
         $form = $rb_obj->init_module('Libs/QuickForm');
-//        $form->addElement('textarea', 'note', __('Note'), array('rows' => '4', 'cols' => '60'));
-        $ck = $form->addElement('ckeditor', 'note', __('Note'), array('id' => 'note'));
-        $ck->setFCKProps(400, 100);
+        $form->addElement('textarea', 'note', __('Note'), array('rows' => '4', 'cols' => '60'));
         $form->addElement('hidden', 'template', '');
         $form_html = $rb_obj->get_html_of_module($form);
         if ($form->validate()) {
