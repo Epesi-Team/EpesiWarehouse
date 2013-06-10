@@ -49,7 +49,7 @@ class Premium_Warehouse_InvoiceCommon extends ModuleCommon {
 	}
 
     private static function template_print_href($record_id, $template) {
-        $data = array('record_id' => $record_id, 'print_template' => $template, 'cid' => CID);
+        $data = array('record_id' => $record_id, 'print_template' => $template, 'cid' => CID, 'ut' => time());
         $href = 'modules/Premium/Warehouse/Invoice/print_invoice.php?' . http_build_query($data) . '"';
         return 'target="_blank" target="_blank" href="' . $href . '';
     }

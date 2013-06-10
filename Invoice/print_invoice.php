@@ -26,6 +26,7 @@ $buffer = $printer->print_pdf($order_id, $style);
 
 header('Content-Type: application/pdf');
 header('Content-Length: ' . strlen($buffer));
+header('Cache-Control: no-cache');
 header('Content-disposition: inline; filename="' . $printer->get_printed_filename() . '"');
 
 print($buffer);
