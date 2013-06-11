@@ -8,14 +8,14 @@
  * @author Paul Bukowski <pbukowski@telaxus.com>
  * @copyright Copyright &copy; 2008, Telaxus LLC
  * @license Commercial
- * @version 1.0
+ * @version 1.5.1
  * @package epesi-premium
  * @subpackage warehouse
  */
 defined("_VALID_ACCESS") || die('Direct access forbidden');
 
 class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
-    const version = '1.5.0';
+    const version = '1.5.1';
 
 	public function install() {
 		set_time_limit(0);
