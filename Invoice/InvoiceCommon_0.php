@@ -23,6 +23,8 @@ class Premium_Warehouse_InvoiceCommon extends ModuleCommon {
      * @return array
      */
     public static function invoice_addon_parameters($record, $rb_obj) {
+        if (Utils_RecordBrowser::$mode != 'view')
+            return;
 		if (isset($record['id']) && (!isset($record['payment']) || $record['payment'])) {
             // POSNET printing
             $print_receipt_as_invoice = true;
