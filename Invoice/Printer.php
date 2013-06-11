@@ -400,7 +400,15 @@ class Premium_Warehouse_Invoice_Printer {
             Libs_TCPDFCommon::writeHTML($tcpdf, $footer, false);
         }
 
-        $this->print_filename = ($order['transaction_type'] == 0 ? __('Purchase Order') : ($order['status'] > 2 ? __('Invoice') : __('Sales Quote'))) . '_' . $order['id'] . '.pdf';
+        $this->print_filename = 'Print';
+        if ($order['transaction_type'] == 0) {
+            $this->print_filename = $order['status'] < 2 ? __('Purchase Quote') : __('Purchase Order');
+        } else {
+            if ($order['status'] == 4) $this->print_filename = __('Packing List');
+            else if ($order['status'] > 2) $this->print_filename = __('Invoice');
+            else $this->print_filename = __('Sales Quote');
+        }
+        $this->print_filename .=  '_' . $order['id'] . '.pdf';
 
         return Libs_TCPDFCommon::output($tcpdf);
     }
