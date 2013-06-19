@@ -461,7 +461,8 @@ class Premium_Warehouse_SalesReport extends Module {
 		$warehouses = Utils_RecordBrowserCommon::get_records('premium_warehouse',array(),array(),array('warehouse'=>'ASC'));
 		$items_amount = Utils_RecordBrowserCommon::get_records_count('premium_warehouse_items',array('id'=>$items_ids));
 		$limit = $this->rbr->enable_paging($items_amount);
-		$items_ids = array_splice($items_ids, $limit['offset'], $limit['numrows']);
+        if ($limit !== null)
+		    $items_ids = array_splice($items_ids, $limit['offset'], $limit['numrows']);
 		$items_recs = Utils_RecordBrowserCommon::get_records('premium_warehouse_items',array('id'=>$items_ids),array(),array('item_name'=>'ASC'));
 		$items = array();
 		foreach ($items_ids as $v) {
