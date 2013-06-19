@@ -195,7 +195,7 @@ class Premium_Warehouse_InvoiceCommon extends ModuleCommon {
 		if ($order['transaction_type']!=1) return $num;
 		if ($order['receipt']==1) return $num;
 		if (!$num || !is_numeric($num)) return $num;
-		return date('Y/n/',strtotime($order['transaction_date'])).$num.'-'.self::get_warehouse_code($order);
+		return date('Y/n/',strtotime($order['invoice_print_date'])).$num.'-'.self::get_warehouse_code($order);
 	}
 
 	public static function get_warehouse_code($order) {
@@ -224,8 +224,8 @@ class Premium_Warehouse_InvoiceCommon extends ModuleCommon {
 	
 	public static function get_conflict_invoices($order) {
 		if (!trim($order['invoice_number']) || $order['transaction_type']!=1) return array();
-		$t = strtotime($order['transaction_date']);
-		$recs = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders',array('transaction_type'=>$order['transaction_type'], '!id'=>$order['id'], 'invoice_number'=>$order['invoice_number'], 'warehouse'=>$order['warehouse'], 'receipt'=>$order['receipt'], '>=transaction_date'=>date('Y-m-01',$t), '<=transaction_date'=>date('Y-m-t',$t)));
+		$t = strtotime($order['invoice_print_date']);
+		$recs = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders',array('transaction_type'=>$order['transaction_type'], '!id'=>$order['id'], 'invoice_number'=>$order['invoice_number'], 'warehouse'=>$order['warehouse'], 'receipt'=>$order['receipt'], '>=invoice_print_date'=>date('Y-m-01',$t), '<=invoice_print_date'=>date('Y-m-t',$t)));
 		return $recs;
 	}
 
