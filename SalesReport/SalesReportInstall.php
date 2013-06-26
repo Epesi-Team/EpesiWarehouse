@@ -26,13 +26,24 @@ class Premium_Warehouse_SalesReportInstall extends ModuleInstall {
 						'n_earning_fifo I4',
 						array('constraints'=>'')
 		);
-		DB::CreateTable('premium_warehouse_sales_report_purchase_fifo_tmp',
+        DB::CreateTable('premium_warehouse_sales_report_related_order_details_fifo',
+            'order_details_id_sold I4,' .
+            'order_details_id_bought I4',
+            array('constraints' => '')
+        );
+        DB::CreateTable('premium_warehouse_sales_report_related_order_details_lifo',
+            'order_details_id_sold I4,' .
+            'order_details_id_bought I4',
+            array('constraints' => '')
+        );
+        DB::CreateTable('premium_warehouse_sales_report_purchase_fifo_tmp',
 						'id I4 KEY,'.
 						'item_id I4,'.
 						'quantity I4,'.
 						'warehouse I4,'.
 						'net_price I4,'.
-						'gross_price I4',
+						'gross_price I4'.
+                        'order_details_id I4',
 						array('constraints'=>'')
 		);
 		DB::CreateTable('premium_warehouse_sales_report_purchase_lifo_tmp',
@@ -41,7 +52,8 @@ class Premium_Warehouse_SalesReportInstall extends ModuleInstall {
 						'quantity I4,'.
 						'warehouse I4,'.
 						'net_price I4,'.
-						'gross_price I4',
+						'gross_price I4'.
+                        'order_details_id I4',
 						array('constraints'=>'')
 		);
 		DB::CreateTable('premium_warehouse_sales_report_exchange',
