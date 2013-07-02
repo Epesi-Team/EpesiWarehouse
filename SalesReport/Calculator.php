@@ -5,6 +5,8 @@ class Premium_Warehouse_SalesReport_CalculatorDB {
     public function clean_up_data() {
         DB::Execute('DELETE FROM premium_warehouse_sales_report_purchase_fifo_tmp');
         DB::Execute('DELETE FROM premium_warehouse_sales_report_purchase_lifo_tmp');
+        DB::Execute('DELETE FROM premium_warehouse_sales_report_related_order_details_fifo');
+        DB::Execute('DELETE FROM premium_warehouse_sales_report_related_order_details_lifo');
         DB::Execute('DELETE FROM premium_warehouse_sales_report_earning');
     }
 
@@ -172,7 +174,9 @@ class Premium_Warehouse_SalesReport_Calculator {
     }
 
     private function _price_to_int($value) {
-        return (int)($value * $this->currency_multiplier);
+        // conversion with rounding floating point.
+        // 158.2 * 100 is not exactly 15820 but something like 15819.99999999
+        return (int)(round($value * $this->currency_multiplier));
     }
 
     private function _calculate_values_in_proper_currency($currency_field_value, $order_id, $tax_rate_id) {
