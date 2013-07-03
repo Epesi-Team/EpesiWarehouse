@@ -87,12 +87,10 @@ class Premium_Warehouse_SalesReport_CalculatorDB {
             $net_value_lifo, $net_value_fifo));
     }
 
-    public function store_related_order_details($mode, $sale_order_details_id, $purchase_order_details_ids) {
+    public function store_related_order_details($mode, $sale_order_details_id, $purchase_order_details_id, $qty) {
         $this->_check_mode($mode);
-        $sql = "INSERT INTO premium_warehouse_sales_report_related_order_details_{$mode} VALUES(%d, %d)";
-        foreach ($purchase_order_details_ids as $id) {
-            DB::Execute($sql, array($sale_order_details_id, $id));
-        }
+        $sql = "INSERT INTO premium_warehouse_sales_report_related_order_details_{$mode} VALUES(%d, %d, %d)";
+        DB::Execute($sql, array($sale_order_details_id, $purchase_order_details_id, $qty));
     }
 
     private function _get_purchase_transactions() {
@@ -250,14 +248,13 @@ class Premium_Warehouse_SalesReport_Calculator {
 
         $sold_qty = $sale['quantity'];
         $items = $this->db->temp($mode, $sale['item_id'], $sale['warehouse']);
-        $purchase_orders_details_ids = array();
         foreach ($items as $item) {
             if ($sold_qty > 0) {
                 $qty = min($sold_qty, $item['quantity']);
                 $sold_qty -= $qty;
                 $earning_gross += ($sale['gross_value_int'] - $item['gross_price']) * $qty;
                 $earning_net += ($sale['net_value_int'] - $item['net_price']) * $qty;
-                $purchase_orders_details_ids[] = $item['order_details_id'];
+                $this->db->store_related_order_details($mode, $sale['order_details_id'], $item['order_details_id'], $qty);
                 if ($item['quantity'] > $qty)
                     $this->db->update_temp_quantity($mode, $item['id'], $item['quantity'] - $qty);
                 else
@@ -265,7 +262,6 @@ class Premium_Warehouse_SalesReport_Calculator {
             } else break;
         }
         $qty = $sale['quantity'] - $sold_qty;
-        $this->db->store_related_order_details($mode, $sale['order_details_id'], $purchase_orders_details_ids);
         return array($earning_net, $earning_gross, $qty);
     }
 
