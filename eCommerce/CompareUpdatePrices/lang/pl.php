@@ -5,11 +5,11 @@
  * @subpackage pl
  */
 global $translations;
-$translations['Tax Rate']='Podatek';
 $translations['Skąpiec']='';
 $translations['Ceneo']='';
 $translations['Item Name']='Nazwa produktu';
 $translations['Plugin']='Wtyczka';
+$translations['Tax Rate']='Podatek';
 $translations['Gross Price']='Cena Brutto';
 $translations['Compare Services']='';
 $translations['Auto update']='';

@@ -5,12 +5,12 @@
  * @subpackage vi
  */
 global $translations;
-$translations['Tax Rate']='';
 $translations['Skąpiec']='';
 $translations['Ceneo']='';
-$translations['Item Name']='';
+$translations['Item Name']='Tên sản phẩm';
 $translations['Plugin']='';
-$translations['Gross Price']='';
+$translations['Tax Rate']='Phần trăm Thuế';
+$translations['Gross Price']='Giá sau Thuế';
 $translations['Compare Services']='';
 $translations['Auto update']='';
 $translations['eCommerce']='';

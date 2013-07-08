@@ -5,9 +5,9 @@
  * @subpackage zh
  */
 global $translations;
-$translations['Invoice']='';
 $translations['Invalid number']='';
 $translations['Allegro']='';
+$translations['Invoice']='';
 $translations['Invalid price']='';
 $translations['WEBAPI Key']='';
 $translations['Additional info on shipment and payment']='';

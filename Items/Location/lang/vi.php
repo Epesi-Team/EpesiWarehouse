@@ -5,16 +5,16 @@
  * @subpackage vi
  */
 global $translations;
-$translations['Inventory Management']='';
+$translations['Inventory Management']='Quản lý Kho hàng';
 $translations['Total']='';
-$translations['Item Name']='';
-$translations['Quantity']='';
+$translations['Quantity']='Số lượng';
+$translations['Item Name']='Tên sản phẩm';
 $translations['n/a']='';
-$translations['Quantity on Hand']='';
-$translations['Warehouse']='';
-$translations['Items Locations']='';
-$translations['Items Serials']='';
-$translations['Warehouse Items']='';
-$translations['Item SKU']='';
-$translations['Item Location']='';
-$translations['Item List']='';
+$translations['Quantity on Hand']='Tổng tồn kho';
+$translations['Warehouse']='Danh mục kho';
+$translations['Items Locations']='Vị trí sản phẩm';
+$translations['Items Serials']='Serials sản phẩm';
+$translations['Warehouse Items']='Sản phẩm kho';
+$translations['Item SKU']='SKU sản phẩm';
+$translations['Item Location']='Vị trí sản phẩm';
+$translations['Item List']='Danh sách sản phẩm';

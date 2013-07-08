@@ -5,7 +5,7 @@
  * @subpackage vi
  */
 global $translations;
-$translations['Inventory Management']='';
-$translations['Invoice']='';
-$translations['Trans. ID']='';
+$translations['Inventory Management']='Quản lý Kho hàng';
+$translations['Invoice']='Hoá đơn';
+$translations['Trans. ID']='Mã GD';
 $translations['Sales Opportunity Integration']='';

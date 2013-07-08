@@ -7,8 +7,8 @@
 global $translations;
 $translations['Inventory Management']='';
 $translations['Total']='';
-$translations['Item Name']='Наименование товара';
 $translations['Quantity']='Количество';
+$translations['Item Name']='Наименование товара';
 $translations['n/a']='';
 $translations['Quantity on Hand']='Количество в наличии';
 $translations['Warehouse']='Склад';

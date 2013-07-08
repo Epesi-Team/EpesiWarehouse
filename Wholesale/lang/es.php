@@ -6,12 +6,11 @@
  */
 global $translations;
 $translations['Weight']='';
-$translations['Inventory Management']='';
-$translations['Tax Rate']='';
+$translations['Inventory Management']='Gestión de Inventario';
 $translations['Price']='';
+$translations['Quantity']='';
 $translations['Items']='';
 $translations['Item Name']='';
-$translations['Quantity']='';
 $translations['Item']='';
 $translations['Plugin']='';
 $translations['Param1']='';
@@ -20,6 +19,7 @@ $translations['Param3']='';
 $translations['Param4']='';
 $translations['Param5']='';
 $translations['Param6']='';
+$translations['Tax Rate']='';
 $translations['Inventory']='';
 $translations['Item Type']='';
 $translations['Product Code']='';

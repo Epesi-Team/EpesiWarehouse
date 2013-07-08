@@ -7,8 +7,8 @@
 global $translations;
 $translations['Inventory Management']='Lager Ledelse';
 $translations['Total']='Total';
-$translations['Item Name']='';
 $translations['Quantity']='';
+$translations['Item Name']='';
 $translations['n/a']='';
 $translations['Quantity on Hand']='';
 $translations['Warehouse']='';

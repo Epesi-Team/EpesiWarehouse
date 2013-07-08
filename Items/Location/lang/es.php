@@ -5,10 +5,10 @@
  * @subpackage es
  */
 global $translations;
-$translations['Inventory Management']='';
+$translations['Inventory Management']='Gestión de Inventario';
 $translations['Total']='';
-$translations['Item Name']='';
 $translations['Quantity']='';
+$translations['Item Name']='';
 $translations['n/a']='';
 $translations['Quantity on Hand']='';
 $translations['Warehouse']='Depósito';

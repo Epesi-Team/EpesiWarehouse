@@ -5,17 +5,17 @@
  * @subpackage vi
  */
 global $translations;
-$translations['Sales Report']='';
-$translations['Inventory Management']='';
+$translations['Sales Report']='Báo cáo Doanh số';
+$translations['Inventory Management']='Quản lý Kho hàng';
 $translations['Total']='';
 $translations['Unknown mode']='';
 $translations['You don\'t have permission to access this module']='';
-$translations['Warehouse']='';
+$translations['Warehouse']='Danh mục kho';
 $translations['Gross']='';
-$translations['Sales by Warehouse']='';
-$translations['Sales by Transaction']='';
-$translations['Sales by Item']='';
-$translations['Stock Value by Warehouse']='';
+$translations['Sales by Warehouse']='Doanh số theo Kho';
+$translations['Sales by Transaction']='Doanh số theo Đơn hàng';
+$translations['Sales by Item']='Doanh số theo Sản phẩm';
+$translations['Stock Value by Warehouse']='Tồn kho theo Kho hàng';
 $translations['Enter new exchange rate']='';
 $translations['Use dot to delimit decimal part.']='';
 $translations['Enter the amount in %s']='';
