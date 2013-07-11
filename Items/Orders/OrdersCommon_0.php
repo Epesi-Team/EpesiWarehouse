@@ -338,7 +338,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	public static function display_reserved_qty($r, $nolink) {
 		$qty = self::get_reserved_qty($r['id']);
 		$my_warehouse = Base_User_SettingsCommon::get('Premium_Warehouse','my_warehouse');
-		$ret = Premium_Warehouse_Items_LocationCommon::display_item_quantity_in_warehouse_and_total($r,$my_warehouse,$nolink,$qty['per_warehouse'],array('main'=>__('Reserved Qty'), 'in_one'=>__('In %s'), 'in_all'=>__('Total')));
+		$ret = Premium_Warehouse_Items_LocationCommon::display_item_quantity_in_warehouse_and_total($r,$my_warehouse,$nolink,$qty['per_warehouse'],array('main'=>__('Reserved Qty'), 'in_one'=>_M('In %s', array('%s')), 'in_all'=>__('Total')));
 		return $ret;
 	}
 	
@@ -364,7 +364,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			}
 		}
 		$my_warehouse = Base_User_SettingsCommon::get('Premium_Warehouse','my_warehouse');
-		$ret = Premium_Warehouse_Items_LocationCommon::display_item_quantity_in_warehouse_and_total($r,$my_warehouse,$nolink,$qty['per_warehouse'],array('main'=>__('Available Qty'), 'in_one'=>__('In %s'), 'in_all'=>__('Total')));
+		$ret = Premium_Warehouse_Items_LocationCommon::display_item_quantity_in_warehouse_and_total($r,$my_warehouse,$nolink,$qty['per_warehouse'],array('main'=>__('Available Qty'), 'in_one'=>_M('In %s', array("%s")), 'in_all'=>__('Total')));
 		return $ret;
 	}
 	
@@ -389,7 +389,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			$en_route_qty[$warehouse] += $i['quantity'];
 			$qty+=$i['quantity'];
 		}
-		return Premium_Warehouse_Items_LocationCommon::display_item_quantity_in_warehouse_and_total($r,$my_warehouse,$nolink,$en_route_qty,array('main'=>__('Quantity En Route'), 'in_one'=>__('to %s'), 'in_all'=>__('Total')));
+		return Premium_Warehouse_Items_LocationCommon::display_item_quantity_in_warehouse_and_total($r,$my_warehouse,$nolink,$en_route_qty,array('main'=>__('Quantity En Route'), 'in_one'=>_M('to %s', array("%s")), 'in_all'=>__('Total')));
 	}
 
     /**

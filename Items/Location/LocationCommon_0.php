@@ -147,7 +147,7 @@ class Premium_Warehouse_Items_LocationCommon extends ModuleCommon {
 				if ($v['warehouse']==$warehouse) $warehouse_label = '<b>'.$warehouse_label.'</b>';
 				if ($quantities[$v['warehouse']])
 					$tooltip .= '<tr><td>'.
-						sprintf($custom_label['in_one'], $warehouse_label).
+						_V($custom_label['in_one'], array($warehouse_label)).
 						'</td><td bgcolor="#FFFFFF" WIDTH=50 style="text-align:right;">'.
 						$quantities[$v['warehouse']].
 						'</td></tr>';
@@ -176,7 +176,7 @@ class Premium_Warehouse_Items_LocationCommon extends ModuleCommon {
 					$warehouse_label = '---';
 				if ($k==$warehouse) $warehouse_label = '<b>'.$warehouse_label.'</b>';
 				$tooltip .= '<tr><td>'.
-					sprintf($custom_label['in_one'], $warehouse_label).
+					_V($custom_label['in_one'], array($warehouse_label)).
 					'</td><td bgcolor="#FFFFFF" WIDTH=50 style="text-align:right;">'.
 					$quantities[$k].
 					'</td></tr>';
