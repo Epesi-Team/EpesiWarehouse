@@ -30,7 +30,6 @@ class Premium_Warehouse_SoldItemsReport extends Module {
     }
 
     private function add_customer_select() {
-        // customer select
         $customer_field = 'customer';
         $callback = array('CRM_ContactsCommon', 'display_company');
         $company_crits = array();
@@ -168,10 +167,6 @@ class Premium_Warehouse_SoldItemsReport extends Module {
 
     public function display_cells($data_row) {
         return $data_row['groups'];
-    }
-
-    public function row_total() {
-        p(func_get_args());
     }
 }
 
