@@ -50,8 +50,9 @@ class Premium_Warehouse_InvoiceCommon extends ModuleCommon {
 		return array('show'=>false);
 	}
 
-    private static function template_print_href($record_id, $template) {
-        $data = array('record_id' => $record_id, 'print_template' => $template, 'cid' => CID, 'ut' => time());
+    private static function template_print_href($record_id, $template, $template_label = null) {
+        $data = array('record_id' => $record_id, 'print_template' => $template, 'cid' => CID, 'ut' => time(),
+                      'print_filename' => $template_label);
         $href = 'modules/Premium/Warehouse/Invoice/print_invoice.php?' . http_build_query($data) . '"';
         return 'target="_blank" target="_blank" href="' . $href . '';
     }
@@ -68,7 +69,7 @@ class Premium_Warehouse_InvoiceCommon extends ModuleCommon {
         $header = __('Select document template to print');
         $launchpad = array();
         foreach ($templates as $template => $label) {
-            $href = self::template_print_href($items_order['id'], $template);
+            $href = self::template_print_href($items_order['id'], $template, $label);
             $href .= " onclick=\"leightbox_deactivate('$popup_id')\"";
             $launchpad[] = array(
                 'href' => $href,

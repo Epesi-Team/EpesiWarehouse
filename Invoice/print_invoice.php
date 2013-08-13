@@ -13,6 +13,7 @@ if (!isset($_REQUEST['cid']) || !isset($_REQUEST['record_id'])) die('Invalid usa
 $cid = $_REQUEST['cid'];
 $order_id = $_REQUEST['record_id'];
 $style = & $_REQUEST['print_template'];
+$filename_prefix = & $_REQUEST['print_filename'];
 
 if (!is_numeric($order_id)) die('Invalid usage');
 define('CID', $cid);
@@ -22,7 +23,7 @@ ModuleManager::load_modules();
 require_once 'Printer.php';
 
 $printer = new Premium_Warehouse_Invoice_Printer();
-$buffer = $printer->print_pdf($order_id, $style);
+$buffer = $printer->print_pdf($order_id, $style, $filename_prefix);
 
 header('Content-Type: application/pdf');
 header('Content-Length: ' . strlen($buffer));
