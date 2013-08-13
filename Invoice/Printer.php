@@ -2,7 +2,11 @@
 
 class Premium_Warehouse_Invoice_Printer {
 
+    private $path = 'modules/Premium/Warehouse/Invoice/theme/';
     private $print_filename = '';
+
+    private $record;
+    private $style;
 
     public function get_printed_filename() {
         return $this->print_filename;
@@ -10,11 +14,15 @@ class Premium_Warehouse_Invoice_Printer {
 
     function print_pdf($order_id, $template = null, $filename_prefix = null) {
         $this->print_filename = $filename_prefix;
-        $order = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $order_id);
         $style = '';
         if ($template)
             $style = $template;
         if (!$style) $style = 'US';
+        if (!is_dir($this->path . $style))
+            die ("Template doesn't exist");
+        $this->style = $style;
+        $order = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $order_id);
+        $this->record = $order;
 
         if (!Acl::is_user() || !Utils_RecordBrowserCommon::get_access('premium_warehouse_items_orders', 'view', $order)) die('Unauthorized access');
 
@@ -401,19 +409,20 @@ class Premium_Warehouse_Invoice_Printer {
             Libs_TCPDFCommon::writeHTML($tcpdf, $footer, false);
         }
 
-        if (!$this->print_filename) {
-            $this->print_filename = 'Print';
-            if ($order['transaction_type'] == 0) {
-                $this->print_filename = $order['status'] < 2 ? __('Purchase Quote') : __('Purchase Order');
-            } else {
-                if ($order['status'] == 4) $this->print_filename = __('Packing List');
-                else if ($order['status'] > 2) $this->print_filename = __('Invoice');
-                else $this->print_filename = __('Sales Quote');
-            }
-        }
+        $autoname = $this->get_filename_from_template();
+        if ($autoname)
+            $this->print_filename = $autoname;
         $this->print_filename .=  '_' . $order['id'] . '.pdf';
 
         return Libs_TCPDFCommon::output($tcpdf);
+    }
+
+    function get_filename_from_template() {
+        $path = 'modules/Premium/Warehouse/Invoice/theme/' . $this->style . '/filename.php';
+        $order = $this->record; // used in included file
+        if (file_exists($path))
+            return (include $path);
+        return null;
     }
 
     function cmp_items($a, $b) {
