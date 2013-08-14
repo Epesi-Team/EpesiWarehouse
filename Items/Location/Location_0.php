@@ -17,6 +17,33 @@ defined("_VALID_ACCESS") || die('Direct access forbidden');
 class Premium_Warehouse_Items_Location extends Module {
 	private $rb;
 
+    public function applet($conf, & $opts) {
+        $rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items','premium_warehouse_items');
+        $limit = null;
+        $crits = array();
+        $crits['id'] = DB::GetCol('select id from premium_warehouse_items_data_1 as x where f_reorder_point > coalesce((select sum(f_quantity) from premium_warehouse_location_data_1 where active=1 and f_item_sku=x.id),0)');
+
+        $sorting = array();
+        $cols = array(
+            array('field'=>'item_name', 'width'=>10),
+            array('field'=>'quantity_on_hand', 'width'=>10),
+            array('field'=>'reorder_point', 'width'=>10)
+        );
+
+        $conds = array(
+            $cols,
+            $crits,
+            $sorting,
+            array('Premium_Warehouse_ItemsCommon', 'applet_info_format'),
+            $limit,
+            $conf,
+            & $opts
+        );
+//        $opts['actions'][] = Utils_RecordBrowserCommon::applet_new_record_button('premium_warehouse_items',array());
+        $this->display_module($rb, $conds, 'mini_view');
+
+    }
+
 	public function location_serial_addon($arg){
 		$gb = $this->init_module('Utils/GenericBrowser','premium_warehouse_location_serials','premium_warehouse_location_serials');
 		$gb->set_table_columns(array(

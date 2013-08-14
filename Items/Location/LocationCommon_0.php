@@ -31,6 +31,14 @@ class Premium_Warehouse_Items_LocationCommon extends ModuleCommon {
 		return array();
 	}
 
+    public static function applet_caption() {
+        return __('Items to order');
+    }
+
+    public static function applet_info() {
+        return __('Show items that need to be ordered to keep items quantity on specified level');
+    }
+
 	public static function display_rental($r, $nolink = false){
 		if (isset($_REQUEST['warehouse_change_rental_status']) &&
 			$_REQUEST['warehouse_change_rental_status']==$r['id']) {
