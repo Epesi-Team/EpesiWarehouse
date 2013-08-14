@@ -44,7 +44,7 @@ class Premium_Warehouse_SalesReportInstall extends ModuleInstall {
 						'quantity I4,'.
 						'warehouse I4,'.
 						'net_price I4,'.
-						'gross_price I4'.
+						'gross_price I4,'.
                         'order_details_id I4',
 						array('constraints'=>'')
 		);
@@ -54,7 +54,7 @@ class Premium_Warehouse_SalesReportInstall extends ModuleInstall {
 						'quantity I4,'.
 						'warehouse I4,'.
 						'net_price I4,'.
-						'gross_price I4'.
+						'gross_price I4,'.
                         'order_details_id I4',
 						array('constraints'=>'')
 		);
@@ -73,6 +73,8 @@ class Premium_Warehouse_SalesReportInstall extends ModuleInstall {
 	public function uninstall() {
 		DB::DropTable('premium_warehouse_sales_report_exchange');
 		DB::DropTable('premium_warehouse_sales_report_earning');
+        DB::DropTable('premium_warehouse_sales_report_related_order_details_fifo');
+        DB::DropTable('premium_warehouse_sales_report_related_order_details_lifo');
 		DB::DropTable('premium_warehouse_sales_report_purchase_fifo_tmp');
 		DB::DropTable('premium_warehouse_sales_report_purchase_lifo_tmp');
 		return true;
