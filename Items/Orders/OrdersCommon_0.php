@@ -27,7 +27,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 				array('name'=>'my_transaction','label'=>'','type'=>'hidden','default'=>'')
 			),
 			__('Inventory')=>array(
-				array('name'=>'display_qty','label'=>__('Quantity Display'),'type'=>'select','values'=>array(0=>__('Availble'), 1=>__('On Hand'), 2=>__('Both')),'default'=>2),
+				array('name'=>'display_qty','label'=>__('Quantity Display'),'type'=>'select','values'=>array(0=>__('Available'), 1=>__('On Hand'), 2=>__('Both')),'default'=>2),
 				array('name'=>'filter_by_my_warehouse','label'=>__('Filter items by my warehouse'),'type'=>'select','values'=>array(0=>__('No'), 1=>__('Yes')),'default'=>1)
 			));
 	}
