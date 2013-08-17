@@ -17,11 +17,16 @@ defined("_VALID_ACCESS") || die('Direct access forbidden');
 class Premium_Warehouse_Items_Location extends Module {
 	private $rb;
 
+    /**
+     * Applet "Items to order" - based on reorder point
+     * @param $conf
+     * @param $opts
+     */
     public function applet($conf, & $opts) {
         $rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items','premium_warehouse_items');
         $limit = null;
         $crits = array();
-        $crits['id'] = DB::GetCol('select id from premium_warehouse_items_data_1 as x where f_reorder_point > coalesce((select sum(f_quantity) from premium_warehouse_location_data_1 where active=1 and f_item_sku=x.id),0)');
+        $crits['id'] = Premium_Warehouse_Items_LocationCommon::get_items_to_reorder();
 
         $sorting = array();
         $cols = array(
