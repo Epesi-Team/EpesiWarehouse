@@ -1095,7 +1095,7 @@ class Premium_Warehouse_eCommerceCommon extends ModuleCommon {
 			Premium_Warehouse_eCommerceCommon::write_configs($p);
 	}
 	
-	public static function write_configs($path, $values = array()) {
+	public static function write_configs($path, $vals = array()) {
 		$data_dir = dirname(dirname(dirname(dirname(dirname(__FILE__))))).'/'.DATA_DIR;
 		$langs = Utils_CommonDataCommon::get_array('Premium/Warehouse/eCommerce/Languages');
 		if (!isset($vals['default_lang'])) $vals['default_lang'] = Base_LangCommon::get_lang_code();
