@@ -1,0 +1,30 @@
+<?php
+die('Launch epesi, log in as administrator, go to Menu->Adminitration->eCommerce->QuickCart settings and add \''.dirname(dirname(__FILE__)).'\' directory to setup quickcart');
+$config['default_lang'] = 'en';
+$config['available_lang'] = array('en');
+$config['text_size'] = false;
+$config['email'] = '';
+$config['skapiec_shop_id'] = 0;
+$config['products_list'] = 10;
+$config['news_list'] = 4;
+$config['site_map_products'] = false;
+$config['time_diff'] = 0;
+$config['allpay_id'] = 0;
+$config['przelewy24_id'] = 0;
+$config['platnosci_id']	= 0;
+$config['platnosci_pos_auth_key'] = 0;
+$config['platnosci_key1'] = '';
+$config['platnosci_key2'] = '';
+$config['epesi_payments_url'] = '';
+$config['zagiel_id'] = null;
+$config['zagiel_min_price'] = null;
+$config['paypal_email'] = '';
+$config['default_image_size'] = 0;
+$config['ups_accesskey'] = '';
+$config['ups_username'] = '';
+$config['ups_password'] = '';
+$config['ups_shipper_number'] = '';
+$config['ups_src_country'] = '';
+$config['ups_src_zip'] = '';
+$config['ups_weight_unit'] = 'KGS';
+?>
