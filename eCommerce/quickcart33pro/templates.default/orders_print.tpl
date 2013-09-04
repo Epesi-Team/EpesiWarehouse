@@ -39,9 +39,9 @@
 <!-- BEGIN ORDER_PRINT_LIST -->
 <tr class="l$aData[sStyle]">
   <th>$aData[sName]</th>
-  <td class="price">&#36;&nbsp;$aData[sPrice]</td>
+  <td class="price">$config[currency_symbol]&nbsp;$aData[sPrice]</td>
   <td class="quantity">$aData[iQuantity]</td>
-  <td class="summary">&#36;&nbsp;$aData[sSummary]</td>
+  <td class="summary">$config[currency_symbol]&nbsp;$aData[sSummary]</td>
 </tr>
 <!-- END ORDER_PRINT_LIST -->
 <!-- BEGIN ORDER_PRINT_HEAD -->

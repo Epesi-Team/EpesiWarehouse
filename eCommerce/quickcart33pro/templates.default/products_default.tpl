@@ -67,7 +67,7 @@ $sPopupProducts
 </div>
 <!-- END BASKET_POPUP -->
 
-<!-- BEGIN PRICE --><div id="price"><em>$lang['Price']:</em><strong id="priceValue">&#36;&nbsp;$aData[sPrice]</strong></div><!-- END PRICE -->
+<!-- BEGIN PRICE --><div id="price"><em>$lang['Price']:</em><strong id="priceValue">$config[currency_symbol]&nbsp;$aData[sPrice]</strong></div><!-- END PRICE -->
 <!-- BEGIN NO_PRICE --><div id="noPrice">$lang['Call_for_price']</div><!-- END NO_PRICE -->
 <!-- BEGIN OUT_OF_STOCK --><div id="noPrice">$lang['Out_of_stock']</div><!-- END OUT_OF_STOCK -->
 
@@ -116,7 +116,7 @@ $sPopupProducts
 <!-- BEGIN CROSS_SELL_LIST -->
   <li class="l$aData[sStyle]"><a href="$aData[sLinkName]">$aData[sName]</a>$aData[sPrice]</li>
 <!-- END CROSS_SELL_LIST -->
-<!-- BEGIN CROSS_SELL_PRICE --><strong>&#36;&nbsp;$aData[sPrice]</strong><!-- END CROSS_SELL_PRICE -->
+<!-- BEGIN CROSS_SELL_PRICE --><strong>$config[currency_symbol]&nbsp;$aData[sPrice]</strong><!-- END CROSS_SELL_PRICE -->
 <!-- BEGIN CROSS_SELL_NO_PRICE --><strong class="noPrice">$aData[sPrice]</strong><!-- END CROSS_SELL_NO_PRICE -->
 <!-- BEGIN CROSS_SELL_HEAD -->
 <div id="crossSell">
@@ -200,7 +200,7 @@ $sPopupProducts
     $aData[sBasket]
   </td>
 <!-- END RELATED_LIST -->
-<!-- BEGIN RELATED_PRICE --><div class="price"><strong>&#36;&nbsp;$aData[sPrice]</strong></div><!-- END RELATED_PRICE -->
+<!-- BEGIN RELATED_PRICE --><div class="price"><strong>$config[currency_symbol]&nbsp;$aData[sPrice]</strong></div><!-- END RELATED_PRICE -->
 <!-- BEGIN RELATED_BREAK -->
   </tr>
   <tr>
