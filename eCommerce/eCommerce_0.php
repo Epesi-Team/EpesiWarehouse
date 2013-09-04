@@ -894,6 +894,9 @@ class Premium_Warehouse_eCommerce extends Module {
 		$recs = Utils_RecordBrowserCommon::get_records('premium_ecommerce_products',array('item_name'=>$arg['id']));
 		if(empty($recs)) {
 		    print('<h1><a '.$this->create_callback_href(array('Premium_Warehouse_eCommerceCommon','publish_warehouse_item'),$arg['id']).'>'.__('Publish').'</a></h1>');
+		    
+		    $plugins = Utils_RecordBrowserCommon::get_records('premium_ecommerce_3rdp_info',array(),array(),array('position'=>'ASC'));
+		    if($plugins) print('<h1><a '.$this->create_callback_href(array('Premium_Warehouse_eCommerceCommon','publish_warehouse_item'),array($arg['id'],false)).'>'.__('Publish without getting information data').'</a></h1>');
 		    return;
 		}
 		$rec = array_pop($recs);
