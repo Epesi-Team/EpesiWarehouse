@@ -218,9 +218,9 @@ class Premium_Warehouse_eCommerce_3rdp__Plugin_icecat implements Premium_Warehou
             if(is_array($ooo))
                 foreach($ooo as $oo) {
 					if(preg_match('/^ice_/',$oo['original']))
-						$old_pics[$oo['original']] = $oo['id'];
+						$old_pics[$oo['original']] = $oo['note_id'];
 					else
-						$old_ver_pics[$oo['original']] = $oo['id']; //collect all images
+						$old_ver_pics[$oo['original']] = $oo['note_id']; //collect all images
                 }
             foreach($pic as $pp) {
                 $base_pp = 'ice_'.basename($pp);
