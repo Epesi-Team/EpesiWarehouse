@@ -131,6 +131,7 @@ class Products
     			if($compare_price) {
 		        	$aExp['fPrice']=$compare_price['f_gross_price'];
 		        	$aExp['tax']=$compare_price['f_tax_rate'];
+		        	$aExp['fPriceNet'] = round(((float)$aExp['fPrice'])*100/(100+$taxes[$aExp['tax']]),2);
 		        }
 		}
 		if(!$aExp['fPrice']) {
@@ -138,6 +139,7 @@ class Products
 			if($rr && $rr[0] && $rr[1]==$currency) {
 				$netto = $rr[0];
 				$aExp['fPrice'] = round(((float)$netto)*(100+$taxes[$aExp['tax2']])/100,2);
+				$aExp['fPriceNet'] = round((float)$netto,2);
 				$aExp['tax'] = $aExp['tax2'];
 			} 
 		}
@@ -181,12 +183,14 @@ class Products
 						$dist_price = round((float)$dist['price']*(100+$taxes[$aExp['tax2']])/100,2);
 						if($user_price>=$dist_price) {
 							$aExp2['fPrice'] = $user_price;
+							$aExp2['fPrice'] = $aExp['fPriceNet'];
 						} else {
 							$netto = $dist['price'];
 							$profit = $netto*(is_numeric($dist['f_percentage_profit'])?$dist['f_percentage_profit']:$percentage)/100;
 							$minimal2 = (is_numeric($dist['f_minimal_profit'])?$dist['f_minimal_profit']:$minimal);
 							if($profit<$minimal2) $profit = $minimal2;
 							$aExp2['fPrice'] = round((float)($netto+$profit)*(100+$taxes[$aExp['tax2']])/100,2);
+							$aExp2['fPriceNet'] = round((float)($netto+$profit),2);
 							$aExp2['tax'] = $aExp['tax2'];		
 						}
 					}
@@ -213,6 +217,7 @@ class Products
 					$profit = $netto*$percentage/100;
 					if($profit<$minimal) $profit = $minimal;
 					$aExp['fPrice'] = round((float)($netto+$profit)*(100+$taxes[$aExp['tax2']])/100,2);
+					$aExp['fPriceNet'] = round((float)($netto+$profit),2);
 					$aExp['tax'] = $aExp['tax2'];		
 				}
 		}
@@ -230,6 +235,7 @@ class Products
 		$aExp['iQuantity'] = 0+$aExp['f_quantity']+$aExp['distributorQuantity'];
 		if($aExp['fPrice']) {
 			$aExp['fPrice'] = number_format($aExp['fPrice'],2,'.','');
+			$aExp['fPriceNet'] = number_format($aExp['fPriceNet'],2,'.','');
 		}
 		$aExp['iComments'] = 1;
 		unset($aExp['sName2']);
@@ -454,6 +460,7 @@ class Products
         $aData['iStyle'] = ( $i % 2 ) ? 0: 1;
         $aData['sStyle'] = ( $i == ( $iCount - 1 ) ) ? 'L': $i + 1;
         $aData['sPrice'] = is_numeric( $aData['fPrice'] ) ? displayPrice( $aData['fPrice'] ) : $aData['fPrice'];
+        $aData['sPriceNet'] = is_numeric( $aData['fPriceNet'] ) ? displayPrice( $aData['fPriceNet'] ) : $aData['fPriceNet'];
         $aData['sPages'] = $this->throwProductsPagesTree( $aData['aCategories'] );
         $aData['sBasket']= null;
         $aData['sRecommended'] = $aData['sRecommended']? $oTpl->tbHtml( $sFile, 'PRODUCTS_RECOMMENDED' ) : null;
@@ -566,6 +573,7 @@ class Products
         $aData['iStyle'] = ( $i % 2 ) ? 0: 1;
         $aData['sStyle'] = ( $i == ( $iCount - 1 ) ) ? 'L': $i + 1;
         $aData['sPrice'] = is_numeric( $aData['fPrice'] ) ? displayPrice( $aData['fPrice'] ) : $aData['fPrice'];
+        $aData['sPriceNet'] = is_numeric( $aData['fPriceNet'] ) ? displayPrice( $aData['fPriceNet'] ) : $aData['fPriceNet'];
         $aData['sPages'] = $this->throwProductsPagesTree( $aData['aCategories'] );
         $aData['sBasket']= null;
         $aData['sRecommended'] = $aData['sRecommended']? $oTpl->tbHtml( $sFile, 'PRODUCTS_RECOMMENDED' ) : null;
@@ -643,6 +651,7 @@ class Products
     $aData = $this->getProduct($iProduct, true);
     if( $aData ){
 	    $aData['sPrice'] = is_numeric( $aData['fPrice'] ) ? displayPrice( $aData['fPrice'] ) : $aData['fPrice'];
+	    $aData['sPriceNet'] = is_numeric( $aData['fPriceNet'] ) ? displayPrice( $aData['fPriceNet'] ) : $aData['fPriceNet'];
 	    return $aData;
     }
     return null;
@@ -698,11 +707,13 @@ class Products
           $aData['sStyle'] = ( $i == ( $iCount - 1 ) ) ? 'L': $i + 1;
           if( is_numeric( $aData['fPrice'] ) ){
             $aData['sPrice'] = displayPrice( $aData['fPrice'] );
+            $aData['sPriceNet'] = displayPrice( $aData['fPriceNet'] );
             $oTpl->setVariables( 'aData', $aData );
             $aData['sPrice'] = $oTpl->tbHtml( $sFile, 'SITEMAP_PRODUCTS_PRICE' );
           }
           else{
             $aData['sPrice'] = $aData['fPrice'];
+            $aData['sPriceNet'] = $aData['fPriceNet'];
             $oTpl->setVariables( 'aData', $aData );
             $aData['sPrice'] = $oTpl->tbHtml( $sFile, 'SITEMAP_PRODUCTS_NO_PRICE' );
           }
@@ -747,11 +758,13 @@ class Products
           $aData['sStyle'] = ( $i == ( $iCount - 1 ) ) ? 'L': $i + 1;
           if( is_numeric( $aData['fPrice'] ) ){
             $aData['sPrice'] = displayPrice( $aData['fPrice'] );
+            $aData['sPriceNet'] = displayPrice( $aData['fPriceNet'] );
             $oTpl->setVariables( 'aData', $aData );
             $aData['sPrice'] = $oTpl->tbHtml( $sFile, 'CROSS_SELL_PRICE' );
           }
           else{
             $aData['sPrice'] = $aData['fPrice'];
+            $aData['sPriceNet'] = $aData['fPriceNet'];
             $oTpl->setVariables( 'aData', $aData );
             $aData['sPrice'] = $oTpl->tbHtml( $sFile, 'CROSS_SELL_NO_PRICE' );
           }
