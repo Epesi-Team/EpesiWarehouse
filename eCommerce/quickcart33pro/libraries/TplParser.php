@@ -165,6 +165,7 @@ class TplParser
       $iPosition2 = strpos( $this->content, '?>' );
       $sPhpCode = substr( $this->content, $iPosition1 + 5, $iPosition2 - $iPosition1 - 5 );
       ob_start( );
+      extract($this->aVariables);
       eval( $sPhpCode );
       $this->content = substr( $this->content, 0, $iPosition1 ).ob_get_contents( ).substr( $this->content, $iPosition2 + 2  );
       ob_end_clean( );
