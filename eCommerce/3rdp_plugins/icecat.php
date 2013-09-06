@@ -19,8 +19,8 @@ class Premium_Warehouse_eCommerce_3rdp__Plugin_icecat implements Premium_Warehou
 	 */
 	public function get_parameters() {
 		return array(
-			__('Login')=>'text',
-			__('Password')=>'password'
+			'Login'=>'text',
+			'Password'=>'password'
 		);
 	}
 
