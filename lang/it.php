@@ -6,6 +6,7 @@
  */
 global $translations;
 $translations['Inventory Management']='Gestione inventario';
+$translations['Total']='';
 $translations['Bank account']='';
 $translations['Inventory']='';
 $translations['Warehouse']='';
@@ -25,6 +26,10 @@ $translations['Shipping Country']='';
 $translations['Shipping Zone']='';
 $translations['Shipping Postal Code']='';
 $translations['Shipping Phone']='';
+$translations['Sold Items']='';
+$translations['Sold Items Report']='';
+$translations['Sold Items, %s']='';
+$translations['Sold_Items_%s']='';
 $translations['My main Warehouse']='';
 $translations['Subscriptions']='Iscrizione';
 $translations['Other subscriptions']='';

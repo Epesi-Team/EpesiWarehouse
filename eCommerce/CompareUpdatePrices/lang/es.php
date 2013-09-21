@@ -13,6 +13,6 @@ $translations['Tax Rate']='';
 $translations['Gross Price']='';
 $translations['Compare Services']='';
 $translations['Auto update']='';
-$translations['eCommerce']='Comercio-e';
+$translations['eCommerce']='Comercio Electrónico';
 $translations['URL']='';
 $translations['eCommerce - compare prices']='';
