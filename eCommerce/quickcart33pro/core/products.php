@@ -88,7 +88,7 @@ class Products
 								it.f_weight as sWeight,
 								it.f_manufacturer as iProducer,
 								it.f_sku as sSku,
-								SUM(loc.f_quantity) as f_quantity,
+								(SELECT SUM(loc.f_quantity) FROM premium_warehouse_location_data_1 loc WHERE loc.f_item_sku=it.id AND loc.active=1) as f_quantity,
 								it.f_net_price fPrice2,
 								it.f_tax_rate tax2,
 								pr.f_exclude_compare_services,
