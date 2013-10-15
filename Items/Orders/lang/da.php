@@ -5,20 +5,20 @@
  * @subpackage da
  */
 global $translations;
-$translations['Completed']='';
+$translations['Completed']='Færdig';
 $translations['Pending']='';
 $translations['Weight']='';
 $translations['Create Bill']='';
 $translations['Gross Cost']='';
+$translations['Memo']='';
+$translations['Total']='Total';
 $translations['Inventory Management']='Lager Ledelse';
 $translations['Price']='';
 $translations['Service']='';
-$translations['Total']='Total';
 $translations['Cost']='';
 $translations['Purchase Order']='';
 $translations['Quantity']='';
 $translations['Transaction Date']='';
-$translations['Memo']='';
 $translations['Items']='';
 $translations['Item Name']='';
 $translations['Item \\"%s\\" not found']='';
@@ -67,7 +67,6 @@ $translations['On Hand']='';
 $translations['Item SKU']='';
 $translations['Transaction']='';
 $translations['Quantity Display']='';
-$translations['Availble']='';
 $translations['Filter items by my warehouse']='';
 $translations['Check-in']='';
 $translations['Check-out']='';

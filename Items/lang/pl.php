@@ -6,6 +6,7 @@
  */
 global $translations;
 $translations['Weight']='Waga';
+$translations['Category Name']='Nazwa kategorii';
 $translations['Inventory Management']='Menadżer Inwentarza';
 $translations['Price']='Cena';
 $translations['Service']='Serwis';
@@ -14,7 +15,6 @@ $translations['Allegro']='';
 $translations['Items']='Produkty';
 $translations['Item Name']='Nazwa produktu';
 $translations['Settings']='Ustawienia';
-$translations['Category Name']='Nazwa kategorii';
 $translations['Parent Category']='';
 $translations['4 weeks']='';
 $translations['4 months']='';

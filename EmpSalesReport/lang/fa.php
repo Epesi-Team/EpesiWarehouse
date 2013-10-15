@@ -5,8 +5,8 @@
  * @subpackage fa
  */
 global $translations;
-$translations['Inventory Management']='مدیریت موجودی';
 $translations['Total']='';
+$translations['Inventory Management']='مدیریت موجودی';
 $translations['Employee Sales']='';
 $translations['You don\'t have permission to access this module']='';
 $translations['Employee Sales Report, %s']='';
