@@ -4,6 +4,7 @@ unset( $config, $aMenuTypes, $aPay, $lang, $aBanners, $aBoxes, $aUser );
 if(!include_once('epesi.php'))
     die('Please configure ecommerce module in epesi');
 
+$config['display_all_published_products'] = true;
 /*
 * Directories
 */

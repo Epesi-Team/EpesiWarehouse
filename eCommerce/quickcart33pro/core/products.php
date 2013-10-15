@@ -233,6 +233,7 @@ class Products
 		unset($aExp['iAvailable2']);
 		if(!$aExp['tax']) $aExp['tax'] = 0;
 		$aExp['iQuantity'] = 0+$aExp['f_quantity']+$aExp['distributorQuantity'];
+		if(!$config['display_all_published_products'] && $aExp['iQuantity']==0) continue;
 		if($aExp['fPrice']) {
 			$aExp['fPrice'] = number_format($aExp['fPrice'],2,'.','');
 			$aExp['fPriceNet'] = number_format($aExp['fPriceNet'],2,'.','');
