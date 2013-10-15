@@ -6,7 +6,6 @@
  */
 global $translations;
 $translations['Inventory Management']='Menadżer Inwentarza';
-$translations['Total']='Suma';
 $translations['Bank account']='Konto bankowe';
 $translations['Inventory']='Inwentarz';
 $translations['Warehouse']='Magazyn';
@@ -26,10 +25,6 @@ $translations['Shipping Country']='Kraj do wysyłki';
 $translations['Shipping Zone']='Strefa do wysyłki';
 $translations['Shipping Postal Code']='Kod pocztowy do wysyłki';
 $translations['Shipping Phone']='Telefon do wysyłki';
-$translations['Sold Items']='';
-$translations['Sold Items Report']='';
-$translations['Sold Items, %s']='';
-$translations['Sold_Items_%s']='';
 $translations['My main Warehouse']='Mój główny Magazyn';
 $translations['Subscriptions']='Subsckrypcje';
 $translations['Other subscriptions']='';

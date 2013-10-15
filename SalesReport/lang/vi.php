@@ -7,7 +7,7 @@
 global $translations;
 $translations['Sales Report']='Báo cáo Doanh số';
 $translations['Inventory Management']='Quản lý Kho hàng';
-$translations['Total']='Tổng thanh toán';
+$translations['Total']='';
 $translations['Unknown mode']='';
 $translations['You don\'t have permission to access this module']='';
 $translations['Warehouse']='Danh mục kho';

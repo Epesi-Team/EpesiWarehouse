@@ -5,7 +5,7 @@
  * @subpackage vi
  */
 global $translations;
-$translations['Weight']='Trọng lượng';
+$translations['Weight']='';
 $translations['Inventory Management']='Quản lý Kho hàng';
 $translations['Price']='Giá';
 $translations['Quantity']='Số lượng';
@@ -22,7 +22,7 @@ $translations['Param6']='';
 $translations['Tax Rate']='Phần trăm Thuế';
 $translations['Inventory']='Kho hàng';
 $translations['Item Type']='Loại sản phẩm';
-$translations['Product Code']='Barcode';
+$translations['Product Code']='';
 $translations['UPC']='';
 $translations['Manufacturer Part Number']='Mã Hãng';
 $translations['Manufacturer']='Hãng sản xuất';
