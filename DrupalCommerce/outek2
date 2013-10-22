@@ -1,0 +1,1066 @@
+Array
+(
+    [tid] => 136
+    [vid] => 14
+    [name] => Agd kuchnia
+    [description] => opis angielski
+    [format] => filtered_html
+    [weight] => 0
+    [vocabulary_machine_name] => epesi_category
+    [field_epesi_category_id] => Array
+        (
+            [und] => Array
+                (
+                    [0] => Array
+                        (
+                            [value] => 1
+                            [format] => 
+                            [safe_value] => 1
+                        )
+
+                )
+
+        )
+
+    [name_field] => Array
+        (
+            [en] => Array
+                (
+                    [0] => Array
+                        (
+                            [value] => Agd kuchnia
+                            [format] => 
+                            [safe_value] => Agd kuchnia
+                        )
+
+                )
+
+            [pl] => Array
+                (
+                    [0] => Array
+                        (
+                            [value] => Agd kuchnia
+                            [format] => 
+                            [safe_value] => Agd kuchnia
+                        )
+
+                )
+
+        )
+
+    [description_field] => Array
+        (
+            [en] => Array
+                (
+                    [0] => Array
+                        (
+                            [value] => opis angielski
+                            [summary] => 
+                            [format] => filtered_html
+                            [safe_value] => <p>opis angielski</p>
+
+                            [safe_summary] => 
+                        )
+
+                )
+
+            [pl] => Array
+                (
+                    [0] => Array
+                        (
+                            [value] => opis polski
+                            [summary] => 
+                            [format] => filtered_html
+                            [safe_value] => <p>opis polski</p>
+
+                            [safe_summary] => 
+                        )
+
+                )
+
+        )
+
+    [name_original] => Agd kuchnia
+    [translations] => Array
+        (
+            [original] => en
+            [data] => Array
+                (
+                    [en] => Array
+                        (
+                            [entity_type] => taxonomy_term
+                            [entity_id] => 136
+                            [language] => en
+                            [source] => 
+                            [uid] => 1
+                            [status] => 1
+                            [translate] => 0
+                            [created] => 1382091389
+                            [changed] => 1382091448
+                        )
+
+                    [pl] => Array
+                        (
+                            [entity_type] => taxonomy_term
+                            [entity_id] => 136
+                            [language] => pl
+                            [source] => en
+                            [uid] => 1
+                            [status] => 1
+                            [translate] => 0
+                            [created] => 1382091430
+                            [changed] => 1382091430
+                        )
+
+                )
+
+        )
+
+    [description_original] => opis angielski
+)
+Array
+(
+    [tid] => 137
+    [vid] => 14
+    [name] => Odkurzacze
+    [description] => 
+    [format] => filtered_html
+    [weight] => 0
+    [vocabulary_machine_name] => epesi_category
+    [field_epesi_category_id] => Array
+        (
+            [und] => Array
+                (
+                    [0] => Array
+                        (
+                            [value] => 2
+                            [format] => 
+                            [safe_value] => 2
+                        )
+
+                )
+
+        )
+
+    [name_field] => Array
+        (
+            [en] => Array
+                (
+                    [0] => Array
+                        (
+                            [value] => Odkurzacze
+                            [format] => 
+                            [safe_value] => Odkurzacze
+                        )
+
+                )
+
+        )
+
+    [description_field] => Array
+        (
+            [en] => Array
+                (
+                    [0] => Array
+                        (
+                            [value] => 
+                            [summary] => 
+                            [format] => filtered_html
+                            [safe_value] => 
+                            [safe_summary] => 
+                        )
+
+                )
+
+        )
+
+    [name_original] => Odkurzacze
+    [translations] => Array
+        (
+            [original] => 
+            [data] => Array
+                (
+                )
+
+        )
+
+    [description_original] => 
+)
+Array
+(
+    [tid] => 138
+    [vid] => 14
+    [name] => Pralki
+    [description] => 
+    [format] => filtered_html
+    [weight] => 0
+    [vocabulary_machine_name] => epesi_category
+    [field_epesi_category_id] => Array
+        (
+            [und] => Array
+                (
+                    [0] => Array
+                        (
+                            [value] => 3
+                            [format] => 
+                            [safe_value] => 3
+                        )
+
+                )
+
+        )
+
+    [name_field] => Array
+        (
+            [en] => Array
+                (
+                    [0] => Array
+                        (
+                            [value] => Pralki
+                            [format] => 
+                            [safe_value] => Pralki
+                        )
+
+                )
+
+        )
+
+    [description_field] => Array
+        (
+            [en] => Array
+                (
+                    [0] => Array
+                        (
+                            [value] => 
+                            [summary] => 
+                            [format] => filtered_html
+                            [safe_value] => 
+                            [safe_summary] => 
+                        )
+
+                )
+
+        )
+
+    [name_original] => Pralki
+    [translations] => Array
+        (
+            [original] => 
+            [data] => Array
+                (
+                )
+
+        )
+
+    [description_original] => 
+)
+Array
+(
+    [tid] => 139
+    [vid] => 14
+    [name] => Zmywarki
+    [description] => 
+    [format] => filtered_html
+    [weight] => 0
+    [vocabulary_machine_name] => epesi_category
+    [field_epesi_category_id] => Array
+        (
+            [und] => Array
+                (
+                    [0] => Array
+                        (
+                            [value] => 4
+                            [format] => 
+                            [safe_value] => 4
+                        )
+
+                )
+
+        )
+
+    [name_field] => Array
+        (
+            [en] => Array
+                (
+                    [0] => Array
+                        (
+                            [value] => Zmywarki
+                            [format] => 
+                            [safe_value] => Zmywarki
+                        )
+
+                )
+
+        )
+
+    [description_field] => Array
+        (
+            [en] => Array
+                (
+                    [0] => Array
+                        (
+                            [value] => 
+                            [summary] => 
+                            [format] => filtered_html
+                            [safe_value] => 
+                            [safe_summary] => 
+                        )
+
+                )
+
+        )
+
+    [name_original] => Zmywarki
+    [translations] => Array
+        (
+            [original] => 
+            [data] => Array
+                (
+                )
+
+        )
+
+    [description_original] => 
+)
+Array
+(
+    [tid] => 140
+    [vid] => 14
+    [name] => RTV
+    [description] => 
+    [format] => filtered_html
+    [weight] => 0
+    [vocabulary_machine_name] => epesi_category
+    [field_epesi_category_id] => Array
+        (
+            [und] => Array
+                (
+                    [0] => Array
+                        (
+                            [value] => 5
+                            [format] => 
+                            [safe_value] => 5
+                        )
+
+                )
+
+        )
+
+    [name_field] => Array
+        (
+            [en] => Array
+                (
+                    [0] => Array
+                        (
+                            [value] => RTV
+                            [format] => 
+                            [safe_value] => RTV
+                        )
+
+                )
+
+        )
+
+    [description_field] => Array
+        (
+            [en] => Array
+                (
+                    [0] => Array
+                        (
+                            [value] => 
+                            [summary] => 
+                            [format] => filtered_html
+                            [safe_value] => 
+                            [safe_summary] => 
+                        )
+
+                )
+
+        )
+
+    [name_original] => RTV
+    [translations] => Array
+        (
+            [original] => 
+            [data] => Array
+                (
+                )
+
+        )
+
+    [description_original] => 
+)
+Array
+(
+    [tid] => 142
+    [vid] => 14
+    [name] => Kina domowe
+    [description] => 
+    [format] => filtered_html
+    [weight] => 0
+    [vocabulary_machine_name] => epesi_category
+    [field_epesi_category_id] => Array
+        (
+            [und] => Array
+                (
+                    [0] => Array
+                        (
+                            [value] => 7
+                            [format] => 
+                            [safe_value] => 7
+                        )
+
+                )
+
+        )
+
+    [name_field] => Array
+        (
+            [en] => Array
+                (
+                    [0] => Array
+                        (
+                            [value] => Kina domowe
+                            [format] => 
+                            [safe_value] => Kina domowe
+                        )
+
+                )
+
+        )
+
+    [description_field] => Array
+        (
+            [en] => Array
+                (
+                    [0] => Array
+                        (
+                            [value] => 
+                            [summary] => 
+                            [format] => filtered_html
+                            [safe_value] => 
+                            [safe_summary] => 
+                        )
+
+                )
+
+        )
+
+    [name_original] => Kina domowe
+    [translations] => Array
+        (
+            [original] => 
+            [data] => Array
+                (
+                )
+
+        )
+
+    [description_original] => 
+)
+Array
+(
+    [tid] => 141
+    [vid] => 14
+    [name] => Telewizory
+    [description] => 
+    [format] => filtered_html
+    [weight] => 0
+    [vocabulary_machine_name] => epesi_category
+    [field_epesi_category_id] => Array
+        (
+            [und] => Array
+                (
+                    [0] => Array
+                        (
+                            [value] => 6
+                            [format] => 
+                            [safe_value] => 6
+                        )
+
+                )
+
+        )
+
+    [name_field] => Array
+        (
+            [en] => Array
+                (
+                    [0] => Array
+                        (
+                            [value] => Telewizory
+                            [format] => 
+                            [safe_value] => Telewizory
+                        )
+
+                )
+
+        )
+
+    [description_field] => Array
+        (
+            [en] => Array
+                (
+                    [0] => Array
+                        (
+                            [value] => 
+                            [summary] => 
+                            [format] => filtered_html
+                            [safe_value] => 
+                            [safe_summary] => 
+                        )
+
+                )
+
+        )
+
+    [name_original] => Telewizory
+    [translations] => Array
+        (
+            [original] => 
+            [data] => Array
+                (
+                )
+
+        )
+
+    [description_original] => 
+)
+stdClass Object
+(
+    [name] => Agd kuchnia
+    [name_original] => Agd kuchnia
+    [vid] => 14
+    [field_epesi_category_id] => Array
+        (
+            [und] => Array
+                (
+                    [0] => Array
+                        (
+                            [value] => 1
+                        )
+
+                )
+
+        )
+
+    [name_field] => Array
+        (
+            [en] => Array
+                (
+                    [0] => Array
+                        (
+                            [value] => Agd kuchnia
+                            [format] => 
+                            [safe_value] => Agd kuchnia
+                        )
+
+                )
+
+            [pl] => Array
+                (
+                    [0] => Array
+                        (
+                            [value] => AGD
+                            [format] => 
+                            [safe_value] => AGD
+                        )
+
+                )
+
+        )
+
+    [description_field] => Array
+        (
+            [en] => Array
+                (
+                    [0] => Array
+                        (
+                            [format] => filtered_html
+                            [value] => 
+                            [safe_value] => 
+                            [summary] => 
+                            [safe_summary] => 
+                        )
+
+                )
+
+            [pl] => Array
+                (
+                    [0] => Array
+                        (
+                            [format] => filtered_html
+                            [value] => test3
+                            [safe_value] => test3
+                            [summary] => test4
+                            [safe_summary] => test4
+                        )
+
+                )
+
+        )
+
+    [description_original] => 
+    [format] => filtered_html
+    [translations] => Array
+        (
+            [original] => en
+            [data] => Array
+                (
+                    [en] => Array
+                        (
+                            [entity_type] => taxonomy_term
+                            [source] => 
+                            [language] => en
+                            [status] => 1
+                            [translate] => 0
+                            [entity_id] => 136
+                        )
+
+                    [pl] => Array
+                        (
+                            [entity_type] => taxonomy_term
+                            [language] => pl
+                            [source] => en
+                            [status] => 1
+                            [translate] => 0
+                            [entity_id] => 136
+                        )
+
+                )
+
+        )
+
+)
+stdClass Object
+(
+    [name] => Odkurzacze
+    [name_original] => Odkurzacze
+    [vid] => 14
+    [field_epesi_category_id] => Array
+        (
+            [und] => Array
+                (
+                    [0] => Array
+                        (
+                            [value] => 2
+                        )
+
+                )
+
+        )
+
+    [name_field] => Array
+        (
+            [en] => Array
+                (
+                    [0] => Array
+                        (
+                            [value] => Odkurzacze
+                            [format] => 
+                            [safe_value] => Odkurzacze
+                        )
+
+                )
+
+        )
+
+    [description_field] => Array
+        (
+            [en] => Array
+                (
+                    [0] => Array
+                        (
+                            [format] => filtered_html
+                            [value] => 
+                            [safe_value] => 
+                            [summary] => 
+                            [safe_summary] => 
+                        )
+
+                )
+
+        )
+
+    [description_original] => 
+    [format] => filtered_html
+    [translations] => Array
+        (
+            [original] => en
+            [data] => Array
+                (
+                    [en] => Array
+                        (
+                            [entity_type] => taxonomy_term
+                            [source] => 
+                            [language] => en
+                            [status] => 1
+                            [translate] => 0
+                            [entity_id] => 137
+                        )
+
+                )
+
+        )
+
+)
+stdClass Object
+(
+    [name] => Pralki
+    [name_original] => Pralki
+    [vid] => 14
+    [field_epesi_category_id] => Array
+        (
+            [und] => Array
+                (
+                    [0] => Array
+                        (
+                            [value] => 3
+                        )
+
+                )
+
+        )
+
+    [name_field] => Array
+        (
+            [en] => Array
+                (
+                    [0] => Array
+                        (
+                            [value] => Pralki
+                            [format] => 
+                            [safe_value] => Pralki
+                        )
+
+                )
+
+        )
+
+    [description_field] => Array
+        (
+            [en] => Array
+                (
+                    [0] => Array
+                        (
+                            [format] => filtered_html
+                            [value] => 
+                            [safe_value] => 
+                            [summary] => 
+                            [safe_summary] => 
+                        )
+
+                )
+
+        )
+
+    [description_original] => 
+    [format] => filtered_html
+    [translations] => Array
+        (
+            [original] => en
+            [data] => Array
+                (
+                    [en] => Array
+                        (
+                            [entity_type] => taxonomy_term
+                            [source] => 
+                            [language] => en
+                            [status] => 1
+                            [translate] => 0
+                            [entity_id] => 138
+                        )
+
+                )
+
+        )
+
+)
+stdClass Object
+(
+    [name] => Zmywarki
+    [name_original] => Zmywarki
+    [vid] => 14
+    [field_epesi_category_id] => Array
+        (
+            [und] => Array
+                (
+                    [0] => Array
+                        (
+                            [value] => 4
+                        )
+
+                )
+
+        )
+
+    [name_field] => Array
+        (
+            [en] => Array
+                (
+                    [0] => Array
+                        (
+                            [value] => Zmywarki
+                            [format] => 
+                            [safe_value] => Zmywarki
+                        )
+
+                )
+
+        )
+
+    [description_field] => Array
+        (
+            [en] => Array
+                (
+                    [0] => Array
+                        (
+                            [format] => filtered_html
+                            [value] => 
+                            [safe_value] => 
+                            [summary] => 
+                            [safe_summary] => 
+                        )
+
+                )
+
+        )
+
+    [description_original] => 
+    [format] => filtered_html
+    [translations] => Array
+        (
+            [original] => en
+            [data] => Array
+                (
+                    [en] => Array
+                        (
+                            [entity_type] => taxonomy_term
+                            [source] => 
+                            [language] => en
+                            [status] => 1
+                            [translate] => 0
+                            [entity_id] => 139
+                        )
+
+                )
+
+        )
+
+)
+stdClass Object
+(
+    [name] => RTV
+    [name_original] => RTV
+    [vid] => 14
+    [field_epesi_category_id] => Array
+        (
+            [und] => Array
+                (
+                    [0] => Array
+                        (
+                            [value] => 5
+                        )
+
+                )
+
+        )
+
+    [name_field] => Array
+        (
+            [en] => Array
+                (
+                    [0] => Array
+                        (
+                            [value] => RTV
+                            [format] => 
+                            [safe_value] => RTV
+                        )
+
+                )
+
+        )
+
+    [description_field] => Array
+        (
+            [en] => Array
+                (
+                    [0] => Array
+                        (
+                            [format] => filtered_html
+                            [value] => 
+                            [safe_value] => 
+                            [summary] => 
+                            [safe_summary] => 
+                        )
+
+                )
+
+        )
+
+    [description_original] => 
+    [format] => filtered_html
+    [translations] => Array
+        (
+            [original] => en
+            [data] => Array
+                (
+                    [en] => Array
+                        (
+                            [entity_type] => taxonomy_term
+                            [source] => 
+                            [language] => en
+                            [status] => 1
+                            [translate] => 0
+                            [entity_id] => 140
+                        )
+
+                )
+
+        )
+
+)
+stdClass Object
+(
+    [name] => Telewizory
+    [name_original] => Telewizory
+    [vid] => 14
+    [field_epesi_category_id] => Array
+        (
+            [und] => Array
+                (
+                    [0] => Array
+                        (
+                            [value] => 6
+                        )
+
+                )
+
+        )
+
+    [name_field] => Array
+        (
+            [en] => Array
+                (
+                    [0] => Array
+                        (
+                            [value] => Telewizory
+                            [format] => 
+                            [safe_value] => Telewizory
+                        )
+
+                )
+
+        )
+
+    [description_field] => Array
+        (
+            [en] => Array
+                (
+                    [0] => Array
+                        (
+                            [format] => filtered_html
+                            [value] => 
+                            [safe_value] => 
+                            [summary] => 
+                            [safe_summary] => 
+                        )
+
+                )
+
+        )
+
+    [description_original] => 
+    [format] => filtered_html
+    [translations] => Array
+        (
+            [original] => en
+            [data] => Array
+                (
+                    [en] => Array
+                        (
+                            [entity_type] => taxonomy_term
+                            [source] => 
+                            [language] => en
+                            [status] => 1
+                            [translate] => 0
+                            [entity_id] => 141
+                        )
+
+                )
+
+        )
+
+)
+stdClass Object
+(
+    [name] => Kina domowe
+    [name_original] => Kina domowe
+    [vid] => 14
+    [field_epesi_category_id] => Array
+        (
+            [und] => Array
+                (
+                    [0] => Array
+                        (
+                            [value] => 7
+                        )
+
+                )
+
+        )
+
+    [name_field] => Array
+        (
+            [en] => Array
+                (
+                    [0] => Array
+                        (
+                            [value] => Kina domowe
+                            [format] => 
+                            [safe_value] => Kina domowe
+                        )
+
+                )
+
+        )
+
+    [description_field] => Array
+        (
+            [en] => Array
+                (
+                    [0] => Array
+                        (
+                            [format] => filtered_html
+                            [value] => 
+                            [safe_value] => 
+                            [summary] => 
+                            [safe_summary] => 
+                        )
+
+                )
+
+        )
+
+    [description_original] => 
+    [format] => filtered_html
+    [translations] => Array
+        (
+            [original] => en
+            [data] => Array
+                (
+                    [en] => Array
+                        (
+                            [entity_type] => taxonomy_term
+                            [source] => 
+                            [language] => en
+                            [status] => 1
+                            [translate] => 0
+                            [entity_id] => 142
+                        )
+
+                )
+
+        )
+
+)
