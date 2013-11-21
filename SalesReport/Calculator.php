@@ -59,7 +59,7 @@ class Premium_Warehouse_SalesReport_CalculatorDB {
     }
 
     public function increase_temp_ids($mode, $temp_id) {
-        $sql = "UPDATE premium_warehouse_sales_report_purchase_{$mode}_tmp SET id=id+1 WHERE id>%d";
+        $sql = "UPDATE premium_warehouse_sales_report_purchase_{$mode}_tmp SET id=id+1 WHERE id>%d ORDER BY id DESC";
         DB::Execute($sql, array($temp_id));
     }
 
