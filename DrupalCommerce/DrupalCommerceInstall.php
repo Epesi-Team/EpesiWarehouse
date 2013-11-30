@@ -444,7 +444,6 @@ class Premium_Warehouse_DrupalCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_parameters', 'Premium/Warehouse/DrupalCommerce', 'parameter_labels_addon');
 		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_parameter_groups', 'Premium/Warehouse/DrupalCommerce', 'parameter_group_labels_addon');
 		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_products', 'Premium/Warehouse/DrupalCommerce', 'prices_addon');
-		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_products', 'Premium/Warehouse/DrupalCommerce', 'product_comments_addon');
 		Utils_RecordBrowserCommon::delete_addon('premium_warehouse_items_orders', 'Premium/Warehouse/DrupalCommerce', 'orders_addon');
 		Utils_RecordBrowserCommon::delete_addon('contact', 'Premium/Warehouse/DrupalCommerce', 'users_addon');
 

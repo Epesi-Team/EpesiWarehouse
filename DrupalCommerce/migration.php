@@ -99,3 +99,4 @@ Acl::set_user(1);
 		Utils_RecordBrowserCommon::add_access('premium_ecommerce_drupal', 'edit', 'ADMIN');
 		Utils_RecordBrowserCommon::add_access('premium_ecommerce_drupal', 'delete', 'ADMIN');
 
+		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_products', 'Premium/Warehouse/DrupalCommerce', 'product_comments_addon');

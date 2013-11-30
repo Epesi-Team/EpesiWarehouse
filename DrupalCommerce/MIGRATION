@@ -4,8 +4,11 @@
 - content types: "basic page", 
 - menus: "main menu"
 - taxonomy: "Product category" - set "localize" option
-4. set your contact us, rules pages
-5. move your banners, boxes, polls, pages etc. to drupal ads, blocks, polls, pages
-6. export newsletters recordset from epesi (it will be deleted)
-7. run migration.php
-8. set drupal url with administrative user/password in epesi ecommerce administration panel
+4. /admin/commerce/config/currency/handling - Enable dedicated price fields for Epesi Products - for each currency you support
+5. Enable "currency selector" block
+5. /admin/structure/types/manage/epesi-products/fields/body - click "Enable translation" and confirm
+5. set your contact us, rules pages
+6. move your banners, boxes, polls, pages etc. to drupal ads, blocks, polls, pages
+7. export newsletters recordset from epesi (it will be deleted)
+8. run migration.php
+9. set drupal url with administrative user/password in epesi ecommerce administration panel

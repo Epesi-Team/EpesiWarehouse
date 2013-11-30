@@ -8,7 +8,7 @@ Acl::set_user(1);
 
 $drupal_id = 1;
 //$ret = Premium_Warehouse_DrupalCommerceCommon::drupal_request(1,'taxonomy_vocabulary.getTree',array(1,0,99));
-$voc = Premium_Warehouse_DrupalCommerceCommon::drupal_request($drupal_id,'taxonomy_vocabulary.index',array(0,'*',array(),1000));
+$voc = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'taxonomy_vocabulary',array('pagesize'=>10000));
 $epesi_vocabulary = null;
 foreach($voc as $v) {
   if($v['machine_name']=='epesi_category') {
@@ -21,13 +21,12 @@ if(!$epesi_vocabulary) continue;
 $category_exists = array();
 $category_mapping = array();
 try {
-  $terms = Premium_Warehouse_DrupalCommerceCommon::drupal_request($drupal_id,'taxonomy_vocabulary.getTree',array($epesi_vocabulary,0,99));
+  $terms = Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'taxonomy_vocabulary/getTree',array('vid'=>$epesi_vocabulary,'maxdepth'=>99));
   foreach($terms as $t) {
 //    Premium_Warehouse_DrupalCommerceCommon::drupal_request($drupal_id,'taxonomy_term.delete',array($t['tid']));
 //    continue;
     $category_exists[$t['tid']] = 1;
-    $term_data = Premium_Warehouse_DrupalCommerceCommon::drupal_request($drupal_id,'taxonomy_term.retrieve',array($t['tid']));
-    print_r($term_data);
+    $term_data = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'taxonomy_term/'.$t['tid']);
     $category_mapping[$term_data['field_epesi_category_id']['und'][0]['value']] = $t['tid'];
   }
 } catch(Exception $e) {}
@@ -63,13 +62,13 @@ do {
     if($epesi_category_parents[$id])
       $term->parent = $category_mapping[$epesi_category_parents[$id]];
     if(isset($category_mapping[$id])) {
-      Premium_Warehouse_DrupalCommerceCommon::drupal_request($drupal_id,'taxonomy_term.update',array($category_mapping[$id],$term));
+      Premium_Warehouse_DrupalCommerceCommon::drupal_put($drupal_id,'taxonomy_term/'.$category_mapping[$id],array('term'=>$term));
     } else {
-      Premium_Warehouse_DrupalCommerceCommon::drupal_request($drupal_id,'taxonomy_term.create',array($term));
-      $all_terms = Premium_Warehouse_DrupalCommerceCommon::drupal_request($drupal_id,'taxonomy_vocabulary.getTree',array($epesi_vocabulary,0,99));
+      Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'taxonomy_term',array('term'=>$term));
+      $all_terms = Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'taxonomy_vocabulary/getTree',array('vid'=>$epesi_vocabulary,'maxdepth'=>99));
       foreach($all_terms as $t) {
         if(!isset($category_exists[$t['tid']])) {
-          $term_data = Premium_Warehouse_DrupalCommerceCommon::drupal_request($drupal_id,'taxonomy_term.retrieve',array($t['tid']));
+          $term_data = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'taxonomy_term/'.$t['tid']);
           if($term_data['field_epesi_category_id']['und'][0]['value']==$id) {
             $category_exists[$t['tid']] = 2;
             $category_mapping[$term_data['field_epesi_category_id']['und'][0]['value']] = $t['tid'];
@@ -92,7 +91,7 @@ do {
         'status'=>1,
         'translate'=>0,
       );
-      Premium_Warehouse_DrupalCommerceCommon::drupal_request($drupal_id,'entity_translation.translate',array('taxonomy_term',$category_mapping[$id],$info,$values));
+      Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'entity_translation/translate',array('entity_type'=>'taxonomy_term','entity_id'=>$category_mapping[$id],'translation'=>$info,'values'=>$values));
     }
 
     unset($epesi_category_names[$id]);
@@ -101,5 +100,5 @@ do {
 
 //remove elements with invalid epesi_category field
 foreach($category_exists as $tid=>$val) {
-  if($val===1) Premium_Warehouse_DrupalCommerceCommon::drupal_request($drupal_id,'taxonomy_term.delete',array($tid));
+  if($val===1) Premium_Warehouse_DrupalCommerceCommon::drupal_delete($drupal_id,'taxonomy_term/'.$tid);
 }

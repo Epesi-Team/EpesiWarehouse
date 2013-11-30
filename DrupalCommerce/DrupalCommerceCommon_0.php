@@ -195,28 +195,29 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			_M('eCommerce')=>$m));
     }
 
-/*    public static function copy_attachment($id,$file,$original) {
-        $qcs = self::get_quickcarts();
+    public static $images;
+    public static function copy_attachment($id,$file,$original,$arr) {
+        $drupal_id = $arr[0];
         $ext = strrchr($original,'.');
         if(preg_match('/^\.(jpg|jpeg|gif|png|bmp)$/i',$ext)) {
-                $th1 = Utils_ImageCommon::create_thumb($file,100,100);
-            $th2 = Utils_ImageCommon::create_thumb($file,200,200);
-            $file = Utils_ImageCommon::create_thumb($file,800,600);
-            $file = $file['thumb'];
+           $files = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'views/epesi_product_images_search_by_filename.json?'.http_build_query(array('display_id'=>'services_1','args'=>array('epesi_'.$id.$ext,''))));
+           if(isset($files[0]['fid'])) {
+             $ret['fid'] = $files[0]['fid'];
+           } else {
+             $file_arr = array(
+               'filesize' => filesize($file),
+               'filename' => 'epesi_'.$id.$ext,
+               'file' => base64_encode(file_get_contents($file)),
+               'filepath'=>"public://epesi/epesi_".$id.$ext
+             );
+             $ret = self::drupal_post($drupal_id,'file',$file_arr);
+           }
+           if(isset($ret['fid'])) {
+             $lang = $arr[1]?'und':basename(dirname(dirname($file)));
+             self::$images[$lang][] = $ret['fid'];
+           }
         }
-        foreach($qcs as $q) {
-            copy($file,$q.'/files/epesi/'.$id.$ext);
-            if(isset($th1)) {
-                copy($th1['thumb'],$q.'/files/100/epesi/'.$id.$ext);
-                copy($th2['thumb'],$q.'/files/200/epesi/'.$id.$ext);
-            }
-        }
-        if(isset($th1)) {
-            @unlink($th1['thumb']);
-            @unlink($th2['thumb']);
-            @unlink($file);
-        }
-    }*/
+    }
 
 	public static function get_plugin($arg) {
 		static $plugins = array();
@@ -1008,7 +1009,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 	        $drupal_id = $drupal_row['id'];
 
             //look for epesi vocabulary
-            $voc = Premium_Warehouse_DrupalCommerceCommon::drupal_request($drupal_id,'taxonomy_vocabulary.index',array(0,'*',array(),9999999999));
+            $voc = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'taxonomy_vocabulary',array('pagesize'=>9999999999));
             $epesi_vocabulary = null;
             foreach($voc as $v) {
               if($v['machine_name']=='epesi_category') {
@@ -1022,11 +1023,10 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
             $category_exists = array();
             $category_mapping = array();
             try {
-              $terms = Premium_Warehouse_DrupalCommerceCommon::drupal_request($drupal_id,'taxonomy_vocabulary.getTree',array($epesi_vocabulary,0,99));
+              $terms = Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'taxonomy_vocabulary/getTree',array('vid'=>$epesi_vocabulary,'maxdepth'=>99));
               foreach($terms as $t) {
                 $category_exists[$t['tid']] = 1;
-                $term_data = Premium_Warehouse_DrupalCommerceCommon::drupal_request($drupal_id,'taxonomy_term.retrieve',array($t['tid']));
-                print_r($term_data);
+                $term_data = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'taxonomy_term/'.$t['tid']);
                 $category_mapping[$term_data['field_epesi_category_id']['und'][0]['value']] = $t['tid'];
               }
             } catch(Exception $e) {}
@@ -1063,13 +1063,13 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
                   
                 //sync/create categories
                 if(isset($category_mapping[$id])) {
-                  Premium_Warehouse_DrupalCommerceCommon::drupal_request($drupal_id,'taxonomy_term.update',array($category_mapping[$id],$term));
+                  Premium_Warehouse_DrupalCommerceCommon::drupal_put($drupal_id,'taxonomy_term/'.$category_mapping[$id],array('term'=>$term));
                 } else {
-                  Premium_Warehouse_DrupalCommerceCommon::drupal_request($drupal_id,'taxonomy_term.create',array($term));
-                  $all_terms = Premium_Warehouse_DrupalCommerceCommon::drupal_request($drupal_id,'taxonomy_vocabulary.getTree',array($epesi_vocabulary,0,99));
+                  Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'taxonomy_term',array('term'=>$term));
+                  $all_terms = Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'taxonomy_vocabulary/getTree',array('vid'=>$epesi_vocabulary,'maxdepth'=>99));
                   foreach($all_terms as $t) {
                     if(!isset($category_exists[$t['tid']])) {
-                      $term_data = Premium_Warehouse_DrupalCommerceCommon::drupal_request($drupal_id,'taxonomy_term.retrieve',array($t['tid']));
+                      $term_data = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'taxonomy_term/'.$t['tid']);
                       if($term_data['field_epesi_category_id']['und'][0]['value']==$id) {
                         $category_exists[$t['tid']] = 2;
                         $category_mapping[$term_data['field_epesi_category_id']['und'][0]['value']] = $t['tid'];
@@ -1093,7 +1093,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
                     'status'=>1,
                     'translate'=>0,
                   );
-                  Premium_Warehouse_DrupalCommerceCommon::drupal_request($drupal_id,'entity_translation.translate',array('taxonomy_term',$category_mapping[$id],$info,$values));
+                  Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'entity_translation/translate',array('entity_type'=>'taxonomy_term','entity_id'=>$category_mapping[$id],'translation'=>$info,'values'=>$values));
                 }
             
                 unset($epesi_category_names[$id]);
@@ -1102,7 +1102,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
             
             //remove elements with invalid epesi_category field
             foreach($category_exists as $tid=>$val) {
-              if($val===1) Premium_Warehouse_DrupalCommerceCommon::drupal_request($drupal_id,'taxonomy_term.delete',array($tid));
+              if($val===1) Premium_Warehouse_DrupalCommerceCommon::drupal_delete($drupal_id,'taxonomy_term/'.$tid);
             }
 
         }
@@ -1113,62 +1113,56 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 	    
 	}
 	
-	public static function drupal_request($drupal,$op,$args=array()) {
+	public static function drupal_connection($drupal) {
 	    static $conn;
 	    if(!isset($conn)) $conn = array();
 	    
 	    if(!isset($conn[$drupal])) {
+		  require_once(self::Instance()->get_module_dir().'guzzle.phar');
 	      $drupal_record = Utils_RecordBrowserCommon::get_record('premium_ecommerce_drupal',$drupal);
 	      
-	      require_once(dirname(__FILE__)."/xmlrpc.inc");
-	      global $xmlrpc_internalencoding;
-	      $xmlrpc_internalencoding = 'UTF-8';
-	      
-	      $conn[$drupal]=new xmlrpc_client(rtrim($drupal_record['url'],'/')."/".$drupal_record['endpoint']);
-	        
-	      if(isset($SESSION['drupal_cookies']) && isset($_SESSION['drupal_csrf_token'])) {
-            foreach($SESSION['drupal_cookies'] as $cookie_name=>$cookie_value) {
-              if(isset($cookie_value['value'])) $conn[$drupal]->setCookie($cookie_name,$cookie_value['value']);
-            }
-	        
-            $conn[$drupal]->setHeader('X-CSRF-Token',$_SESSION['drupal_csrf_token']);
-	      } else {
-            $f=new xmlrpcmsg('user.login',
-			    array(new xmlrpcval($drupal_record['login']),new xmlrpcval($drupal_record['password']))
-    		);
-            $r=&$conn[$drupal]->send($f);
-            if($r->faultCode()) {
-                throw new Exception("An error occurred: ".
-	                  "Code: " . htmlspecialchars($r->faultCode()).
-		              " Reason: '" . htmlspecialchars($r->faultString()) . "'");
-            }
-            $SESSION['drupal_cookies'] = $r->cookies();
-            foreach($SESSION['drupal_cookies'] as $cookie_name=>$cookie_value) {
-              if(isset($cookie_value['value'])) $conn[$drupal]->setCookie($cookie_name,$cookie_value['value']);
-            }
+	      $endpoint = rtrim($drupal_record['url'],'/')."/".$drupal_record['endpoint'];
+	      $conn[$drupal] = $client = new \Guzzle\Http\Client($endpoint);
 
-            $csrf_token_get=new xmlrpcmsg('user.token');
-            $r = &$conn[$drupal]->send($csrf_token_get);
-            if($r->faultCode()) {
-                throw new Exception("An error occurred: ".
-	                  "Code: " . htmlspecialchars($r->faultCode()).
-		              " Reason: '" . htmlspecialchars($r->faultString()) . "'");
-            }
-            $csrf_token = php_xmlrpc_decode($r->value());
-            $_SESSION['drupal_csrf_token'] = $csrf_token['token'];
-            $conn[$drupal]->setHeader('X-CSRF-Token',$csrf_token['token']);
-          }
-        }
-        
-        foreach($args as &$arg) if(!is_object($arg) || get_class($arg) != 'xmlrpcval') $arg = php_xmlrpc_encode($arg);
-        $f=new xmlrpcmsg($op,$args);
-        $r=&$conn[$drupal]->send($f);
-        if($r->faultCode()) {
-            throw new Exception("An error occurred: ".
-	                  "Code: " . htmlspecialchars($r->faultCode()).
-		              " Reason: '" . htmlspecialchars($r->faultString()) . "'");
-        }
-        return php_xmlrpc_decode($r->value());
+	      if(isset($SESSION['drupal_cookies']) && isset($_SESSION['drupal_csrf_token'])) {
+	        $client->addSubscriber($SESSION['drupal_cookies']); 
+	      } else {
+	        $cookiePlugin = new \Guzzle\Plugin\Cookie\CookiePlugin(new \Guzzle\Plugin\Cookie\CookieJar\ArrayCookieJar());
+	        $client->addSubscriber($cookiePlugin); 
+	        $user = $client->post('user/login.json')->setBody(json_encode(array('username'=>$drupal_record['login'],'password'=>$drupal_record['password'])),'application/json')->send()->json();
+	        if(!isset($user['user']['uid']) || !$user['user']['uid']) {
+	          throw new Exception("Drupal login failed.");
+	        }
+	        $csrf_token=$client->post('user/token.json')->setBody(json_encode(array()),'application/json')->send()->json();
+	        if(!isset($csrf_token['token']) || !$csrf_token['token']) {
+	          throw new Exception("Drupal getting csrf token failed.");
+	        }
+	        $SESSION['drupal_csrf_token'] = $csrf_token['token'];
+	        $SESSION['drupal_cookies'] = $cookiePlugin;
+	      }
+	      $client->setDefaultOption('headers', array('X-CSRF-Token' => $SESSION['drupal_csrf_token']));
+	    }
+	    return $conn[$drupal];
+	}
+	
+	public static function drupal_get($drupal,$op,$args=array()) {
+	    $client = self::drupal_connection($drupal);
+	    return $client->get($op.'.json?'.http_build_query($args))->send()->json();
+	}
+
+	public static function drupal_put($drupal,$op,$args=array()) {
+	    $client = self::drupal_connection($drupal);
+	    return $client->put($op.'.json')->setBody(json_encode($args),'application/json')->send()->json();
+	}
+
+	public static function drupal_delete($drupal,$op,$args=array()) {
+	    $client = self::drupal_connection($drupal);
+	    return $client->delete($op.'.json?'.http_build_query($args))->send()->json();
+	}
+
+	public static function drupal_post($drupal,$op,$args=array()) {
+	    $client = self::drupal_connection($drupal);
+	    return $client->post($op.'.json')->setBody(json_encode($args),'application/json')->send()->json();
 	}
 }
 
