@@ -445,7 +445,7 @@ var fOrderSummary = "$aData[fProductsSummary]";
           $lang[Summary_cost]
         </th>
         <td id="orderSummary">
-          $aData[sProductsSummary]
+            $config[currency_symbol]&nbsp;$aData[sProductsSummary]
         </td>
       </tr>
     </tfoot>
