@@ -200,9 +200,23 @@ class Premium_Warehouse_DrupalCommerceInstall extends ModuleInstall {
 		
 		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_pages', 'Premium/Warehouse/DrupalCommerce', 'pages_info_addon', _M('Info'));
 
+		//drupal
+		$fields = array(
+			array('name' => _M('URL'), 			'type'=>'text', 'required'=>true, 'param'=>'128', 'extra'=>false, 'visible'=>true),
+			array('name' => _M('Login'), 			'type'=>'text', 'required'=>true, 'param'=>'128', 'extra'=>false, 'visible'=>true),
+			array('name' => _M('Password'), 			'type'=>'text', 'required'=>true, 'param'=>'128', 'extra'=>false, 'visible'=>false,'QFfield_callback'=>array('Premium_Warehouse_DrupalCommerceCommon','QFfield_password'), 'display_callback'=>array('Premium_Warehouse_DrupalCommerceCommon','display_password')),
+			array('name' => _M('Endpoint'), 			'type'=>'text', 'required'=>true, 'param'=>'128', 'extra'=>false, 'visible'=>true),
+			array('name' => _M('Update products every (minutes)'), 'type'=>'integer', 'required'=>false, 'extra'=>false, 'visible'=>false),
+			array('name' => _M('Last products update'), 'type'=>'timestamp', 'required'=>false, 'param'=>'128', 'extra'=>false, 'visible'=>false),
+		);
+		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_drupal', $fields);
+		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_drupal', _M('eCommerce - Drupal'));
+
 		//orders
 		$fields = array(
 			array('name' => _M('Transaction ID'), 	'type'=>'select', 'required'=>true, 'param'=>'premium_warehouse_items_orders::Transaction ID;Premium_Warehouse_Items_OrdersCommon::transactions_crits', 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_transaction_id_in_details')),
+			array('name' => _M('Drupal'), 	'type'=>'select', 'required'=>true, 'param'=>'premium_ecommerce_drupal::URL', 'extra'=>false, 'visible'=>true),
+			array('name' => _M('Drupal order ID'), 	'type'=>'integer', 'required'=>true, 'extra'=>false, 'visible'=>true),
 			array('name' => _M('Language'), 		'type'=>'commondata', 'required'=>true, 'extra'=>false, 'param'=>array('Premium/Warehouse/eCommerce/Languages'), 'visible'=>true),
 			array('name' => _M('Email'), 			'type'=>'email', 'required'=>false, 'extra'=>false, 'visible'=>false),
 			array('name' => _M('IP'), 			'type'=>'text', 'required'=>false, 'param'=>'32', 'extra'=>false, 'visible'=>false),
@@ -219,17 +233,6 @@ class Premium_Warehouse_DrupalCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::new_addon('premium_warehouse_items_orders', 'Premium/Warehouse/DrupalCommerce', 'orders_addon', 'Premium_Warehouse_DrupalCommerceCommon::orders_addon_parameters');
 		Utils_RecordBrowserCommon::register_processing_callback('premium_ecommerce_orders', array('Premium_Warehouse_DrupalCommerceCommon', 'submit_ecommerce_order'));
 		
-
-		//drupal
-		$fields = array(
-			array('name' => _M('URL'), 			'type'=>'text', 'required'=>true, 'param'=>'128', 'extra'=>false, 'visible'=>true),
-			array('name' => _M('Login'), 			'type'=>'text', 'required'=>true, 'param'=>'128', 'extra'=>false, 'visible'=>true),
-			array('name' => _M('Password'), 			'type'=>'text', 'required'=>true, 'param'=>'128', 'extra'=>false, 'visible'=>false,'QFfield_callback'=>array('Premium_Warehouse_DrupalCommerceCommon','QFfield_password'), 'display_callback'=>array('Premium_Warehouse_DrupalCommerceCommon','display_password')),
-			array('name' => _M('Endpoint'), 			'type'=>'text', 'required'=>true, 'param'=>'128', 'extra'=>false, 'visible'=>true),
-		);
-		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_drupal', $fields);
-		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_drupal', _M('eCommerce - Drupal'));
-
         //emails
 		$fields = array(
 			array('name' => _M('Subject'),	'type'=>'text', 'param'=>128, 'required'=>true, 'extra'=>false, 'visible'=>true),
@@ -242,16 +245,6 @@ class Premium_Warehouse_DrupalCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::set_favorites('premium_ecommerce_emails', false);
 		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_emails', _M('eCommerce - e-mails'));
 
-		//users
-		$fields = array(
-			array('name' => _M('Contact'), 	'type'=>'crm_contact', 'param'=>array('field_type'=>'select','crits'=>array('Premium_Warehouse_DrupalCommerceCommon','customer_crits'), 'format'=>array('CRM_ContactsCommon','contact_format_default')), 'required'=>true, 'extra'=>false, 'visible'=>false),
-			array('name' => _M('Password'), 	'type'=>'text', 'required'=>true, 'param'=>'32', 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_DrupalCommerceCommon', 'display_password'), 'QFfield_callback'=>array('Premium_Warehouse_DrupalCommerceCommon', 'QFfield_password'))
-		);
-		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_users', $fields);
-		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_users', _M('eCommerce - Users'));
-		Utils_RecordBrowserCommon::new_addon('contact', 'Premium/Warehouse/DrupalCommerce', 'users_addon', 'Premium_Warehouse_DrupalCommerceCommon::users_addon_parameters');
-		Utils_RecordBrowserCommon::register_processing_callback('premium_ecommerce_users', array('Premium_Warehouse_DrupalCommerceCommon', 'submit_user'));
-		
 		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items_orders',array('name' => _M('Online order'),	'type'=>'checkbox', 'required'=>false, 'filter'=>true, 'extra'=>false, 'visible'=>true, 'QFfield_callback'=>array('Premium_Warehouse_DrupalCommerceCommon','QFfield_online_order')));
 
 		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_distributor',array('name' => _M('Items Availability'), 'type'=>'select', 'required'=>true, 'extra'=>false, 'visible'=>false, 'param'=>'premium_ecommerce_availability::Availability Code'));
@@ -380,7 +373,6 @@ class Premium_Warehouse_DrupalCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::add_default_access('premium_ecommerce_availability_labels');
 		Utils_RecordBrowserCommon::add_default_access('premium_ecommerce_prices');
 		Utils_RecordBrowserCommon::add_default_access('premium_ecommerce_orders');
-		Utils_RecordBrowserCommon::add_default_access('premium_ecommerce_users');
 
 		Utils_RecordBrowserCommon::add_access('premium_warehouse_items_orders', 'edit', 'ACCESS:employee', array('online_order'=>1, '<status'=>6), array('transaction_type'));
 
@@ -401,7 +393,6 @@ class Premium_Warehouse_DrupalCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::unregister_processing_callback('premium_payments', array('Premium_Warehouse_DrupalCommerceCommon', 'submit_payment'));
 		Utils_RecordBrowserCommon::unregister_processing_callback('premium_ecommerce_parameter_groups', array('Premium_Warehouse_DrupalCommerceCommon', 'submit_parameter_groups_position'));
 		//Utils_RecordBrowserCommon::unregister_processing_callback('premium_ecommerce_param_group_labels', array('Premium_Warehouse_DrupalCommerceCommon', 'submit_parameter_labels'));
-		Utils_RecordBrowserCommon::unregister_processing_callback('premium_ecommerce_users', array('Premium_Warehouse_DrupalCommerceCommon', 'submit_user'));
 		Utils_RecordBrowserCommon::unregister_processing_callback('premium_ecommerce_3rdp_info', array('Premium_Warehouse_DrupalCommerceCommon', 'submit_3rdp_info'));
 
 		Utils_RecordBrowserCommon::delete_record_field('premium_warehouse_items_categories','Available languages');
@@ -445,7 +436,6 @@ class Premium_Warehouse_DrupalCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_parameter_groups', 'Premium/Warehouse/DrupalCommerce', 'parameter_group_labels_addon');
 		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_products', 'Premium/Warehouse/DrupalCommerce', 'prices_addon');
 		Utils_RecordBrowserCommon::delete_addon('premium_warehouse_items_orders', 'Premium/Warehouse/DrupalCommerce', 'orders_addon');
-		Utils_RecordBrowserCommon::delete_addon('contact', 'Premium/Warehouse/DrupalCommerce', 'users_addon');
 
 //		Utils_AttachmentCommon::delete_addon('premium_ecommerce_descriptions');
 //		Utils_AttachmentCommon::delete_addon('premium_ecommerce_pages_data');
@@ -468,7 +458,6 @@ class Premium_Warehouse_DrupalCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_availability_labels');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_prices');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_orders');
-		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_users');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_drupal');
 		return true;
 	}

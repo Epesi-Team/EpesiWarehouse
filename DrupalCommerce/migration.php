@@ -90,6 +90,8 @@ Acl::set_user(1);
 			array('name' => _M('Login'), 			'type'=>'text', 'required'=>true, 'param'=>'128', 'extra'=>false, 'visible'=>true),
 			array('name' => _M('Password'), 			'type'=>'text', 'required'=>true, 'param'=>'128', 'extra'=>false, 'visible'=>false,'QFfield_callback'=>array('Premium_Warehouse_DrupalCommerceCommon','QFfield_password'), 'display_callback'=>array('Premium_Warehouse_DrupalCommerceCommon','display_password')),
 			array('name' => _M('Endpoint'), 			'type'=>'text', 'required'=>true, 'param'=>'128', 'extra'=>false, 'visible'=>true),
+			array('name' => _M('Update products every (minutes)'), 'type'=>'integer', 'required'=>false, 'extra'=>false, 'visible'=>false),
+			array('name' => _M('Last products update'), 'type'=>'timestamp', 'required'=>false, 'extra'=>false, 'visible'=>false),
 		);
 		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_drupal', $fields);
 		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_drupal', _M('eCommerce - Drupal'));
@@ -100,3 +102,14 @@ Acl::set_user(1);
 		Utils_RecordBrowserCommon::add_access('premium_ecommerce_drupal', 'delete', 'ADMIN');
 
 		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_products', 'Premium/Warehouse/DrupalCommerce', 'product_comments_addon');
+
+		Utils_RecordBrowserCommon::new_record_field('premium_ecommerce_orders', array('name' => _M('Drupal'), 	'type'=>'select', 'required'=>true, 'param'=>'premium_ecommerce_drupal::URL', 'extra'=>false, 'visible'=>true));
+		Utils_RecordBrowserCommon::new_record_field('premium_ecommerce_orders', array('name' => _M('Drupal order ID'), 	'type'=>'integer', 'required'=>true, 'extra'=>false, 'visible'=>true));
+
+		Utils_CommonDataCommon::new_array('Premium_Items_Orders_Payment_Types',array('Drupal'=>_M('Drupal')));
+		Utils_CommonDataCommon::new_array('Premium_Items_Orders_Shipment_Types',array('Drupal'=>_M('Drupal')));
+
+		//users
+		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_users');
+		Utils_RecordBrowserCommon::unregister_processing_callback('premium_ecommerce_users', array('Premium_Warehouse_DrupalCommerceCommon', 'submit_user'));
+		Utils_RecordBrowserCommon::delete_addon('contact', 'Premium/Warehouse/DrupalCommerce', 'users_addon');

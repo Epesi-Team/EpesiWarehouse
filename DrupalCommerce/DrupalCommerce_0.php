@@ -310,7 +310,7 @@ class Premium_Warehouse_DrupalCommerce extends Module {
 
 		$this->recordset = 'drupal';
 		$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_drupal');
-		$this->rb->set_defaults(array('endpoint'=>'epesi'));
+		$this->rb->set_defaults(array('endpoint'=>'epesi','update_products_every__minutes_'=>'360'));
 		$this->display_module($this->rb);
 
 		return true;
@@ -588,15 +588,6 @@ class Premium_Warehouse_DrupalCommerce extends Module {
 	    	}
  		    $this->display_module($m);
  		}
-	}
-	
-	public function users_addon($arg) {
-		$rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_users');
-		$order = array(array('contact'=>$arg['id']), array('contact'=>false), array());
-		$rb->set_defaults(array('contact'=>$arg['id']));
-		$ret = Utils_RecordBrowserCommon::get_records('premium_ecommerce_users',array('contact'=>$arg['id']));
-		if(count($ret)) $rb->set_button(false);
-		$this->display_module($rb,$order,'show_data');
 	}
 	
 	public function caption(){

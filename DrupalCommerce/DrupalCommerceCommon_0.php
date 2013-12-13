@@ -102,14 +102,6 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
         return '*****';
     }
 
-    public static function users_addon_parameters($r) {
-		if (!isset($r['id'])) return array();
-//      $ret = Utils_RecordBrowserCommon::get_records('premium_ecommerce_users',array('contact'=>$r['id']));
-        if(!in_array('custm',$r['group']))
-            return array('show'=>false);
-        return array('show'=>true, 'label'=>__('eCommerce user'));
-    }
-
     public static function prices_addon_parameters($r) {
         if(!Variable::get('ecommerce_item_prices'))
             return array('show'=>false);
@@ -124,16 +116,6 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
         if(!Variable::get('ecommerce_item_descriptions'))
             return array('show'=>false);
         return array('show'=>true, 'label'=>__('Descriptions'));
-    }
-
-    public static function submit_user($values, $mode) {
-        switch ($mode) {
-            case 'add':
-            case 'edit':
-                $values['password'] = md5($values['password']);
-                break;
-        }
-        return $values;
     }
 
     public static $order_statuses;
@@ -712,6 +694,8 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
     public static function submit_warehouse_order($values, $mode,$erec = null) {
         if ($mode=='edit' && $values['transaction_type']==1 && $values['online_order'] && 
         	(isset($erec) || $values['status']!=DB::GetOne('SELECT f_status FROM premium_warehouse_items_orders_data_1 WHERE id=%d',array($values['id'])))) {
+        	
+        	//send messages from epesi
             $txt = '';
             
             $orec = $values;
@@ -731,7 +715,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 	                $erec = array_shift($erec);
             	}
             }
-            if(isset($erec) && is_array($erec) && isset($erec['language']) && $values['status']!=-1) {
+            if(isset($erec) && is_array($erec) && $erec['language'] && $values['status']!=-1) {
                 $emails = Utils_RecordBrowserCommon::get_records('premium_ecommerce_emails',array('send_on_status'=>$values['status'],'language'=>$erec['language']));
                 if(!$emails)
                     $emails = Utils_RecordBrowserCommon::get_records('premium_ecommerce_emails',array('send_on_status'=>$values['status'],'language'=>''));
@@ -798,6 +782,17 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 				
                 Base_MailCommon::send($email,$title,$mail,null,null,true);
             }
+            
+        	//update status
+        	if(isset($erec) && is_array($erec) && $erec['drupal'] && $erec['drupal_order_id'] && $values['status']!=-1) {
+        		$drupal_id = $erec['drupal'];
+        		$drupal_order_id = $erec['drupal_order_id'];
+//        		$drupal_order = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'order/'.$drupal_order_id);
+//        		$drupal_order['status'] = $values['status']>0 && $values['status']<20?'processing':($values['status']==20?'completed':'canceled');
+				$drupal_status = $values['status']>0 && $values['status']<20?'processing':($values['status']==20?'completed':'canceled');
+				Premium_Warehouse_DrupalCommerceCommon::drupal_put($drupal_id,'order/'.$drupal_order_id,array('status'=>$drupal_status));
+//				Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'order/'.$drupal_order_id,$drupal_order);
+			}
         }
         return null;//don't modify values
     }
@@ -1008,16 +1003,178 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 	    foreach($drupals as $drupal_row) {
 	        $drupal_id = $drupal_row['id'];
 
+			//create new orders
+			$taxes = DB::GetAssoc('SELECT f_percentage, id FROM data_tax_rates_data_1 WHERE active=1');
+			$drupal_orders_tmp = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'order',array('filter'=>array('status'=>'pending'),'limit'=>999999999999999999));
+			foreach($drupal_orders_tmp as $ord) {
+			  if(!Utils_RecordBrowserCommon::get_records_count('premium_ecommerce_orders',array('drupal'=>$drupal_id,'drupal_order_id'=>$ord['order_id']))) {
+			    $billing = array_shift($ord['commerce_customer_billing_entities']);
+			    $billing = $billing['commerce_customer_address'];
+			    if(!$billing['last_name'] && $billing['name_line'])
+			      list($billing['first_name'],$billing['last_name']) = explode(' ',$billing['name_line'],2);
+			    $shipping = array_shift($ord['commerce_customer_shipping_entities']);
+			    $shipping = $shipping['commerce_customer_address'];
+			    if(!$shipping['last_name'] && $shipping['name_line'])
+			      list($shipping['first_name'],$shipping['last_name']) = explode(' ',$shipping['name_line'],2);
+			      
+			    $products = array();
+			    //products
+			    foreach($ord['commerce_line_items_entities'] as $line_item) {
+			      if($line_item['type']!='product') continue;
+			      $node = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'product/'.$line_item['commerce_product']);
+			      if($node['type']!='epesi_products') continue;
+			      $products[$line_item['commerce_product']] = $node;
+			    }
+			    if(!$products) continue;
+			      
+			    $memo = '';
+			    //shipping
+			    $shipping_cost = 0;
+			    $handling_cost = 0;
+			    $currency_id = 0;
+			    $currency_precission = 0;
+			    foreach($ord['commerce_line_items_entities'] as $line_item) {
+			      if(!$currency_id && isset($line_item['commerce_unit_price']['currency_code'])) {
+			        $currency_id = Utils_CurrencyFieldCommon::get_id_by_code($line_item['commerce_unit_price']['currency_code']);
+			        $currency_precission = pow(10,Utils_CurrencyFieldCommon::get_precission($currency_id));
+			      }
+			      if($line_item['type']=='shipping') {
+			        $memo .= _('Shipping').': '.$line_item['line_item_label']."\n";
+			        $shipping_cost += $line_item['commerce_unit_price']['amount'];
+			      } elseif($line_item['type']!='product' && isset($line_item['commerce_unit_price']['amount']) && $line_item['commerce_unit_price']['amount']) {
+			        $handling_cost += $line_item['commerce_unit_price']['amount'];
+			        $memo .= _('Handling').': '.$line_item['line_item_label'].' '.($line_item['commerce_unit_price']['amount']/$currency_precission).' '.$line_item['commerce_unit_price']['currency_code']."\n";
+			      }
+			    }
+			    $shipping_cost/=$currency_precission;
+			    $handling_cost/=$currency_precission;
+			    
+			    //contact & company
+			    $contact = DB::GetOne('SELECT id FROM contact_data_1 WHERE f_email=%s AND active=1',array($ord['mail']));
+			    $company = DB::GetOne('SELECT id FROM company_data_1 WHERE f_email=%s AND active=1',array($ord['mail']));
+			    if(!$company && $billing['organisation_name']) {
+			        $company = Utils_RecordBrowserCommon::new_record('contact',array(
+			          'company_name'=>$billing['organisation_name'],
+			          'address_1'=>$billing['thoroughfare'],
+			          'city'=>$billing['locality'],
+			          'postal_code'=>$billing['postal_code'],
+			          'phone'=>isset($billing['phone'])?$billing['phone']:'',
+			          'country'=>$billing['country'],
+			          'email'=>$ord['mail']
+			        ));
+			    }
+			    if(!$contact) {
+			      $arr = array(
+			        'last_name'=>$billing['last_name'],
+			        'first_name'=>$billing['first_name'],
+			        'address_1'=>$billing['thoroughfare'],
+			        'city'=>$billing['locality'],
+			        'postal_code'=>$billing['postal_code'],
+			        'work_phone'=>isset($billing['phone'])?$billing['phone']:'',
+			        'country'=>$billing['country'],
+			        'email'=>$ord['mail'],
+			      );
+			      if($company)
+			        $arr['company_name']=$company;
+			      $contact = Utils_RecordBrowserCommon::new_record('contact',$arr);
+			    } elseif($company) {
+			      $ccc = Utils_RecordBrowserCommon::get_record('contact',$contact);
+			      if($ccc['company_name'])
+			        $ccc['related_companies'][] = $company;
+			      else
+			        $ccc['company_name'] = $company;
+			      Utils_RecordBrowserCommon::update_record('contact',$contact,$ccc);
+			    }
+			    
+			    $id = Utils_RecordBrowserCommon::new_record('premium_warehouse_items_orders',array(
+			      'transaction_type'=>1,
+			      'transaction_date'=>$ord['created'],
+			      'company_name'=>$billing['organisation_name'],
+			      'last_name'=>$billing['last_name'],
+			      'first_name'=>$billing['first_name'],
+			      'address_1'=>$billing['thoroughfare'],
+			      'city'=>$billing['locality'],
+			      'postal_code'=>$billing['postal_code'],
+			      'phone'=>isset($billing['phone'])?$billing['phone']:'',
+			      'country'=>$billing['country'],
+			//	    'zone'=>$aForm['sState'],
+			      'created_on'=>$ord['created'],
+			      'shipment_type'=>'Drupal',
+			      'shipment_cost'=>$shipping_cost.'__'.$currency_id,
+			      'payment'=>1,
+			      'payment_type'=>'Drupal',
+			      'memo'=>$memo,
+			//	    'tax_id'=>$aForm['sNip'],
+			      'tax_calculation'=> Variable::get('premium_warehouse_def_tax_calc', false),
+			//	    'warehouse'=>$carrier==0?$aForm['iPickupShop']:null,
+			      'online_order'=>1,
+			      'status'=>-1,
+			      'contact'=>$contact,
+			      'company'=>$company,
+			//	    'terms'=>$order_terms,
+			//	    'receipt'=>$aForm['iInvoice']?0:1,
+			      'handling_cost'=>$handling_cost.'__'.$currency_id,
+			      'shipping_company_name'=>$shipping['organisation_name'],
+			      'shipping_last_name'=>$shipping['last_name'],
+			      'shipping_first_name'=>$shipping['first_name'],
+			      'shipping_address_1'=>$shipping['thoroughfare'],
+			      'shipping_city'=>$shipping['locality'],
+			      'shipping_postal_code'=>$shipping['postal_code'],
+			      'shipping_phone'=>isset($shipping['phone'])?$shipping['phone']:'',
+			      'shipping_country'=>$shipping['country'],
+			      'shipping_contact'=>$contact,
+			      'shipping_company'=>$company
+			    ));
+			    
+			    Utils_RecordBrowserCommon::new_record('premium_ecommerce_orders',array(
+			      'drupal'=>$drupal_id,
+			      'drupal_order_id'=>$ord['order_id'],
+			      'transaction_id'=>$id,
+			      'email'=>$ord['mail'],
+			      'ip'=>isset($ord['hostname'])?$ord['hostname']:(isset($ord['revision_hostname'])?$ord['revision_hostname']:''),
+			      
+			    ));
+			
+			    //products
+			    foreach($ord['commerce_line_items_entities'] as $line_item) {
+			      if($line_item['type']!='product') continue;
+			      $tax_amount = 0;
+			      $tax = 0;
+			      foreach($line_item['commerce_unit_price']['data']['components'] as $pr) {
+			        if(isset($pr['price']['data']['tax_rate'])) {
+			          $tax_amount+=$pr['price']['amount'];
+			          if(isset($taxes[(string)($pr['price']['data']['tax_rate']['rate']*100)])) {
+			            $tax = $taxes[(string)($pr['price']['data']['tax_rate']['rate']*100)];
+			          }
+			        }
+			      }
+			      $net = ($line_item['commerce_unit_price']['amount']-$tax_amount)/$currency_precission;;
+			      $gross = $line_item['commerce_unit_price']['amount']/$currency_precission;;
+			      $node = $products[$line_item['commerce_product']];
+			      $product_id = ltrim($node['sku'],'#0');
+			      Utils_RecordBrowserCommon::new_record('premium_warehouse_items_orders_details',array('transaction_id'=>$id,'item_name'=>$product_id,'quantity'=>$line_item['quantity'],'description'=>$line_item['line_item_label'].' '.$line_item['line_item_title'],'tax_rate'=>$tax,'net_price'=>$net.'__'.$currency_id,'gross_price'=>$gross.'__'.$currency_id));
+			    }
+			    
+				//TODO: skasowanie niepotrzebnych pol z ecommerce_orders
+			  }
+			}
+			
+			if(!$drupal_row['update_products_every__minutes_']) continue;
+			if(strtotime($drupal_row['last_products_update'])+60*$drupal_row['update_products_every__minutes_']>time()) continue;
+
             //look for epesi vocabulary
             $voc = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'taxonomy_vocabulary',array('pagesize'=>9999999999));
             $epesi_vocabulary = null;
+            $epesi_manufacturer_vocabulary = null;
             foreach($voc as $v) {
-              if($v['machine_name']=='epesi_category') {
+              if($v['machine_name']=='epesi_category')
                 $epesi_vocabulary = $v['vid'];
+              if($v['machine_name']=='epesi_manufacturer')
+                $epesi_manufacturer_vocabulary = $v['vid'];
+              if($epesi_vocabulary && $epesi_manufacturer_vocabulary)
                 break;
-              }
             }
-            if(!$epesi_vocabulary) continue;
+            if(!$epesi_vocabulary || !$epesi_manufacturer_vocabulary) continue;
             
             //get terms from epesi vocabulary
             $category_exists = array();
@@ -1105,12 +1262,284 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
               if($val===1) Premium_Warehouse_DrupalCommerceCommon::drupal_delete($drupal_id,'taxonomy_term/'.$tid);
             }
 
-        }
 
-	    //TODO:sync products
-	    
-	    //TODO:sync orders
-	    
+            //update manufacturers
+            
+            //get terms from epesi manufacturer vocabulary
+            $manufacturer_exists = array();
+            $manufacturer_mapping = array();
+            try {
+              $terms = Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'taxonomy_vocabulary/getTree',array('vid'=>$epesi_manufacturer_vocabulary,'maxdepth'=>99));
+              foreach($terms as $t) {
+                $manufacturer_exists[$t['tid']] = 1;
+                $term_data = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'taxonomy_term/'.$t['tid']);
+                $manufacturer_mapping[$term_data['field_epesi_manufacturer_id']['und'][0]['value']] = $t['tid'];
+              }
+            } catch(Exception $e) {}
+            
+            //get local epesi manufacturers
+            $epesi_manufacturers_temp = Utils_RecordBrowserCommon::get_records('premium_warehouse_items',array('!manufacturer'=>''),array('manufacturer'));
+            $epesi_manufacturer_names = array();
+            foreach($epesi_manufacturers_temp as $c) {
+              if(isset($manufacturer_mapping[$c['manufacturer']])) {
+                $manufacturer_exists[$manufacturer_mapping[$c['manufacturer']]] = 2;
+              }
+              $manufacturer = CRM_ContactsCommon::get_company($c['manufacturer']);
+              $epesi_manufacturer_names[$c['manufacturer']] = $manufacturer['company_name'];
+            }
+            
+            foreach($epesi_manufacturer_names as $id=>$name) {
+              $term = new stdClass();
+              $term->name = $name;
+              $term->name_original = $name;
+              $term->vid = $epesi_manufacturer_vocabulary;
+              $term->field_epesi_manufacturer_id['und'][0]['value']=$id;
+              $term->name_field = array();
+              $term->description_field = array();
+              $term->description_original = '';
+              $term->format = 'filtered_html';
+              $term->translations['original']='en';
+              
+              //sync/create categories
+              if(isset($manufacturer_mapping[$id])) {
+                Premium_Warehouse_DrupalCommerceCommon::drupal_put($drupal_id,'taxonomy_term/'.$manufacturer_mapping[$id],array('term'=>$term));
+              } else {
+                Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'taxonomy_term',array('term'=>$term));
+                $all_terms = Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'taxonomy_vocabulary/getTree',array('vid'=>$epesi_manufacturer_vocabulary,'maxdepth'=>99));
+                foreach($all_terms as $t) {
+                  if(!isset($manufacturer_exists[$t['tid']])) {
+                    $term_data = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'taxonomy_term/'.$t['tid']);
+                    if($term_data['field_epesi_manufacturer_id']['und'][0]['value']==$id) {
+                      $manufacturer_exists[$t['tid']] = 2;
+                      $manufacturer_mapping[$term_data['field_epesi_manufacturer_id']['und'][0]['value']] = $t['tid'];
+                      break;
+                    }
+                  }
+                }
+              }
+            }
+            unset($epesi_manufacturer_names);
+            
+            //remove elements with invalid epesi_category field
+            foreach($manufacturer_exists as $tid=>$val) {
+              if($val===1) Premium_Warehouse_DrupalCommerceCommon::drupal_delete($drupal_id,'taxonomy_term/'.$tid);
+            }
+
+			$manufacturers = Utils_RecordBrowserCommon::get_records('premium_warehouse_items',array('!manufacturer'=>''),array('manufacturer'));
+			
+			//update products
+			$drupal_products_tmp = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'product',array('fields'=>'product_id,sku','filter'=>array('type'=>'epesi_products'),'sort_by'=>'sku','limit'=>999999999999999999));
+			$drupal_products = array();
+			$drupal_done = array();
+			foreach($drupal_products_tmp as $row) {
+			  $drupal_products[$row['sku']] = $row['product_id'];
+			}
+			unset($drupal_products_tmp);
+			
+			$currencies = DB::GetAssoc('SELECT id,code,decimals FROM utils_currency WHERE active=1');
+			$taxes = DB::GetAssoc('SELECT id, f_percentage FROM data_tax_rates_data_1 WHERE active=1');
+			
+			$products = Utils_RecordBrowserCommon::get_records('premium_ecommerce_products',array('publish'=>1),array(),array('item_name'=>'ASC'));
+			foreach($products as $row) {
+			  $row = array_merge($row,Utils_RecordBrowserCommon::get_record('premium_warehouse_items',$row['item_name']));
+			  
+			  //set prices
+			  $prices = Utils_RecordBrowserCommon::get_records('premium_ecommerce_prices',array('item_name'=>$row['id']));
+			  $data = array('sku'=>$row['sku'],'title'=>$row['item_name'],'type'=>'epesi_products');
+			  foreach($prices as $price) {
+			    if(!isset($currencies[$price['currency']])) continue;
+			    $currency = $currencies[$price['currency']];
+			    $data['commerce_price_'.strtolower($currency['code'])]=array('amount'=>$price['gross_price']*pow(10,$currency['decimals']),
+			                    'currency_code'=>$currency['code']);//TODO: taxes
+			    if(!isset($data['commerce_price']))
+			      $data['commerce_price'] = $data['commerce_price_'.strtolower($currency['code'])];
+			  }
+			  if($row['net_price']) {
+			    $item_price = Utils_CurrencyFieldCommon::get_values($row['net_price']);
+			    if($item_price[0] && isset($currencies[$item_price[1]])) {
+			      $currency = $currencies[$item_price[1]];
+			      $data['commerce_price']=array('amount'=>round(((float)$item_price[0])*(100+$taxes[$row['tax_rate']])/100,$currency['decimals'])*pow(10,$currency['decimals']),
+			                    'currency_code'=>$currency['code']);//TODO: taxes
+			      if(!isset($data['commerce_price_'.strtolower($currency['code'])]))
+			        $data['commerce_price_'.strtolower($currency['code'])] = $data['commerce_price'];
+			    }
+			  }
+			  $quantity = Premium_Warehouse_Items_LocationCommon::get_item_quantity_in_warehouse($row['id']) - DB::GetOne('SELECT SUM(d.f_quantity) FROM premium_warehouse_items_orders_details_data_1 d INNER JOIN premium_warehouse_items_orders_data_1 o ON (o.id=d.f_transaction_id) WHERE ((o.f_transaction_type=1 AND o.f_status in (-1,2,3,4,5)) OR (o.f_transaction_type=4 AND o.f_status in (2,3))) AND d.active=1 AND o.active=1 AND d.f_item_name=%d',array($row['id']));
+			  if($quantity<=0) {
+			    if($row['always_on_stock']) {
+			      $quantity = 9999999;
+			    /*} else {
+			     //TODO: distributors
+			      $distributors = DB::GetAll('SELECT dist_item.quantity,
+								dist_item.quantity_info,
+								dist_item.price,
+								dist.f_items_availability,
+								dist.f_minimal_profit,
+								dist.f_percentage_profit,
+								dist_item.price_currency
+								FROM premium_warehouse_wholesale_items dist_item
+								INNER JOIN premium_warehouse_distributor_data_1 dist ON dist.id=dist_item.distributor_id
+								WHERE dist_item.item_id=%d AND dist_item.quantity>0 AND dist.active=1',array($row['item_name']));
+			      $minimal_aExp = null;
+			      foreach($distributors as $kkk=>$dist) {
+			        if($dist['quantity']>-$quantity) {
+			          $dist['quantity'] += $quantity;
+			
+			          $aExp2 = array();
+			          $aExp2['distributorQuantity'] = $dist['quantity'];
+								$aExp2['iAvailable'] = $dist['iAvailable'];
+								$aExp2['sAvailableInfo'] = $dist['quantity_info'];
+			
+			          if($autoprice && $dist['price_currency']==$currency) {
+								    $user_price = $aExp['fPrice'];
+									$dist_price = round((float)$dist['price']*(100+$taxes[$aExp['tax2']])/100,2);
+									if($user_price>=$dist_price) {
+										$aExp2['fPrice'] = $user_price;
+										$aExp2['fPrice'] = $aExp['fPriceNet'];
+									} else {
+										$netto = $dist['price'];
+										$profit = $netto*(is_numeric($dist['f_percentage_profit'])?$dist['f_percentage_profit']:$percentage)/100;
+										$minimal2 = (is_numeric($dist['f_minimal_profit'])?$dist['f_minimal_profit']:$minimal);
+										if($profit<$minimal2) $profit = $minimal2;
+										$aExp2['fPrice'] = round((float)($netto+$profit)*(100+$taxes[$aExp['tax2']])/100,2);
+										$aExp2['fPriceNet'] = round((float)($netto+$profit),2);
+										$aExp2['tax'] = $aExp['tax2'];		
+									}
+								}
+								if($minimal_aExp===null || (!isset($minimal_aExp['fPrice']) && isset($aExp2['fPrice'])) || $minimal_aExp['fPrice']>$aExp2['fPrice'])
+			                                                $minimal_aExp = $aExp2;
+							}
+						}
+						if($minimal_aExp!==null) {
+						        $aExp = array_merge($aExp,$minimal_aExp);
+							$reserved[$aExp['iProduct']] = 0;
+						}
+						unset($distributors);
+			*/
+			    }
+			
+			    if($quantity<=0) continue; //skip if not available
+			  }
+			  $data['commerce_stock'] = $quantity;
+			  
+			  //get images
+			  Premium_Warehouse_DrupalCommerceCommon::$images = array();
+			  Utils_AttachmentCommon::call_user_func_on_file('premium_ecommerce_products',array('Premium_Warehouse_DrupalCommerceCommon','copy_attachment'),true,array($drupal_id,1));
+			  Utils_AttachmentCommon::call_user_func_on_file('premium_ecommerce_descriptions',array('Premium_Warehouse_DrupalCommerceCommon','copy_attachment'),true,array($drupal_id,0));
+			  $field_images = array();
+			  foreach(Premium_Warehouse_DrupalCommerceCommon::$images as $lang=>$fids) {
+			    foreach($fids as $fid) {
+			      if($lang=='und') $data['field_images'][]['fid'] = $fid;
+			      else $field_images[$lang][]['fid'] = $fid;
+			    }
+			  }
+			  //update each language... if there is no field_images translation, default/random language images are displayed
+			  foreach(Utils_CommonDataCommon::get_array('Premium/Warehouse/eCommerce/Languages') as $lang=>$lang_name)
+			    if(!isset($field_images[$lang])) $field_images[$lang] = array();
+			  
+			  //update product
+			  $drupal_product_id = 0;
+			  $nid = 0;
+			  if(isset($drupal_products[$row['sku']])) {
+			    //check product
+			    $drupal_data = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'product/'.$drupal_products[$row['sku']]);
+			    $update = false;
+			    foreach($data as $key=>$val) {
+			      if(is_array($val)) {
+			        foreach($val as $key2=>$val2) {
+			          if(!isset($drupal_data[$key][$key2]) || $val2!=$drupal_data[$key][$key2]) {
+			            $update = true;
+			            break;
+			          }
+			        }
+			      } else {
+			        if($val!=$drupal_data[$key]) {
+			          $update = true;
+			          break;
+			        }
+			      }
+			    }
+			    if($update) Premium_Warehouse_DrupalCommerceCommon::drupal_put($drupal_id,'product/'.$drupal_products[$row['sku']],$data);
+			    $drupal_product_id = $drupal_products[$row['sku']];
+			    $nodes = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'views/epesi_products_search_by_product_id.json?'.http_build_query(array('display_id'=>'services_1','args'=>array($drupal_products[$row['sku']],''))));
+			    $nid = isset($nodes[0]['nid'])?$nodes[0]['nid']:0;
+			  } else {
+			    $product = Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'product',$data);
+			    $drupal_product_id = $product['product_id'];
+			  }
+			  
+			
+			  if($drupal_product_id) {
+			    //translate product images
+			    foreach($field_images as $lang=>$images) {
+			      $values=array();
+			      $values['field_images'][$lang] = array_merge($data['field_images'],$images);
+			      $info = array(
+			        'language'=>$lang,
+			        'source'=>$lang=='en'?'':'en',
+			        'status'=>1,
+			        'translate'=>0,
+			      );
+			      Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'entity_translation/translate',array('entity_type'=>'commerce_product','entity_id'=>$drupal_product_id,'translation'=>$info,'values'=>$values));
+			    }
+			
+			
+			    //update node of product
+			    $node = array();
+			    $node['type']='epesi_products';
+			    $node['title']=$node['title_field']['en'][0]['value']=$row['item_name'];
+			    $node['body']['en'][0]['value']=$row['description'];
+			    $node['body']['en'][0]['format'] = 'filtered_html';
+			    $node['field_product']['und'][0]['product_id'] = $drupal_product_id;
+			    $node['promote']=$row['recommended']?1:0;
+			    $node['sticky']=$row['recommended']?1:0;
+			    foreach($row['category'] as $ccc)
+			      $node['field_epesi_category']['und'][] = $category_mapping[array_pop(explode('/',$ccc))];
+			    if($row['manufacturer'] && isset($manufacturer_mapping[$row['manufacturer']]))
+			      $node['field_manufacturer']['und'][0] = $manufacturer_mapping[$row['manufacturer']];
+			    $translations = Utils_RecordBrowserCommon::get_records('premium_ecommerce_descriptions',array('item_name'=>$row['id'],'language'=>'en'));
+			    if($translations) {
+			      $translations = array_shift($translations);
+			      $node['title']=$node['title_field']['en'][0]['value'] = $translations['display_name'];
+			      $node['body']['en'][0]['value']=$translations['long_description'];
+			      $node['body']['en'][0]['summary']=$translations['short_description'];
+			    }
+			    if($nid) {
+			      Premium_Warehouse_DrupalCommerceCommon::drupal_put($drupal_id,'node/'.$nid,$node);
+			    } else {
+			      $tmp = Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'node',$node);
+			      $nid = $tmp['nid'];
+			    }
+			    
+			    $translations = Utils_RecordBrowserCommon::get_records('premium_ecommerce_descriptions',array('item_name'=>$row['id']));
+			    foreach($translations as $translation) {
+			      $values = array();
+			      $values['title_field'][$translation['language']][0]['value'] = $translation['display_name'];
+			      $values['body'][$translation['language']][0]['value'] = $translation['long_description'];
+			      $values['body'][$translation['language']][0]['format'] = 'filtered_html';
+			      $values['body'][$translation['language']][0]['summary'] = $translation['short_description'];
+			      $info = array(
+			        'language'=>$translation['language'],
+			        'source'=>$translation['language']=='en'?'':'en',
+			        'status'=>1,
+			        'translate'=>0,
+			      );
+			      Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'entity_translation/translate',array('entity_type'=>'node','entity_id'=>$nid,'translation'=>$info,'values'=>$values));
+			    }
+			    
+			    $drupal_done[$row['sku']] = 1;
+			  }
+			}
+			
+			foreach($drupal_products as $sku=>$id) {
+			  if(!isset($drupal_done[$sku])) {
+			    Premium_Warehouse_DrupalCommerceCommon::drupal_delete($drupal_id,'product/'.$id);
+			//    Premium_Warehouse_DrupalCommerceCommon::drupal_request($drupal_id,'node.delete',array($id)); //tutaj trzebaby pobrac poprawne id node
+			  }
+			}
+				    
+			Utils_RecordBrowserCommon::update_record('premium_ecommerce_drupal',$drupal_row['id'],array('last_products_update'=>time()));
+        }
 	}
 	
 	public static function drupal_connection($drupal) {

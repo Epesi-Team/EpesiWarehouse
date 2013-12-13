@@ -8,6 +8,10 @@ Acl::set_user(1);
 
 $drupal_id = 1;
 
+//update manufacturers
+
+
+//update products
 $drupal_products_tmp = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'product',array('fields'=>'product_id,sku','filter'=>array('type'=>'epesi_products'),'sort_by'=>'sku','limit'=>999999999999999999));
 $drupal_products = array();
 $drupal_done = array();
@@ -173,6 +177,10 @@ foreach($products as $row) {
     $node['field_product']['und'][0]['product_id'] = $drupal_product_id;
     $node['promote']=$row['recommended']?1:0;
     $node['sticky']=$row['recommended']?1:0;
+    foreach($row['category'] as $ccc)
+      $node['field_epesi_category']['und'][]['tid'] = $category_mapping[array_pop(explode('/',$ccc))];
+    if($row['manufacturer'])
+      $node['field_manufacturer']['und'][]['tid'] = 0; //TODO: mapping
     $translations = Utils_RecordBrowserCommon::get_records('premium_ecommerce_descriptions',array('item_name'=>$row['id'],'language'=>'en'));
     if($translations) {
       $translations = array_shift($translations);
@@ -181,6 +189,8 @@ foreach($products as $row) {
       $node['body']['en'][0]['summary']=$translations['short_description'];
     }
     if($nid) {
+      $aaa = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'node/'.$nid);
+      print_r($aaa);
       Premium_Warehouse_DrupalCommerceCommon::drupal_put($drupal_id,'node/'.$nid,$node);
     } else {
       $tmp = Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'node',$node);

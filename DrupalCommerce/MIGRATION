@@ -6,9 +6,11 @@
 - taxonomy: "Product category" - set "localize" option
 4. /admin/commerce/config/currency/handling - Enable dedicated price fields for Epesi Products - for each currency you support
 5. Enable "currency selector" block
-5. /admin/structure/types/manage/epesi-products/fields/body - click "Enable translation" and confirm
-5. set your contact us, rules pages
-6. move your banners, boxes, polls, pages etc. to drupal ads, blocks, polls, pages
-7. export newsletters recordset from epesi (it will be deleted)
-8. run migration.php
-9. set drupal url with administrative user/password in epesi ecommerce administration panel
+6. /admin/structure/types/manage/epesi-products/fields/body - click "Enable translation" and confirm
+7. set your contact us, rules pages
+8 /admin/commerce/customer-profiles/types/billing/fields/commerce_customer_address - select "Name (First name, Last name)", "Organisation (single line)" and unselect "Name (single line)"
+  OPTIONAL: /admin/commerce/customer-profiles/types/billing/fields - add Phone text field
+9. move your banners, boxes, polls, pages etc. to drupal ads, blocks, polls, pages
+10. export newsletters recordset from epesi (it will be deleted)
+11. run migration.php
+12. set drupal url with administrative user/password in epesi ecommerce administration panel
