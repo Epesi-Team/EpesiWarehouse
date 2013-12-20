@@ -31,18 +31,6 @@ class Premium_Warehouse_Items_LocationCommon extends ModuleCommon {
 		return array();
 	}
 
-    public static function applet_caption() {
-        return __('Items to order');
-    }
-
-    public static function applet_info() {
-        return __('Show items that need to be ordered to keep items quantity on specified level');
-    }
-
-    public static function get_items_to_reorder() {
-        return DB::GetCol('select id from premium_warehouse_items_data_1 as x where f_item_type <= 1 and f_reorder_point > coalesce((select sum(f_quantity) from premium_warehouse_location_data_1 where active=1 and f_item_sku=x.id),0)');
-    }
-
 	public static function display_rental($r, $nolink = false){
 		if (isset($_REQUEST['warehouse_change_rental_status']) &&
 			$_REQUEST['warehouse_change_rental_status']==$r['id']) {

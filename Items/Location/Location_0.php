@@ -15,39 +15,6 @@
 defined("_VALID_ACCESS") || die('Direct access forbidden');
 
 class Premium_Warehouse_Items_Location extends Module {
-	private $rb;
-
-    /**
-     * Applet "Items to order" - based on reorder point
-     * @param $conf
-     * @param $opts
-     */
-    public function applet($conf, & $opts) {
-        $rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items','premium_warehouse_items');
-        $limit = null;
-        $crits = array();
-        $crits['id'] = Premium_Warehouse_Items_LocationCommon::get_items_to_reorder();
-
-        $sorting = array();
-        $cols = array(
-            array('field'=>'item_name', 'width'=>10),
-            array('field'=>'quantity_on_hand', 'width'=>10),
-            array('field'=>'reorder_point', 'width'=>10)
-        );
-
-        $conds = array(
-            $cols,
-            $crits,
-            $sorting,
-            array('Premium_Warehouse_ItemsCommon', 'applet_info_format'),
-            $limit,
-            $conf,
-            & $opts
-        );
-//        $opts['actions'][] = Utils_RecordBrowserCommon::applet_new_record_button('premium_warehouse_items',array());
-        $this->display_module($rb, $conds, 'mini_view');
-
-    }
 
 	public function location_serial_addon($arg){
 		$gb = $this->init_module('Utils/GenericBrowser','premium_warehouse_location_serials','premium_warehouse_location_serials');
@@ -93,10 +60,6 @@ class Premium_Warehouse_Items_Location extends Module {
 		$rb->set_button(false);
 		$order = array(array('item_sku'=>$arg['id'],'!quantity'=>0), array('item_sku'=>false), array('warehouse'=>'ASC'));
 		$this->display_module($rb,$order,'show_data');
-	}
-
-	public function caption(){
-		return $this->rb->caption();
 	}
 
 	public function warehouse_item_list_addon($arg) {
