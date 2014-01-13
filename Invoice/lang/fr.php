@@ -8,7 +8,7 @@ global $translations;
 $translations['SSN']='';
 $translations['Units']='';
 $translations['Comments']='';
-$translations['Inventory Management']='';
+$translations['Inventory Management']='Inventaire';
 $translations['Warning: Found duplicate invoice number, transaction: ']='';
 $translations['Purchase Order']='';
 $translations['Due Date']='';

@@ -6,14 +6,12 @@
  */
 global $translations;
 $translations['Total']='';
+$translations['n/a']='';
 $translations['Inventory Management']='';
 $translations['Quantity']='Количество';
 $translations['Item Name']='Наименование товара';
-$translations['n/a']='';
 $translations['Quantity on Hand']='Количество в наличии';
 $translations['Warehouse']='Склад';
-$translations['Items to order']='';
-$translations['Show items that need to be ordered to keep items quantity on specified level']='';
 $translations['Items Locations']='Расположение элементов';
 $translations['Items Serials']='';
 $translations['Warehouse Items']='';

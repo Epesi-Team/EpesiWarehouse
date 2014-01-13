@@ -6,9 +6,10 @@
  */
 global $translations;
 $translations['Sales Report']='';
-$translations['Total']='';
+$translations['Total']='Total';
 $translations['Inventory Management']='Gestión de Inventario';
 $translations['Unknown mode']='';
+$translations['Prices']='';
 $translations['You don\'t have permission to access this module']='';
 $translations['Warehouse']='Depósito';
 $translations['Gross']='';
@@ -24,7 +25,6 @@ $translations['Scan']='';
 $translations['Method']='Método';
 $translations['FIFO']='';
 $translations['LIFO']='';
-$translations['Prices']='';
 $translations['Net']='';
 $translations['Sales Report, %s']='';
 $translations['Sales_Report_%s']='';

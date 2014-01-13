@@ -5,7 +5,7 @@
  * @subpackage nl
  */
 global $translations;
-$translations['Inventory Management']='';
+$translations['Inventory Management']='Magazijnbeheer';
 $translations['Invoice']='';
 $translations['Trans. ID']='';
 $translations['Sales Opportunity Integration']='';

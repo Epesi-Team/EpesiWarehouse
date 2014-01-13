@@ -5,10 +5,10 @@
  * @subpackage zh
  */
 global $translations;
-$translations['Auto update']='';
-$translations['Last update']='';
-$translations['eCommerce']='电子商务';
 $translations['eCommerce - prices']='';
+$translations['Auto update']='';
+$translations['DrupalCommerce']='';
+$translations['Last update']='';
 $translations['Rates']='';
 $translations['eCommerce Prices Auto Updater']='';
 $translations['Profit margin (in percent)']='';
