@@ -44,7 +44,7 @@ function getUrlFromGet( ){
 
         $aActions['o1']   = $aExp[0];
         $aActions['f']    = $aExp[2];
-        $aActions['a']    = isset($aExp[1])?$aExp[1]:null;
+        $aActions['a']    = $aExp[1];
         $aActions['sLink']= '?'.$mKey;
 
         $a = $aActions['a'];

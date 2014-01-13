@@ -482,7 +482,7 @@ function getAction( $p ){
 * @param string $sContent
 */
 function change2Url( $sContent ){
-  return strtolower( str_replace( 
+  return mb_strtolower( str_replace( 
     Array( ' ', '&raquo;', '/', '$', '\'', '"', '~', '\\', '?', '#', '%', '+', '^', '*', '>', '<', '@', '|', '&quot;', '%', ':', '&', ',', '=', '--', '--', '[', ']' ),
     Array( '-', '',        '-', '-', '',   '',  '-', '-',  '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-',      '-', '-', '',  '-', '-', '-',  '-', '(', ')' ),
     trim( $sContent )
