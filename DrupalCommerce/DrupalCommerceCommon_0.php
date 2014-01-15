@@ -1000,6 +1000,10 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 	}*/
 
 	public static function cron() {
+        return array('cron2'=>1);
+    }
+
+    public static function cron2() {
 	    $drupals = Utils_RecordBrowserCommon::get_records('premium_ecommerce_drupal');
 	    foreach($drupals as $drupal_row) {
 	        $drupal_id = $drupal_row['id'];
@@ -1163,6 +1167,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 				//TODO: skasowanie niepotrzebnych pol z ecommerce_orders
 			  }
 			}
+
 			if(ModuleManager::is_installed('Premium_Payments')>=0) {
 				$payments = Utils_RecordBrowserCommon::get_records('premium_payments',array('record_id'=>''));
 				foreach($payments as $payment) {
@@ -1218,7 +1223,6 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
             }
             
             do {
-		        print("3\n");
 		      $old_count_epesi_category_names = count($epesi_category_names);
               //TODO: use or remove meta tags from descriptions from ecommerce recordsets
               foreach($epesi_category_names as $id=>$name) {
