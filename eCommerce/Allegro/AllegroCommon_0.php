@@ -89,18 +89,22 @@ class Premium_Warehouse_eCommerce_AllegroCommon extends ModuleCommon {
     }
     
     public static function cron() {
-	$us = Acl::get_user();
-	Acl::set_user(2);
-    	$c = Variable::get('ecommerce_allegro_cats_up',0);
-    	$t = time();
-    	if($c+3600*24*3<$t || true) {
-//    		print("up cats\n");
-    		if(self::update_cats())
-    			Variable::set('ecommerce_allegro_cats_up',$t);
-    	}
+        return array('cron_statuses'=>5,'cron_cats'=>24*60*3);
+    }
+
+    public static function cron_cats() {
+		$us = Acl::get_user();
+		Acl::set_user(2);
+   		self::update_cats();
+		Acl::set_user($us);
+   	}
+
+    public static function cron_statuses() {
+		$us = Acl::get_user();
+		Acl::set_user(2);
     	self::update_statuses();
-	DB::Execute('DELETE FROM premium_ecommerce_allegro_cross WHERE created_on<%T',array(time()-3600*12));
-	Acl::set_user($us);
+		DB::Execute('DELETE FROM premium_ecommerce_allegro_cross WHERE created_on<%T',array(time()-3600*12));
+		Acl::set_user($us);
     }
     
     public static function get_lib() {

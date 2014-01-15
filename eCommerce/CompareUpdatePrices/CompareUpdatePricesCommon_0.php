@@ -95,6 +95,10 @@ class Premium_Warehouse_eCommerce_CompareUpdatePricesCommon extends ModuleCommon
 	}
 	
 	public static function cron() {
+//        return array('cron2'=>1);
+    }
+
+    public static function cron2() {
 /*	    if(Variable::get('premium_ecommerce_compare_servic',0)<(time()-900)) {
 		if(self::update()===false) return 'Unable to update compare services prices';
 	    }*/

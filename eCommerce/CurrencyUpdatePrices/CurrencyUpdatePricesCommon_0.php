@@ -113,6 +113,10 @@ class Premium_Warehouse_eCommerce_CurrencyUpdatePricesCommon extends ModuleCommo
 	}
 	
 	public static function cron() {
+        return array('cron2'=>600);
+    }
+
+    public static function cron2() {
 	    if(self::update()===false) return 'Unable to get ECB currencies rates';
 	    return '';
 	}

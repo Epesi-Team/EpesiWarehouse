@@ -432,6 +432,10 @@ class Premium_Warehouse_WholesaleCommon extends ModuleCommon {
 	}
 	
 	public static function cron() {
+        return array('cron2'=>30);
+    }
+
+    public static function cron2() {
 		$dists = Utils_RecordBrowserCommon::get_records('premium_warehouse_distributor',array('<last_update'=>date('Y-m-d 8:00:00',time()-3600*23)));
 		$ret = '';
 		foreach($dists as $dist) {

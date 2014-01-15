@@ -210,6 +210,10 @@ class Premium_Warehouse_Items_KitCommon extends ModuleCommon {
     }
 
     public static function cron() {
+        return array('cron2'=>1);
+    }
+
+    public static function cron2() {
         $kits = Utils_RecordBrowserCommon::get_records('premium_warehouse_items', array('item_type'=>'kit'),array('kit_items'));
         foreach($kits as $kit) {
     	    self::process_kit($kit);
