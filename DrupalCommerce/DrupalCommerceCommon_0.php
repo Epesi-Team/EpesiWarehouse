@@ -1173,6 +1173,8 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 				foreach($payments as $payment) {
 					if(preg_match('/^drupal:([0-9]+):([0-9]+)$/',$payment['record_hash'],$match)) {
 						$ecomm_order = Utils_RecordBrowserCommon::get_records('premium_ecommerce_orders',array('drupal'=>$match[1],'drupal_order_id'=>$match[2]));
+						if(!$ecomm_order) continue;
+						$ecomm_order = array_shift($ecomm_order);
 						Utils_RecordBrowserCommon::update_record('premium_payments',$payment['id'],array('record_id'=>$ecomm_order['transaction_id']));
 					}
 				}
