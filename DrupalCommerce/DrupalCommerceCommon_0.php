@@ -1000,10 +1000,10 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 	}*/
 
 	public static function cron() {
-        return array('cron2'=>1);
+        return array('cron_orders'=>1,'cron_categories'=>6*60);
     }
 
-    public static function cron2() {
+    public static function cron_orders() {
 	    $drupals = Utils_RecordBrowserCommon::get_records('premium_ecommerce_drupal');
 	    foreach($drupals as $drupal_row) {
 	        $drupal_id = $drupal_row['id'];
@@ -1177,9 +1177,13 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 					}
 				}
 			}
-			
-			if(!$drupal_row['update_products_every__minutes_']) continue;
-			if(strtotime($drupal_row['last_products_update'])+60*$drupal_row['update_products_every__minutes_']>time()) continue;
+		}
+	}
+	
+	public static function cron_categories() {
+	    $drupals = Utils_RecordBrowserCommon::get_records('premium_ecommerce_drupal');
+	    foreach($drupals as $drupal_row) {
+	        $drupal_id = $drupal_row['id'];
 
             //look for epesi vocabulary
             $voc = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'taxonomy_vocabulary',array('pagesize'=>9999999999));
@@ -1585,8 +1589,6 @@ print("ok\n");
 			//    Premium_Warehouse_DrupalCommerceCommon::drupal_request($drupal_id,'node.delete',array($id)); //tutaj trzebaby pobrac poprawne id node
 			  }
 			}
-				    
-			Utils_RecordBrowserCommon::update_record('premium_ecommerce_drupal',$drupal_row['id'],array('last_products_update'=>time()));
         }
 	}
 	
