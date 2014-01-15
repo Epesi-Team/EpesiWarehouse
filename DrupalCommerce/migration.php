@@ -1,11 +1,4 @@
 <?php 
-define('SET_SESSION',false);
-define('CID',false); 
-require_once('../../../../include.php');
-ModuleManager::load_modules();
-
-Acl::set_user(1);
-
 die('Please comment out or delete second line from this file to run migration script.'."\n");
 
 define('SET_SESSION',false);
