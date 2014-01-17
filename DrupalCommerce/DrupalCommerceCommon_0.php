@@ -1008,7 +1008,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 	    foreach($drupals as $drupal_row) {
 	        $drupal_id = $drupal_row['id'];
 	        
-	        print("1\n");
+//	        print("1\n");
 
 			//create new orders
 			$taxes = DB::GetAssoc('SELECT f_percentage, id FROM data_tax_rates_data_1 WHERE active=1');
@@ -1387,6 +1387,8 @@ print("ok\n");
 			foreach($products as $row) {
 			  $ecommerce_product_id = $row['id'];
 			  $row = array_merge($row,Utils_RecordBrowserCommon::get_record('premium_warehouse_items',$row['item_name']));
+			  $row['item_name'] = html_entity_decode($row['item_name']);
+			  
 		        print("6 ".$row['id']."\n");
 			  
 			  //set prices

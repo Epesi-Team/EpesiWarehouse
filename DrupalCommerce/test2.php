@@ -9,7 +9,9 @@ Acl::set_user(1);
 $drupal_id = 1;
 
 //update manufacturers
-
+  $row = Utils_RecordBrowserCommon::get_record('premium_warehouse_items',220);
+  print_r($row);
+die();
 
 //update products
 $drupal_products_tmp = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'product',array('fields'=>'product_id,sku','filter'=>array('type'=>'epesi_products'),'sort_by'=>'sku','limit'=>999999999999999999));
