@@ -1459,7 +1459,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 			    if($quantity<=0) continue; //skip if not available
 			  }
 			  $data['commerce_stock'] = $quantity;
-			  
+
 			  //get images
 			  Premium_Warehouse_DrupalCommerceCommon::$images = array();
 			  Utils_AttachmentCommon::call_user_func_on_file('premium_ecommerce_products/'.$row['id'],array('Premium_Warehouse_DrupalCommerceCommon','copy_attachment'),false,array($drupal_id,1));
@@ -1501,7 +1501,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 			    }
 			    if($update) Premium_Warehouse_DrupalCommerceCommon::drupal_put($drupal_id,'product/'.$drupal_products[$row['sku']],$data);
 			    $drupal_product_id = $drupal_products[$row['sku']];
-			    $nodes = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'views/epesi_products_search_by_product_id.json?'.http_build_query(array('display_id'=>'services_1','args'=>array($drupal_products[$row['sku']],''))));
+			    $nodes = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'views/epesi_products_search_by_product_id.json?'.http_build_query(array('display_id'=>'services_1','args'=>array($drupal_product_id,''))));
 			    $nid = isset($nodes[0]['nid'])?$nodes[0]['nid']:0;
 			  } else {
 			  	print(var_export($data));
@@ -1576,11 +1576,16 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 			    $drupal_done[$row['sku']] = 1;
 			  }
 			}
-			
+
+            //print("7\n");
+            //print_r($drupal_done);
 			foreach($drupal_products as $sku=>$id) {
 			  if(!isset($drupal_done[$sku])) {
-			    Premium_Warehouse_DrupalCommerceCommon::drupal_delete($drupal_id,'product/'.$id);
-			  }
+                $nodes = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'views/epesi_products_search_by_product_id.json?'.http_build_query(array('display_id'=>'services_1','args'=>array($id,''))));
+                $nid = isset($nodes[0]['nid'])?$nodes[0]['nid']:0;
+                Premium_Warehouse_DrupalCommerceCommon::drupal_delete($drupal_id,'product/'.$id);
+                Premium_Warehouse_DrupalCommerceCommon::drupal_delete($drupal_id,'node/'.$nid);
+              }
 			}
         }
 	}
