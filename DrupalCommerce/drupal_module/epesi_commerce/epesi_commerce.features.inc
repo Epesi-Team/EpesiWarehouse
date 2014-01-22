@@ -121,3 +121,10 @@ function epesi_commerce_node_info() {
   );
   return $items;
 }
+
+/**
+ * Implements hook_views_api().
+ */
+function epesi_commerce_views_api() {
+  return array("version" => "3.0");
+}

@@ -1,0 +1,123 @@
+<?php
+/**
+ * @file
+ * Implements transferuj.pl Payments in Drupal Commerce checkout.
+ */
+
+function commerce_epesi_payment_commerce_payment_method_info() {
+  $payment_methods = array();
+
+  $payment_methods['epesi_payment'] = array(
+    'base' => 'commerce_epesi_payment',
+    'title' => t('Epesi Premium Payment module'),
+    'short_title' => t('Epesi'),
+    'description' => t('Pay with Epesi Premium payment module'),
+    'terminal' => FALSE,
+    'offsite' => TRUE,
+  );
+
+  return $payment_methods;
+}
+
+function commerce_epesi_payment_settings_form($settings = NULL) {
+  $form = array();
+
+  $form['epesi_payment_url'] = array(
+    '#title' => t('Epesi payment URL'),
+    '#type' => 'textfield',
+    '#default_value' => isset($settings['epesi_payment_url'])?$settings['epesi_payment_url']:'',
+    '#description' => t('Epesi Payment module Gateway URL.'),
+    '#required' => TRUE,
+  );
+
+  $form['epesi_payment_drupal_id'] = array(
+    '#title' => t('Drupal configuration record ID on Epesi'),
+    '#type' => 'textfield',
+    '#default_value' => isset($settings['epesi_payment_drupal_id'])?$settings['epesi_payment_drupal_id']:'',
+    '#description' => t('Drupal configuration record ID on Epesi'),
+    '#required' => TRUE,
+  );
+
+  return $form;
+}
+
+function commerce_epesi_payment_submit_form($payment_method, $pane_values, $checkout_pane, $order) {
+  if (empty($payment_method['settings']['epesi_payment_url'])) {
+    drupal_set_message(t('Epesi Payment is not configured for use.'), 'error');
+  }
+
+  $form = array();
+
+  if (!empty($order->data['commerce_payment_epesi_payment'])) {
+    $pane_values += $order->data['commerce_payment_epesi_payment'];
+  }
+
+  return $form;
+}
+
+function commerce_epesi_payment_redirect_form($form, &$form_state, $order, $payment_method) {
+  if (empty($payment_method['settings']['epesi_payment_url'])) {
+    drupal_set_message(t('Epesi Payment is not configured for use.'), 'error');
+  }
+
+  $wrapper = entity_metadata_wrapper('commerce_order', $order);
+
+  $currency_code = $wrapper->commerce_order_total->currency_code->value();
+  $amount = $wrapper->commerce_order_total->amount->value();
+
+
+  $ts = time();
+  $url_fail = "checkout/" . $order->order_id . "/payment/back/" . $order->data['payment_redirect_key'];
+  $url_ok = "checkout/" . $order->order_id . "/payment/return/" . $order->data['payment_redirect_key'];
+
+  $data = array(
+    'record_hash'           => 'drupal:'.$payment_method['settings']['epesi_payment_drupal_id'].':'.$order->order_id,
+    'record_type'          => 'premium_warehouse_items_orders',
+    'amount'       => $amount/100,//TODO/100
+    'currency'     => $currency_code,
+    'description'  => t('Order @order_number (@store)', array('@order_number' => $order->order_number, '@store' => variable_get('site_name', url('<front>', array('absolute' => TRUE))))),
+    'limit'        => 1,
+    'first_name'   => '',
+    'last_name'    => '',
+    'address_1'    => '',
+    'city'         => '',
+    'postal_code'  => '',
+    'country'      => '',
+    'email'        => $order->mail,
+    'phone'        => '',
+    'url_ok'       => url($url_ok, array('absolute' => TRUE)),
+    'url_error'    => url($url_fail, array('absolute' => TRUE)),
+  );
+
+  $params_map = array(
+    'last_name' => 'name_line',
+    'address_1' => 'thoroughfare',
+    'city' => 'locality',
+    'postal_code' => 'postal_code',
+    'country' => 'country',
+  );
+
+  foreach ($params_map as $key => $value) {
+    if (isset($wrapper->commerce_customer_billing->commerce_customer_address->$value)) {
+      $data[$key] = $wrapper->commerce_customer_billing->commerce_customer_address->$value->value();
+    }
+    else {
+    }
+  }
+
+  $form['#action'] = $payment_method['settings']['epesi_payment_url'];
+
+  foreach ($data as $name => $value) {
+    if (!empty($value)) {
+      $form[$name] = array('#type' => 'hidden', '#value' => $value);
+    }
+  }
+  //drupal_set_message('<pre>'.print_r($data, 1).'<pre>');
+
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Make a payment'),
+  );
+
+  return $form;
+}

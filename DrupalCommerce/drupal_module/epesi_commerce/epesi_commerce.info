@@ -1,6 +1,8 @@
 name = Epesi Commerce connector
 description = Defines Services resources for Epesi Commerce entities and systems.
 package = Services
+dependencies[] = ctools
+dependencies[] = views
 dependencies[] = entity
 dependencies[] = entity_translation
 #dependencies[] = i18n_node
@@ -10,6 +12,7 @@ dependencies[] = title
 dependencies[] = services
 dependencies[] = services_views
 dependencies[] = services_entity_translation
+dependencies[] = rest_server
 dependencies[] = commerce_cart
 dependencies[] = commerce_extra_price_formatters
 dependencies[] = commerce_fancy_attributes
@@ -23,6 +26,7 @@ dependencies[] = commerce_services
 dependencies[] = commerce_stock
 dependencies[] = commerce_stock_ui
 dependencies[] = commerce_ss
+dependencies[] = commerce_ssr
 dependencies[] = commerce_multicurrency
 features[commerce_product_type][] = epesi_products
 features[field][] = commerce_product-epesi_products-commerce_price
@@ -53,6 +57,10 @@ features[variable][] = pathauto_node_epesi_products_pattern
 features[variable][] = pathauto_punctuation_hyphen
 features[variable][] = pathauto_taxonomy_term_epesi_category_pattern
 features[variable][] = pathauto_taxonomy_term_manufacturer_pattern
+features[ctools][] = views:views_default:3.0
+features[features_api][] = api:1
+features[views_view][] = epesi_product_images_search_by_filename
+features[views_view][] = epesi_products_search_by_product_id
 core = 7.x
 
 ; Information added by drupal.org packaging script on 2013-05-22
@@ -60,4 +68,3 @@ version = "7.x-1.x-dev"
 core = "7.x"
 project = "epesi_commerce"
 datestamp = "1369226736"
-

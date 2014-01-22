@@ -606,7 +606,7 @@ function epesi_commerce_field_default_fields() {
   $fields['node-epesi_products-field_epesi_category'] = array(
     'field_config' => array(
       'active' => '1',
-      'cardinality' => '1',
+      'cardinality' => '-1',
       'deleted' => '0',
       'entity_types' => array(),
       'field_name' => 'field_epesi_category',
@@ -1031,7 +1031,7 @@ function epesi_commerce_field_default_fields() {
       ),
       'entity_type' => 'taxonomy_term',
       'field_name' => 'field_epesi_manufacturer_id',
-      'label' => 'Epesi Category ID',
+      'label' => 'Manufacturer',
       'required' => 0,
       'settings' => array(
         'text_processing' => '0',
