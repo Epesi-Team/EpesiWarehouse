@@ -1208,7 +1208,6 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
               $terms = Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'taxonomy_vocabulary/getTree',array('vid'=>$epesi_vocabulary,'load_entities'=>1));
               foreach($terms as $term_data) {
                 $category_exists[$term_data['tid']] = 1;
-//                $term_data = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'taxonomy_term/'.$t['tid']);
                 $category_mapping[$term_data['field_epesi_category_id']['und'][0]['value']] = $term_data['tid'];
               }
             } catch(Exception $e) {}
@@ -1227,6 +1226,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
               $epesi_category_parents[$c['id']] = $c['parent_category'];
               $epesi_category_weight[$c['id']] = $c['position'];
             }
+            print_r($category_mapping);
             
             do {
 		      $old_count_epesi_category_names = count($epesi_category_names);
@@ -1247,7 +1247,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
                 
                 if($epesi_category_parents[$id])
                   $term->parent = $category_mapping[$epesi_category_parents[$id]];
-                  
+
                 //sync/create categories
                 if(isset($category_mapping[$id])) {
                   Premium_Warehouse_DrupalCommerceCommon::drupal_put($drupal_id,'taxonomy_term/'.$category_mapping[$id],array('term'=>$term));
@@ -1284,28 +1284,18 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
                   );
                   Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'entity_translation/translate',array('entity_type'=>'taxonomy_term','entity_id'=>$category_mapping[$id],'translation'=>$info,'values'=>$values));
                 }
-/*                if(!$en_trans_done) {
-                  $values = array();
-                  $values['name_field']['en'][0]['value'] = $name;
-                  $info = array(
-                    'language'=>'en',
-                    'source'=>'',
-                    'status'=>1,
-                    'translate'=>0,
-                  );
-                  Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'entity_translation/translate',array('entity_type'=>'taxonomy_term','entity_id'=>$category_mapping[$id],'translation'=>$info,'values'=>$values));
-                }*/
-            
+
                 unset($epesi_category_names[$id]);
               }
             } while(!empty($epesi_category_names) && $old_count_epesi_category_names!=count($epesi_category_names));
             
             //remove elements with invalid epesi_category field
             foreach($category_exists as $tid=>$val) {
-              if($val===1) Premium_Warehouse_DrupalCommerceCommon::drupal_delete($drupal_id,'taxonomy_term/'.$tid);
+              if($val===1)  try {
+                  Premium_Warehouse_DrupalCommerceCommon::drupal_delete($drupal_id,'taxonomy_term/'.$tid);
+              } catch(Exception $e) {}
             }
-//	die();
-print("ok\n");
+
             //update manufacturers
             
             //get terms from epesi manufacturer vocabulary
@@ -1590,7 +1580,6 @@ print("ok\n");
 			foreach($drupal_products as $sku=>$id) {
 			  if(!isset($drupal_done[$sku])) {
 			    Premium_Warehouse_DrupalCommerceCommon::drupal_delete($drupal_id,'product/'.$id);
-			//    Premium_Warehouse_DrupalCommerceCommon::drupal_request($drupal_id,'node.delete',array($id)); //tutaj trzebaby pobrac poprawne id node
 			  }
 			}
         }
