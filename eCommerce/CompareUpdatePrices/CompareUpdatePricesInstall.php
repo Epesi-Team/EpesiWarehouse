@@ -13,7 +13,7 @@ defined("_VALID_ACCESS") || die('Direct access forbidden');
 class Premium_Warehouse_eCommerce_CompareUpdatePricesInstall extends ModuleInstall {
 
 	public function install() {
-		Utils_CommonDataCommon::new_array('Premium/Warehouse/eCommerce/CompareServices',array('ceneo'=>_M('Ceneo'),'skapiec'=>_M('Skąpiec')));
+		Utils_CommonDataCommon::new_array('Premium/Warehouse/eCommerce/CompareServices',array('ceneo'=>_M('Ceneo'),'skapiec'=>_M('Skąpiec')),true,true);
 		
 		//product prices
 		$fields = array(

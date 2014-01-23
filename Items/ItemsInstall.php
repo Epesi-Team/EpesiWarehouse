@@ -71,8 +71,9 @@ class Premium_Warehouse_ItemsInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::new_addon('premium_warehouse_items_categories', 'Premium/Warehouse/Items', 'subcategories_addon', _M('Subcategories'));
 
 // ************ other ************** //	
-		Utils_CommonDataCommon::new_array('Premium_Warehouse_Items_Type',array(0=>_M('Inventory Item'), 1=>_M('Serialized Item'), 2=>_M('Non-Inventory Item'), 3=>_M('Service')));
-		Utils_CommonDataCommon::new_array('Premium_Warehouse_Items_Categories',array());
+		Utils_CommonDataCommon::new_array('Premium_Warehouse_Items_Type',array(0=>_M('Inventory Item'), 1=>_M('Serialized Item'), 2=>_M('Non-Inventory Item'), 3=>_M('Service')),true,true);
+        Utils_CommonDataCommon::new_id('Premium_Warehouse_Items_Categories', true);
+        Utils_CommonDataCommon::new_array('Premium_Warehouse_Items_Categories',array());
 		Utils_CommonDataCommon::extend_array('Companies_Groups',array('manufacturer'=>_M('Manufacturer')));
 
 		Utils_RecordBrowserCommon::add_access('premium_warehouse_items', 'view', 'ACCESS:employee');

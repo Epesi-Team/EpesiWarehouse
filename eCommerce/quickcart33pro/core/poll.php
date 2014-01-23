@@ -41,57 +41,6 @@ function throwPollAnswers( $sFile, $iPoll, $bResult = null, $sOption = null, $iW
     $content .= $oTpl->tbHtml( $sFile, $sBlock.'LIST' );
   } // end for
     //} epesi
-/*
-  if( isset( $iPoll ) ){
-    $aData =  dbThrowPollAnswers( $iPoll );
-    $aVotes = throwPollVotes( );
-  }
-
-  if( isset( $bResult ) )
-    $sBlock = 'ANSWERS_RESULT_';
-  else
-    $sBlock = 'ANSWERS_FORM_';
-
-  if( isset( $aData ) )
-    $iCount = count( $aData );
-  else
-    $iCount = 0;
-
-  if( isset( $bResult ) || $sOption == 'admin' ){
-    $iSummary = 0;
-    for( $i = 0; $i < $iCount; $i++ ){
-      if( isset( $aVotes[$aData[$i]['iAnswer']] ) && is_numeric( $aVotes[$aData[$i]['iAnswer']] ) )
-        $iSummary += $aVotes[$aData[$i]['iAnswer']];
-    } // end for
-  }
-
-  $content = null;
-  $iLast = 0;
-  for( $i = 0; $i < $iCount; $i++ ){
-    $aList = $aData[$i];
-    if( isset( $aVotes[$aList['iAnswer']] ) && is_numeric( $aVotes[$aList['iAnswer']] ) )
-      $aList['iCountAnswers'] = $aVotes[$aList['iAnswer']];
-    else
-      $aList['iCountAnswers'] = 0;
-    if( isset( $bResult ) || $sOption == 'admin' ){
-      if( $aList['iCountAnswers'] > 0 && $iSummary > 0 )
-        $aList['iPercentage'] = round( $aList['iCountAnswers'] / $iSummary * 100 );
-      else
-        $aList['iPercentage'] = 0;
-
-      $aList['iWidth'] = round( $aList['iPercentage'] * $iWidth / 100 );
-    }
-    $oTpl->setVariables( 'aList', $aList );
-    $content .= $oTpl->tbHtml( $sFile, $sBlock.'LIST' );
-    $iLast = $i+1;
-  } // end for
-  
-  if( $sOption == 'admin' && $iLast < POLL_MAX_ANSWERS ){
-    for( $i = $iLast; $i < POLL_MAX_ANSWERS; $i++ ){
-      $content .= $oTpl->tbHtml( $sFile, $sBlock.'NEW' );
-    } // end for
-  }
-  */
   if( isset( $content ) )
     $content = $oTpl->tbHtml( $sFile, $sBlock.'HEAD' ).$content.$oTpl->tbHtml( $sFile, $sBlock.'FOOT' );
   return $content;
@@ -158,19 +107,5 @@ function dbSavePollAnswer( $iAnswer, $iPoll ){
   }
   //} epesi
 } // end function dbSavePollAnswer
-
-/**
-* Throws poll cookie name
-* @param int $iPoll
-*/
-/*
-function throwPollCookieName( $iPoll ){
-  $aData = throwPollQuestions( $iPoll );
-  if( isset( $aData['sCookieName'] ) && !empty( $aData['sCookieName'] ) )
-    return $aData['sCookieName'];
-  else
-    return null;
-} // end function throwPollCookieName
-*/
 
 ?>

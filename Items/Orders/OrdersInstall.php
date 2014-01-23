@@ -154,10 +154,10 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::field_deny_access('premium_warehouse_items', 'Quantity on Hand', 'edit');
 		Utils_RecordBrowserCommon::register_processing_callback('premium_warehouse_items', array('Premium_Warehouse_Items_OrdersCommon', 'submit_new_item_from_order'));
 
-		Utils_CommonDataCommon::new_array('Premium_Items_Orders_Trans_Types',array(0=>_M('Purchase'),1=>_M('Sale'),2=>_M('Inventory Adjustment'),3=>_M('Rental'),4=>_M('Transfer')));
-		Utils_CommonDataCommon::new_array('Premium_Items_Orders_Payment_Types',array(0=>_M('Cash'),1=>_M('Check')));
-		Utils_CommonDataCommon::new_array('Premium_Items_Orders_Shipment_Types',array(0=>_M('Pickup'),1=>_M('USPS'),2=>_M('UPS'),3=>_M('DHL'),4=>_M('FedEx'),5=>_M('Courier'),6=>_M('Other')));
-		Utils_CommonDataCommon::new_array('Premium_Items_Orders_Terms',array(0=>_M('Due on Receipt'),15=>_M('Net 15'),30=>_M('Net 30')));
+		Utils_CommonDataCommon::new_array('Premium_Items_Orders_Trans_Types',array(0=>_M('Purchase'),1=>_M('Sale'),2=>_M('Inventory Adjustment'),3=>_M('Rental'),4=>_M('Transfer')),true,true);
+		Utils_CommonDataCommon::new_array('Premium_Items_Orders_Payment_Types',array(0=>_M('Cash'),1=>_M('Check')),true,true);
+		Utils_CommonDataCommon::new_array('Premium_Items_Orders_Shipment_Types',array(0=>_M('Pickup'),1=>_M('USPS'),2=>_M('UPS'),3=>_M('DHL'),4=>_M('FedEx'),5=>_M('Courier'),6=>_M('Other')),true,true);
+		Utils_CommonDataCommon::new_array('Premium_Items_Orders_Terms',array(0=>_M('Due on Receipt'),15=>_M('Net 15'),30=>_M('Net 30')),true,true);
 
 		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items', _M('Quantity En Route'), 'calculated', true, false, '', 'integer', false, false, 10);
 		Utils_RecordBrowserCommon::set_display_callback('premium_warehouse_items', 'Quantity En Route', array('Premium_Warehouse_Items_OrdersCommon', 'display_quantity_on_route'));
@@ -201,7 +201,7 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 		Base_AclCommon::add_permission(_M('Inventory - Sell at loss'),array('ACCESS:employee','ACCESS:manager'));
 
 		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items_orders', array('name' => 'Tax Calculation', 'type'=>'commondata', 'param'=>array('Premium_Items_Orders_TaxCalc'), 'required'=>true, 'extra'=>true, 'filter'=>false, 'visible'=>false, 'position'=>'Related'));
-		Utils_CommonDataCommon::new_array('Premium_Items_Orders_TaxCalc',array(0=>'Per Item',1=>'By Total'));
+		Utils_CommonDataCommon::new_array('Premium_Items_Orders_TaxCalc',array(0=>'Per Item',1=>'By Total'),true,true);
 
 		return true;
 	}

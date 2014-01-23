@@ -117,21 +117,6 @@ function listProductsRelated( $sFile, $iProduct, $tbl='related' ){
 } // end function
 
 /**
-* Check if product is related with selected
-* @return bool
-* @param array $aData
-* @param int $iProduct
-*/
-/*
-function checkThrowProductsRelated( $aData, $iProduct ){
-  if( $aData['iProduct'] == $iProduct )
-    return true;
-  else
-    return null;
-} // end function checkThrowProductsRelated
-*/
-
-/**
 * Throw array with ids of related products (id of related product as index and value)
 * @return array
 * @param int  $iProduct
