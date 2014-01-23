@@ -288,6 +288,7 @@ class Premium_Warehouse_DrupalCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::new_addon('premium_warehouse_items', 'Premium/Warehouse/DrupalCommerce', 'warehouse_item_addon', _M('eCommerce'));
 
 // ************ other ************** //
+        Utils_CommonDataCommon::new_id('Premium/Warehouse/eCommerce/Languages', true);
 		Utils_CommonDataCommon::new_array('Premium/Warehouse/eCommerce/Languages',array('en'=>_M('English'),'pl'=>_M('Polish'),'it'=>_M('Italian'),'fr'=>_M('French'),'nl'=>_M('Dutch'),'ru'=>_M('Russian')));
 		Utils_RecordBrowserCommon::new_record('premium_ecommerce_availability',
 				array('availability_code'=>'24h',
@@ -477,8 +478,7 @@ class Premium_Warehouse_DrupalCommerceInstall extends ModuleInstall {
 			array('name'=>'Utils/RecordBrowser', 'version'=>0),
 			array('name'=>'Utils/RecordBrowser/RecordPicker', 'version'=>0),
             array('name'=>'Premium/Warehouse/Wholesale', 'version'=>0),
-            array('name'=>'Premium/Payments', 'version'=>0),
-            array('name'=>'Premium/MultipleAddresses', 'version'=>0));
+            array('name'=>'Premium/Payments', 'version'=>0));
 	}
 	
 	public static function info() {
