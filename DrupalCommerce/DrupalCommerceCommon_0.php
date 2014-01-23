@@ -1046,7 +1046,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 			        $currency_precission = pow(10,Utils_CurrencyFieldCommon::get_precission($currency_id));
 			      }
 			      if($line_item['type']=='shipping') {
-			        $memo .= _('Shipping').': '.$line_item['line_item_label']."\n";
+			        $memo .= __('Shipping').': '.$line_item['line_item_label']."\n";
 			        $shipping_cost += $line_item['commerce_unit_price']['amount'];
 			      } elseif($line_item['type']!='product' && isset($line_item['commerce_unit_price']['amount']) && $line_item['commerce_unit_price']['amount']) {
 			        $handling_cost += $line_item['commerce_unit_price']['amount'];
@@ -1534,7 +1534,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 			    $node['body']['en'][0]['value']=$row['description'];
 			    $node['body']['en'][0]['format'] = 'filtered_html';
 			    $node['field_product']['und'][0]['product_id'] = $drupal_product_id;
-			    $node['promote']=$row['recommended']?1:0;
+			    $node['promote']=$row['recommended']?1:0; //TODO: doesn't work
 			    $node['sticky']=$row['recommended']?1:0;
 			    foreach($row['category'] as $ccc) {
 			      $category_id = array_pop(explode('/',$ccc));

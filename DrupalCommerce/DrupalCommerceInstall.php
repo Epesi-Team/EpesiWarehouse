@@ -418,7 +418,6 @@ class Premium_Warehouse_DrupalCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::delete_addon('premium_warehouse_items', 'Premium_Warehouse_DrupalCommerce', 'warehouse_item_addon');
 
 		Utils_CommonDataCommon::remove('Premium/Warehouse/eCommerce/Languages');
-		Base_ThemeCommon::uninstall_default_theme($this->get_type());
 
 		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_products', 'Premium/Warehouse/DrupalCommerce', 'parameters_addon');
 		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_products', 'Premium/Warehouse/DrupalCommerce', 'availability_addon');
@@ -458,6 +457,8 @@ class Premium_Warehouse_DrupalCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_prices');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_orders');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_drupal');
+		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_pages');
+		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_pages_data');
 		return true;
 	}
 	
