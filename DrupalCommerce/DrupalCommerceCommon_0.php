@@ -1528,14 +1528,15 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 			
 			    //update node of product
 			    print_r($row);
+			    if($row['recommended']) print('RECOMMENDED!!!'."\n");
 			    $node = array();
 			    $node['type']='epesi_products';
 			    $node['title']=$node['title_field']['en'][0]['value']=$node['title_field']['und'][0]['value']=$node['field_title']=$row['item_name'];
 			    $node['body']['en'][0]['value']=$row['description'];
 			    $node['body']['en'][0]['format'] = 'filtered_html';
 			    $node['field_product']['und'][0]['product_id'] = $drupal_product_id;
-			    $node['promote']=$row['recommended']?1:0; //TODO: doesn't work
-			    $node['sticky']=$row['recommended']?1:0;
+			    $node['promote']=$row['recommended']?1:null; //TODO: doesn't work
+			    $node['sticky']=$row['recommended']?1:null;
 			    foreach($row['category'] as $ccc) {
 			      $category_id = array_pop(explode('/',$ccc));
 			      if(isset($category_mapping[$category_id])) $node['field_epesi_category']['und'][] = $category_mapping[$category_id];
@@ -1549,10 +1550,11 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 			      $node['body']['en'][0]['value']=$translations['long_description'];
 			      $node['body']['en'][0]['summary']=$translations['short_description'];
 			    }
+			    print(var_export($node));
 			    if($nid) {
+			      print('nid='.$nid."\n");
 			      Premium_Warehouse_DrupalCommerceCommon::drupal_put($drupal_id,'node/'.$nid,$node);
 			    } else {
-			      print(var_export($node));
 			      $tmp = Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'node',$node);
 			      $nid = $tmp['nid'];
 			    }
