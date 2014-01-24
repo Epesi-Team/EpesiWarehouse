@@ -168,8 +168,10 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 
     public static function menu() {
 		$m = array('__submenu__'=>1);
-		if (Utils_RecordBrowserCommon::get_access('premium_ecommerce_products', 'add'))
+		if (Utils_RecordBrowserCommon::get_access('premium_ecommerce_products', 'add')) {
 			$m[_M('Express publish')] = array('__function__'=>'fast_fill');
+            $m[_M('Update categories and products now')] = array('__function__'=>'reset_cron');
+        }
 		if (Utils_RecordBrowserCommon::get_access('premium_ecommerce_products', 'browse'))
 			$m[_M('Products')] = array();
 		return array(_M('Inventory')=>array(

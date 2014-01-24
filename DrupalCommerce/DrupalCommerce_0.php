@@ -673,6 +673,12 @@ class Premium_Warehouse_DrupalCommerce extends Module {
 		$this->display_module($a);
 	}
 
+    public function reset_cron() {
+        $ret = ModuleManager::reset_cron($this->get_type(),'cron_categories');
+        if($ret) print(__('Categories and products update has been successfully queued as first cron job to run.'));
+        else print(__('Categories and products update is already running - please come back here later.'));
+    }
+
 }
 
 ?>
