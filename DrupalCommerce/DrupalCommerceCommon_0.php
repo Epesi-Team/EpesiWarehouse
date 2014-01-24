@@ -101,21 +101,53 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
     public static function display_password($r, $nolink=false) {
         return '*****';
     }
+    
+    public static function product_exists($id) {
+        static $cache;
+        if(!isset($cache)) $cache = array();
+        if(isset($cache[$id])) return $cache[$id];
+        $cache[$id] = Utils_RecordBrowserCommon::get_records_count('premium_ecommerce_products',array('item_name'=>$id))>0;
+        return $cache[$id];
+    }
 
     public static function prices_addon_parameters($r) {
         if(!Variable::get('ecommerce_item_prices'))
             return array('show'=>false);
         return array('show'=>true, 'label'=>__('Prices'));
     }
+    public static function prices_addon_item_parameters($r) {
+		$product_exists = self::product_exists($r['id']);
+        if(!Variable::get('ecommerce_item_prices') || !$product_exists)
+            return array('show'=>false);
+        return array('show'=>true, 'label'=>__('eCommerce').'#'.__('Prices'));
+    }
     public static function parameters_addon_parameters($r) {
         if(!Variable::get('ecommerce_item_parameters'))
             return array('show'=>false);
         return array('show'=>true, 'label'=>__('Parameters'));
     }
+    public static function parameters_addon_item_parameters($r) {
+		$product_exists = self::product_exists($r['id']);
+        if(!Variable::get('ecommerce_item_parameters') || !$product_exists)
+            return array('show'=>false);
+        return array('show'=>true, 'label'=>__('eCommerce').'#'.__('Parameters'));
+    }
     public static function descriptions_addon_parameters($r) {
         if(!Variable::get('ecommerce_item_descriptions'))
             return array('show'=>false);
         return array('show'=>true, 'label'=>__('Descriptions'));
+    }
+    public static function descriptions_addon_item_parameters($r) {
+		$product_exists = self::product_exists($r['id']);
+        if(!Variable::get('ecommerce_item_descriptions') || !$product_exists)
+            return array('show'=>false);
+        return array('show'=>true, 'label'=>__('eCommerce').'#'.__('Descriptions'));
+    }
+    public static function attachment_product_addon_item_parameters($r) {
+		$product_exists = self::product_exists($r['id']);
+        if(!$product_exists)
+            return array('show'=>false);
+        return array('show'=>true, 'label'=>__('eCommerce').'#'.__('Pictures'));
     }
 
     public static $order_statuses;

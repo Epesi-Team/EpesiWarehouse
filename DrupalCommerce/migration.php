@@ -8,10 +8,10 @@ ModuleManager::load_modules();
 
 Acl::set_user(1);
 
-		Utils_RecordBrowserCommon::unregister_processing_callback('premium_ecommerce_pages', array('Premium_Warehouse_DrupalCommerceCommon', 'submit_pages_position'));
-		Utils_RecordBrowserCommon::unregister_processing_callback('premium_ecommerce_polls', array('Premium_Warehouse_DrupalCommerceCommon', 'submit_polls_position'));
-		Utils_RecordBrowserCommon::unregister_processing_callback('premium_ecommerce_boxes', array('Premium_Warehouse_DrupalCommerceCommon', 'submit_boxes_position'));
-		Utils_RecordBrowserCommon::unregister_processing_callback('premium_ecommerce_banners', array('Premium_Warehouse_DrupalCommerceCommon','banners_processing'));
+		Utils_RecordBrowserCommon::unregister_processing_callback('premium_ecommerce_pages', array('Premium_Warehouse_eCommerceCommon', 'submit_pages_position'));
+		Utils_RecordBrowserCommon::unregister_processing_callback('premium_ecommerce_polls', array('Premium_Warehouse_eCommerceCommon', 'submit_polls_position'));
+		Utils_RecordBrowserCommon::unregister_processing_callback('premium_ecommerce_boxes', array('Premium_Warehouse_eCommerceCommon', 'submit_boxes_position'));
+		Utils_RecordBrowserCommon::unregister_processing_callback('premium_ecommerce_banners', array('Premium_Warehouse_eCommerceCommon','banners_processing'));
 		DB::DropTable('premium_ecommerce_orders_temp');
 
 		DB::DropTable('premium_ecommerce_products_stats');
@@ -20,7 +20,7 @@ Acl::set_user(1);
 		DB::DropTable('premium_ecommerce_searched_stats');
 		DB::DropTable('premium_ecommerce_quickcart');
 
-		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_pages', 'Premium/Warehouse/DrupalCommerce', 'pages_stats_addon');
+		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_pages', 'Premium/Warehouse/eCommerce', 'pages_stats_addon');
 
 		$langs = Utils_CommonDataCommon::get_array('Premium/Warehouse/eCommerce/Languages');
 		foreach($langs as $k=>$name) {
@@ -32,14 +32,17 @@ Acl::set_user(1);
 		Variable::delete('ecommerce_rules');
 		Variable::delete('ecommerce_contactus');
 
-		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_pages', 'Premium/Warehouse/DrupalCommerce', 'subpages_addon');
-		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_polls', 'Premium/Warehouse/DrupalCommerce', 'poll_answers');
+		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_pages', 'Premium/Warehouse/eCommerce', 'subpages_addon');
+		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_polls', 'Premium/Warehouse/eCommerce', 'poll_answers');
 
-		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_pages', 'Premium/Warehouse/DrupalCommerce', 'attachment_page_addon');
-		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_pages_data', 'Premium/Warehouse/DrupalCommerce', 'attachment_page_desc_addon');
+		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_pages', 'Premium/Warehouse/eCommerce', 'attachment_page_addon');
+		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_pages', 'Premium/Warehouse/eCommerce', 'pages_info_addon');
+		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_pages', 'Premium/Warehouse/eCommerce', 'pages_stats_addon');
+		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_pages', 'Premium/Warehouse/eCommerce', 'subpages_addon');
+		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_pages_data', 'Premium/Warehouse/eCommerce', 'attachment_page_desc_addon');
 
-		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_products', 'Premium/Warehouse/DrupalCommerce', 'products_stats_addon');
-		Utils_RecordBrowserCommon::delete_addon('premium_warehouse_items_categories', 'Premium/Warehouse/DrupalCommerce', 'categories_stats_addon');
+		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_products', 'Premium/Warehouse/eCommerce', 'products_stats_addon');
+		Utils_RecordBrowserCommon::delete_addon('premium_warehouse_items_categories', 'Premium/Warehouse/eCommerce', 'categories_stats_addon');
 
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_pages');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_pages_data');
@@ -104,3 +107,9 @@ Acl::set_user(1);
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_users');
 		Utils_RecordBrowserCommon::unregister_processing_callback('premium_ecommerce_users', array('Premium_Warehouse_DrupalCommerceCommon', 'submit_user'));
 		Utils_RecordBrowserCommon::delete_addon('contact', 'Premium/Warehouse/DrupalCommerce', 'users_addon');
+
+		//new addons
+		Utils_RecordBrowserCommon::new_addon('premium_warehouse_items', 'Premium/Warehouse/DrupalCommerce', 'parameters_addon_item', 'Premium_Warehouse_DrupalCommerceCommon::parameters_addon_item_parameters');
+		Utils_RecordBrowserCommon::new_addon('premium_warehouse_items', 'Premium/Warehouse/DrupalCommerce', 'descriptions_addon_item', 'Premium_Warehouse_DrupalCommerceCommon::descriptions_addon_item_parameters');
+		Utils_RecordBrowserCommon::new_addon('premium_warehouse_items', 'Premium/Warehouse/DrupalCommerce', 'prices_addon_item', 'Premium_Warehouse_DrupalCommerceCommon::prices_addon_item_parameters');
+		Utils_RecordBrowserCommon::new_addon('premium_warehouse_items', 'Premium/Warehouse/DrupalCommerce', 'attachment_product_addon_item', 'Premium_Warehouse_DrupalCommerceCommon::attachment_product_addon_item_parameters');

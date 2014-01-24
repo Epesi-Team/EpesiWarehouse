@@ -170,9 +170,17 @@ class Premium_Warehouse_DrupalCommerce extends Module {
 	}
 	
 	public function descriptions_addon($arg) {
+		$this->_descriptions_addon($arg['item_name']);
+	}
+
+	public function descriptions_addon_item($arg) {
+		$this->_descriptions_addon($arg['id']);
+	}
+
+	private function _descriptions_addon($id) {
 		$rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_descriptions');
-		$order = array(array('item_name'=>$arg['item_name']), array('item_name'=>false), array('language'=>'ASC'));
-		$rb->set_defaults(array('item_name'=>$arg['item_name'],'language'=>Base_LangCommon::get_lang_code()));
+		$order = array(array('item_name'=>$id), array('item_name'=>false), array('language'=>'ASC'));
+		$rb->set_defaults(array('item_name'=>$id,'language'=>Base_LangCommon::get_lang_code()));
 		$rb->set_header_properties(array(
 			'language'=>array('width'=>10, 'wrapmode'=>'nowrap'),
 			'description'=>array('width'=>50, 'wrapmode'=>'nowrap')
@@ -203,9 +211,15 @@ class Premium_Warehouse_DrupalCommerce extends Module {
 	}
 
 	public function parameters_addon($arg) {
+		$this->_parameters_addon($arg['item_name']);
+	}
+	public function parameters_addon_item($arg) {
+		$this->_parameters_addon($arg['id']);
+	}
+	private function _parameters_addon($id) {
 		$rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_products_parameters');
-		$order = array(array('item_name'=>$arg['item_name']), array('item_name'=>false), array('language'=>'ASC','parameter'=>'ASC'));
-		$rb->set_defaults(array('item_name'=>$arg['item_name'],'language'=>Base_LangCommon::get_lang_code()));
+		$order = array(array('item_name'=>$id), array('item_name'=>false), array('language'=>'ASC','parameter'=>'ASC'));
+		$rb->set_defaults(array('item_name'=>$id,'language'=>Base_LangCommon::get_lang_code()));
 		$rb->set_header_properties(array(
 			'parameter'=>array('wrapmode'=>'nowrap'),
 			'value'=>array('wrapmode'=>'nowrap')
@@ -214,9 +228,15 @@ class Premium_Warehouse_DrupalCommerce extends Module {
 	}
 	
 	public function prices_addon($arg) {
+		$this->_prices_addon($arg['item_name']);
+	}
+	public function prices_addon_item($arg) {
+		$this->_prices_addon($arg['id']);
+	}
+	private function _prices_addon($id) {
 		$rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_prices');
-		$order = array(array('item_name'=>$arg['item_name']), array('item_name'=>false), array('currency'=>'ASC'));
-		$rb->set_defaults(array('item_name'=>$arg['item_name']));
+		$order = array(array('item_name'=>$id), array('item_name'=>false), array('currency'=>'ASC'));
+		$rb->set_defaults(array('item_name'=>$id));
 		$rb->set_header_properties(array(
 			'currency'=>array('width'=>10, 'wrapmode'=>'nowrap'),
 			'price'=>array('wrapmode'=>'nowrap')
@@ -645,7 +665,13 @@ class Premium_Warehouse_DrupalCommerce extends Module {
 
 	public function attachment_product_addon($arg){
 		$a = $this->init_module('Utils/Attachment',array('premium_ecommerce_products/'.$arg['item_name']));
-//		$a->set_add_func(array('Premium_Warehouse_DrupalCommerceCommon','copy_attachment'));
+		$a->set_persistent_delete();
+		$a->set_max_file_size(1024*1024);
+		$this->display_module($a);
+	}
+
+	public function attachment_product_addon_item($arg){
+		$a = $this->init_module('Utils/Attachment',array('premium_ecommerce_products/'.$arg['id']));
 		$a->set_persistent_delete();
 		$a->set_max_file_size(1024*1024);
 		$this->display_module($a);
@@ -653,21 +679,6 @@ class Premium_Warehouse_DrupalCommerce extends Module {
 
 	public function attachment_product_desc_addon($arg){
 		$a = $this->init_module('Utils/Attachment',array('premium_ecommerce_descriptions/'.$arg['language'].'/'.$arg['item_name']));
-//		$a->set_add_func(array('Premium_Warehouse_DrupalCommerceCommon','copy_attachment'));
-		$a->set_persistent_delete();
-		$a->set_max_file_size(1024*1024);
-		$this->display_module($a);
-	}
-
-	public function attachment_page_addon($arg){
-		$a = $this->init_module('Utils/Attachment',array('premium_ecommerce_pages/'.$arg['id']));
-		$a->set_persistent_delete();
-		$a->set_max_file_size(1024*1024);
-		$this->display_module($a);
-	}
-	
-	public function attachment_page_desc_addon($arg){
-		$a = $this->init_module('Utils/Attachment',array('premium_ecommerce_pages_data/'.$arg['language'].'/'.$arg['page']));
 		$a->set_persistent_delete();
 		$a->set_max_file_size(1024*1024);
 		$this->display_module($a);
