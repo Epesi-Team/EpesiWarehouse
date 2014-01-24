@@ -167,39 +167,6 @@ class Premium_Warehouse_DrupalCommerceInstall extends ModuleInstall {
 
 		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_availability', 'Premium/Warehouse/DrupalCommerce', 'availability_labels_addon', _M('Labels'));
 
-		//pages
-		$fields = array(
-			array('name' => _M('Page Name'), 		'type'=>'text', 'param'=>128, 'required'=>true, 'extra'=>false, 'visible'=>true),
-			array('name' => _M('Parent Page'),	'type'=>'select', 'param'=>'premium_ecommerce_pages::Page Name;Premium_Warehouse_DrupalCommerceCommon::parent_page_crits' ,'required'=>false, 'extra'=>false, 'visible'=>false),
-			array('name' => _M('Type'),			'type'=>'integer',	'required'=>true, 'extra'=>false, 'visible'=>true,'display_callback'=>array($this->get_type().'Common', 'display_page_type'),'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_page_type')),
-			array('name' => _M('Show subpages as'),	'type'=>'integer',	'required'=>true, 'extra'=>false, 'visible'=>true,'display_callback'=>array($this->get_type().'Common', 'display_subpages'),'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_subpages')),
-			array('name' => _M('Publish'), 		'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>true),
-			array('name' => _M('Position'), 		'type'=>'hidden', 'param'=>Utils_RecordBrowserCommon::actual_db_type('integer'), 'required'=>true, 'extra'=>false,'visible'=>false)
-		);
-		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_pages', $fields);
-
-		Utils_RecordBrowserCommon::set_favorites('premium_ecommerce_pages', false);
-		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_pages', _M('eCommerce - Pages'));
-		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_pages', 'Premium/Warehouse/DrupalCommerce', 'subpages_addon', _M('Subpages'));
-		Utils_RecordBrowserCommon::register_processing_callback('premium_ecommerce_pages', array('Premium_Warehouse_DrupalCommerceCommon', 'submit_pages_position'));
-
-		$fields = array(
-			array('name' => _M('Page'), 	'type'=>'select', 'param'=>'premium_ecommerce_pages::Page Name', 'required'=>true, 'extra'=>false),
-			array('name' => _M('Language'), 	'type'=>'commondata', 'required'=>true, 'extra'=>false, 'param'=>array('Premium/Warehouse/eCommerce/Languages'), 'visible'=>true),
-			array('name' => _M('Name'), 		'type'=>'text', 'param'=>'128', 'required'=>true, 'extra'=>false, 'visible'=>true),
-			array('name' => _M('Short Description'), 	'type'=>'long text', 'required'=>true, 'extra'=>false, 'visible'=>true, 'QFfield_callback'=>array('Libs_CKEditorCommon', 'QFfield_cb'), 'display_callback'=>array('Libs_CKEditorCommon', 'display_cb')),
-			array('name' => _M('Long Description'), 	'type'=>'long text', 'required'=>false, 'extra'=>false, 'visible'=>false, 'QFfield_callback'=>array('Libs_CKEditorCommon', 'QFfield_cb'), 'display_callback'=>array('Libs_CKEditorCommon', 'display_cb')),
-			array('name' => _M('Page Title'), 	'type'=>'text', 'required'=>false, 'extra'=>false, 'param'=>64, 'visible'=>false),
-			array('name' => _M('Meta Description'), 	'type'=>'text', 'required'=>false, 'extra'=>false, 'param'=>256, 'visible'=>false),
-			array('name' => _M('Keywords'), 	'type'=>'text', 'required'=>false, 'extra'=>false, 'param'=>128, 'visible'=>false)
-		);
-		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_pages_data', $fields);
-
-		Utils_RecordBrowserCommon::set_favorites('premium_ecommerce_pages_data', false);
-		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_pages_data', _M('eCommerce - Pages'));
-		
-		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_pages', 'Premium/Warehouse/DrupalCommerce', 'pages_info_addon', _M('Info'));
-
 		//drupal
 		$fields = array(
 			array('name' => _M('URL'), 			'type'=>'text', 'required'=>true, 'param'=>'128', 'extra'=>false, 'visible'=>true),
