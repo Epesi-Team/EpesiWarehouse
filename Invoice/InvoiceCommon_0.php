@@ -58,6 +58,9 @@ class Premium_Warehouse_InvoiceCommon extends ModuleCommon {
     }
 
     private static function print_action_href($items_order) {
+        $printer = new Premium_Warehouse_Invoice_PrinterNew();
+        $href = $printer->get_href($items_order['id']);
+        return $href;
         $templates = self::enabled_templates();
         if (count($templates) == 1) {
             reset($templates);
