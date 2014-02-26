@@ -5,14 +5,14 @@
  * @subpackage tr
  */
 global $translations;
-$translations['Completed']='';
+$translations['Completed']='Bitti';
 $translations['Pending']='';
 $translations['Weight']='';
 $translations['Create Bill']='';
 $translations['Gross Cost']='';
 $translations['Settings']='';
 $translations['Memo']='';
-$translations['Total']='';
+$translations['Total']='Toplam';
 $translations['n/a']='';
 $translations['Inventory Management']='';
 $translations['Price']='';
@@ -31,7 +31,7 @@ $translations['Accepted']='';
 $translations['Rental']='';
 $translations['Contact Details']='';
 $translations['Item']='';
-$translations['Expiration Date']='';
+$translations['Expiration Date']='Bitiş tarihi';
 $translations['Check']='Kontrol';
 $translations['Terms']='';
 $translations['Invoice']='';

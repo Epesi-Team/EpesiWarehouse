@@ -7,7 +7,7 @@
 global $translations;
 $translations['Total']='';
 $translations['n/a']='';
-$translations['Inventory Management']='Inventar verwalten';
+$translations['Inventory Management']='Inventarverwaltung';
 $translations['Quantity']='';
 $translations['Item Name']='';
 $translations['Quantity on Hand']='';

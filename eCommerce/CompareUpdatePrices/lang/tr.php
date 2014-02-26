@@ -8,7 +8,7 @@ global $translations;
 $translations['Skąpiec']='';
 $translations['Ceneo']='';
 $translations['Item Name']='';
-$translations['Plugin']='';
+$translations['Plugin']='Eklenti';
 $translations['Tax Rate']='';
 $translations['Gross Price']='';
 $translations['Auto update']='';

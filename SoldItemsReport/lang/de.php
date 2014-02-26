@@ -6,7 +6,7 @@
  */
 global $translations;
 $translations['Total']='';
-$translations['Inventory Management']='Inventar verwalten';
+$translations['Inventory Management']='Inventarverwaltung';
 $translations['Warehouse']='';
 $translations['Sold Items']='';
 $translations['Sold Items Report']='';

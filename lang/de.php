@@ -5,7 +5,7 @@
  * @subpackage de
  */
 global $translations;
-$translations['Inventory Management']='Inventar verwalten';
+$translations['Inventory Management']='Inventarverwaltung';
 $translations['Bank account']='';
 $translations['Auto update']='';
 $translations['Inventory']='';

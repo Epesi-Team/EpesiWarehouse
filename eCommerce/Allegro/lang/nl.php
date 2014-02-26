@@ -7,11 +7,11 @@
 global $translations;
 $translations['Invalid number']='';
 $translations['Allegro']='';
+$translations['Template']='';
 $translations['Invoice']='';
 $translations['Invalid price']='';
 $translations['WEBAPI Key']='';
 $translations['Additional info on shipment and payment']='';
-$translations['Template']='';
 $translations['Ostatnio zakończone aukcje na allegro']='';
 $translations['Inventory - Allegro Settings']='';
 $translations['Tytuł']='';

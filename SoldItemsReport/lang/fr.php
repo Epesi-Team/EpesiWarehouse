@@ -5,7 +5,7 @@
  * @subpackage fr
  */
 global $translations;
-$translations['Total']='';
+$translations['Total']='Total';
 $translations['Inventory Management']='Inventaire';
 $translations['Warehouse']='';
 $translations['Sold Items']='';

@@ -5,12 +5,12 @@
  * @subpackage es
  */
 global $translations;
-$translations['Completed']='Completado';
+$translations['Completed']='Ya Completado';
 $translations['Pending']='';
 $translations['Weight']='';
 $translations['Create Bill']='';
 $translations['Gross Cost']='';
-$translations['Settings']='';
+$translations['Settings']='Ajustes';
 $translations['Memo']='';
 $translations['Total']='Total';
 $translations['n/a']='';
