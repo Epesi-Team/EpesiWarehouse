@@ -36,7 +36,7 @@ class Premium_Warehouse_Items_ReorderPointCommon extends ModuleCommon
 
     public static function applet_caption() {
         if (self::applet_access())
-            return __('Items to order');
+            return __('Items to Order');
     }
 
     public static function applet_info() {
