@@ -400,7 +400,7 @@ class Premium_Warehouse_Invoice_PrinterNew extends Base_Print_Printer {
         $p = 'Premium/Warehouse/Invoice/';
         foreach ($available_tpls as $tpl) {
             $tpl_obj = new Base_Print_Template_Template();
-            foreach(array('top', 'table_row', 'summary', 'bottom', 'footer') as $section) {
+            foreach(array('top', 'table_row', 'summary', 'bottom', 'footer', 'filename') as $section) {
                 $file = $p . $tpl . '/' . $section;
 
                 if (Base_ThemeCommon::get_template_file($file . ".tpl")) {
@@ -441,7 +441,8 @@ class Premium_Warehouse_Invoice_PrinterNew extends Base_Print_Printer {
     private $net_total_sum_f = array();
     private $tax_total_sum_f = array();
 
-    public function get_printed_filename() {
+    public function get_printed_filename_suffix()
+    {
         return $this->print_filename;
     }
 
