@@ -50,47 +50,19 @@ class Premium_Warehouse_InvoiceCommon extends ModuleCommon {
 		return array('show'=>false);
 	}
 
-    private static function template_print_href($record_id, $template, $template_label = null) {
-        $data = array('record_id' => $record_id, 'print_template' => $template, 'cid' => CID, 'ut' => time(),
-                      'print_filename' => $template_label);
-        $href = 'modules/Premium/Warehouse/Invoice/print_invoice.php?' . http_build_query($data) . '"';
-        return 'target="_blank" target="_blank" href="' . $href . '';
-    }
-
     private static function print_action_href($items_order) {
-        $printer = new Premium_Warehouse_Invoice_PrinterNew();
+        $printer = new Premium_Warehouse_Invoice_Printer();
         $href = $printer->get_href($items_order['id']);
         return $href;
-        $templates = self::enabled_templates();
-        if (count($templates) == 1) {
-            reset($templates);
-            $tpl = key($templates);
-            return self::template_print_href($items_order['id'], $tpl);
-        }
-        // multiple templates
-        $popup_id = 'print_choice_popup';
-        $header = __('Select document template to print');
-        $launchpad = array();
-        foreach ($templates as $template => $label) {
-            $href = self::template_print_href($items_order['id'], $template, $label);
-            $href .= " onclick=\"leightbox_deactivate('$popup_id')\"";
-            $launchpad[] = array(
-                'href' => $href,
-                'label' => $label
-            );
-        }
-        $th = Base_ThemeCommon::init_smarty();
-        $th->assign('icons', $launchpad);
-        ob_start();
-        Base_ThemeCommon::display_smarty($th, self::Instance()->get_type(), 'launchpad');
-        $content = ob_get_clean();
-        Libs_LeightboxCommon::display($popup_id, $content, $header);
-        return Libs_LeightboxCommon::get_open_href($popup_id);
     }
 
     private static function print_to_note($order_id, $template, $note_text) {
-        $printer = new Premium_Warehouse_Invoice_Printer();
-        $invoice_content = $printer->print_pdf($order_id, $template);
+        $handler = new Base_Print_PrintingHandler();
+        $handler->set_printer(new Premium_Warehouse_Invoice_Printer());
+        $handler->set_data($order_id);
+        $handler->set_tpl($template);
+        $printed_document = $handler->printed_document();
+        $invoice_content = $printed_document->get_output();
         $file = tempnam(DATA_DIR, 'note_print_');
         if ($file === false) {
             // fail creating file
@@ -103,7 +75,7 @@ class Premium_Warehouse_InvoiceCommon extends ModuleCommon {
             $group = "premium_warehouse_items_orders/$order_id";
             $permission = Base_User_SettingsCommon::get('Utils_Attachment','default_permission');
             $user = Base_AclCommon::get_user();
-            $origin_filename = $printer->get_printed_filename();
+            $origin_filename = $printed_document->get_filename_with_extension();
             Utils_AttachmentCommon::add($group, $permission, $user, $note_text, $origin_filename, $file);
             Base_StatusBarCommon::message(__("Note attached!"));
         }
@@ -123,7 +95,7 @@ class Premium_Warehouse_InvoiceCommon extends ModuleCommon {
         }
         $launchpad = array();
         foreach ($templates as $template => $label) {
-            $template_change_js = "document.{$form->get_name()}.template.value=" . str_replace('"', "'", json_encode($template));
+            $template_change_js = "document.{$form->get_name()}.template.value=" . str_replace('"', "'", json_encode($label));
             $submit_js = $form->get_submit_form_js();
             $href = "href=\"javascript:void(0);\" onclick=\"$template_change_js;$submit_js\"";
             $launchpad[] = array(
@@ -141,7 +113,7 @@ class Premium_Warehouse_InvoiceCommon extends ModuleCommon {
         return Libs_LeightboxCommon::get_open_href($popup_id);
     }
 
-    private static function enabled_templates() {
+    public static function enabled_templates() {
         $templates = Variable::get('premium_warehouse_invoice_style', false);
         if (!is_array($templates)) {
             return array($templates => $templates);

@@ -1,49 +1,35 @@
 <?php
 
-class Premium_Warehouse_Invoice_Printer {
+class Premium_Warehouse_Invoice_Printer extends Base_Print_Printer {
 
-    private $path = 'modules/Premium/Warehouse/Invoice/theme/';
-    private $print_filename = '';
-
-    private $record;
-    private $style;
-
-    public function get_printed_filename() {
-        return $this->print_filename;
+    public function document_name()
+    {
+        return _M('Transaction Print');
     }
 
-    function print_pdf($order_id, $template = null, $filename_prefix = null) {
-        $this->print_filename = $filename_prefix;
-        $style = '';
-        if ($template)
-            $style = $template;
-        if (!$style) $style = 'US';
-        if (!is_dir($this->path . $style))
-            die ("Template doesn't exist");
-        $this->style = $style;
-        $order = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $order_id);
-        $this->record = $order;
+    protected function init_data($order_id)
+    {
+        $this->print_filename = $this->document_name();
+        $this->order = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $order_id);
+        if (!$this->order) {
+            throw new ErrorException('Wrong order ID');
+        }
+        $this->warehouse = Utils_RecordBrowserCommon::get_record('premium_warehouse', $this->order['warehouse']);
+        $this->company = CRM_ContactsCommon::get_company(CRM_ContactsCommon::get_main_company());
+        $this->items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id' => $order_id));
 
-        if (!Acl::is_user() || !Utils_RecordBrowserCommon::get_access('premium_warehouse_items_orders', 'view', $order)) die('Unauthorized access');
-
-        $tcpdf = Libs_TCPDFCommon::new_pdf();
-
-        $warehouse = Utils_RecordBrowserCommon::get_record('premium_warehouse', $order['warehouse']);
-        $company = CRM_ContactsCommon::get_company(CRM_ContactsCommon::get_main_company());
-
+        $order = & $this->order;
         if ($order['transaction_type'] == 1) {
             if (!$order['invoice_number']) {
                 $order['invoice_number'] = Premium_Warehouse_InvoiceCommon::generate_invoice_number($order);
             }
             $order['proforma_id'] = str_pad($order['id'], 4, '0', STR_PAD_LEFT);
             $order['invoice_id'] = Premium_Warehouse_InvoiceCommon::format_invoice_number($order['invoice_number'], $order);
-//	$header = 'Faktura VAT nr. '.$order['invoice_id'];
         }
 
         if ($order['transaction_type'] == 0) {
             $order['po_id'] = Premium_Warehouse_InvoiceCommon::format_invoice_number($order['invoice_number'], $order);
             $order['invoice_id'] = $order['invoice_number'];
-//	$header = 'Zamówienie '.$order['po_id'];
         }
 
         if (!$order['invoice_print_date'] && $order['status'] > 2) {
@@ -65,33 +51,7 @@ class Premium_Warehouse_Invoice_Printer {
             }
         }
 
-        $theme = Base_ThemeCommon::init_smarty();
-        $theme->assign('order', $order);
-
-        ob_start();
-        @Base_ThemeCommon::display_smarty($theme, 'Premium_Warehouse_Invoice', $style . '/footer');
-        $footer = ob_get_clean();
-
-        $tcpdf->setPrintHeader(false);
-        preg_match('/footer_height[\s]?=[\s]?([0-9]+)/i', $footer, $matches);
-        if (isset($matches[1])) {
-            $tcpdf->setFooterMargin($matches[1]);
-            $tcpdf->SetAutoPageBreak(true, $matches[1]);
-        }
-        $tcpdf->set_footer_border('');
-
-        Libs_TCPDFCommon::prepare_header($tcpdf, null, '', false, null);
-        Libs_TCPDFCommon::add_page($tcpdf);
-
-        $buffer = '';
-
-        $theme = Base_ThemeCommon::init_smarty();
-        $theme->assign('order', $order);
-        $theme->assign('warehouse', $warehouse);
-        $theme->assign('company', $company);
-        $theme->assign('date', $order['invoice_print_date']);
-
-        $labels = array(
+        $this->labels = array(
             'po' => __('Purchase Order no.'),
             'receipt' => __('Receipt no.'),
             'invoice' => __('Invoice no.'),
@@ -129,14 +89,54 @@ class Premium_Warehouse_Invoice_Printer {
             'comments' => __('Comments')
         );
 
-        $theme->assign('labels', $labels);
+    }
 
+    protected function check_access()
+    {
+        $access =
+            Utils_RecordBrowserCommon::get_access('premium_warehouse_items_orders',
+                                                  'view',
+                                                  $this->order);
+        if (!$access) {
+            throw new ErrorException('Unauthorized access');
+        }
+    }
+
+    protected function print_document($order_id)
+    {
+        $this->init_data($order_id);
+        $this->check_access();
+
+        $this->footer();
+        $this->section_top();
+        $this->section_table_row();
+        $this->section_summary();
+        $this->section_bottom();
+        $this->get_filename_from_template();
+    }
+
+    protected function footer()
+    {
+        $section = $this->new_section();
+        $section->assign('order', $this->order);
+        $this->set_footer($section);
+    }
+
+    protected function section_top()
+    {
+        $order = & $this->order;
+        $section = $this->new_section();
+        $section->assign('order', $this->order);
+        $section->assign('warehouse', $this->warehouse);
+        $section->assign('company', $this->company);
+        $section->assign('date', $order['invoice_print_date']);
+        $section->assign('labels', $this->labels);
         $file = Libs_TCPDFCommon::get_logo_filename();
         if (file_exists($file))
-            $theme->assign('logo', '<img src="' . $file . '" />');
+            $section->assign('logo', '<img src="' . $file . '" />');
 
-        $paid = array();
-        $amount_due = array();
+        
+        $paid = & $this->paid;
 
         if (ModuleManager::is_installed('Premium_Payments') >= 0) {
             $payments = Utils_RecordBrowserCommon::get_records('premium_payments', array('record_type' => 'premium_warehouse_items_orders', 'record_id' => $order['id']));
@@ -148,22 +148,21 @@ class Premium_Warehouse_Invoice_Printer {
                 if (!isset($paid[$p[1]])) $paid[$p[1]] = 0;
                 if ($v['status'] == 2) $paid[$p[1]] += $p[0];
             }
-            $theme->assign('payments', $payments);
+            $section->assign('payments', $payments);
         }
-
-        ob_start();
-        Base_ThemeCommon::display_smarty($theme, 'Premium_Warehouse_Invoice', $style . '/top');
-        $html = ob_get_clean();
-
-        $html = Libs_TCPDFCommon::stripHTML($html);
-        Libs_TCPDFCommon::writeHTML($tcpdf, $html, false);
-
-        $items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id' => $order_id));
+        $this->print_section('top', $section);
+    }
+    
+    protected function section_table_row()
+    {
         $lp = 1;
 
-        $gross_total_sum = array();
-        $net_total_sum = array();
-        $tax_total_sum = array();
+        $gross_total_sum = & $this->gross_total_sum;
+        $net_total_sum = & $this->net_total_sum;
+        $tax_total_sum = & $this->tax_total_sum;
+        
+        $order = & $this->order;
+        $items = & $this->items;
 
         foreach ($items as $k => $v) {
             $tax = Data_TaxRatesCommon::get_tax_rate($items[$k]['tax_rate']);
@@ -218,16 +217,11 @@ class Premium_Warehouse_Invoice_Printer {
             uasort($items, array($this, 'cmp_items'));
 
         foreach ($items as $k => $v) {
-            $theme = Base_ThemeCommon::init_smarty();
+            $theme = $this->new_section();
             $theme->assign('details', $items[$k]);
             $theme->assign('lp', $lp);
             $theme->assign('order', $order);
-            ob_start();
-            Base_ThemeCommon::display_smarty($theme, 'Premium_Warehouse_Invoice', $style . '/table_row');
-            $html = ob_get_clean();
-
-            $html = Libs_TCPDFCommon::stripHTML($html);
-            Libs_TCPDFCommon::writeHTML($tcpdf, $html, false);
+            $this->print_section('table_row', $theme);
             $lp++;
         }
 
@@ -237,13 +231,14 @@ class Premium_Warehouse_Invoice_Printer {
 
         foreach (array('shipment' => __('Shipment'), 'handling' => __('Handling')) as $k => $v) {
             if ($additional_cost[$k][0]) {
-                $theme = Base_ThemeCommon::init_smarty();
+                $theme = $this->new_section();
 
                 $gross_val = $additional_cost[$k][0];
 
-                if ($company['country'] == 'US')
+                if ($this->company['country'] == 'US')
                     $vat = 0;
                 else {
+                    // polish tax rate
                     $vat = 22;
                     if ($order['transaction_date'] >= '2011-01-01') $vat = 23;
                 }
@@ -281,20 +276,22 @@ class Premium_Warehouse_Invoice_Printer {
                 $theme->assign('details', $details);
                 $theme->assign('order', $order);
                 $theme->assign('lp', $lp);
-                ob_start();
-                Base_ThemeCommon::display_smarty($theme, 'Premium_Warehouse_Invoice', $style . '/table_row');
-                $html = ob_get_clean();
-
-                $html = Libs_TCPDFCommon::stripHTML($html);
-                Libs_TCPDFCommon::writeHTML($tcpdf, $html, false);
+                $this->print_section('table_row', $theme);
                 $lp++;
             }
         }
+    }
+    
+    protected function section_summary()
+    {
+        $gross_total_sum = & $this->gross_total_sum;
+        $net_total_sum = & $this->net_total_sum;
+        $tax_total_sum = & $this->tax_total_sum;
+        $amount_due = & $this->amount_due;
 
-        /************************ summary **************************/
-        $gross_total_sum_f = array();
-        $net_total_sum_f = array();
-        $tax_total_sum_f = array();
+        $gross_total_sum_f = & $this->gross_total_sum_f;
+        $net_total_sum_f = & $this->net_total_sum_f;
+        $tax_total_sum_f = & $this->tax_total_sum_f;
         foreach ($gross_total_sum as $k => $v) {
             $gross_total_sum_f[$k] = array();
             $net_total_sum_f[$k] = array();
@@ -318,23 +315,28 @@ class Premium_Warehouse_Invoice_Printer {
             $tax_total_sum_f[$k]['x'] = Utils_CurrencyFieldCommon::format($sum['tax'], $k);
         }
 
-        $theme = Base_ThemeCommon::init_smarty();
+        $theme = $this->new_section();
         $theme->assign('gross_total', $gross_total_sum_f);
         $theme->assign('net_total', $net_total_sum_f);
         $theme->assign('tax_total', $tax_total_sum_f);
-        $theme->assign('order', $order);
-        ob_start();
-        Base_ThemeCommon::display_smarty($theme, 'Premium_Warehouse_Invoice', $style . '/summary');
-        $html = ob_get_clean();
+        $theme->assign('order', $this->order);
+        $this->print_section('summary', $theme);
+    }
+    
+    protected function section_bottom()
+    {
+        $order = & $this->order;
+        $labels = & $this->labels;
+        $gross_total_sum = & $this->gross_total_sum;
+        $net_total_sum = & $this->net_total_sum;
+        $tax_total_sum = & $this->tax_total_sum;
+        $gross_total_sum_f = & $this->gross_total_sum_f;
+        $net_total_sum_f = & $this->net_total_sum_f;
+        $tax_total_sum_f = & $this->tax_total_sum_f;
+        $amount_due = & $this->amount_due;
+        $paid = & $this->paid;
 
-        $html = Libs_TCPDFCommon::stripHTML($html);
-        $html = explode('<!-- BREAK -->', $html);
-        foreach ($html as $h)
-            Libs_TCPDFCommon::writeHTML($tcpdf, $h);
-
-        /******************** bottom *************************/
-
-        $theme = Base_ThemeCommon::init_smarty();
+        $theme = $this->new_section();
         $theme->assign('order', $order);
         $total = array();
         foreach ($gross_total_sum_f as $gr) $total[] = $gr['x'];
@@ -388,41 +390,70 @@ class Premium_Warehouse_Invoice_Printer {
         if ($labels['legal_notice'] == 'legal_notice') $labels['legal_notice'] = '';
 
         $theme->assign('labels', $labels);
+        $this->print_section('bottom', $theme);
+    }
 
+    public function default_templates()
+    {
+        $enabled_tpls = Premium_Warehouse_InvoiceCommon::enabled_templates();
+        $ret = array();
+        $p = 'Premium/Warehouse/Invoice/';
+        foreach ($enabled_tpls as $tpl => $label) {
+            $tpl_obj = new Base_Print_Template_Template();
+            foreach(array('top', 'table_row', 'summary', 'bottom', 'footer', 'filename') as $section) {
+                $file = $p . $tpl . '/' . $section;
 
-        ob_start();
-        Base_ThemeCommon::display_smarty($theme, 'Premium_Warehouse_Invoice', $style . '/bottom');
-        $html = ob_get_clean();
-
-        $html = Libs_TCPDFCommon::stripHTML($html);
-        $html = explode('<!-- BREAK -->', $html);
-        foreach ($html as $h)
-            Libs_TCPDFCommon::writeHTML($tcpdf, $h);
-
-        $margins = $tcpdf->getOriginalMargins();
-        $pages_total = $tcpdf->getNumPages();
-        for ($page = 1; $page <= $pages_total; $page++) {
-            $tcpdf->SetPage($page);
-            $tcpdf->SetAutoPageBreak(false);
-            $footer_y = $tcpdf->getPageHeight() - $tcpdf->getFooterMargin();
-            $tcpdf->SetXY($margins['left'], $footer_y);
-            Libs_TCPDFCommon::writeHTML($tcpdf, $footer, false);
+                if (Base_ThemeCommon::get_template_file($file . ".tpl")) {
+                    $section_obj = new Base_Print_Template_SectionFromFile($file);
+                    $tpl_obj->set_section_template($section, $section_obj);
+                }
+            }
+            $ret[$label] = $tpl_obj;
         }
+        return $ret;
+    }
 
-        $autoname = $this->get_filename_from_template();
-        if ($autoname)
-            $this->print_filename = $autoname;
-        $this->print_filename .=  '_' . $order['id'] . '.pdf';
+    public function sample_data()
+    {
+        $tab = 'premium_warehouse_items_orders';
+        $orders = Utils_RecordBrowserCommon::get_records($tab, array(), array(), array(), 1);
+        $order = reset($orders);
+        return array($order['id']);
+    }
 
-        return Libs_TCPDFCommon::output($tcpdf);
+
+    private $print_filename = '';
+
+    private $order;
+    private $warehouse;
+    private $company;
+    private $items;
+    private $style;
+    private $labels;
+    
+    private $paid = array();
+    private $amount_due = array();
+    
+    private $gross_total_sum = array();
+    private $net_total_sum = array();
+    private $tax_total_sum = array();
+    private $gross_total_sum_f = array();
+    private $net_total_sum_f = array();
+    private $tax_total_sum_f = array();
+
+    public function get_printed_filename_suffix()
+    {
+        return $this->print_filename;
     }
 
     function get_filename_from_template() {
-        $path = 'modules/Premium/Warehouse/Invoice/theme/' . $this->style . '/filename.php';
-        $order = $this->record; // used in included file
-        if (file_exists($path))
-            return (include $path);
-        return null;
+        $filename = $this->new_section();
+        $filename->assign('order', $this->order);
+        $filename_str = $this->get_template()->print_section('filename', $filename);
+        $autoname = preg_replace("/[^a-zA-Z0-9 ]/", "", $filename_str);
+        if ($autoname)
+            $this->print_filename = $autoname;
+        $this->print_filename .=  '_' . $this->order['id'];
     }
 
     function cmp_items($a, $b) {
