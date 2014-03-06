@@ -15,7 +15,7 @@
 defined("_VALID_ACCESS") || die('Direct access forbidden');
 
 class Premium_Warehouse_InvoiceInstall extends ModuleInstall {
-    const version = '1.5.3';
+    const version = '1.5.5';
 
 	public function install() {
 		Base_ThemeCommon::install_default_theme($this->get_type());
@@ -35,6 +35,8 @@ class Premium_Warehouse_InvoiceInstall extends ModuleInstall {
 
 		Variable::set('premium_warehouse_invoice_style', 'US');
 
+        Base_PrintCommon::register_printer(new Premium_Warehouse_Invoice_Printer());
+
 		return true;
 	}
 	
@@ -52,6 +54,8 @@ class Premium_Warehouse_InvoiceInstall extends ModuleInstall {
 
 		Utils_RecordBrowserCommon::delete_record_field('premium_warehouse_items_orders_details','SWW');
 
+        Base_PrintCommon::unregister_printer(new Premium_Warehouse_Invoice_Printer());
+
 		return true;
 	}
 	
@@ -62,6 +66,7 @@ class Premium_Warehouse_InvoiceInstall extends ModuleInstall {
 	public function requires($v) {
 		return array(
 			array('name'=>'Base/Lang','version'=>0),
+			array('name'=>'Base/Print','version'=>0),
 			array('name'=>'Premium/Warehouse/Items/Orders','version'=>0),
 			array('name'=>'Utils/RecordBrowser', 'version'=>0));
 	}
