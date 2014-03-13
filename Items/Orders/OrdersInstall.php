@@ -79,7 +79,7 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 			array('name' => _M('Shipping Address 2'), 		'type'=>'text', 'param'=>'64', 'required'=>false, 'extra'=>true, 'visible'=>false, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon','shipping_maplink')),
 			array('name' => _M('Shipping City'),	 		'type'=>'text', 'param'=>'64', 'required'=>false, 'extra'=>true, 'visible'=>false, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon','shipping_maplink')),
 			array('name' => _M('Shipping Country'),		'type'=>'commondata', 'required'=>false, 'param'=>array('Countries'), 'extra'=>true, 'QFfield_callback'=>array('Data_CountriesCommon', 'QFfield_country')),
-			array('name' => _M('Shipping Zone'),			'type'=>'commondata', 'required'=>false, 'param'=>array('Countries','Country'), 'extra'=>true, 'visible'=>false, 'QFfield_callback'=>array('Data_CountriesCommon', 'QFfield_zone')),
+			array('name' => _M('Shipping Zone'),			'type'=>'commondata', 'required'=>false, 'param'=>array('Countries','Shipping Country'), 'extra'=>true, 'visible'=>false, 'QFfield_callback'=>array('Data_CountriesCommon', 'QFfield_zone')),
 			array('name' => _M('Shipping Postal Code'),	'type'=>'text', 'param'=>'64', 'required'=>false, 'extra'=>true, 'visible'=>false),
 			array('name' => _M('Shipping Phone'),	 		'type'=>'text', 'param'=>'64', 'required'=>false, 'extra'=>true, 'visible'=>false)
 		);
