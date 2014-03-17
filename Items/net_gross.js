@@ -113,7 +113,13 @@ update_net_discount=function(decp,unit,net,gross,discount){
   jq('#'+net).val(format_currency(val+val*discount/100,decp));
 }
 switch_currencies=function(val,net,gross,unit){
-	$("__"+net+"__currency").selectedIndex=val;
-	$("__"+gross+"__currency").selectedIndex=val;
-    if(unit) $("__"+unit+"__currency").selectedIndex=val;
+    var el;
+    el = $("__"+net+"__currency");
+    if (el) el.selectedIndex = val;
+	el = $("__"+gross+"__currency");
+    if (el) el.selectedIndex = val;
+    if(unit) {
+        el = $("__"+unit+"__currency");
+        if (el) el.selectedIndex = val;
+    }
 }

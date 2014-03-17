@@ -45,11 +45,12 @@ $location_id = array_shift($location_id);
 if (!isset($location_id) || !$location_id)
 	$location_id = null;
 
+$ja = array();
 $js = '';
-$js .= '$("description").value="'.Epesi::escapeJS($rec['description']).'";';
+$ja['description'] = $rec['description'];
 if ($trans['transaction_type']<2) {
-	$js .= 'if($("last_item_price"))$("last_item_price").value="'.$rec['last_purchase_price'].'";';
-	$js .= 'if($("tax_rate"))$("tax_rate").value="'.$rec['tax_rate'].'";';
+    $ja['last_item_price'] = $rec['last_purchase_price'];
+    $ja['tax_rate'] = $rec['tax_rate'];
 
     $price = '';
     $use_sales_or_purchase_price = Variable::get('premium_warehouse_use_last_price', false);
@@ -73,13 +74,17 @@ if ($trans['transaction_type']<2) {
 	$price = Utils_CurrencyFieldCommon::get_values($price_p);
 
 	$gross_price = Utils_CurrencyFieldCommon::get_values(Utils_CurrencyFieldCommon::format_default($price[0]*(100+Data_TaxRatesCommon::get_tax_rate($rec['tax_rate']))/100, $price[1]));
-	$js .= 	'if($("unit_price")){'.
-				'obj=$("__unit_price__currency");for(i=0;i<obj.options.length;i++)if(obj.options[i].value=='.$price[1].'){cur_key=i;break;}'.
-				'$("unit_price").value=$("net_price").value="'.implode(Utils_currencyFieldCommon::get_decimal_point(),explode('.',$price[0])).'";'.
-				'$("gross_price").value="'.implode(Utils_currencyFieldCommon::get_decimal_point(),explode('.',$gross_price[0])).'";'.
-                '$("markup_discount_rate").value=0;'.
-				'switch_currencies(cur_key,"net_price","gross_price","unit_price");'.
-			'}';
+    $js .= 'var pcf = "unit_price";' . "\n";
+    $js .= 'if (!$(pcf)) pcf = "gross_price";' . "\n";
+    $js .= 'if (!$(pcf)) pcf = "net_price";' . "\n";
+    $js .= 'if ($(pcf)) { ' . "\n" .
+           '    obj=$("__" + pcf + "__currency");' . "\n" .
+           '    for(i=0;i<obj.options.length;i++) if(obj.options[i].value=='.$price[1].'){cur_key=i;break;}' . "\n" .
+           '}' . "\n" .
+           'switch_currencies(cur_key,"net_price","gross_price","unit_price");' .  "\n";
+    $ja['unit_price'] = $ja['net_price'] = implode(Utils_currencyFieldCommon::get_decimal_point(),explode('.',$price[0]));
+    $ja['gross_price'] = implode(Utils_currencyFieldCommon::get_decimal_point(),explode('.',$gross_price[0]));
+    $ja['markup_discount_rate'] = 0;
 
 	$js .= 'if($("quantity"))$("quantity").style.display="inline";';
 	$js .= 'if(!$("quantity").value){$("quantity").value=1;';
@@ -105,5 +110,8 @@ if ($trans['transaction_type']==0 && !$trans['payment']) {
 	$js .= 'if($("serials_section"))item_type_changed('.$rec['item_type'].');';
 }
 
+foreach ($ja as $id => $value) {
+    $js .= 'var el = $("' . $id . '"); if (el) el.value = "' . Epesi::escapeJS($value) . '";' . "\n";
+}
 print($js);
 ?>
