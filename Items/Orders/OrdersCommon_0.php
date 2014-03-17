@@ -788,6 +788,20 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		}
 	}
 
+    public static function allow_negative_qty($item_id)
+    {
+        $negative = Variable::get('premium_warehouse_negative_qty', false);
+        if ($negative == 'all') {
+            return true;
+        } elseif ($negative == 'selected') {
+            $item = Utils_RecordBrowserCommon::get_record('premium_warehouse_items', $item_id);
+            if (isset($item['allow_negative_quantity']) && $item['allow_negative_quantity']) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 	public static function check_qty_on_hand($data){
 		self::get_trans();
 		if (isset($data['quantity']) && intval($data['quantity'])!=$data['quantity']) return array('item_name'=>__( 'Invalid amount'));
@@ -822,6 +836,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		if (self::$trans['transaction_type']==1) {
 			if ($ord_qty<=0) return array('quantity'=>__( 'Invalid amount'));
 			if (self::$trans['status']<=1) return true;
+            if (self::allow_negative_qty($data['item_name'])) return true;
 			$location_id = Utils_RecordBrowserCommon::get_records('premium_warehouse_location',array('item_sku'=>$data['item_name'],'warehouse'=>self::$trans['warehouse']));
 			$location_id = array_shift($location_id);
 			if (!isset($location_id) || !$location_id) {
@@ -830,7 +845,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			if ($data['quantity']>$location_id['quantity']) return array('quantity'=>__( 'Amount not available'));
 		}
 		if (self::$trans['transaction_type']==4) {
-			if ($ord_qty<=0) return array('quantity'=>__( 'Invallid amount'));
+			if ($ord_qty<=0) return array('quantity'=>__( 'Invalid amount'));
 			$location_id = Utils_RecordBrowserCommon::get_records('premium_warehouse_location',array('item_sku'=>$data['item_name'],'warehouse'=>self::$trans['warehouse']));
 			$location_id = array_shift($location_id);
 			if (!isset($location_id) || !$location_id) {
@@ -841,7 +856,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		if (self::$trans['transaction_type']==2) {
 			if (!isset($data['debit'])) return true;
 			if ($data['debit']<0 ||
-				$data['credit']<0) return array('debit'=>__( 'Invallid amount'));
+				$data['credit']<0) return array('debit'=>__( 'Invalid amount'));
 //			if (!$data['debit']>0 &&
 //				!$data['credit']>0) return array('debit'=>__( 'Non-zero amount must be entered'));
 			if ($data['debit']>0) {
@@ -1539,8 +1554,10 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		$qry = array();
 		$vals = array();
 		$words = explode(' ', $str);
-		if (($trans_type==1 || $trans_type==4) && $trans['status']>=2 && $trans['warehouse']) {
-			$qry[] = '(pwi.f_item_type>=%s OR EXISTS (SELECT id FROM premium_warehouse_location_data_1 AS pwl WHERE pwl.f_quantity!=0 AND pwl.f_item_sku=pwi.id AND pwl.f_warehouse=%d))';
+        $negative_qty = Variable::get('premium_warehouse_negative_qty', false);
+		if ($negative_qty != 'all' && ($trans_type==1 || $trans_type==4) && $trans['status']>=2 && $trans['warehouse']) {
+            $negative_query = ($negative_qty == 'selected') ? 'OR pwi.f_allow_negative_quantity = 1 ' : '';
+			$qry[] = '(pwi.f_item_type>=%s ' . $negative_query . 'OR EXISTS (SELECT id FROM premium_warehouse_location_data_1 AS pwl WHERE pwl.f_quantity!=0 AND pwl.f_item_sku=pwi.id AND pwl.f_warehouse=%d))';
 			$vals[] = 2;
 			$vals[] = $trans['warehouse'];
 		}
@@ -1647,6 +1664,36 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
     public static function shipping_maplink($r,$nolink,$desc) {
         if (!$nolink) return Utils_TooltipCommon::create('<a '.self::create_shipping_map_href($r).'>'.$r[$desc['id']].'</a>',__('Click here to search this location using google maps'));
         return $r[$desc['id']];
+    }
+
+    public static function display_negative_qty($record, $nolink, $desc)
+    {
+        $allow_negative = Variable::get('premium_warehouse_negative_qty', false);
+        if (!$allow_negative) {
+            return __('Not allowed');
+        }
+        if ($allow_negative == 'all') {
+            $ret = true;
+        } else {
+            $ret = $record[$desc['id']];
+        }
+        return $ret = $ret ? __('Yes') : __('No');
+    }
+
+    public static function QFfield_negative_qty(&$form, $field, $label, $mode, $default, $desc, $rb_obj)
+    {
+        $allow_negative = Variable::get('premium_warehouse_negative_qty', false);
+        if (!$allow_negative) {
+            return;
+        }
+        if ($mode == 'edit' || $mode == 'add') {
+            Utils_RecordBrowserCommon::QFfield_checkbox($form, $field, $label, $mode, $default, $desc, $rb_obj);
+        } else {
+            if ($allow_negative == 'all') {
+                $default = 1;
+            }
+            Utils_RecordBrowserCommon::QFfield_checkbox($form, $field, $label, $mode, $default, $desc, $rb_obj);
+        }
     }
 
 }

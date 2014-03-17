@@ -203,10 +203,23 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items_orders', array('name' => 'Tax Calculation', 'type'=>'commondata', 'param'=>array('Premium_Items_Orders_TaxCalc'), 'required'=>true, 'extra'=>true, 'filter'=>false, 'visible'=>false, 'position'=>'Related'));
 		Utils_CommonDataCommon::new_array('Premium_Items_Orders_TaxCalc',array(0=>'Per Item',1=>'By Total'),true,true);
 
-		return true;
+        // add allow negative field
+        $recordset = 'premium_warehouse_items';
+        $definition = array('name' => _M('Allow negative quantity'),
+                            'type' => 'checkbox',
+                            'extra' => false,
+                            'visible' => false,
+                            'QFfield_callback' => array('Premium_Warehouse_Items_OrdersCommon', 'QFfield_negative_qty'),
+                            'display_callback' => array('Premium_Warehouse_Items_OrdersCommon', 'display_negative_qty')
+        );
+        Utils_RecordBrowserCommon::new_record_field($recordset, $definition);
+        Variable::set('premium_warehouse_negative_qty', 'all');
+
+        return true;
 	}
 	
 	public function uninstall() {
+        Utils_RecordBrowserCommon::delete_record_field('premium_warehouse_items', 'Allow negative quantity');
 		Base_AclCommon::delete_permission('Inventory - Sell at loss');
 		DB::DropTable('premium_warehouse_location_orders_serial');
 		Utils_RecordBrowserCommon::unregister_processing_callback('premium_warehouse_items', array('Premium_Warehouse_Items_OrdersCommon', 'submit_new_item_from_order'));

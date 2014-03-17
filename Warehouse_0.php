@@ -57,6 +57,10 @@ class Premium_Warehouse extends Module {
             $tax_calculation_values = Utils_CommonDataCommon::get_translated_array('Premium_Items_Orders_TaxCalc');
             $form->addElement('select', 'tax_calculation', __('Default tax calculation'), $tax_calculation_values);
             $form->setDefaults(array('tax_calculation' => Variable::get('premium_warehouse_def_tax_calc', false)));
+            $neg_qty_values = array('' => __('No'), 'all' => __('For all items'), 'selected' => __('For selected items'));
+            $form->addElement('select', 'allow_negative_qty', __('Allow negative quantity'), $neg_qty_values);
+            $form->setDefaults(array('allow_negative_qty' => Variable::get('premium_warehouse_negative_qty', false)));
+
 			$form->addElement('header', 'disable_trans_types_header', __('Disable Transaction Types'));
 			$form->addElement('checkbox', 'disable_purchase', __('Disable Purchase'));
 			$form->addElement('checkbox', 'disable_sales_quote', __('Disable Sales Quote'));
@@ -96,6 +100,8 @@ class Premium_Warehouse extends Module {
                 Variable::set('premium_warehouse_use_last_price', $use_last_sale_or_purchase_price);
                 $tax_calculation = & $vals['tax_calculation'];
                 Variable::set('premium_warehouse_def_tax_calc', $tax_calculation);
+                $negative_qty = & $vals['allow_negative_qty'];
+                Variable::set('premium_warehouse_negative_qty', $negative_qty);
 				$result = array();
 				foreach ($vals as $k=>$v) {
 					if (strpos($k, 'disable_')!==false && $v==true) $result[] = $k;
