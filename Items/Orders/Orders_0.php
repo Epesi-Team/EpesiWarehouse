@@ -281,6 +281,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 			'markup_discount_rate'=>array('name'=>__('Markup'),'width'=>'80px', 'wrapmode'=>'nowrap'),
 			'net_total'=>array('width'=>'80px', 'wrapmode'=>'nowrap'),
 			'net_price'=>array('width'=>'100px', 'wrapmode'=>'nowrap'),
+			'unit_price'=>array('width'=>'100px', 'wrapmode'=>'nowrap'),
 			'gross_price'=>array('width'=>'100px', 'wrapmode'=>'nowrap'),
 			'debit'=>array('width'=>20, 'wrapmode'=>'nowrap'),
 			'credit'=>array('width'=>20, 'wrapmode'=>'nowrap'),
@@ -298,8 +299,11 @@ class Premium_Warehouse_Items_Orders extends Module {
 		if ($arg['payment']!=1) {
 			$cols['tax_rate'] = false;
 			$cols['net_total'] = false;
-			$cols['net_price'] = false;			
-			$cols['gross_price'] = false;			
+			$cols['net_price'] = false;
+            $cols['unit_price'] = false;
+            $cols['markup_discount_rate'] = false;
+            $cols['sww'] = false;
+			$cols['gross_price'] = false;
 			$cols['tax_value'] = false;			
 			$cols['gross_total'] = false;
 			$cols['quantity'] =  $arg['transaction_type']!=2;
