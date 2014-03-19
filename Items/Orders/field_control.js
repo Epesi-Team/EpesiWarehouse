@@ -11,7 +11,6 @@ warehouse_orders_hide_fields = function(trans_type, status, shipment_type, payme
 	if (!payment_type && $('payment_type')) payment_type = $('payment_type').value;
 
 	warehouse_orders_hide_field('online_order', (trans_type!=1));
-	warehouse_orders_hide_field('related', true);
 	warehouse_orders_hide_field('status', (warehouse_order_mode=='add'));
 	warehouse_orders_hide_field('company', (warehouse_order_mode=='view' || trans_type==2 || trans_type==4));
 	warehouse_orders_hide_field('contact', (warehouse_order_mode=='view' || trans_type==2 || trans_type==4));

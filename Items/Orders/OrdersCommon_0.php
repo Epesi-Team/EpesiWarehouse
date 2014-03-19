@@ -66,6 +66,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			$related = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $r['related']);
 			return Utils_RecordBrowserCommon::record_link_open_tag('premium_warehouse_items_orders', $r['related'], $nolink).$related['transaction_id'].': '.self::display_transaction_type_order($related).Utils_RecordBrowserCommon::record_link_close_tag();
 		} else {
+            eval_js("warehouse_orders_hide_field('related', true);");
 			return '';
 		}
 	}
