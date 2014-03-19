@@ -1231,7 +1231,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 					$label = __('Use this Trans.');
 				}
 				Base_ActionBarCommon::add($icon,$label,Module::create_href(array('premium_warehouse_change_active_order'=>$values['id'])));
-				if (isset($_REQUEST['premium_warehouse_add_bill']) && $_REQUEST['premium_warehouse_add_bill']===$values['id']) {
+				if (isset($_REQUEST['premium_warehouse_add_bill']) && $_REQUEST['premium_warehouse_add_bill']==$values['id']) {
 					$bill = $values;
 					foreach ($bill as $b=>$bb) $bill[$b] = htmlspecialchars_decode($bb);
 					$bill['transaction_type'] = 1;
@@ -1693,6 +1693,14 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
                 $default = 1;
             }
             Utils_RecordBrowserCommon::QFfield_checkbox($form, $field, $label, $mode, $default, $desc, $rb_obj);
+        }
+    }
+
+    public static function QFfield_split_transaction(&$form, $field, $label, $mode, $default, $desc, $rb_obj)
+    {
+        if ($default) {
+            $callback = Utils_RecordBrowserCommon::get_default_QFfield_callback($desc['type']);
+            call_user_func_array($callback, array(&$form, $field, $label, $mode, $default, $desc, $rb_obj));
         }
     }
 

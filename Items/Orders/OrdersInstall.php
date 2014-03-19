@@ -27,7 +27,8 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 			array('name' => _M('Warehouse'), 		'type'=>'select', 'required'=>false, 'extra'=>false, 'filter'=>true, 'visible'=>true, 'param'=>'premium_warehouse::Warehouse;::', 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_warehouse')),
 			array('name' => _M('Target Warehouse'),'type'=>'select', 'required'=>false, 'extra'=>false, 'visible'=>false, 'param'=>'premium_warehouse::Warehouse;::', 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_warehouse')),
 			array('name' => _M('Ref No'), 		'type'=>'text', 'param'=>'64', 'required'=>false, 'extra'=>false, 'visible'=>true),
-			array('name' => _M('Employee'), 		'type'=>'crm_contact', 'filter'=>true, 'param'=>array('field_type'=>'select','crits'=>array('Premium_Warehouse_ItemsCommon','employee_crits'), 'format'=>array('CRM_ContactsCommon','contact_format_no_company')), 'required'=>false, 'extra'=>false, 'visible'=>true),
+            array('name' => _M('Split Transaction'),'type' => 'select','extra' => false,'visible' => false,'param' => "premium_warehouse_items_orders::Transaction ID",'QFfield_callback' => array('Premium_Warehouse_Items_OrdersCommon', 'QFfield_split_transaction')),
+            array('name' => _M('Employee'), 		'type'=>'crm_contact', 'filter'=>true, 'param'=>array('field_type'=>'select','crits'=>array('Premium_Warehouse_ItemsCommon','employee_crits'), 'format'=>array('CRM_ContactsCommon','contact_format_no_company')), 'required'=>false, 'extra'=>false, 'visible'=>true),
 			array('name' => _M('Transaction Date'),'type'=>'date', 'required'=>true, 'extra'=>false, 'visible'=>true),
 			array('name' => _M('Return Date'),	'type'=>'date', 'required'=>false, 'extra'=>false, 'visible'=>false),
 			array('name' => _M('Expiration Date'),'type'=>'date', 'required'=>false, 'extra'=>false, 'visible'=>false),
@@ -202,6 +203,10 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 
 		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items_orders', array('name' => 'Tax Calculation', 'type'=>'commondata', 'param'=>array('Premium_Items_Orders_TaxCalc'), 'required'=>true, 'extra'=>true, 'filter'=>false, 'visible'=>false, 'position'=>'Related'));
 		Utils_CommonDataCommon::new_array('Premium_Items_Orders_TaxCalc',array(0=>'Per Item',1=>'By Total'),true,true);
+
+        // deny access to disallow edit
+        Utils_RecordBrowserCommon::field_deny_access('premium_warehouse_items_orders', 'Split Transaction', 'add');
+        Utils_RecordBrowserCommon::field_deny_access('premium_warehouse_items_orders', 'Split Transaction', 'edit');
 
         // add allow negative field
         $recordset = 'premium_warehouse_items';

@@ -538,7 +538,9 @@ class Premium_Warehouse_Items_Orders extends Module {
 			else Utils_RecordBrowserCommon::delete_record('premium_warehouse_items_orders_details', $v['id']);
 			if (intval($vals['item__'.$v['id']]['new_qty'])>0) {
 				if ($id===null) {
+                    $trans['split_transaction'] = $trans['id'];
 					$id = Utils_RecordBrowserCommon::new_record('premium_warehouse_items_orders', $trans);
+                    Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $trans['id'], array('split_transaction' => $id));
 					$this->set_module_variable('split_transaction_id', $id);
 				}
 				$old['transaction_id'] = $id;
@@ -607,10 +609,12 @@ class Premium_Warehouse_Items_Orders extends Module {
 		}
 		$p = $trans['payment'];
 		$lp = $this->init_module('Utils/LeightboxPrompt');
-		if ($trans['transaction_type']==0 && isset($trans['id'])) {
+		if ($trans['transaction_type']==0 && isset($trans['id'])) { // Purchase
+            // if not payment and status is other delivered or cancelled,
+            // then set status to shipment received
 			if (!$p && $status<20) $status = 4;
 			switch ($status) {			
-				case '':
+				case '': // Purchase - New
 					$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$trans['id']));
 					$po_form = $this->init_module('Libs_QuickForm'); 
 
@@ -654,7 +658,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 						location(array());
 					}
 					break;
-				case 1:
+				case 1: // Purchase - Purchase Quote
 					$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$trans['id']));
 					$po_form = $this->init_module('Libs_QuickForm'); 
 
@@ -695,7 +699,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 						location(array());
 					}
 					break;
-				case 2:
+				case 2: // Purchase - Purchase Order
 					$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$trans['id']));
 					if (empty($items)) {
 						$this->href = Utils_TooltipCommon::open_tag_attrs(__('No items were saved in this transaction, cannot proceed with processing.'),false);
@@ -712,7 +716,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 						location(array());
 					}
 					break;
-				case 3:
+				case 3: // Purchase - New shipment
 					$ship_received = $this->init_module('Libs/QuickForm');
 					$emps_ids = CRM_ContactsCommon::get_contacts(Premium_Warehouse_ItemsCommon::employee_crits(), array(), array('last_name'=>'ASC','first_name'=>'ASC'));
 					$emps = array(''=>'---');
@@ -736,7 +740,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 						location(array());
 					}
 					break;
-				case 4:
+				case 4: // Purchase - shipment received
 					$serials = $this->init_module('Libs/QuickForm');
 					$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$trans['id']));
 					$serials->addElement('static', 'item_header', '');
@@ -797,7 +801,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 						location(array());
 					}
 					break;
-				case 5:
+				case 5: // Purchase - On hold
 					$lp->add_option('items_available', __('Items Available'), null, null);
 					$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$trans['id']));
 					$split = $this->split_items_form($items);
@@ -821,7 +825,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 					}
 					break;
 			}
-		} elseif ($trans['transaction_type']==1) {
+		} elseif ($trans['transaction_type']==1) { // Sale
 			if (!$p && $status<2) $status = 2;
 			switch ($status) {			
 				case -2:
@@ -1109,7 +1113,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 						location(array());
 					}
 					break;
-				case 5:
+				case 5: // Sale - On hold
 					$lp->add_option('items_available', __('Items Available'), null, null);
 					$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$trans['id']));
 					$split = $this->split_items_form($items);
@@ -1276,7 +1280,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 						location(array());
 					}
 					break;
-				case 4:
+				case 4: // WAREHOUSE TRANSFER - On hold
 					$lp->add_option('items_available', __('Items Available'), null, null);
 					$items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$trans['id']));
 					$split = $this->split_items_form($items);
