@@ -538,9 +538,11 @@ class Premium_Warehouse_Items_Orders extends Module {
 			else Utils_RecordBrowserCommon::delete_record('premium_warehouse_items_orders_details', $v['id']);
 			if (intval($vals['item__'.$v['id']]['new_qty'])>0) {
 				if ($id===null) {
-                    $trans['split_transaction'] = $trans['id'];
+                    $split_trans_old = $trans['split_transaction'];
+                    $trans['split_transaction'] = array($trans['id']);
 					$id = Utils_RecordBrowserCommon::new_record('premium_warehouse_items_orders', $trans);
-                    Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $trans['id'], array('split_transaction' => $id));
+                    $split_trans_old[] = $id;
+                    Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $trans['id'], array('split_transaction' => $split_trans_old));
 					$this->set_module_variable('split_transaction_id', $id);
 				}
 				$old['transaction_id'] = $id;

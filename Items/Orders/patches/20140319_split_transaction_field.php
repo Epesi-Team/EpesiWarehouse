@@ -2,7 +2,7 @@
 
 $tab = 'premium_warehouse_items_orders';
 $definition = array('name' => _M('Split Transaction'),
-                    'type' => 'select',
+                    'type' => 'multiselect',
                     'extra' => false,
                     'visible' => false,
                     'param' => "$tab::Transaction ID",
