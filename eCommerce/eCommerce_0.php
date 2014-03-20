@@ -1199,30 +1199,22 @@ class Premium_Warehouse_eCommerce extends Module {
 	public function attachment_product_addon($arg){
 		$a = $this->init_module('Utils/Attachment',array('premium_ecommerce_products/'.$arg['item_name']));
 		$a->set_add_func(array('Premium_Warehouse_eCommerceCommon','copy_attachment'));
-		$a->set_persistent_delete();
-		$a->set_max_file_size(1024*1024);
 		$this->display_module($a);
 	}
 
 	public function attachment_product_desc_addon($arg){
 		$a = $this->init_module('Utils/Attachment',array('premium_ecommerce_descriptions/'.$arg['language'].'/'.$arg['item_name']));
 		$a->set_add_func(array('Premium_Warehouse_eCommerceCommon','copy_attachment'));
-		$a->set_persistent_delete();
-		$a->set_max_file_size(1024*1024);
 		$this->display_module($a);
 	}
 
 	public function attachment_page_addon($arg){
 		$a = $this->init_module('Utils/Attachment',array('premium_ecommerce_pages/'.$arg['id']));
-		$a->set_persistent_delete();
-		$a->set_max_file_size(1024*1024);
 		$this->display_module($a);
 	}
 	
 	public function attachment_page_desc_addon($arg){
 		$a = $this->init_module('Utils/Attachment',array('premium_ecommerce_pages_data/'.$arg['language'].'/'.$arg['page']));
-		$a->set_persistent_delete();
-		$a->set_max_file_size(1024*1024);
 		$this->display_module($a);
 	}
 
