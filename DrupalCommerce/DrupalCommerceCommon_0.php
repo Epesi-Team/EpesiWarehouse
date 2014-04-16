@@ -216,7 +216,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
         $drupal_id = $arr[0];
         $ext = strrchr($original,'.');
         if(preg_match('/^\.(jpg|jpeg|gif|png|bmp)$/i',$ext)) {
-           print($id.' '.$file.' '.$original.' '.print_r($arr,true)."\n");
+//           print($id.' '.$file.' '.$original.' '.print_r($arr,true)."\n");
            $files = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'views/epesi_product_images_search_by_filename.json?'.http_build_query(array('display_id'=>'services_1','args'=>array('epesi_'.$id.$ext,''))));
            if(isset($files[0]['fid'])) {
              $ret['fid'] = $files[0]['fid'];
@@ -1034,7 +1034,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 	}*/
 
 	public static function cron() {
-        return array('cron_orders'=>1,'cron_categories'=>6*60);
+        return array('cron_orders'=>3,'cron_categories'=>6*60);
     }
 
     public static function cron_orders() {
@@ -1245,7 +1245,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
                 $category_mapping[$term_data['field_epesi_category_id']['und'][0]['value']] = $term_data['tid'];
               }
             } catch(Exception $e) {}
-            print_r($terms);
+            //print_r($terms);
             
             //get local epesi categories
             $epesi_categories_temp = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_categories');
@@ -1260,13 +1260,13 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
               $epesi_category_parents[$c['id']] = $c['parent_category'];
               $epesi_category_weight[$c['id']] = $c['position'];
             }
-            print_r($category_mapping);
+            //print_r($category_mapping);
             
             do {
 		      $old_count_epesi_category_names = count($epesi_category_names);
               //TODO: use or remove meta tags from descriptions from ecommerce recordsets
               foreach($epesi_category_names as $id=>$name) {
-		        print("4 ".$name."\n");
+		       // print("4 ".$name."\n");
                 if($epesi_category_parents[$id] && !isset($category_mapping[$epesi_category_parents[$id]])) continue;
                 $term = new stdClass();
                 $term->name = $name;
@@ -1302,14 +1302,12 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
                 
                 //sync translations
                 $translations = Utils_RecordBrowserCommon::get_records('premium_ecommerce_cat_descriptions',array('category'=>$id));
-//                $en_trans_done = false;
                 foreach($translations as $translation) {
                   $values = array();
                   $values['name_field'][$translation['language']][0]['value'] = $translation['display_name']?$translation['display_name']:$name;
                   $values['description_field'][$translation['language']][0]['value'] = $translation['long_description'];
                   $values['description_field'][$translation['language']][0]['format'] = 'filtered_html';
                   $values['description_field'][$translation['language']][0]['summary'] = $translation['short_description'];
-                  if($translation['language']=='en') $en_trans_done = true;
                   $info = array(
                     'language'=>$translation['language'],
                     'source'=>$translation['language']=='en'?'':'en',
@@ -1356,7 +1354,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
             }
             
             foreach($epesi_manufacturer_names as $id=>$name) {
-		        print("5 ".$name."\n");
+		        //print("5 ".$name."\n");
               $term = new stdClass();
               $term->name = $name;
               $term->name_original = $name;
@@ -1413,7 +1411,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 			  $row = array_merge($row,Utils_RecordBrowserCommon::get_record('premium_warehouse_items',$row['item_name']));
 			  $row['item_name'] = html_entity_decode($row['item_name']);
 			  
-		        print("6 ".$row['id']."\n");
+		        //print("6 ".$row['id']."\n");
 			  
 			  //set prices
 			  $prices = Utils_RecordBrowserCommon::get_records('premium_ecommerce_prices',array('item_name'=>$row['id']));
@@ -1537,12 +1535,11 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 			    $drupal_product_id = $drupal_products[$row['sku']];
 			    $nodes = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'views/epesi_products_search_by_product_id.json?'.http_build_query(array('display_id'=>'services_1','args'=>array($drupal_product_id,''))));
 			    $nid = isset($nodes[0]['nid'])?$nodes[0]['nid']:0;
+//			    $product = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'product/'.$drupal_product_id);
 			  } else {
-			  	print(var_export($data));
 			    $product = Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'product',$data);
 			    $drupal_product_id = $product['product_id'];
 			  }
-			  
 			
 			  if(!isset($data['field_images']) || !is_array($data['field_images'])) $data['field_images'] = array();
 			  if($drupal_product_id) {
@@ -1559,21 +1556,21 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 			      Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'entity_translation/translate',array('entity_type'=>'commerce_product','entity_id'=>$drupal_product_id,'translation'=>$info,'values'=>$values));
 			    }
 			
-			
 			    //update node of product
-			    print_r($row);
-			    if($row['recommended']) print('RECOMMENDED!!!'."\n");
+			    //print_r($row);
+			    //if($row['recommended']) print('RECOMMENDED!!!'."\n");
 			    $node = array();
 			    $node['type']='epesi_products';
 			    $node['title']=$node['title_field']['en'][0]['value']=$node['title_field']['und'][0]['value']=$node['field_title']=$row['item_name'];
 			    $node['body']['en'][0]['value']=$row['description'];
 			    $node['body']['en'][0]['format'] = 'filtered_html';
 			    $node['field_product']['und'][0]['product_id'] = $drupal_product_id;
+//			    $node['field_product']['und'][0] = $product;
 			    $node['promote']=$row['recommended']?1:null; //TODO: doesn't work
 			    $node['sticky']=$row['recommended']?1:null;
 			    foreach($row['category'] as $ccc) {
 			      $category_id = array_pop(explode('/',$ccc));
-			      if(isset($category_mapping[$category_id])) $node['field_epesi_category']['und'][] = $category_mapping[$category_id];
+			      if(isset($category_mapping[$category_id])) $node['field_epesi_category']['und'][]['tid'] = $category_mapping[$category_id];
 			    }
 			    if($row['manufacturer'] && isset($manufacturer_mapping[$row['manufacturer']]))
 			      $node['field_manufacturer']['und'][0] = $manufacturer_mapping[$row['manufacturer']];
@@ -1584,12 +1581,13 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 			      $node['body']['en'][0]['value']=$translations['long_description'];
 			      $node['body']['en'][0]['summary']=$translations['short_description'];
 			    }
-			    print(var_export($node));
+//			    print(var_export($node));
 			    if($nid) {
-			      print('nid='.$nid."\n");
-			      Premium_Warehouse_DrupalCommerceCommon::drupal_put($drupal_id,'node/'.$nid,$node);
+//			      print('nid='.$nid."\n");
+                  $node['nid']=$nid;
+			      Premium_Warehouse_DrupalCommerceCommon::drupal_put($drupal_id,'entity_node/'.$nid,$node);
 			    } else {
-			      $tmp = Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'node',$node);
+			      $tmp = Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'entity_node',$node);
 			      $nid = $tmp['nid'];
 			    }
 			    
@@ -1620,7 +1618,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
                 $nodes = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'views/epesi_products_search_by_product_id.json?'.http_build_query(array('display_id'=>'services_1','args'=>array($id,''))));
                 $nid = isset($nodes[0]['nid'])?$nodes[0]['nid']:0;
                 Premium_Warehouse_DrupalCommerceCommon::drupal_delete($drupal_id,'product/'.$id);
-                Premium_Warehouse_DrupalCommerceCommon::drupal_delete($drupal_id,'node/'.$nid);
+                Premium_Warehouse_DrupalCommerceCommon::drupal_delete($drupal_id,'entity_node/'.$nid);
               }
 			}
         }

@@ -10,6 +10,7 @@ dependencies[] = entity_translation
 #dependencies[] = i18n_menu
 dependencies[] = title
 dependencies[] = services
+dependencies[] = services_entity
 dependencies[] = services_views
 dependencies[] = services_entity_translation
 dependencies[] = rest_server

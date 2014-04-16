@@ -1362,10 +1362,6 @@ function commerce_services_validate_field_value($entity_type, $entity, $field_na
     $value = array($value);
   }
 
-  $properties = entity_get_property_info($entity_type);
-  $bundle = field_extract_bundle($entity_type, $entity);
-  $fields = $properties['bundles'][$bundle]['properties'];
-
   $wrapper = entity_metadata_wrapper($entity_type, $entity);
 
   // If the field has an options list callback...
@@ -1781,10 +1777,6 @@ function commerce_services_update_entity($entity_type, $entity_id, $data, $flatt
  *   flattened as in GET requests; accepts true or false, defaults to true.
  */
 function commerce_services_set_field_values($entity_type, $entity, $data, $flatten_fields) {
-  $entity_wrapper = entity_metadata_wrapper($entity_type, $entity);
-  $properties = entity_get_property_info($entity_type);
-  $bundle = field_extract_bundle($entity_type, $entity);
-
   // Build an array of protected properties, preventing update requests from
   // changing IDs and other immutable properties of the entity.
   $entity_info = entity_get_info($entity_type);
@@ -1946,7 +1938,7 @@ function commerce_services_set_field_values($entity_type, $entity, $data, $flatt
  */
 function commerce_services_expand_entities($entity_type, $entity, $depth, $flatten_fields) {
   // Extract the bundle name.
-  $bundle = field_extract_bundle($entity_type, $entity);
+  list(, , $bundle) = entity_extract_ids($entity_type, $entity);
 
   // Look for each type of Commerce reference field on the given entity.
   foreach (array('commerce_product_reference', 'commerce_line_item_reference', 'commerce_customer_profile_reference', 'taxonomy_term_reference') as $field_type) {
@@ -2030,20 +2022,6 @@ function commerce_services_expand_entities($entity_type, $entity, $depth, $flatt
 }
 
 /**
- * Implements hook_entity_info_alter().
- *
- * The core Taxonomy module specifies an incorrect bundle key name for the
- * taxonomy_term entity type. Once core is patched, this alter hook can be
- * removed, but in the meantime it is essential for flattening fields on
- * taxonomy term entities.
- *
- * @see http://drupal.org/node/1736466
- */
-function commerce_services_entity_info_alter(&$info) {
-  $info['taxonomy_term']['bundle keys']['bundle'] = 'vocabulary_machine_name';
-}
-
-/**
  * Flattens field value arrays on the given entity.
  *
  * Field flattening in Commerce Services involves reducing their value arrays to
@@ -2062,7 +2040,7 @@ function commerce_services_entity_info_alter(&$info) {
  *   A clone of the entity whose field value arrays should be flattened.
  */
 function commerce_services_flatten_fields($entity_type, $cloned_entity) {
-  $bundle = field_extract_bundle($entity_type, $cloned_entity);
+  list(, , $bundle) = entity_extract_ids($entity_type, $cloned_entity);
   $clone_wrapper = entity_metadata_wrapper($entity_type, $cloned_entity);
 
   // Loop over every field instance on the given entity.
@@ -2091,7 +2069,7 @@ function commerce_services_flatten_fields($entity_type, $cloned_entity) {
  *   The entity whose field value arrays should be flattened.
  */
 function commerce_services_decorate_entity($entity_type, $entity) {
-  $bundle = field_extract_bundle($entity_type, $entity);
+  list(, , $bundle) = entity_extract_ids($entity_type, $entity);
 
   // If the entity is a line item, add its title to it.
   if ($entity_type == 'commerce_line_item') {

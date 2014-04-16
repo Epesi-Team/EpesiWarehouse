@@ -332,6 +332,19 @@ class Premium_Warehouse_DrupalCommerce extends Module {
 		$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_drupal');
 		$this->rb->set_defaults(array('endpoint'=>'epesi','update_products_every__minutes_'=>'360'));
 		$this->display_module($this->rb);
+		
+		print('<div style="text-align:left;padding-left:20px;">You need following drupal modules installed:<ul>
+		<li><a href="https://drupal.org/project/services" target="_blank">Services</a></li>
+		<li><a href="https://drupal.org/project/commerce_multicurrency" target="_blank">Commerce Multicurrency</a></li>
+		<li><a href="https://drupal.org/project/commerce_stock" target="_blank">Commerce Stock</a></li>
+		<li><a href="https://drupal.org/project/entity_translation" target="_blank">Entrity Translation</a></li>
+		<li><a href="https://drupal.org/project/services_views" target="_blank">Services Views</a></li>
+		<li><a href="https://drupal.org/project/services_entity" target="_blank">Services Entity</a></li>
+		<li><a href="'.$this->get_module_dir().'drupal_module/commerce_services.tar.gz" target="_blank">Commerce Services</a></li>
+		<li><a href="'.$this->get_module_dir().'drupal_module/services_entity_translation.tar.gz" target="_blank">Services Entity Translation</a></li>
+		<li><a href="'.$this->get_module_dir().'drupal_module/epesi_commerce.tar.gz" target="_blank">Epesi Commerce</a></li>
+		<li><a href="'.$this->get_module_dir().'drupal_module/commerce_epesi_payment.tar.gz" target="_blank">Epesi Commerce Payment (optional)</a></li>
+		</ul></div>');
 
 		return true;
 	}

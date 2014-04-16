@@ -3,6 +3,7 @@ description = Exposes entity translations to the Service API.
 package = Services
 core = 7.x
 dependencies[] = services
+dependencies[] = services_entity
 dependencies[] = entity_translation
 
 ; Information added by drupal.org packaging script on 2013-08-07

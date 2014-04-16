@@ -1,3 +1,21 @@
 <?php
 
 include_once 'epesi_commerce.features.inc';
+
+function epesi_commerce_views_default_views() {
+  // Check for all view file in views directory
+  $files = file_scan_directory(drupal_get_path('module', 'epesi_commerce') . '/views', '/.*\.inc$/');
+  
+  // Add view to list of views
+  $views = array();
+  foreach ($files as $filepath => $file) {
+      $view = null;
+      require $filepath;
+      if (isset($view)) {
+        $views[$view->name] = $view;
+      }
+  }
+  
+  // At the end, return array of default views.
+  return $views;
+}

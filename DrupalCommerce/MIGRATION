@@ -3,7 +3,6 @@
 3. Set "multilingual with translations" in structure on: (optional)
 - content types: "basic page", 
 - menus: "main menu"
-- taxonomy: "Epesi category" - set "localize" option
 4. /admin/commerce/config/currency/handling - Enable dedicated price fields for Epesi Products - for each currency you support
    /admin/commerce/config/stock/ss - enable stock management for "epesi products" (already should be enabled)
 5. Enable "currency selector" block (optional - multicurrency)
