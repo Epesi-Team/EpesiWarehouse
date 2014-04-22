@@ -4,10 +4,10 @@ header("Expires: Mon, 26 Jul 1997 05:00:00 GMT"); // date in the past
 define('CID',false); //i know that i won't access $_SESSION['client']
 define('SET_SESSION',false);
 require_once('../../../../../include.php');
-ModuleManager::load_modules();
 $old_user = Acl::get_user();
 if(!$old_user) Acl::set_user(1);
 
+ModuleManager::load_modules();
 if(!isset($_GET['id']) || !is_numeric($_GET['id']) || !isset($_GET['pos']) || !is_numeric($_GET['pos']) || !isset($_GET['w']) || !is_numeric($_GET['w'])) {
     blank_img();
     if(!$old_user) Acl::set_user();
@@ -18,7 +18,7 @@ $photo = null;
 Utils_AttachmentCommon::call_user_func_on_file('premium_ecommerce_products/'.$_GET['id'],'collect_photos');
 Utils_AttachmentCommon::call_user_func_on_file('premium_ecommerce_descriptions/pl/'.$_GET['id'],'collect_photos');
 
-if($photo == null) {
+if($photo == null || !file_exists($photo)) {
     blank_img();
 } else {
     header("Content-type: image/jpeg");

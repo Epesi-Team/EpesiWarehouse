@@ -4,10 +4,10 @@ header("Expires: Mon, 26 Jul 1997 05:00:00 GMT"); // date in the past
 define('CID',false); //i know that i won't access $_SESSION['client']
 define('SET_SESSION',false);
 require_once('../../../../../include.php');
-ModuleManager::load_modules();
 $old_user = Acl::get_user();
 if(!$old_user) Acl::set_user(1);
 
+ModuleManager::load_modules();
 if(!isset($_GET['i']) || !isset($_GET['id']) || !is_numeric($_GET['id'])) {
     blank_img();
     if(!$old_user) Acl::set_user();
