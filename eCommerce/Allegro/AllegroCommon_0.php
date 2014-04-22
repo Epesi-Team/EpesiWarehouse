@@ -15,12 +15,12 @@ class Premium_Warehouse_eCommerce_AllegroCommon extends ModuleCommon {
 	if(!isset($r['id']))
 	    return array('show'=>false);
         $x = Utils_RecordBrowserCommon::get_records_count('premium_ecommerce_products',array('item_name'=>$r['id']));
-        if (!$x || !Base_User_SettingsCommon::get('Premium_Warehouse_eCommerce_Allegro','login')) return array('show'=>false);
+        if (!$x || !Variable::get('allegro_login')) return array('show'=>false);
         return array('label'=>'Allegro', 'show'=>true);
     }
     
     public static function update_cats() {
-    	$country = Base_User_SettingsCommon::get('Premium_Warehouse_eCommerce_Allegro','country');
+    	$country = Variable::get('allegro_country');
 
     	/* @var $a Allegro */
     	$a = self::get_lib();
@@ -483,10 +483,10 @@ class Premium_Warehouse_eCommerce_AllegroCommon extends ModuleCommon {
     	static $a;
     	if($a===null) {
     		require_once('modules/Premium/Warehouse/eCommerce/Allegro/allegro.php');
-    		$a = new Allegro(Base_User_SettingsCommon::get('Premium_Warehouse_eCommerce_Allegro','login'),
-    			Base_User_SettingsCommon::get('Premium_Warehouse_eCommerce_Allegro','pass'),
-    			Base_User_SettingsCommon::get('Premium_Warehouse_eCommerce_Allegro','country'),
-    			Base_User_SettingsCommon::get('Premium_Warehouse_eCommerce_Allegro','key'));
+    		$a = new Allegro(Variable::get('allegro_login'),
+    			Variable::get('allegro_pass'),
+    			Variable::get('allegro_country'),
+    			Variable::get('allegro_key'));
     		if($a->error()) {
     		    if($trig_error) trigger_error($a->error(),E_USER_ERROR);
     		    else return false;
@@ -506,30 +506,9 @@ class Premium_Warehouse_eCommerce_AllegroCommon extends ModuleCommon {
 		return $templates;    	
     }
     
-    public static function user_settings(){
-    	if(self::Instance()->acl_check('settings')) {
-    		$rule = array(array('message'=>'Field required', 'type'=>'required'));
-    		$rule_pr = array(array('message'=>'Field required', 'type'=>'required'),array('type'=>'regex', 'message'=>'Nieprawidłowa cena','param'=>'/^[1-9][0-9]*(\.[0-9]+)?$/'));
-    		$settings = array();
-    		$countries = array();
-			$countries[1] = 'Polska';
-			$countries[228] = 'Neverland (webapi test)';
-			$states = explode('|','--|dolnośląskie|kujawsko-pomorskie|lubelskie|lubuskie|łódzkie|małopolskie|mazowieckie|opolskie|podkarpackie|podlaskie|pomorskie|śląskie|świętokrzyskie|warmińsko-mazurskie|wielkopolskie|zachodniopomorskie');
-    		
-    		$settings[] = array('name'=>'key','label'=>'Klucz WEBAPI','type'=>'text','default'=>'','rule'=>$rule);
-			$settings[] = array('name'=>'login','label'=>'Login','type'=>'text','default'=>'','rule'=>$rule);
-    		$settings[] = array('name'=>'pass','label'=>'Hasło','type'=>'text','default'=>'','rule'=>$rule);
-    		$settings[] = array('name'=>'country','label'=>'Kraj','type'=>'select','values'=>$countries,'default'=>1,'rule'=>$rule);
-    		$settings[] = array('name'=>'state','label'=>'Województwo','type'=>'select','values'=>$states,'default'=>0,'rule'=>$rule);
-    		$settings[] = array('name'=>'city','label'=>'Miasto','type'=>'text','default'=>'','rule'=>$rule);
-    		$settings[] = array('name'=>'postal_code','label'=>'Kod pocztowy','type'=>'text','default'=>'','rule'=>$rule);
-    		$settings[] = array('name'=>'fvat','label'=>'Faktura VAT','type'=>'checkbox','default'=>1);
-    		$settings[] = array('name'=>'transport_description','label'=>'Dodatkowe informacje o przesyłce i płatności','type'=>'textarea','default'=>'');
-    		$settings[] = array('name'=>'template','label'=>'Szablon','type'=>'select','values'=>self::get_templates(),'default'=>'');
-    		
-    		return array('Allegro'=>$settings);
-    	}
-    	return array();
+    
+    public static function admin_caption() {
+        return 'Allegro';
     }
     
     public static function get_other_auctions($id,$cache = false) {
@@ -600,7 +579,7 @@ class Premium_Warehouse_eCommerce_AllegroCommon extends ModuleCommon {
 
 
 	public static function autoselect_category_search($arg=null, $id=null) {
-		$country = Base_User_SettingsCommon::get('Premium_Warehouse_eCommerce_Allegro','country');
+		$country = Variable::get('allegro_country');
 		$cats = DB::GetOne('SELECT 1 FROM premium_ecommerce_allegro_cats WHERE country=%d',array($country));
 		if(!$cats)
 			Premium_Warehouse_eCommerce_AllegroCommon::update_cats();
@@ -615,7 +594,7 @@ class Premium_Warehouse_eCommerce_AllegroCommon extends ModuleCommon {
 	}
 
 	public static function autoselect_category_format($arg=null) {
-		$country = Base_User_SettingsCommon::get('Premium_Warehouse_eCommerce_Allegro','country');
+		$country = Variable::get('allegro_country');
 		$emps = DB::GetOne('SELECT name FROM premium_ecommerce_allegro_cats WHERE country=%d AND id=%d',array($country,$arg));
 		return $emps;
 	}
@@ -637,7 +616,7 @@ class Premium_Warehouse_eCommerce_AllegroCommon extends ModuleCommon {
 	}
 	
 	private static $photos;
-	public static function collect_photos($id,$rev,$file,$original,$args=null) {
+	public static function collect_photos($id,$file,$original,$args=null) {
 	    if(count(self::$photos)==1) return;
 	    $ext = strrchr($original,'.');
 	    if(preg_match('/^\.(jpg|jpeg|gif|png|bmp)$/i',$ext)) {
@@ -652,7 +631,7 @@ class Premium_Warehouse_eCommerce_AllegroCommon extends ModuleCommon {
 	}
 	
 	public static function get_publish_array($r,$vals,$auction_cost=0) {
-			$country = Base_User_SettingsCommon::get('Premium_Warehouse_eCommerce_Allegro','country');
+			$country = Variable::get('allegro_country');
 
 			self::$photos = array();
 			Utils_AttachmentCommon::call_user_func_on_file('premium_ecommerce_products/'.$r['id'],array('Premium_Warehouse_eCommerce_AllegroCommon','collect_photos'));
@@ -807,7 +786,7 @@ class Premium_Warehouse_eCommerce_AllegroCommon extends ModuleCommon {
 			$fields[] = array(
 				        'fid' => 9,   // Kraj
 				        'fvalueString' => '',
-				        'fvalueInt' => Base_User_SettingsCommon::get('Premium_Warehouse_eCommerce_Allegro','country'),
+				        'fvalueInt' => Variable::get('allegro_country'),
 				        'fvalueFloat' => 0,
 				        'fvalueImage' => 0,
 				        'fvalueDatetime' => 0,
@@ -825,7 +804,7 @@ class Premium_Warehouse_eCommerce_AllegroCommon extends ModuleCommon {
 			$fields[] = array(
 				        'fid' => 10,   // Województwo
 				        'fvalueString' => '',
-				        'fvalueInt' => Base_User_SettingsCommon::get('Premium_Warehouse_eCommerce_Allegro','country')==1?Base_User_SettingsCommon::get('Premium_Warehouse_eCommerce_Allegro','state'):213,
+				        'fvalueInt' => Variable::get('allegro_country')==1?Variable::get('allegro_state'):213,
 				        'fvalueFloat' => 0,
 				        'fvalueImage' => 0,
 				        'fvalueDatetime' => 0,
@@ -842,7 +821,7 @@ class Premium_Warehouse_eCommerce_AllegroCommon extends ModuleCommon {
 			);
 			$fields[] = array(
 				        'fid' => 11,   // Miasto
-				        'fvalueString' => Base_User_SettingsCommon::get('Premium_Warehouse_eCommerce_Allegro','city'),
+				        'fvalueString' => Variable::get('allegro_city'),
 				        'fvalueInt' => 0,
 				        'fvalueFloat' => 0,
 				        'fvalueImage' => 0,
@@ -860,7 +839,7 @@ class Premium_Warehouse_eCommerce_AllegroCommon extends ModuleCommon {
 			);
 			$fields[] = array(
 				        'fid' => 32,   // Kod pocztowy
-				        'fvalueString' => Base_User_SettingsCommon::get('Premium_Warehouse_eCommerce_Allegro','postal_code'),
+				        'fvalueString' => Variable::get('allegro_postal_code'),
 				        'fvalueInt' => 0,
 				        'fvalueFloat' => 0,
 				        'fvalueImage' => 0,
@@ -953,7 +932,7 @@ class Premium_Warehouse_eCommerce_AllegroCommon extends ModuleCommon {
 			$fields[] = array(
 				        'fid' => 14,   // Formy płatności
 				        'fvalueString' => '',
-				        'fvalueInt' => 1 + (Base_User_SettingsCommon::get('Premium_Warehouse_eCommerce_Allegro','fvat')?(Base_User_SettingsCommon::get('Premium_Warehouse_eCommerce_Allegro','country')==1?32:8):0),
+				        'fvalueInt' => 1 + (Variable::get('allegro_fvat')?(Variable::get('allegro_country')==1?32:8):0),
 				        'fvalueFloat' => 0,
 				        'fvalueImage' => 0,
 				        'fvalueDatetime' => 0,
@@ -1206,7 +1185,8 @@ class Premium_Warehouse_eCommerce_AllegroCommon extends ModuleCommon {
 			
 			/* @var $a Allegro */
 			$a = self::get_lib();
-			$similar = $a->search($r['item_name'],$vals['category']);
+//			$similar = $a->search($r['item_name'],$vals['category']);
+            $similar = array();
 
 			$cat_fields = $a->get_sell_form_fields_for_category($vals['category']);
 			if(isset($cat_fields['sellFormFieldsForCategory']->sellFormFieldsList->item) && $cat_fields['sellFormFieldsForCategory']->sellFormFieldsList->item) {

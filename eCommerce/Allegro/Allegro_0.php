@@ -192,7 +192,7 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 		    break;
 		}
 		$qf->addElement('textarea','transport_description','Dodatkowe informacje o przesyłce i płatności');
-		$transport_description = trim(Base_User_SettingsCommon::get('Premium_Warehouse_eCommerce_Allegro','transport_description'));
+		$transport_description = trim(Variable::get('allegro_transport_description'));
 		if($transport_description)
 		$qf->setDefaults(array('transport_description'=>$transport_description));
 
@@ -201,7 +201,7 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 		
 		$qf->addElement('header',null,'Wygląd aukcji');
 		$qf->addElement('select','template',$this->t('Szablon'),Premium_Warehouse_eCommerce_AllegroCommon::get_templates());
-		$qf->setDefaults(array('template'=>Base_User_SettingsCommon::get('Premium_Warehouse_eCommerce_Allegro','template')));
+		$qf->setDefaults(array('template'=>Variable::get('allegro_template')));
 		$qf->addElement('checkbox','pr_bold',$this->t('Pogrubienie'));
 		$qf->addElement('checkbox','pr_thumbnail',$this->t('Miniaturka'));
 		$qf->setDefaults(array('pr_thumbnail'=>1));
@@ -309,7 +309,7 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 		$on = '<span class="checkbox_on" />';
 		$off = '<span class="checkbox_off" />';
 		while(($row=$ret->FetchRow())) {
-			$gb->add_row((Base_User_SettingsCommon::get('Premium_Warehouse_eCommerce_Allegro','country')!=1?'<a target="_blank" href="http://testwebapi.pl/i'.$row['auction_id'].'.html">'.$row['auction_id'].'</a>':'<a href="http://allegro.pl/ShowItem2.php?item='.$row['auction_id'].'" target="_blank">'.$row['auction_id'].'</a>'),
+			$gb->add_row((Variable::get('allegro_country')!=1?'<a target="_blank" href="http://testwebapi.pl/i'.$row['auction_id'].'.html">'.$row['auction_id'].'</a>':'<a href="http://allegro.pl/ShowItem2.php?item='.$row['auction_id'].'" target="_blank">'.$row['auction_id'].'</a>'),
 				$row['active']==1?$on:$off,$row['login'],$row['started_on'],$row['ended_on']);			
 		}
 		$this->display_module($gb);		
@@ -349,6 +349,51 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 			$gb_row->add_action(Libs_LeightboxCommon::get_open_href('new_auction_leightbox_'.$row['item_id']),'Edit');
 		}
 		$this->display_module($gb);
+	}
+	
+	public function admin() {
+		if($this->is_back()) {
+			if($this->parent->get_type()=='Base_Admin')
+				$this->parent->reset();
+			else
+				location(array());
+			return;
+		}
+		Base_ActionBarCommon::add('back',__('Back'),$this->create_back_href());
+
+   		$rule = array(array('message'=>'Field required', 'type'=>'required'));
+   		$rule_pr = array(array('message'=>'Field required', 'type'=>'required'),array('type'=>'regex', 'message'=>'Nieprawidłowa cena','param'=>'/^[1-9][0-9]*(\.[0-9]+)?$/'));
+   		$settings = array();
+   		$countries = array();
+		$countries[1] = 'Polska';
+		$countries[228] = 'Neverland (webapi test)';
+		$states = explode('|','--|dolnośląskie|kujawsko-pomorskie|lubelskie|lubuskie|łódzkie|małopolskie|mazowieckie|opolskie|podkarpackie|podlaskie|pomorskie|śląskie|świętokrzyskie|warmińsko-mazurskie|wielkopolskie|zachodniopomorskie');
+   		
+   		$settings[] = array('name'=>'key','label'=>'Klucz WEBAPI','type'=>'text','default'=>'','rule'=>$rule);
+		$settings[] = array('name'=>'login','label'=>'Login','type'=>'text','default'=>'','rule'=>$rule);
+   		$settings[] = array('name'=>'pass','label'=>'Hasło','type'=>'password','default'=>'','rule'=>$rule);
+   		$settings[] = array('name'=>'country','label'=>'Kraj','type'=>'select','values'=>$countries,'default'=>1,'rule'=>$rule);
+   		$settings[] = array('name'=>'state','label'=>'Województwo','type'=>'select','values'=>$states,'default'=>0,'rule'=>$rule);
+   		$settings[] = array('name'=>'city','label'=>'Miasto','type'=>'text','default'=>'','rule'=>$rule);
+   		$settings[] = array('name'=>'postal_code','label'=>'Kod pocztowy','type'=>'text','default'=>'','rule'=>$rule);
+   		$settings[] = array('name'=>'fvat','label'=>'Faktura VAT','type'=>'checkbox','default'=>1);
+   		$settings[] = array('name'=>'transport_description','label'=>'Dodatkowe informacje o przesyłce i płatności','type'=>'textarea','default'=>'');
+   		$settings[] = array('name'=>'template','label'=>'Szablon','type'=>'select','values'=>Premium_Warehouse_eCommerce_AllegroCommon::get_templates(),'default'=>'');
+   		
+   		$f = $this->init_module('Libs/QuickForm');
+   		$f->add_array($settings);
+   		foreach($settings as $s)
+       		$f->setDefaults(array($s['name']=>Variable::get('allegro_'.$s['name'],false)));
+   		
+   		if($f->validate()) {
+   		    $vars = $f->exportValues();
+       		foreach($settings as $s)
+       		    Variable::set('allegro_'.$s['name'],isset($vars[$s['name']])?$vars[$s['name']]:'');
+   		    $this->parent->reset();
+   		}
+   		
+   		Base_ActionBarCommon::add('save',__('Save'),$f->get_submit_form_href());
+   		$this->display_module($f);
 	}
 
 }

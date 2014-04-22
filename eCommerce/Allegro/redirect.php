@@ -24,7 +24,7 @@ if(!isset($auctions[$_GET['i']]))  {
 	die();
 }
 
-if(Base_User_SettingsCommon::get('Premium_Warehouse_eCommerce_Allegro','country')==228)
+if(Variable::get('allegro_country')==228)
     $url = 'http://testwebapi.pl/i'.$auctions[$_GET['i']]['auction'].'.html';
 else
     $url = 'http://allegro.pl/ShowItem2.php?item='.$auctions[$_GET['i']]['auction'];

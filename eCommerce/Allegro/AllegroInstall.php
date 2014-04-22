@@ -67,9 +67,18 @@ class Premium_Warehouse_eCommerce_AllegroInstall extends ModuleInstall {
 		}
 		
 		$this->create_data_dir();
-		
-		$this->add_aco('settings',array('Employee'));
 		Variable::set('ecommerce_allegro_cats_up', null);
+		
+		Variable::set('allegro_key','');
+		Variable::set('allegro_country','');
+		Variable::set('allegro_login','');
+		Variable::set('allegro_pass','');
+		Variable::set('allegro_state','');
+		Variable::set('allegro_city','');
+		Variable::set('allegro_postal_code','');
+		Variable::set('allegro_fvat',1);
+		Variable::set('allegro_transport_description','');
+		Variable::set('allegro_template','');
 		
 		return true;
 	}
