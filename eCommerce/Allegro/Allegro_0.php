@@ -278,12 +278,11 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 				    eval_js('if(confirm("'.Epesi::escapeJS($ret['itemPriceDesc'],true,false).'\nOpłata łączna za wystawienie: '.Epesi::escapeJS($ret['itemPrice'],true,false).'\nOpłata za sprzedaż: '.$sell_price.' zł\n-------------------------------\nWystawienie + Sprzedaż: '.$auction_cost.' zł")) {$("allegro_publish").value=1;'.$qf->get_submit_form_js(true,'publikuję aukcję',true).'}');
 				}else
 					Epesi::alert('Nie można pobrać kosztu wystawienia aukcji');
-				Libs_LeightboxCommon::close('new_auction_leightbox');
-			}
+				Libs_LeightboxCommon::close('new_auction_leightbox_'.$r['id']);
+			} 
 				
 			Premium_Warehouse_eCommerce_AllegroCommon::delete_photos();
 		}
-		
 		Libs_LeightboxCommon::display('new_auction_leightbox_'.$r['id'],$this->get_html_of_module($qf),'Wystaw aukcję');
 	}
 		

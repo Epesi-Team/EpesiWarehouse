@@ -9,7 +9,7 @@ require_once('../../../../../include.php');
 set_time_limit(0);
 ini_set('memory_limit', '512M');
 ModuleManager::load_modules();
-Acl::set_user(2);
+Acl::set_user(1);
 $allegro = Premium_Warehouse_eCommerce_AllegroCommon::get_lib();
 //if(!$allegro) die();
 

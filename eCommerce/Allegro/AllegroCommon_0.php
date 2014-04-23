@@ -1349,7 +1349,6 @@ class Premium_Warehouse_eCommerce_AllegroCommon extends ModuleCommon {
 					}
 				}
 			}
-			
 			return $fields;
 	}
 	
