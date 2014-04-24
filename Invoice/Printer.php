@@ -451,6 +451,7 @@ class Premium_Warehouse_Invoice_Printer extends Base_Print_Printer {
         $filename->assign('order', $this->order);
         $filename_str = $this->get_template()->print_section('filename', $filename);
         $autoname = preg_replace("/[^a-zA-Z0-9 ]/", "", $filename_str);
+        $autoname = trim($autoname);
         if ($autoname)
             $this->print_filename = $autoname;
         $this->print_filename .=  '_' . $this->order['id'];
