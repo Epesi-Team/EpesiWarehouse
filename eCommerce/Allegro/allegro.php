@@ -140,7 +140,7 @@ class Allegro {
 		foreach(array_chunk($ids,25) as $a) {
 			$req = array('sessionHandle'=>$this->session_id,'itemsArray'=>$a);
 			$r2 = $this->call('doGetPostBuyData',0,$req);
-			if($r2['itemsPostBuyData']->item) {
+			if(isset($r2['itemsPostBuyData']->item) && $r2['itemsPostBuyData']->item) {
 			    if(!is_array($r2['itemsPostBuyData']->item)) $r2['itemsPostBuyData']->item = array($r2['itemsPostBuyData']->item);
 			    foreach($r2['itemsPostBuyData']->item as $rec) {
 				$ret[(string)$rec->itemId] = $rec;
