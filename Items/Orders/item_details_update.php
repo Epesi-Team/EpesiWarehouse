@@ -72,23 +72,22 @@ if ($trans['transaction_type']<2) {
     $price_p = $price;
     unset($price); // destroy reference
 	$price = Utils_CurrencyFieldCommon::get_values($price_p);
+    $cost = Utils_CurrencyFieldCommon::get_values($rec['cost']);
 
 	$gross_price = Utils_CurrencyFieldCommon::get_values(Utils_CurrencyFieldCommon::format_default($price[0]*(100+Data_TaxRatesCommon::get_tax_rate($rec['tax_rate']))/100, $price[1]));
-    $js .= 'var pcf = "unit_price";' . "\n";
-    $js .= 'if (!$(pcf)) pcf = "gross_price";' . "\n";
-    $js .= 'if (!$(pcf)) pcf = "net_price";' . "\n";
-    $js .= 'if ($(pcf)) { ' . "\n" .
-           '    obj=$("__" + pcf + "__currency");' . "\n" .
-           '    for(i=0;i<obj.options.length;i++) if(obj.options[i].value=='.$price[1].'){cur_key=i;break;}' . "\n" .
-           '}' . "\n" .
-           'switch_currencies(cur_key,"net_price","gross_price","unit_price");' .  "\n";
-    $ja['unit_price'] = $ja['net_price'] = implode(Utils_currencyFieldCommon::get_decimal_point(),explode('.',$price[0]));
+    $ja['net_price'] = implode(Utils_currencyFieldCommon::get_decimal_point(),explode('.',$price[0]));
+    $ja['__net_price__currency'] = $price[1];
+    $ja['unit_price'] = $ja['net_price'];
+    $ja['__unit_price__currency'] = $price[1];
     $ja['gross_price'] = implode(Utils_currencyFieldCommon::get_decimal_point(),explode('.',$gross_price[0]));
+    $ja['__gross_price__currency'] = $gross_price[1];
+    $ja['cost'] = implode(Utils_currencyFieldCommon::get_decimal_point(),explode('.',$cost[0]));
+    $ja['__cost__currency'] = $cost[1];
     $ja['markup_discount_rate'] = 0;
 
-	$js .= 'if($("quantity"))$("quantity").style.display="inline";';
-	$js .= 'if(!$("quantity").value){$("quantity").value=1;';
-	$js .= 'if(typeof(set_serials_based_on_quantity)!="undefined")set_serials_based_on_quantity(-1);}';
+	$js .= 'jq("#quantity").css("display","inline");';
+	$js .= 'if(!jq("#quantity").val()){jq("#quantity").val(1);';
+	$js .= 'if(typeof(set_serials_based_on_quantity)!="undefined") set_serials_based_on_quantity(-1);}';
 }
 if ($trans['transaction_type']==2) {
 	if ($location_id!==null) $js .= 'if(!$("credit").value)$("debit").style.display="inline";';
@@ -111,7 +110,7 @@ if ($trans['transaction_type']==0 && !$trans['payment']) {
 }
 
 foreach ($ja as $id => $value) {
-    $js .= 'var el = $("' . $id . '"); if (el) el.value = "' . Epesi::escapeJS($value) . '";' . "\n";
+    $js .= 'jq("#' . $id . '").val("' . Epesi::escapeJS($value) . '");' . "\n";
 }
 print($js);
 ?>
