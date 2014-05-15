@@ -7,10 +7,106 @@ ModuleManager::load_modules();
 Acl::set_user(1);
 
 $drupal_id = 1;
+Premium_Warehouse_DrupalCommerceCommon::cron_categories();
+die();
 
+$nid = 296;
 //update manufacturers
-  $row = Utils_RecordBrowserCommon::get_record('premium_warehouse_items',220);
-  print_r($row);
+//  $row = Utils_RecordBrowserCommon::get_record('premium_warehouse_items',220);
+
+//$row = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'entity_node/'.$nid);
+//print_r($row);
+
+$drupal_product_id=406;
+$values = array (
+  'field_images' => 
+  array (
+    'nl' => 
+    array (
+      0 => 
+      array (
+        'fid' => '415',
+      ),
+    ),
+  ),
+);
+$info = array (
+  'language' => 'nl',
+  'source' => 'en',
+  'status' => 1,
+  'translate' => 0,
+);
+Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'entity_translation/translate',array('entity_type'=>'commerce_product','entity_id'=>$drupal_product_id,'translation'=>$info,'values'=>$values));
+
+$values = array (
+  'field_images' => 
+  array (
+    'en' => 
+    array (
+      0 => 
+      array (
+        'fid' => '415',
+      ),
+    ),
+  ),
+);
+$info = array (
+  'language' => 'en',
+  'source' => '',
+  'status' => 1,
+  'translate' => 0,
+);
+Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'entity_translation/translate',array('entity_type'=>'commerce_product','entity_id'=>$drupal_product_id,'translation'=>$info,'values'=>$values));
+
+die("ok\n");
+
+
+$values = array (
+  'title_field' => 
+  array (
+    'en' => 
+    array (
+      0 => 
+      array (
+        'value' => '',
+      ),
+    ),
+  ),
+  'body' => 
+  array (
+    'en' => 
+    array (
+      0 => 
+      array (
+        'value' => '<p>
+	BLACK STRIPE DESIGN</p>
+<h4>
+	<span id="/Base_Box|0|0content">GREASEPROOF BAKING CUP<br />
+	SIZE: H 1 1/4&quot; X B 2&quot;<br />
+	QUANTITY: 1000 CUPS</span></h4>
+',
+        'format' => 'filtered_html',
+        'summary' => '<p>
+	BLACK STRIPE DESIGN</p>
+<h4>
+	<span id="/Base_Box|0|0content">GREASEPROOF BAKING CUP<br />
+	SIZE: H 1 1/4&quot; X B 2&quot;<br />
+	QUANTITY: 1000 CUPS</span></h4>
+',
+      ),
+    ),
+  ),
+);
+$info = array (
+  'language' => 'en',
+  'source' => '',
+  'status' => 1,
+  'translate' => 0,
+);
+
+Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'entity_translation/translate',array('entity_type'=>'node','entity_id'=>$nid,'translation'=>$info,'values'=>$values));
+
+//Premium_Warehouse_DrupalCommerceCommon::cron_categories();
 die();
 
 //update products
