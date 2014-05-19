@@ -1418,6 +1418,8 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 			  //set prices
 			  $prices = Utils_RecordBrowserCommon::get_records('premium_ecommerce_prices',array('item_name'=>$row['id']));
 			  $data = array('sku'=>$row['sku'],'title'=>$row['item_name'],'type'=>'epesi_products');
+			  $data['field_weight'] = array('weight'=>$row['weight'],'unit'=>Variable::get('premium_warehouse_weight_units','lb'));
+			  $data['field_dimensions'] = array('length'=>$row['volume'],'width'=>1,'height'=>1,'unit'=>strip_tags(Variable::get('premium_warehouse_volume_units','in')));
 			  foreach($prices as $price) {
 			    if(!isset($currencies[$price['currency']])) continue;
 			    $currency = $currencies[$price['currency']];
