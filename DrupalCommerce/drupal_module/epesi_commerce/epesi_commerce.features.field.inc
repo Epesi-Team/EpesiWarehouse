@@ -416,6 +416,166 @@ function epesi_commerce_field_default_fields() {
     ),
   );
 
+  // Exported field: 'commerce_product-epesi_products-field_dimensions'.
+  $fields['commerce_product-epesi_products-field_dimensions'] = array(
+    'field_config' => array(
+      'active' => '1',
+      'cardinality' => '1',
+      'deleted' => '0',
+      'entity_types' => array(),
+      'field_name' => 'field_dimensions',
+      'foreign keys' => array(),
+      'indexes' => array(),
+      'locked' => '0',
+      'module' => 'physical',
+      'settings' => array(
+        'entity_translation_sync' => FALSE,
+      ),
+      'translatable' => '0',
+      'type' => 'physical_dimensions',
+    ),
+    'field_instance' => array(
+      'bundle' => 'epesi_products',
+      'default_value' => NULL,
+      'deleted' => '0',
+      'description' => '',
+      'display' => array(
+        'add_to_cart_confirmation_view' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'default' => array(
+          'label' => 'above',
+          'module' => 'physical',
+          'settings' => array(),
+          'type' => 'physical_dimensions_formatted',
+          'weight' => 7,
+        ),
+        'line_item' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'node_teaser' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'product_in_cart' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+      ),
+      'entity_type' => 'commerce_product',
+      'fences_wrapper' => '',
+      'field_name' => 'field_dimensions',
+      'label' => 'Dimensions',
+      'required' => 0,
+      'settings' => array(
+        'entity_translation_sync' => FALSE,
+        'user_register_form' => FALSE,
+      ),
+      'widget' => array(
+        'active' => 1,
+        'module' => 'physical',
+        'settings' => array(
+          'default_unit' => 'in',
+          'unit_select_list' => 1,
+        ),
+        'type' => 'physical_dimensions_textfields',
+        'weight' => '40',
+      ),
+    ),
+  );
+
+  // Exported field: 'commerce_product-epesi_products-field_weight'.
+  $fields['commerce_product-epesi_products-field_weight'] = array(
+    'field_config' => array(
+      'active' => '1',
+      'cardinality' => '1',
+      'deleted' => '0',
+      'entity_types' => array(),
+      'field_name' => 'field_weight',
+      'foreign keys' => array(),
+      'indexes' => array(
+        'weight' => array(
+          0 => 'weight',
+        ),
+      ),
+      'locked' => '0',
+      'module' => 'physical',
+      'settings' => array(
+        'entity_translation_sync' => FALSE,
+      ),
+      'translatable' => '0',
+      'type' => 'physical_weight',
+    ),
+    'field_instance' => array(
+      'bundle' => 'epesi_products',
+      'default_value' => NULL,
+      'deleted' => '0',
+      'description' => '',
+      'display' => array(
+        'add_to_cart_confirmation_view' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'default' => array(
+          'label' => 'above',
+          'module' => 'physical',
+          'settings' => array(),
+          'type' => 'physical_weight_formatted',
+          'weight' => 6,
+        ),
+        'line_item' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'node_teaser' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'product_in_cart' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+      ),
+      'entity_type' => 'commerce_product',
+      'fences_wrapper' => '',
+      'field_name' => 'field_weight',
+      'label' => 'Weight',
+      'required' => 0,
+      'settings' => array(
+        'entity_translation_sync' => FALSE,
+        'user_register_form' => FALSE,
+      ),
+      'widget' => array(
+        'active' => 1,
+        'module' => 'physical',
+        'settings' => array(
+          'default_unit' => 'lb',
+          'unit_select_list' => 1,
+        ),
+        'type' => 'physical_weight_textfield',
+        'weight' => '39',
+      ),
+    ),
+  );
+
   // Exported field: 'node-epesi_products-body'.
   $fields['node-epesi_products-body'] = array(
     'field_config' => array(
@@ -1058,6 +1218,8 @@ function epesi_commerce_field_default_fields() {
   t('Price');
   t('Product variations');
   t('Title');
+  t('Dimensions');
+  t('Weight');
 
   return $fields;
 }
