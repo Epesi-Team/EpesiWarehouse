@@ -6,8 +6,13 @@ ModuleManager::load_modules();
 
 Acl::set_user(1);
 
-$drupal_id = 1;
 Premium_Warehouse_DrupalCommerceCommon::cron_categories();
+die();
+$drupal_id = 1;
+//$tmp = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'product/399');
+$tmp = Utils_RecordBrowserCommon::get_record('premium_warehouse_items',20);
+print_r($tmp);
+//Premium_Warehouse_DrupalCommerceCommon::cron_categories();
 die();
 
 $nid = 296;

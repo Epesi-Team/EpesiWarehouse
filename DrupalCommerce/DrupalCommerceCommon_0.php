@@ -1418,8 +1418,8 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 			  //set prices
 			  $prices = Utils_RecordBrowserCommon::get_records('premium_ecommerce_prices',array('item_name'=>$row['id']));
 			  $data = array('sku'=>$row['sku'],'title'=>$row['item_name'],'type'=>'epesi_products');
-			  $data['field_weight'] = array('weight'=>$row['weight'],'unit'=>Variable::get('premium_warehouse_weight_units','lb'));
-			  $data['field_dimensions'] = array('length'=>$row['volume'],'width'=>1,'height'=>1,'unit'=>strip_tags(Variable::get('premium_warehouse_volume_units','in')));
+			  if($row['weight']) $data['field_weight'] = array('weight'=>$row['weight'],'unit'=>Variable::get('premium_warehouse_weight_units','lb'));
+			  if($row['volume']) $data['field_dimensions'] = array('length'=>$row['volume'],'width'=>1,'height'=>1,'unit'=>preg_replace('/[^a-z]/','',strip_tags(Variable::get('premium_warehouse_volume_units','in'))));
 			  foreach($prices as $price) {
 			    if(!isset($currencies[$price['currency']])) continue;
 			    $currency = $currencies[$price['currency']];
@@ -1628,7 +1628,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
                 $nodes = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'views/epesi_products_search_by_product_id.json?'.http_build_query(array('display_id'=>'services_1','args'=>array($id,''))));
                 $nid = isset($nodes[0]['nid'])?$nodes[0]['nid']:0;
                 Premium_Warehouse_DrupalCommerceCommon::drupal_delete($drupal_id,'product/'.$id);
-                Premium_Warehouse_DrupalCommerceCommon::drupal_delete($drupal_id,'entity_node/'.$nid);
+                if($nid) Premium_Warehouse_DrupalCommerceCommon::drupal_delete($drupal_id,'entity_node/'.$nid);
               }
 			}
         }
@@ -1668,22 +1668,39 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 	
 	public static function drupal_get($drupal,$op,$args=array()) {
 	    $client = self::drupal_connection($drupal);
-	    return $client->get($op.'.json?'.http_build_query($args))->send()->json();
+	    try {
+    	    $ret = $client->get($op.'.json?'.http_build_query($args))->send()->json();
+    	} catch(Exception $e) {
+    	    $ret = $client->get($op.'.json?'.http_build_query($args))->send()->json();
+    	}
+	    return $ret;
 	}
 
 	public static function drupal_put($drupal,$op,$args=array()) {
 	    $client = self::drupal_connection($drupal);
-	    return $client->put($op.'.json')->setBody(json_encode($args),'application/json')->send()->json();
+	    try {
+    	    return $client->put($op.'.json')->setBody(json_encode($args),'application/json')->send()->json();
+    	} catch(Exception $e) {
+    	    return $client->put($op.'.json')->setBody(json_encode($args),'application/json')->send()->json();
+    	}
 	}
 
 	public static function drupal_delete($drupal,$op,$args=array()) {
 	    $client = self::drupal_connection($drupal);
-	    return $client->delete($op.'.json?'.http_build_query($args))->send()->json();
+	    try {
+    	    return $client->delete($op.'.json?'.http_build_query($args))->send()->json();
+    	} catch(Exception $e) {
+    	    return $client->delete($op.'.json?'.http_build_query($args))->send()->json();
+    	}
 	}
 
 	public static function drupal_post($drupal,$op,$args=array()) {
 	    $client = self::drupal_connection($drupal);
-	    return $client->post($op.'.json')->setBody(json_encode($args),'application/json')->send()->json();
+	    try {
+    	    return $client->post($op.'.json')->setBody(json_encode($args),'application/json')->send()->json();
+    	} catch(Exception $e) {
+    	    return $client->post($op.'.json')->setBody(json_encode($args),'application/json')->send()->json();
+    	}
 	}
 }
 
