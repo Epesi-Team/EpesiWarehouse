@@ -1,4 +1,5 @@
 <?php
+defined("_VALID_ACCESS") || die('Direct access forbidden');
 if(ModuleManager::is_installed('Premium_Warehouse_Items_Orders')>=0) {
 	$ret = DB::Execute('SELECT * FROM premium_warehouse_items_orders_data_1');
 	while ($row = $ret->FetchRow()) {

@@ -1,4 +1,5 @@
 <?php
+defined("_VALID_ACCESS") || die('Direct access forbidden');
 if (ModuleManager::is_installed('Premium_Warehouse_eCommerce')>=0) {
 		Utils_CommonDataCommon::remove('UPS_Area');
 

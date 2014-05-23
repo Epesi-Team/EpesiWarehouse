@@ -1,4 +1,5 @@
 <?php
+defined("_VALID_ACCESS") || die('Direct access forbidden');
 
 	$ret = DB::Execute('SELECT uaf.id as id, uaf.original as original, uaf.attach_id as attach_id, uaf.revision as revision, ual.local as local FROM utils_attachment_file uaf LEFT JOIN utils_attachment_link ual ON ual.id=uaf.attach_id ORDER BY revision DESC');
 	$max_rev = array();

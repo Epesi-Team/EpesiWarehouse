@@ -1,4 +1,5 @@
 <?php
+defined("_VALID_ACCESS") || die('Direct access forbidden');
 if (!DB::GetOne('SELECT name FROM modules WHERE name=%s', array('Premium_Warehouse_InvoicePL'))) return;
 
 DB::Execute('UPDATE modules SET name=%s WHERE name=%s', array('Premium_Warehouse_Invoice', 'Premium_Warehouse_InvoicePL'));

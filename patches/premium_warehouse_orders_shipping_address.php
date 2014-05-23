@@ -1,4 +1,5 @@
 <?php
+defined("_VALID_ACCESS") || die('Direct access forbidden');
 if (ModuleManager::is_installed('Premium_Warehouse_Items_Orders')>=0) {
     $a = array(
 			array('name' => _M('Shipping Address'),'type'=>'page_split', 'required'=>true),

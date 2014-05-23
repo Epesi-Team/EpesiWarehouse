@@ -1,4 +1,5 @@
 <?php
+defined("_VALID_ACCESS") || die('Direct access forbidden');
 if (ModuleManager::is_installed('Premium_Warehouse_eCommerce')>=0) {
 		$fields = array(
 			array('name' => _M('Subject'),	'type'=>'text', 'param'=>128, 'required'=>true, 'extra'=>false, 'visible'=>true),

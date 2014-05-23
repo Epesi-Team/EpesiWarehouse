@@ -1,4 +1,5 @@
 <?php
+defined("_VALID_ACCESS") || die('Direct access forbidden');
 
 PatchUtil::db_add_column('premium_warehouse_sales_report_purchase_fifo_tmp', 'order_details_id', 'I4');
 PatchUtil::db_add_column('premium_warehouse_sales_report_purchase_lifo_tmp', 'order_details_id', 'I4');

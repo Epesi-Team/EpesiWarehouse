@@ -1,4 +1,5 @@
 <?php
+defined("_VALID_ACCESS") || die('Direct access forbidden');
 Utils_RecordBrowserCommon::delete_record_field('premium_warehouse_items_orders_details','Discount Rate');
 Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items_orders_details',
     array('name' => _M('Markup/Discount Rate'), 			'type'=>'float', 'required'=>false, 'extra'=>false, 'visible'=>true, 'QFfield_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'QFfield_discount_rate'),'position'=>'Unit Price')

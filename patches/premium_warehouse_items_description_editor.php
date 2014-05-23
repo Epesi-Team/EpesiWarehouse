@@ -1,4 +1,5 @@
 <?php
+defined("_VALID_ACCESS") || die('Direct access forbidden');
 if(ModuleManager::is_installed('Premium_Warehouse_Items')>=0) {
     Utils_RecordBrowserCommon::set_QFfield_callback('premium_warehouse_items', 'Description', 'Libs_CKEditorCommon::QFfield_cb');
     Utils_RecordBrowserCommon::set_display_callback('premium_warehouse_items', 'Description', 'Libs_CKEditorCommon::display_cb');

@@ -1,4 +1,5 @@
 <?php
+defined("_VALID_ACCESS") || die('Direct access forbidden');
 
 $recordset = 'premium_warehouse_items';
 $definition = array('name' => _M('Allow negative quantity'),

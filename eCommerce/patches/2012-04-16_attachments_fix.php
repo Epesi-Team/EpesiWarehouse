@@ -1,4 +1,5 @@
 <?php
+defined("_VALID_ACCESS") || die('Direct access forbidden');
 if (ModuleManager::is_installed('Premium_Warehouse_eCommerce')==-1) return;
 
 		Utils_AttachmentCommon::delete_addon('premium_ecommerce_descriptions');

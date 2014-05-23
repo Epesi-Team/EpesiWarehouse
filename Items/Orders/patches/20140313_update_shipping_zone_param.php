@@ -1,4 +1,5 @@
 <?php
+defined("_VALID_ACCESS") || die('Direct access forbidden');
 
 $new_param = "Countries::Shipping Country";
 $old_param = "Countries::Country";
