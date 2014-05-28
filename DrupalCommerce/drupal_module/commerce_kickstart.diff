@@ -1,23 +1,33 @@
-diff -rup commerce_kickstart.orig/commerce_kickstart.info commerce_kickstart/commerce_kickstart.info
---- commerce_kickstart.orig/commerce_kickstart.info	2014-04-22 11:24:16.000000000 +0200
-+++ commerce_kickstart/commerce_kickstart.info	2014-05-28 17:59:43.313441645 +0200
-@@ -114,6 +114,9 @@ dependencies[] = commerce_kickstart_orde
- dependencies[] = commerce_kickstart_comment
- dependencies[] = commerce_kickstart_migrate
- 
-+; Epesi Commerce
-+dependencies[] = epesi_commerce
-+
- ; System Requirements.
- php_memory_limit = 128M
- 
 diff -rup commerce_kickstart.orig/commerce_kickstart.install commerce_kickstart/commerce_kickstart.install
 --- commerce_kickstart.orig/commerce_kickstart.install	2014-04-22 10:07:25.000000000 +0200
-+++ commerce_kickstart/commerce_kickstart.install	2014-05-28 18:03:54.377445304 +0200
-@@ -204,16 +204,6 @@ function commerce_kickstart_configure_st
-     '#options' => $options,
-     '#default_value' => '1',
++++ commerce_kickstart/commerce_kickstart.install	2014-05-29 00:00:58.325757474 +0200
+@@ -20,14 +20,12 @@ function commerce_kickstart_install_task
+ 
+   $tasks = array();
+   $current_task = variable_get('install_task', 'done');
+-  $install_demo_store = variable_get('commerce_kickstart_demo_store', FALSE);
+-
+   $tasks['commerce_kickstart_configure_store_form'] = array(
+     'display_name' => st('Configure store'),
+     'type' => 'form',
    );
+   $tasks['commerce_kickstart_install_additional_modules'] = array(
+-    'display_name' => $install_demo_store ? st('Install demo store') : st('Install additional functionality'),
++    'display_name' => st('Install additional functionality'),
+     'type' => 'batch',
+     // Show this task only after the Kickstart steps have bene reached.
+     'display' => strpos($current_task, 'commerce_kickstart_') !== FALSE,
+@@ -197,23 +195,6 @@ function commerce_kickstart_configure_st
+     '#type' => 'fieldset',
+     '#title' => st('Functionality'),
+   );
+-  $form['functionality']['install_demo_store'] = array(
+-    '#type' => 'radios',
+-    '#title' => st('Do you want to install the demo store?'),
+-    '#description' => st('Shows you everything Commerce Kickstart can do. Includes a custom theme, sample content and products.'),
+-    '#options' => $options,
+-    '#default_value' => '1',
+-  );
 -  $form['localization'] = array(
 -    '#type' => 'fieldset',
 -    '#title' => st('Localization'),
@@ -31,17 +41,63 @@ diff -rup commerce_kickstart.orig/commerce_kickstart.install commerce_kickstart/
  
    $options_selection = array(
      'anonymous_checkout' => 'Allow checkout for <strong>anonymous users</strong>.',
-@@ -292,7 +282,6 @@ function commerce_kickstart_configure_st
+@@ -228,11 +209,6 @@ function commerce_kickstart_configure_st
+     '#type' => 'checkboxes',
+     '#options' => $options_selection,
+     '#title' => t("Install additional functionality"),
+-    '#states' => array(
+-      'visible' => array(
+-        ':input[name="install_demo_store"]' => array('value' => '0'),
+-      ),
+-    ),
+   );
+ 
+   // Build a currency options list from all defined currencies.
+@@ -291,8 +267,6 @@ function commerce_kickstart_configure_st
+  */
  function commerce_kickstart_configure_store_form_submit(&$form, &$form_state) {
    variable_set('commerce_kickstart_store_country', $form_state['values']['country_list']);
-   variable_set('commerce_kickstart_demo_store', $form_state['values']['install_demo_store']);
+-  variable_set('commerce_kickstart_demo_store', $form_state['values']['install_demo_store']);
 -  variable_set('commerce_kickstart_localization', $form_state['values']['install_localization']);
    variable_set('commerce_kickstart_selected_extras', $form_state['values']['extras']);
    variable_set('commerce_kickstart_choose_tax_country', $form_state['values']['commerce_kickstart_choose_tax_country']);
    variable_set('commerce_default_currency', $form_state['values']['commerce_default_currency']);
-@@ -362,13 +351,10 @@ function commerce_kickstart_install_addi
+@@ -311,29 +285,11 @@ function commerce_kickstart_configure_st
+  */
+ function commerce_kickstart_install_additional_modules() {
+   global $install_state;
+-  $install_demo_store = variable_get('commerce_kickstart_demo_store', FALSE);
+-  if ($install_demo_store) {
+-    $modules = array(
+-      'commerce_kickstart_reset',
+-      'commerce_kickstart_block',
+-      'commerce_kickstart_user',
+-      'commerce_checkout_redirect',
+-      'commerce_kickstart_social',
+-      'commerce_kickstart_product',
+-      'commerce_kickstart_product_ui',
+-      'commerce_kickstart_blog',
+-      'commerce_kickstart_slideshow',
+-      'commerce_kickstart_merchandising',
+-      'commerce_kickstart_menus',
+-      'commerce_kickstart_search',
+-      'commerce_kickstart_taxonomy',
+-    );
+-  }
+-  else {
+     $modules = array(
+       'commerce_kickstart_block',
+       'commerce_kickstart_user',
+       'commerce_kickstart_lite_product',
++      'epesi_commerce',
+       'commerce_kickstart_product_ui',
+       'commerce_kickstart_search',
+       'commerce_kickstart_taxonomy',
+@@ -360,15 +316,11 @@ function commerce_kickstart_install_addi
+     if (!empty($selected_extras['zoom_cloud'])) {
+       variable_set('commerce_kickstart_product_zoom_enabled', TRUE);
      }
-   }
+-  }
  
 -  $install_localization = variable_get('commerce_kickstart_localization', FALSE);
 -  if ($install_localization) {
@@ -57,7 +113,14 @@ diff -rup commerce_kickstart.orig/commerce_kickstart.install commerce_kickstart/
  
    $store_country = variable_get('commerce_kickstart_store_country', 'US');
    // Enable Payleap and Paypal for North America.
-@@ -409,9 +395,7 @@ function commerce_kickstart_install_addi
+@@ -403,19 +355,17 @@ function commerce_kickstart_install_addi
+ 
+   $operations = array();
+   // Enable and set as default the correct theme.
+-  $theme = $install_demo_store ? 'commerce_kickstart_theme' : 'omega_kickstart';
++  $theme = 'omega_kickstart';
+   $operations[] = array('_commerce_kickstart_enable_theme', array($theme));
+   // Enable the selected modules.
    foreach ($modules_sorted as $module => $weight) {
      $operations[] = array('_commerce_kickstart_enable_module', array($module, $files[$module]->info['name']));
    }
@@ -68,4 +131,112 @@ diff -rup commerce_kickstart.orig/commerce_kickstart.install commerce_kickstart/
    $operations[] = array('_commerce_kickstart_flush_caches', array(t('Flushed caches.')));
  
    $batch = array(
+-    'title' => $install_demo_store ? t('Installing demo store') : t('Installing additional functionality'),
++    'title' => t('Installing additional functionality'),
+     'operations' => $operations,
+     'file' => drupal_get_path('profile', 'commerce_kickstart') . '/commerce_kickstart.install_callbacks.inc',
+   );
+@@ -441,7 +391,6 @@ function commerce_kickstart_import_conte
+   $operations = array();
+   $operations[] = array('_commerce_kickstart_example_taxes', array(t('Setting up taxes.')));
+ 
+-  $install_demo_store = variable_get('commerce_kickstart_demo_store', FALSE);
+   $operations[] = array('_commerce_kickstart_taxonomy_menu', array(t('Setting up menus.')));
+ 
+   // Run all available migrations.
+@@ -450,9 +399,6 @@ function commerce_kickstart_import_conte
+     $operations[] = array('_commerce_kickstart_import', array($machine_name, t('Importing content.')));
+   }
+ 
+-  if ($install_demo_store) {
+-    $operations[] = array('_commerce_kickstart_example_user', array(t('Setting up users.')));
+-  }
+   // Perform post-import tasks.
+   $operations[] = array('_commerce_kickstart_post_import', array(t('Completing setup.')));
+ 
+@@ -842,7 +788,6 @@ function commerce_kickstart_update_7204(
+  * Replace the collection view by a view based on the product display index.
+  */
+ function commerce_kickstart_update_7205(&$sandbox) {
+-  $install_demo_store = variable_get('commerce_kickstart_demo_store', FALSE);
+   // Batching the update
+   if (!isset($sandbox['progress'])) {
+     $sandbox['progress'] = 1;
+@@ -874,12 +819,7 @@ function commerce_kickstart_update_7205(
+   }
+   elseif ($sandbox['progress'] == 3) {
+     // Set up taxonomy main menu..
+-    if ($install_demo_store) {
+-      $vocabulary_machine_name = 'collection';
+-    }
+-    else {
+-      $vocabulary_machine_name = 'product_category';
+-    }
++    $vocabulary_machine_name = 'product_category';
+     if (($collection = taxonomy_vocabulary_machine_name_load($vocabulary_machine_name)) && module_exists('taxonomy_menu')) {
+       drupal_load('module', 'taxonomy_menu');
+       $variable_name = _taxonomy_menu_build_variable('vocab_menu', $collection->vid);
+@@ -915,13 +855,6 @@ function commerce_kickstart_update_7205(
+             'type' => 'integer',
+           ),
+         );
+-        if ($install_demo_store) {
+-          $options['fields'] += array(
+-            'field_category:name' => array(
+-              'type' => 'string',
+-            ),
+-          );
+-        }
+         if (!$index->update(array('options' => $options))) {
+           $sandbox['error_message'] = '<strong style="color: red;">' . t("Important: We couldn't add the new fields to the index.") . '</strong>';
+         }
+@@ -963,12 +896,10 @@ function commerce_kickstart_update_7205(
+  * Enable the commerce_kickstart_product_ui on the no demo store.
+  */
+ function commerce_kickstart_update_7206() {
+-  if (!variable_get('commerce_kickstart_demo_store', FALSE)) {
+     // Disable the removed lite modules.
+     _commerce_kickstart_disable_modules(array('commerce_kickstart_lite_product_ui', 'commerce_kickstart_lite_product_zoom'));
+     drupal_flush_all_caches();
+     module_enable(array('commerce_kickstart_product_ui'));
+-  }
+ }
+ 
+ /**
+diff -rup commerce_kickstart.orig/commerce_kickstart.install_callbacks.inc commerce_kickstart/commerce_kickstart.install_callbacks.inc
+--- commerce_kickstart.orig/commerce_kickstart.install_callbacks.inc	2014-04-22 10:07:25.000000000 +0200
++++ commerce_kickstart/commerce_kickstart.install_callbacks.inc	2014-05-28 23:56:56.417753948 +0200
+@@ -181,7 +181,7 @@ function _commerce_kickstart_taxonomy_me
+ 
+ 
+   // Set up taxonomy main menu.
+-  $vocabulary_machine_name = variable_get('commerce_kickstart_demo_store', FALSE) ? 'collection' : 'product_category';
++  $vocabulary_machine_name = 'product_category';
+   if ($collection = taxonomy_vocabulary_machine_name_load($vocabulary_machine_name)) {
+     $variable_name = _taxonomy_menu_build_variable('vocab_menu', $collection->vid);
+     variable_set($variable_name, 'main-menu');
+diff -rup commerce_kickstart.orig/commerce_kickstart.profile commerce_kickstart/commerce_kickstart.profile
+--- commerce_kickstart.orig/commerce_kickstart.profile	2014-04-22 10:07:25.000000000 +0200
++++ commerce_kickstart/commerce_kickstart.profile	2014-05-28 23:56:33.809753619 +0200
+@@ -131,17 +131,9 @@ function commerce_kickstart_system_info_
+     return;
+   }
+ 
+-  $install_demo_store = variable_get('commerce_kickstart_demo_store', FALSE);
+-  if ($install_demo_store) {
+-    $hide_modules = array(
+-      'commerce_kickstart_lite_product',
+-    );
+-  }
+-  else {
+-    $hide_modules = array(
+-      'commerce_kickstart_product',
+-    );
+-  }
++  $hide_modules = array(
++    'commerce_kickstart_product',
++  );
+ 
+   if ($type == 'module' && in_array($file->name, $hide_modules)) {
+     $info['hidden'] = TRUE;
 Tylko w commerce_kickstart/modules: epesi
