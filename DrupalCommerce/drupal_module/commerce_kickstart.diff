@@ -1,0 +1,71 @@
+diff -rup commerce_kickstart.orig/commerce_kickstart.info commerce_kickstart/commerce_kickstart.info
+--- commerce_kickstart.orig/commerce_kickstart.info	2014-04-22 11:24:16.000000000 +0200
++++ commerce_kickstart/commerce_kickstart.info	2014-05-28 17:59:43.313441645 +0200
+@@ -114,6 +114,9 @@ dependencies[] = commerce_kickstart_orde
+ dependencies[] = commerce_kickstart_comment
+ dependencies[] = commerce_kickstart_migrate
+ 
++; Epesi Commerce
++dependencies[] = epesi_commerce
++
+ ; System Requirements.
+ php_memory_limit = 128M
+ 
+diff -rup commerce_kickstart.orig/commerce_kickstart.install commerce_kickstart/commerce_kickstart.install
+--- commerce_kickstart.orig/commerce_kickstart.install	2014-04-22 10:07:25.000000000 +0200
++++ commerce_kickstart/commerce_kickstart.install	2014-05-28 18:03:54.377445304 +0200
+@@ -204,16 +204,6 @@ function commerce_kickstart_configure_st
+     '#options' => $options,
+     '#default_value' => '1',
+   );
+-  $form['localization'] = array(
+-    '#type' => 'fieldset',
+-    '#title' => st('Localization'),
+-  );
+-  $form['localization']['install_localization'] = array(
+-    '#type' => 'radios',
+-    '#title' => st('Do you want to be able to translate the interface of your store?'),
+-    '#options' => $options,
+-    '#default_value' => '0',
+-  );
+ 
+   $options_selection = array(
+     'anonymous_checkout' => 'Allow checkout for <strong>anonymous users</strong>.',
+@@ -292,7 +282,6 @@ function commerce_kickstart_configure_st
+ function commerce_kickstart_configure_store_form_submit(&$form, &$form_state) {
+   variable_set('commerce_kickstart_store_country', $form_state['values']['country_list']);
+   variable_set('commerce_kickstart_demo_store', $form_state['values']['install_demo_store']);
+-  variable_set('commerce_kickstart_localization', $form_state['values']['install_localization']);
+   variable_set('commerce_kickstart_selected_extras', $form_state['values']['extras']);
+   variable_set('commerce_kickstart_choose_tax_country', $form_state['values']['commerce_kickstart_choose_tax_country']);
+   variable_set('commerce_default_currency', $form_state['values']['commerce_default_currency']);
+@@ -362,13 +351,10 @@ function commerce_kickstart_install_addi
+     }
+   }
+ 
+-  $install_localization = variable_get('commerce_kickstart_localization', FALSE);
+-  if ($install_localization) {
+-    $modules[] = 'locale';
+-    $modules[] = 'variable';
+-    $modules[] = 'i18n';
+-    $modules[] = 'i18n_field';
+-  }
++  $modules[] = 'locale';
++  $modules[] = 'variable';
++  $modules[] = 'i18n';
++  $modules[] = 'i18n_field';
+ 
+   $store_country = variable_get('commerce_kickstart_store_country', 'US');
+   // Enable Payleap and Paypal for North America.
+@@ -409,9 +395,7 @@ function commerce_kickstart_install_addi
+   foreach ($modules_sorted as $module => $weight) {
+     $operations[] = array('_commerce_kickstart_enable_module', array($module, $files[$module]->info['name']));
+   }
+-  if ($install_localization) {
+-    $operations[] = array('_commerce_kickstart_setup_localization', array(t('Configured localization.')));
+-  }
++  $operations[] = array('_commerce_kickstart_setup_localization', array(t('Configured localization.')));
+   $operations[] = array('_commerce_kickstart_flush_caches', array(t('Flushed caches.')));
+ 
+   $batch = array(
+Tylko w commerce_kickstart/modules: epesi
