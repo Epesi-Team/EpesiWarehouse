@@ -27,6 +27,7 @@ function epesi_commerce_enable() {
 
   $enabled = array_filter(variable_get('entity_translation_entity_types', array()));
   $enabled['taxonomy_term'] = 'taxonomy_term';
+  $enabled['epesi_products'] = 'epesi_products';
   variable_set('entity_translation_entity_types', $enabled);
 }
 
