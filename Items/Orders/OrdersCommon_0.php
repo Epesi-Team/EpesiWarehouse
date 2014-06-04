@@ -1659,7 +1659,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
     }
     
     public static function create_shipping_map_href($r) {
-        return 'href="http://maps.google.com/maps?'.http_build_query(array('q'=>$r['shipping_address_1'].' '.$r['shipping_address_2'].', '.$r['shipping_city'].', '.$r['shipping_postal_code'].', '.Utils_CommonDataCommon::get_value('Countries/'.$r['shipping_country']))).'" target="_blank"';
+        return 'href="http://maps.'.(IPHONE?'apple.com/':'google.com/maps').'?'.http_build_query(array('q'=>$r['shipping_address_1'].' '.$r['shipping_address_2'].', '.$r['shipping_city'].', '.$r['shipping_postal_code'].', '.Utils_CommonDataCommon::get_value('Countries/'.$r['shipping_country']))).'" target="_blank"';
     }
 
     public static function shipping_maplink($r,$nolink,$desc) {
