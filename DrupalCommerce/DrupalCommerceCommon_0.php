@@ -1432,7 +1432,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 			    $item_price = Utils_CurrencyFieldCommon::get_values($row['net_price']);
 			    if($item_price[0] && isset($currencies[$item_price[1]])) {
 			      $currency = $currencies[$item_price[1]];
-			      $data['commerce_price']=array('amount'=>round(((float)$item_price[0])*(100+$taxes[$row['tax_rate']])/100,$currency['decimals'])*pow(10,$currency['decimals']),
+			      $data['commerce_price']=array('amount'=>round(((float)$item_price[0])*(100+($row['tax_rate']?$taxes[$row['tax_rate']]:0))/100,$currency['decimals'])*pow(10,$currency['decimals']),
 			                    'currency_code'=>$currency['code']);//TODO: taxes
 			      if(!isset($data['commerce_price_'.strtolower($currency['code'])]))
 			        $data['commerce_price_'.strtolower($currency['code'])] = $data['commerce_price'];

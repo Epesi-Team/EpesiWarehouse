@@ -1,17 +1,15 @@
-1. setup drupal ecommerce kickstart
+1. setup drupal commerce kickstart
 2. install "epesi_commerce" module
 3. Set "multilingual with translations" in structure on: (optional)
 - content types: "basic page", 
 - menus: "main menu"
 4. /admin/commerce/config/currency/handling - Enable dedicated price fields for Epesi Products - for each currency you support
-   /admin/commerce/config/stock/ss - enable stock management for "epesi products" (already should be enabled)
 5. Enable "currency selector" block (optional - multicurrency)
-6. /admin/structure/types/manage/epesi-products/fields/body - click "Enable translation" and confirm
-7. set your contact us, rules pages
-8 /admin/commerce/customer-profiles/types/billing/fields/commerce_customer_address - select "Name (First name, Last name)", "Organisation (single line)" and unselect "Name (single line)"
+6. set your contact us, rules pages
+7 /admin/commerce/customer-profiles/types/billing/fields/commerce_customer_address - select "Name (First name, Last name)", "Organisation (single line)" and unselect "Name (single line)"
   /admin/commerce/customer-profiles/types/shipping/fields/commerce_customer_address - select "Name (First name, Last name)", "Organisation (single line)" and unselect "Name (single line)"
   OPTIONAL: /admin/commerce/customer-profiles/types/billing/fields - add Phone text field
-9. move your banners, boxes, polls, pages etc. to drupal ads, blocks, polls, pages
-10. export newsletters recordset from epesi (it will be deleted)
-11. run migration.php
-12. set drupal url with administrative user/password in epesi ecommerce administration panel
+8. move your banners, boxes, polls, pages etc. to drupal ads, blocks, polls, pages
+9. export newsletters recordset from epesi (it will be deleted)
+10. run migration.php
+11. set drupal url with administrative user/password in epesi ecommerce administration panel
