@@ -34,7 +34,7 @@ function collect_photos($id,$file,$original,$args=null) {
 	if($_GET['pos']--!=0) return;
 	$ext = strrchr($original,'.');
         if(preg_match('/^\.(jpg|jpeg)$/i',$ext)) {
-            $th1 = Utils_ImageCommon::create_thumb($file,$_GET['w'],$_GET['w']*2);
+            $th1 = Utils_ImageCommon::create_thumb($file,$_GET['w'],$_GET['w']*1.5);
             $photo = $th1['thumb'];
         }
 }
