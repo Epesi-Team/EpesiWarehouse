@@ -10,6 +10,7 @@ require_once('../../../../../include.php');
 set_time_limit(0);
 ini_set('memory_limit', '512M');
 ModuleManager::load_modules();
+if (!Acl::is_user()) die('Unauthorized access');
 
 $_GET['name'] = trim($_GET['name']);
 

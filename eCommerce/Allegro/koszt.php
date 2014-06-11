@@ -12,6 +12,7 @@ require_once('../../../../../include.php');
 set_time_limit(0);
 ini_set('memory_limit', '512M');
 ModuleManager::load_modules();
+if (!Acl::is_user()) die('Unauthorized access');
 
 list($item_id,$prefs) = DB::GetRow('SELECT item_id,prefs FROM premium_ecommerce_allegro_auctions WHERE auction_id=%s',array($_GET['id']));
 $vals = array();

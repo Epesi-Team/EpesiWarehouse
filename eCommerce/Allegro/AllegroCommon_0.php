@@ -991,7 +991,7 @@ class Premium_Warehouse_eCommerce_AllegroCommon extends ModuleCommon {
 				);
 			}
 			$carriers = array();
-			if(isset($vals['post_service_price'])) {
+			if(isset($vals['post_service_price']) && $vals['post_service_price']!=='') {
 				$fields[] = array(
 					        'fid' => 36,   // Paczka pocztowa ekonomiczna
 					        'fvalueString' => '',
@@ -1012,7 +1012,7 @@ class Premium_Warehouse_eCommerce_AllegroCommon extends ModuleCommon {
 				);
 				$carriers[] = 'Poczta Polska: '.$vals['post_service_price'].' zł';
 			}
-			if(isset($vals['post_service_price_p'])) {
+			if(isset($vals['post_service_price_p']) && $vals['post_service_price_p']!=='') {
 				$fields[] = array(
 					        'fid' => 40,   // Paczka pocztowa ekonomiczna
 					        'fvalueString' => '',
@@ -1033,7 +1033,7 @@ class Premium_Warehouse_eCommerce_AllegroCommon extends ModuleCommon {
 				);
 				$carriers[] = 'Poczta Polska (pobranie): '.$vals['post_service_price_p'].' zł';
 			}
-			if(isset($vals['ups_price'])) {
+			if(isset($vals['ups_price']) && $vals['ups_price']!=='') {
 				$fields[] = array(
 					        'fid' => 44,   // Paczka pocztowa ekonomiczna
 					        'fvalueString' => '',
@@ -1054,7 +1054,7 @@ class Premium_Warehouse_eCommerce_AllegroCommon extends ModuleCommon {
 				);
 				$carriers[] = 'Kurier: '.$vals['ups_price'].' zł';
 			}
-			if(isset($vals['ups_price_p'])) {
+			if(isset($vals['ups_price_p']) && $vals['ups_price_p']!=='') {
 				$fields[] = array(
 					        'fid' => 45,   // Paczka pocztowa ekonomiczna
 					        'fvalueString' => '',
