@@ -11,7 +11,7 @@ set_time_limit(0);
 ini_set('memory_limit', '512M');
 ModuleManager::load_modules();
 
-Acl::set_user(2);
+Acl::set_user(1);
 $c = Variable::get('ecommerce_allegro_cats_up',0);
 $t = time();
 

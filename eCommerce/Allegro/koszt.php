@@ -33,9 +33,12 @@ $vals['title'] = $_GET['name'];
 $item = Utils_RecordBrowserCommon::get_record('premium_warehouse_items',$item_id);
 
 $fields = Premium_Warehouse_eCommerce_AllegroCommon::get_publish_array($item,$vals);
+if(!$fields) die('Skonfiguruj moduł Allegro');
 Premium_Warehouse_eCommerce_AllegroCommon::delete_photos();
 
 $a = Premium_Warehouse_eCommerce_AllegroCommon::get_lib();
+if(!$a) die('Skonfiguruj moduł Allegro');
+
 $ret = $a->check_new_auction_price($fields);
 $err = $a->error();
 $auction_cost = 0;

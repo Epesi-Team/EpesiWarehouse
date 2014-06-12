@@ -21,6 +21,8 @@ if($prefs && $prefs = @unserialize($prefs)) {
 }
 
 $allegro = Premium_Warehouse_eCommerce_AllegroCommon::get_lib();
+if(!$allegro) die('Skonfiguruj moduł Allegro');
+
 $ret = $allegro->search($_GET['name'],$_GET['cat']);
 if($ret) {
     usort($ret,'sort_auctions');

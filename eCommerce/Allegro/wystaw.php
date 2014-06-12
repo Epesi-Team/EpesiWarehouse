@@ -35,8 +35,11 @@ $auction_cost = isset($_GET['auction_cost'])?$_GET['auction_cost']:0;
 $item = Utils_RecordBrowserCommon::get_record('premium_warehouse_items',$item_id);
 
 $fields = Premium_Warehouse_eCommerce_AllegroCommon::get_publish_array($item,$vals,$auction_cost);
+if(!$fields) die('Skonfiguruj moduł Allegro');
 
 $a = Premium_Warehouse_eCommerce_AllegroCommon::get_lib();
+if(!$a) die('Skonfiguruj moduł Allegro');
+
 $local_id = Acl::get_user()*1000000+mt_rand(0,999999);
 $a->new_auction($fields,$local_id);
 $err = $a->error();

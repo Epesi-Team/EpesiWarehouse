@@ -24,6 +24,8 @@ class Premium_Warehouse_eCommerce_AllegroCommon extends ModuleCommon {
 
     	/* @var $a Allegro */
     	$a = self::get_lib();
+    	if(!$a) return array();
+    	
     	$fields = $a->get_sell_form_fields();
     	if(!isset($fields['sellFormFields']->item)) return array();
     	$cats = array();
@@ -73,6 +75,8 @@ class Premium_Warehouse_eCommerce_AllegroCommon extends ModuleCommon {
     
     public static function update_statuses() {
     	$a = self::get_lib();
+    	if(!$a) return;
+    	
     	$ids = DB::GetCol('SELECT auction_id FROM premium_ecommerce_allegro_auctions WHERE active=1');
     	$ids = array_map(create_function('$a','return (float)$a;'),$ids);
     	$ret = $a->get_auctions_info($ids);
@@ -482,6 +486,7 @@ class Premium_Warehouse_eCommerce_AllegroCommon extends ModuleCommon {
     public static function get_lib($trig_error=true) {
     	static $a;
     	if($a===null) {
+    	    if(!Variable::get('allegro_pass')) return false;
     		require_once('modules/Premium/Warehouse/eCommerce/Allegro/allegro.php');
     		$a = new Allegro(Variable::get('allegro_login'),
     			Variable::get('allegro_pass'),
@@ -632,6 +637,13 @@ class Premium_Warehouse_eCommerce_AllegroCommon extends ModuleCommon {
 	
 	public static function get_publish_array($r,$vals,$auction_cost=0) {
 			$country = Variable::get('allegro_country');
+
+			/* @var $a Allegro */
+			$a = self::get_lib();
+			if(!$a) {
+			    Epesi::alert('Skonfiguruj moduł Allegro');
+			    return array();
+			}
 
 			self::$photos = array();
 			Utils_AttachmentCommon::call_user_func_on_file('premium_ecommerce_products/'.$r['id'],array('Premium_Warehouse_eCommerce_AllegroCommon','collect_photos'));
@@ -1183,8 +1195,6 @@ class Premium_Warehouse_eCommerce_AllegroCommon extends ModuleCommon {
 				                'fvalueRangeDateMax' => '')
 			);
 			
-			/* @var $a Allegro */
-			$a = self::get_lib();
 //			$similar = $a->search($r['item_name'],$vals['category']);
             $similar = array();
 

@@ -227,6 +227,7 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
 			$vals = $qf->exportValues();
 			$auction_cost = $this->isset_module_variable('auction_cost')?$this->get_module_variable('auction_cost'):0;
 			$fields = Premium_Warehouse_eCommerce_AllegroCommon::get_publish_array($r,$vals,$auction_cost);
+			if(!$fields) return;
 			$a = Premium_Warehouse_eCommerce_AllegroCommon::get_lib();
 				
 			if(isset($vals['publish']) && $vals['publish']) {
@@ -370,7 +371,7 @@ class Premium_Warehouse_eCommerce_Allegro extends Module {
    		
    		$settings[] = array('name'=>'key','label'=>'Klucz WEBAPI','type'=>'text','default'=>'','rule'=>$rule);
 		$settings[] = array('name'=>'login','label'=>'Login','type'=>'text','default'=>'','rule'=>$rule);
-   		$settings[] = array('name'=>'pass','label'=>'Hasło','type'=>'password','default'=>'','rule'=>$rule);
+   		$settings[] = array('name'=>'pass','label'=>'Hasło','type'=>'password','default'=>'');
    		$settings[] = array('name'=>'country','label'=>'Kraj','type'=>'select','values'=>$countries,'default'=>1,'rule'=>$rule);
    		$settings[] = array('name'=>'state','label'=>'Województwo','type'=>'select','values'=>$states,'default'=>0,'rule'=>$rule);
    		$settings[] = array('name'=>'city','label'=>'Miasto','type'=>'text','default'=>'','rule'=>$rule);
