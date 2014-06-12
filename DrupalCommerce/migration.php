@@ -86,6 +86,7 @@ Acl::set_user(1);
 			array('name' => _M('Login'), 			'type'=>'text', 'required'=>true, 'param'=>'128', 'extra'=>false, 'visible'=>true),
 			array('name' => _M('Password'), 			'type'=>'text', 'required'=>true, 'param'=>'128', 'extra'=>false, 'visible'=>false,'QFfield_callback'=>array('Premium_Warehouse_DrupalCommerceCommon','QFfield_password'), 'display_callback'=>array('Premium_Warehouse_DrupalCommerceCommon','display_password')),
 			array('name' => _M('Endpoint'), 			'type'=>'text', 'required'=>true, 'param'=>'128', 'extra'=>false, 'visible'=>true),
+			array('name' => _M('Export Net Price'), 			'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>true),
 		);
 		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_drupal', $fields);
 		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_drupal', _M('eCommerce - Drupal'));
@@ -113,3 +114,8 @@ Acl::set_user(1);
 		Utils_RecordBrowserCommon::new_addon('premium_warehouse_items', 'Premium/Warehouse/DrupalCommerce', 'descriptions_addon_item', 'Premium_Warehouse_DrupalCommerceCommon::descriptions_addon_item_parameters');
 		Utils_RecordBrowserCommon::new_addon('premium_warehouse_items', 'Premium/Warehouse/DrupalCommerce', 'prices_addon_item', 'Premium_Warehouse_DrupalCommerceCommon::prices_addon_item_parameters');
 		Utils_RecordBrowserCommon::new_addon('premium_warehouse_items', 'Premium/Warehouse/DrupalCommerce', 'attachment_product_addon_item', 'Premium_Warehouse_DrupalCommerceCommon::attachment_product_addon_item_parameters');
+
+        Utils_RecordBrowserCommon::delete_record_field('premium_ecommerce_products','Exclude compare services');
+        Utils_RecordBrowserCommon::delete_record_field('premium_ecommerce_products','Related products');
+        Utils_RecordBrowserCommon::delete_record_field('premium_ecommerce_products','Popup products');
+        

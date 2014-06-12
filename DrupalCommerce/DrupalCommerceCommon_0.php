@@ -631,7 +631,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
         return $rec['item_name'];
     }
 
-    public static function adv_related_products_params() {
+/*    public static function adv_related_products_params() {
         return array('cols'=>array(),
             'format_callback'=>array('Premium_Warehouse_DrupalCommerceCommon','display_product_name_short'));
     }
@@ -668,7 +668,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
                 $ret[] = Utils_RecordBrowserCommon::record_link_open_tag('premium_ecommerce_products',$p).$name.Utils_RecordBrowserCommon::record_link_close_tag();
         }
         return implode($ret,', ');
-    }
+    }*/
 
     public static function display_category_available_languages($r, $nolink) {
         $rr = Utils_RecordBrowserCommon::get_records('premium_ecommerce_cat_descriptions',array('category'=>$r['id']),array('language'));
@@ -1056,11 +1056,11 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 			    $billing = array_shift($ord['commerce_customer_billing_entities']);
 			    $billing = $billing['commerce_customer_address'];
 			    if(!$billing['last_name'] && $billing['name_line'])
-			      list($billing['first_name'],$billing['last_name']) = explode(' ',$billing['name_line'],2);
+			      @list($billing['first_name'],$billing['last_name']) = explode(' ',$billing['name_line'],2);
 			    $shipping = array_shift($ord['commerce_customer_shipping_entities']);
 			    $shipping = $shipping['commerce_customer_address'];
 			    if(!$shipping['last_name'] && $shipping['name_line'])
-			      list($shipping['first_name'],$shipping['last_name']) = explode(' ',$shipping['name_line'],2);
+			      @list($shipping['first_name'],$shipping['last_name']) = explode(' ',$shipping['name_line'],2);
 			      
 			    $products = array();
 			    //products
@@ -1187,19 +1187,30 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 			      if($line_item['type']!='product') continue;
 			      $tax_amount = 0;
 			      $tax = 0;
+			      $tax_type = null;
 			      foreach($line_item['commerce_unit_price']['data']['components'] as $pr) {
 			        if(isset($pr['price']['data']['tax_rate'])) {
 			          $tax_amount+=$pr['price']['amount'];
+			          if(isset($pr['price']['data']['tax_rate']['type'])) {
+    			        $tax_type = $pr['price']['data']['tax_rate']['type'];
+    			      }
 			          if(isset($taxes[(string)($pr['price']['data']['tax_rate']['rate']*100)])) {
 			            $tax = $taxes[(string)($pr['price']['data']['tax_rate']['rate']*100)];
 			          }
 			        }
 			      }
-			      $net = ($line_item['commerce_unit_price']['amount']-$tax_amount)/$currency_precission;;
-			      $gross = $line_item['commerce_unit_price']['amount']/$currency_precission;;
+			      if($tax_type=='sales_tax') {
+	    		      $net = $line_item['commerce_unit_price']['amount']/$currency_precission;
+    			      $gross = ($line_item['commerce_unit_price']['amount']+$tax_amount)/$currency_precission;
+			      } else {
+	    		      $net = ($line_item['commerce_unit_price']['amount']-$tax_amount)/$currency_precission;
+    			      $gross = $line_item['commerce_unit_price']['amount']/$currency_precission;
+			      }
 			      $node = $products[$line_item['commerce_product']];
 			      $product_id = ltrim($node['sku'],'#0');
+			      ob_start();
 			      Utils_RecordBrowserCommon::new_record('premium_warehouse_items_orders_details',array('transaction_id'=>$id,'item_name'=>$product_id,'quantity'=>$line_item['quantity'],'description'=>$line_item['line_item_label'].' '.$line_item['line_item_title'],'tax_rate'=>$tax,'net_price'=>$net.'__'.$currency_id,'gross_price'=>$gross.'__'.$currency_id));
+			      ob_clean();
 			    }
 			    
 				//TODO: skasowanie niepotrzebnych pol z ecommerce_orders
@@ -1408,9 +1419,12 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 			
 			$currencies = DB::GetAssoc('SELECT id,code,decimals FROM utils_currency WHERE active=1');
 			$taxes = DB::GetAssoc('SELECT id, f_percentage FROM data_tax_rates_data_1 WHERE active=1');
+			$export_net_price = $drupal_row['export_net_price'];
 			
 			$products = Utils_RecordBrowserCommon::get_records('premium_ecommerce_products',array('publish'=>1),array(),array('item_name'=>'ASC'));
 			foreach($products as $row) {
+			  if(isset($drupal_done[$row['sku']])) continue;
+			  
 			  $ecommerce_product_id = $row['id'];
 			  $row = array_merge($row,Utils_RecordBrowserCommon::get_record('premium_warehouse_items',$row['item_name']));
 			  $row['item_name'] = html_entity_decode($row['item_name']);
@@ -1427,8 +1441,8 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 			  foreach($prices as $price) {
 			    if(!isset($currencies[$price['currency']])) continue;
 			    $currency = $currencies[$price['currency']];
-			    $data['commerce_price_'.strtolower($currency['code'])]=array('amount'=>$price['gross_price']*pow(10,$currency['decimals']),
-			                    'currency_code'=>$currency['code']);//TODO: taxes
+			    $data['commerce_price_'.strtolower($currency['code'])]=array('amount'=>round($export_net_price?($price['gross_price']*100/(100+($price['tax_rate']?$taxes[$price['tax_rate']]:0))):$price['gross_price'],$currency['decimals'])*pow(10,$currency['decimals']),
+			                    'currency_code'=>$currency['code']);
 			    if(!isset($data['commerce_price']))
 			      $data['commerce_price'] = $data['commerce_price_'.strtolower($currency['code'])];
 			  }
@@ -1436,8 +1450,8 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 			    $item_price = Utils_CurrencyFieldCommon::get_values($row['net_price']);
 			    if($item_price[0] && isset($currencies[$item_price[1]])) {
 			      $currency = $currencies[$item_price[1]];
-			      $data['commerce_price']=array('amount'=>round(((float)$item_price[0])*(100+($row['tax_rate']?$taxes[$row['tax_rate']]:0))/100,$currency['decimals'])*pow(10,$currency['decimals']),
-			                    'currency_code'=>$currency['code']);//TODO: taxes
+			      $data['commerce_price']=array('amount'=>round($export_net_price?(float)$item_price[0]:((float)$item_price[0])*(100+($row['tax_rate']?$taxes[$row['tax_rate']]:0))/100,$currency['decimals'])*pow(10,$currency['decimals']),
+			                    'currency_code'=>$currency['code']);
 			      if(!isset($data['commerce_price_'.strtolower($currency['code'])]))
 			        $data['commerce_price_'.strtolower($currency['code'])] = $data['commerce_price'];
 			    }
@@ -1631,7 +1645,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 			  if(!isset($drupal_done[$sku])) {
                 $nodes = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'views/epesi_products_search_by_product_id.json?'.http_build_query(array('display_id'=>'services_1','args'=>array($id,''))));
                 $nid = isset($nodes[0]['nid'])?$nodes[0]['nid']:0;
-                Premium_Warehouse_DrupalCommerceCommon::drupal_delete($drupal_id,'product/'.$id);
+                @Premium_Warehouse_DrupalCommerceCommon::drupal_delete($drupal_id,'product/'.$id);
                 if($nid) Premium_Warehouse_DrupalCommerceCommon::drupal_delete($drupal_id,'entity_node/'.$nid);
               }
 			}
@@ -1672,39 +1686,22 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 	
 	public static function drupal_get($drupal,$op,$args=array()) {
 	    $client = self::drupal_connection($drupal);
-	    try {
-    	    $ret = $client->get($op.'.json?'.http_build_query($args))->send()->json();
-    	} catch(Exception $e) {
-    	    $ret = $client->get($op.'.json?'.http_build_query($args))->send()->json();
-    	}
-	    return $ret;
+   	    return $client->get($op.'.json?'.http_build_query($args))->send()->json();
 	}
 
 	public static function drupal_put($drupal,$op,$args=array()) {
 	    $client = self::drupal_connection($drupal);
-	    try {
-    	    return $client->put($op.'.json')->setBody(json_encode($args),'application/json')->send()->json();
-    	} catch(Exception $e) {
-    	    return $client->put($op.'.json')->setBody(json_encode($args),'application/json')->send()->json();
-    	}
+   	    return $client->put($op.'.json')->setBody(json_encode($args),'application/json')->send()->json();
 	}
 
 	public static function drupal_delete($drupal,$op,$args=array()) {
 	    $client = self::drupal_connection($drupal);
-	    try {
-    	    return $client->delete($op.'.json?'.http_build_query($args))->send()->json();
-    	} catch(Exception $e) {
-    	    return $client->delete($op.'.json?'.http_build_query($args))->send()->json();
-    	}
+   	    return $client->delete($op.'.json?'.http_build_query($args))->send()->json();
 	}
 
 	public static function drupal_post($drupal,$op,$args=array()) {
 	    $client = self::drupal_connection($drupal);
-	    try {
-    	    return $client->post($op.'.json')->setBody(json_encode($args),'application/json')->send()->json();
-    	} catch(Exception $e) {
-    	    return $client->post($op.'.json')->setBody(json_encode($args),'application/json')->send()->json();
-    	}
+   	    return $client->post($op.'.json')->setBody(json_encode($args),'application/json')->send()->json();
 	}
 }
 

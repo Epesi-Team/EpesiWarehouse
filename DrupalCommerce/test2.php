@@ -5,7 +5,7 @@ require_once('../../../../include.php');
 ModuleManager::load_modules();
 
 Acl::set_user(1);
-Premium_Warehouse_DrupalCommerceCommon::cron_categories();
+Premium_Warehouse_DrupalCommerceCommon::cron_orders();
 die();
 $drupal_id = 1;
 //$tmp = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'product/399');

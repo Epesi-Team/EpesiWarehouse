@@ -28,13 +28,13 @@ class Premium_Warehouse_DrupalCommerceInstall extends ModuleInstall {
 			array('name' => _M('Item Name'), 		'type'=>'select', 'required'=>true, 'param'=>'premium_warehouse_items::SKU|Item Name;Premium_Warehouse_DrupalCommerceCommon::items_crits', 'extra'=>false, 'visible'=>true, 'display_callback'=>array($this->get_type().'Common', 'display_item_name'), 'filter'=>true),
 			array('name' => _M('Publish'), 		'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>true, 'filter'=>true),
 			array('name' => _M('Recommended'), 		'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>false, 'filter'=>true),
-			array('name' => _M('Exclude compare services'),	'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>false, 'filter'=>true),
+//			array('name' => _M('Exclude compare services'),	'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>false, 'filter'=>true),
 			array('name' => _M('Always on stock'),	'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>false, 'filter'=>true),
 			array('name' => _M('Position'), 		'type'=>'hidden', 'param'=>Utils_RecordBrowserCommon::actual_db_type('integer'), 'required'=>true, 'extra'=>false, 'visible'=>false),
 			array('name' => _M('Available'),	 	'type'=>'select', 'required'=>true, 'extra'=>false, 'visible'=>false, 'param'=>'premium_ecommerce_availability::Availability Code'),
 			array('name' => _M('Description'), 	'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>true, 'display_callback'=>array($this->get_type().'Common', 'display_description')),
-			array('name' => _M('Related products'), 	'type'=>'multiselect', 'param'=>'premium_ecommerce_products::Item Name;Premium_Warehouse_DrupalCommerceCommon::related_products_crits;Premium_Warehouse_DrupalCommerceCommon::adv_related_products_params', 'required'=>false, 'extra'=>false, 'visible'=>false, 'display_callback'=>array($this->get_type().'Common', 'display_related_product_name'), 'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_related_products')),
-			array('name' => _M('Popup products'), 	'type'=>'multiselect', 'param'=>'premium_ecommerce_products::Item Name;Premium_Warehouse_DrupalCommerceCommon::related_products_crits;Premium_Warehouse_DrupalCommerceCommon::adv_related_products_params', 'required'=>false, 'extra'=>false, 'visible'=>false, 'display_callback'=>array($this->get_type().'Common', 'display_related_product_name'), 'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_related_products'))
+//			array('name' => _M('Related products'), 	'type'=>'multiselect', 'param'=>'premium_ecommerce_products::Item Name;Premium_Warehouse_DrupalCommerceCommon::related_products_crits;Premium_Warehouse_DrupalCommerceCommon::adv_related_products_params', 'required'=>false, 'extra'=>false, 'visible'=>false, 'display_callback'=>array($this->get_type().'Common', 'display_related_product_name'), 'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_related_products')),
+//			array('name' => _M('Popup products'), 	'type'=>'multiselect', 'param'=>'premium_ecommerce_products::Item Name;Premium_Warehouse_DrupalCommerceCommon::related_products_crits;Premium_Warehouse_DrupalCommerceCommon::adv_related_products_params', 'required'=>false, 'extra'=>false, 'visible'=>false, 'display_callback'=>array($this->get_type().'Common', 'display_related_product_name'), 'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_related_products'))
 		);
 		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_products', $fields);
 		
@@ -173,6 +173,7 @@ class Premium_Warehouse_DrupalCommerceInstall extends ModuleInstall {
 			array('name' => _M('Login'), 			'type'=>'text', 'required'=>true, 'param'=>'128', 'extra'=>false, 'visible'=>true),
 			array('name' => _M('Password'), 			'type'=>'text', 'required'=>true, 'param'=>'128', 'extra'=>false, 'visible'=>false,'QFfield_callback'=>array('Premium_Warehouse_DrupalCommerceCommon','QFfield_password'), 'display_callback'=>array('Premium_Warehouse_DrupalCommerceCommon','display_password')),
 			array('name' => _M('Endpoint'), 			'type'=>'text', 'required'=>true, 'param'=>'128', 'extra'=>false, 'visible'=>true),
+			array('name' => _M('Export Net Price'), 			'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>true),
 		);
 		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_drupal', $fields);
 		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_drupal', _M('eCommerce - Drupal'));
@@ -294,37 +295,6 @@ class Premium_Warehouse_DrupalCommerceInstall extends ModuleInstall {
 		$this->create_data_dir();
 		Base_ThemeCommon::install_default_theme('Premium/Warehouse/DrupalCommerce');
 		
-		$areas = array(
-				"EU,07"=>_M('EU, UPS Express'),
-				"EU,08"=>_M('EU, UPS Expedited'),
-				"EU,11"=>_M('EU, UPS Standard'),
-				"EU,54"=>_M('EU, UPS Worldwide Express Plus'),
-				"EU,64"=>_M('EU, UPS Express NA1'),
-				"EU,65"=>_M('EU, UPS Express Saver'),
-				"US,01"=>_M('USA, UPS Next Day Air'),
-				"US,02"=>_M('USA, UPS 2nd Day Air'),
-				"US,03"=>_M('USA, UPS Ground'),
-				"US,07"=>_M('USA, UPS Worldwide Express'),
-				"US,08"=>_M('USA, UPS Worldwide Expedited'),
-				"US,11"=>_M('USA, UPS Standard'),
-				"US,12"=>_M('USA, UPS 3 Day Select'),
-				"US,13"=>_M('USA, UPS Next Day Air Saver'),
-				"US,14"=>_M('USA, UPS Next Day Early A.M.'),
-				"US,54"=>_M('USA, UPS Worldwide Express Plus'),
-				"US,59"=>_M('USA, UPS 2nd Day Air A.M.'),
-				"US,65"=>_M('USA, UPS Express Saver'),
-				"CA,01"=>_M('Canada, UPS Express'),
-				"CA,02"=>_M('Canada, UPS Expedited'),
-				"CA,07"=>_M('Canada, UPS Worldwide Express'),
-				"CA,08"=>_M('Canada, UPS Worldwide Expedited'),
-				"CA,11"=>_M('Canada, UPS Standard'),
-				"CA,12"=>_M('Canada, UPS 3 Day Select'),
-				"CA,13"=>_M('Canada, UPS Express Saver'),
-				"CA,14"=>_M('Canada, UPS Express Early A.M.'),
-				"CA,54"=>_M('Canada, UPS Worldwide Express Plus')
-				);
-		Utils_CommonDataCommon::new_array('Premium_Items_Orders_Shipment_Types/2',$areas,false,true);
-
 		Utils_RecordBrowserCommon::add_access('premium_ecommerce_products', 'view', 'ACCESS:employee');
 		Utils_RecordBrowserCommon::add_access('premium_ecommerce_products', 'add', 'ACCESS:employee');
 		Utils_RecordBrowserCommon::add_access('premium_ecommerce_products', 'edit', 'ACCESS:employee', array(), array('currency','gross_price'));
