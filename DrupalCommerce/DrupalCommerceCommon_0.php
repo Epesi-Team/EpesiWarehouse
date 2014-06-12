@@ -1271,7 +1271,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
               if(isset($category_mapping[$c['id']])) {
                 $category_exists[$category_mapping[$c['id']]] = 2;
               }
-              $epesi_category_names[$c['id']] = $c['category_name'];
+              $epesi_category_names[$c['id']] = html_entity_decode($c['category_name']);
               $epesi_category_parents[$c['id']] = $c['parent_category'];
               $epesi_category_weight[$c['id']] = $c['position'];
             }
