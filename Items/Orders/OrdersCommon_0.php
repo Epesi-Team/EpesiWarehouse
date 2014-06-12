@@ -477,17 +477,6 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		return $opts[$r['status']];
 	}
 	
-	public static function check_if_no_duplicate_company_contact($data) {
-		if (!isset($data['company']) && !isset($data['contact'])) return true;
-/*		if (((!isset($data['company']) || $data['company']<0) && $data['company_name']) ||
-			((!isset($data['contact']) || $data['contact']<=0) && ($data['first_name'] || $data['last_name']))) {
-			$ret = CRM_ContactsCommon::check_for_duplicates($data);
-			if ($ret==false) return true;
-			return array('company'=>'Found duplicate company/contact entry');
-		}*/
-		return true;
-	}
-
 	public static function check_no_empty_invoice($data) {
 		if (isset($data['receipt']) && $data['receipt']) return true;
 		if (Utils_RecordBrowser::$last_record['transaction_type']==4 || Utils_RecordBrowser::$last_record['transaction_type']==2) return true;
@@ -534,7 +523,6 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			eval_js('new ContractorUpdate()');
 		}
 		if ($mode!='view') {
-			if ($mode=='add') $form->addFormRule(array('Premium_Warehouse_Items_OrdersCommon','check_if_no_duplicate_company_contact'));
 			if ($field=='company_name')$form->addFormRule(array('Premium_Warehouse_Items_OrdersCommon','check_no_empty_invoice'));
 			$form->addElement('text', $field, $label, array('id'=>$field));
 			$form->setDefaults(array($field=>$default));
@@ -1196,7 +1184,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 					Utils_RecordBrowserCommon::restore_record('premium_warehouse_items_orders_details', $d['id']);
 				return;
 			case 'view':
-				if ($values['transaction_type']==2 || $values['transaction_type']==4) {
+				if ($values['transaction_type']==2 || $values['transaction_type']==4 && isset(Utils_RecordBrowser::$rb_obj)) {
 					Utils_RecordBrowser::$rb_obj->hide_tab('Contact Details');
 					Utils_RecordBrowser::$rb_obj->hide_tab('Shipping Address');
 				}

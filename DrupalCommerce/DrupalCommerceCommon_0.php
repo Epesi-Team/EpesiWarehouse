@@ -116,7 +116,8 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
         return array('show'=>true, 'label'=>__('Prices'));
     }
     public static function prices_addon_item_parameters($r) {
-		$product_exists = self::product_exists($r['id']);
+        if(!isset($r['id'])) return array('show'=>false);
+        $product_exists = self::product_exists($r['id']);
         if(!Variable::get('ecommerce_item_prices') || !$product_exists)
             return array('show'=>false);
         return array('show'=>true, 'label'=>__('eCommerce').'#'.__('Prices'));
@@ -127,7 +128,8 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
         return array('show'=>true, 'label'=>__('Parameters'));
     }
     public static function parameters_addon_item_parameters($r) {
-		$product_exists = self::product_exists($r['id']);
+        if(!isset($r['id'])) return array('show'=>false);
+        $product_exists = self::product_exists($r['id']);
         if(!Variable::get('ecommerce_item_parameters') || !$product_exists)
             return array('show'=>false);
         return array('show'=>true, 'label'=>__('eCommerce').'#'.__('Parameters'));
@@ -138,13 +140,15 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
         return array('show'=>true, 'label'=>__('Descriptions'));
     }
     public static function descriptions_addon_item_parameters($r) {
-		$product_exists = self::product_exists($r['id']);
+        if(!isset($r['id'])) return array('show'=>false);
+        $product_exists = self::product_exists($r['id']);
         if(!Variable::get('ecommerce_item_descriptions') || !$product_exists)
             return array('show'=>false);
         return array('show'=>true, 'label'=>__('eCommerce').'#'.__('Descriptions'));
     }
     public static function attachment_product_addon_item_parameters($r) {
-		$product_exists = self::product_exists($r['id']);
+        if(!isset($r['id'])) return array('show'=>false);
+        $product_exists = self::product_exists($r['id']);
         if(!$product_exists)
             return array('show'=>false);
         return array('show'=>true, 'label'=>__('eCommerce').'#'.__('Pictures'));
