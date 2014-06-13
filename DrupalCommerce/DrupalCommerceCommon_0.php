@@ -1319,7 +1319,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
                 $translations = Utils_RecordBrowserCommon::get_records('premium_ecommerce_cat_descriptions',array('category'=>$id));
                 foreach($translations as $translation) {
                   $values = array();
-                  $values['name_field'][$translation['language']][0]['value'] = $translation['display_name']?$translation['display_name']:$name;
+                  $values['name_field'][$translation['language']][0]['value'] = $translation['display_name']?html_entity_decode($translation['display_name']):$name;
                   $values['description_field'][$translation['language']][0]['value'] = $translation['long_description'];
                   $values['description_field'][$translation['language']][0]['format'] = 'filtered_html';
                   $values['description_field'][$translation['language']][0]['summary'] = $translation['short_description'];
