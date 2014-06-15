@@ -1233,6 +1233,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 	
 	public static function cron_categories() {
 	    $drupals = Utils_RecordBrowserCommon::get_records('premium_ecommerce_drupal');
+	    $default_lang = Base_LangCommon::get_lang_code();
 	    foreach($drupals as $drupal_row) {
 	        $drupal_id = $drupal_row['id'];
 
@@ -1290,7 +1291,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
                 $term->field_epesi_category_id['und'][0]['value']=$id;
                 $term->description_field = array();
                 $term->description_original = '';
-                $term->format = 'filtered_html';
+                $term->format = 'full_html';
                 $term->translations['original']='en';
                 $term->weight = $epesi_category_weight[$id];
                 
@@ -1321,7 +1322,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
                   $values = array();
                   $values['name_field'][$translation['language']][0]['value'] = $translation['display_name']?html_entity_decode($translation['display_name']):$name;
                   $values['description_field'][$translation['language']][0]['value'] = $translation['long_description'];
-                  $values['description_field'][$translation['language']][0]['format'] = 'filtered_html';
+                  $values['description_field'][$translation['language']][0]['format'] = 'full_html';
                   $values['description_field'][$translation['language']][0]['summary'] = $translation['short_description'];
                   $info = array(
                     'language'=>$translation['language'],
@@ -1378,7 +1379,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
               $term->name_field = array();
               $term->description_field = array();
               $term->description_original = '';
-              $term->format = 'filtered_html';
+              $term->format = 'full_html';
               $term->translations['original']='en';
               
               //sync/create categories
@@ -1530,7 +1531,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 			  //update each language... if there is no field_images translation, default/random language images are displayed
 			  foreach(Utils_CommonDataCommon::get_array('Premium/Warehouse/eCommerce/Languages') as $lang=>$lang_name)
 			    if(!isset($field_images[$lang])) $field_images[$lang] = array();
-			  
+
 			  //update product
 			  $drupal_product_id = 0;
 			  $nid = 0;
@@ -1586,7 +1587,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 			    $node['type']='epesi_products';
 			    $node['title']=$node['title_field']['en'][0]['value']=$node['title_field']['und'][0]['value']=$node['field_title']=$row['item_name'];
 			    $node['body']['en'][0]['value']=$row['description'];
-			    $node['body']['en'][0]['format'] = 'filtered_html';
+			    $node['body']['en'][0]['format'] = 'full_html';
 			    $node['field_product']['und'][0]['product_id'] = $drupal_product_id;
 //			    $node['field_product']['und'][0] = $product;
 			    $node['promote']=$row['recommended']?1:null; //TODO: doesn't work
@@ -1606,6 +1607,46 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 			      $node['body']['en'][0]['value']=$translations['long_description'];
 			      $node['body']['en'][0]['summary']=$translations['short_description'];
 			    }
+
+			    //features / parameters
+		        $parameters = array();
+			    $ret2 = DB::Execute('SELECT pp.f_item_name, pp.f_value,
+									p.f_parameter_code as parameter_code,
+									pl.f_label as parameter_label,
+									g.f_group_code as group_code,
+									gl.f_label as group_label,
+									pp.f_language as language
+						FROM premium_ecommerce_products_parameters_data_1 pp
+						INNER JOIN (premium_ecommerce_parameters_data_1 p,premium_ecommerce_parameter_groups_data_1 g) ON (p.id=pp.f_parameter AND g.id=pp.f_group)
+						LEFT JOIN premium_ecommerce_parameter_labels_data_1 pl ON (pl.f_parameter=p.id AND pl.f_language=pp.f_language AND pl.active=1)
+						LEFT JOIN premium_ecommerce_param_group_labels_data_1 gl ON (gl.f_group=g.id AND gl.f_language=pp.f_language AND gl.active=1)
+						WHERE pp.active=1 AND pp.f_item_name=%d ORDER BY pp.f_language,g.f_position,gl.f_label,g.f_group_code,p.f_position,pl.f_label,p.f_parameter_code',array($row['id']));
+	            while($bExp = $ret2->FetchRow()) {
+	                if(!isset($parameters[$bExp['language']])) {
+	                    $parameters[$bExp['language']] = array();
+            			$last_group = null;
+            		}
+		    		$parameters[$bExp['language']][] = array('sGroup'=>($last_group!=$bExp['group_code']?($bExp['group_label']?$bExp['group_label']:$bExp['group_code']):''), 'sName'=>($bExp['parameter_label']?$bExp['parameter_label']:$bExp['parameter_code']), 'sValue'=>($bExp['f_value']=='Y'?'<span class="yes">Yes</span>':($bExp['f_value']=='N'?'<span class="no">No</span>':$bExp['f_value'])));
+			    	if($last_group != $bExp['group_code']) {
+    					$last_group = $bExp['group_code'];
+				    }
+			    }
+			    Base_LangCommon::load('en');
+			    $parameters['en'][] = array('sGroup'=>__('Codes'),'sName'=>'SKU','sValue'=>$row['sku']);
+			    if($row['upc']) $parameters['en'][] = array('sGroup'=>'','sName'=>__('UPC'),'sValue'=>$row['upc']);
+			    if($row['product_code']) $parameters['en'][] = array('sGroup'=>'','sName'=>__('Product code'),'sValue'=>$row['product_code']);
+			    Base_LangCommon::load($default_lang);
+
+			    $features = '<table id="features" cellspacing="1"><tbody>';
+			    $i2=0;
+			    foreach($parameters['en'] as $aData) {
+				    $aData['iStyle'] = ( $i2 % 2 ) ? 0: 1;
+    				$features .= '<tr class="l'.$aData['iStyle'].'"><th>'.$aData['sGroup'].'</th><th>'.$aData['sName'].'</th><td>'.$aData['sValue'].'</td></tr>';
+	    			$i2++;
+		    	} // end for
+			    $features .= '</tbody></table>';
+                $node['body']['en'][0]['value'] .= $features;
+
 //			    print(var_export($node));
 			    if($nid) {
 //			      print('nid='.$nid."\n");
@@ -1619,10 +1660,26 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 			    
 			    $translations = Utils_RecordBrowserCommon::get_records('premium_ecommerce_descriptions',array('item_name'=>$row['id']));
 			    foreach($translations as $translation) {
+			      //features
+			      Base_LangCommon::load($translation['language']);
+			      $parameters[$translation['language']][] = array('sGroup'=>__('Codes'),'sName'=>'SKU','sValue'=>$row['sku']);
+			      if($row['upc']) $parameters[$translation['language']][] = array('sGroup'=>'','sName'=>__('UPC'),'sValue'=>$row['upc']);
+			      if($row['product_code']) $parameters[$translation['language']][] = array('sGroup'=>'','sName'=>__('Product Code'),'sValue'=>$row['product_code']);
+			      Base_LangCommon::load($default_lang);
+
+			      $features = '<table id="features" cellspacing="1"><tbody>';
+			      $i2=0;
+			      foreach($parameters[$translation['language']] as $aData) {
+				    $aData['iStyle'] = ( $i2 % 2 ) ? 0: 1;
+    				$features .= '<tr class="l'.$aData['iStyle'].'"><th>'.$aData['sGroup'].'</th><th>'.$aData['sName'].'</th><td>'.$aData['sValue'].'</td></tr>';
+	    			$i2++;
+		    	  } // end for
+			      $features .= '</tbody></table>';
+
 			      $values = array();
 			      $values['title_field'][$translation['language']][0]['value'] = $translation['display_name'];
-			      $values['body'][$translation['language']][0]['value'] = $translation['long_description'];
-			      $values['body'][$translation['language']][0]['format'] = 'filtered_html';
+			      $values['body'][$translation['language']][0]['value'] = $translation['long_description'].$features;
+			      $values['body'][$translation['language']][0]['format'] = 'full_html';
 			      $values['body'][$translation['language']][0]['summary'] = $translation['short_description'];
 			    //  $values['field_epesi_category'][$translation['language']] = $node['field_epesi_category']['und'];
 			      $info = array(
