@@ -487,10 +487,6 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
         Utils_RecordBrowserCommon::update_record('premium_ecommerce_products',$id,array('always_on_stock'=>$v?1:0));
     }
 
-    public static function toggle_exclude_compare_services($id,$v) {
-        Utils_RecordBrowserCommon::update_record('premium_ecommerce_products',$id,array('exclude_compare_services'=>$v?1:0));
-    }
-
     public static function publish_warehouse_item($id,$icecat=true) {
         Utils_RecordBrowserCommon::new_record('premium_ecommerce_products',array('item_name'=>$id,'publish'=>1,'available'=>1));
         if($icecat)
