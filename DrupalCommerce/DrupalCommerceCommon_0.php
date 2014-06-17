@@ -477,14 +477,17 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 
     public static function toggle_publish($id,$v) {
         Utils_RecordBrowserCommon::update_record('premium_ecommerce_products',$id,array('publish'=>$v?1:0));
+        location(array());
     }
 
     public static function toggle_recommended($id,$v) {
         Utils_RecordBrowserCommon::update_record('premium_ecommerce_products',$id,array('recommended'=>$v?1:0));
+        location(array());
     }
 
     public static function toggle_always_on_stock($id,$v) {
         Utils_RecordBrowserCommon::update_record('premium_ecommerce_products',$id,array('always_on_stock'=>$v?1:0));
+        location(array());
     }
 
     public static function publish_warehouse_item($id,$icecat=true) {
