@@ -13,6 +13,8 @@ defined("_VALID_ACCESS") || die('Direct access forbidden');
 class Premium_Warehouse_DrupalCommerce_AllegroInstall extends ModuleInstall {
 
 	public function install() {
+		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items_orders',array('name'=>'Allegro order',	'type'=>'text', 'param'=>16, 'required'=>false, 'filter'=>false, 'extra'=>false, 'visible'=>true, 'QFfield_callback'=>array('Premium_Warehouse_DrupalCommerce_AllegroCommon','QFfield_allegro_order'),'position'=>'Online order'));
+		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items_orders',array('name'=>'Allegro auction',	'type'=>'text', 'param'=>16, 'required'=>false, 'filter'=>false, 'extra'=>false, 'visible'=>false, 'QFfield_callback'=>array('Premium_Warehouse_DrupalCommerce_AllegroCommon','QFfield_allegro_order'),'position'=>'Online order'));
 		Utils_RecordBrowserCommon::new_addon('premium_warehouse_items', 'Premium/Warehouse/DrupalCommerce/Allegro', 'warehouse_item_addon', 'Premium_Warehouse_DrupalCommerce_AllegroCommon::warehouse_item_addon_label');
 		$ret = DB::CreateTable('premium_ecommerce_allegro_cats','
 					id I4 NOTNULL,
@@ -32,7 +34,8 @@ class Premium_Warehouse_DrupalCommerce_AllegroInstall extends ModuleInstall {
 							created_by I4,
 							started_on T,
 							ended_on T,
-							prefs X',
+							prefs X,
+							bids I4 DEFAULT 0',
 				array('constraints'=>', FOREIGN KEY (item_id) REFERENCES premium_warehouse_items_data_1(id),
 										FOREIGN KEY (created_by) REFERENCES user_login(id)'));
 		if(!$ret){
@@ -47,7 +50,7 @@ class Premium_Warehouse_DrupalCommerce_AllegroInstall extends ModuleInstall {
 							position I4 NOTNULL,
 							ip C(32) NOTNULL,
 							created_on T DEFTIMESTAMP',
-				array('constraints'=>', FOREIGN KEY (item_id) REFERENCES premium_warehouse_items_data_1(id), FOREIGN KEY (ret_item_id) REFERENCES premium_warehouse_items_data_1(id), KEY(item_id,position,ip)'));
+				array('constraints'=>', FOREIGN KEY (item_id) REFERENCES premium_warehouse_items_data_1(id), FOREIGN KEY (ret_item_id) REFERENCES premium_warehouse_items_data_1(id), UNIQUE KEY(item_id,position,ip)'));
 		if(!$ret){
 			print('Unable to create table premium_ecommerce_allegro_cross.<br>');
 			return false;
@@ -64,20 +67,38 @@ class Premium_Warehouse_DrupalCommerce_AllegroInstall extends ModuleInstall {
 		}
 		
 		$this->create_data_dir();
-		
-		Base_AclCommon::add_permission(_M('Inventory - Allegro Settings'),array('ACCESS:employee'));
 		Variable::set('ecommerce_allegro_cats_up', null);
+		
+		Variable::set('allegro_key','');
+		Variable::set('allegro_country','');
+		Variable::set('allegro_login','');
+		Variable::set('allegro_pass','');
+		Variable::set('allegro_state','');
+		Variable::set('allegro_city','');
+		Variable::set('allegro_postal_code','');
+		Variable::set('allegro_fvat',1);
+		Variable::set('allegro_transport_description','');
+		Variable::set('allegro_template','');
 		
 		return true;
 	}
 	
 	public function uninstall() {
-		Base_AclCommon::delete_permission('Inventory - Allegro Settings');
 		DB::DropTable('premium_ecommerce_allegro_stan');
 		DB::DropTable('premium_ecommerce_allegro_cats');
 		DB::DropTable('premium_ecommerce_allegro_auctions');
 		DB::DropTable('premium_ecommerce_allegro_cross');
 		Variable::delete('ecommerce_allegro_cats_up');
+		Variable::delete('allegro_key');
+		Variable::delete('allegro_country');
+		Variable::delete('allegro_login');
+		Variable::delete('allegro_pass');
+		Variable::delete('allegro_state');
+		Variable::delete('allegro_city');
+		Variable::delete('allegro_postal_code');
+		Variable::delete('allegro_fvat',1);
+		Variable::delete('allegro_transport_description');
+		Variable::delete('allegro_template');
 		return true;
 	}
 	
@@ -99,7 +120,7 @@ class Premium_Warehouse_DrupalCommerce_AllegroInstall extends ModuleInstall {
 	}
 	
 	public static function simple_setup() {
-        return false;
+        return array('package'=>'eCommerce');
 	}
 	
 }

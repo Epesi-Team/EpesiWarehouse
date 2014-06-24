@@ -5,6 +5,7 @@ define('CID',false); //i know that i won't access $_SESSION['client']
 define('SET_SESSION',false);
 require_once('../../../../../include.php');
 ModuleManager::load_modules();
+
 $old_user = Acl::get_user();
 if(!$old_user) Acl::set_sa_user();
 
@@ -18,7 +19,7 @@ $photo = null;
 Utils_AttachmentCommon::call_user_func_on_file('premium_ecommerce_products/'.$_GET['id'],'collect_photos');
 Utils_AttachmentCommon::call_user_func_on_file('premium_ecommerce_descriptions/pl/'.$_GET['id'],'collect_photos');
 
-if($photo == null) {
+if($photo == null || !file_exists($photo)) {
     blank_img();
 } else {
     header("Content-type: image/jpeg");
@@ -28,12 +29,12 @@ if($photo == null) {
 if(!$old_user) Acl::set_user();
 
 
-function collect_photos($id,$rev,$file,$original,$args=null) {
+function collect_photos($id,$file,$original,$args=null) {
 	global $photo;
 	if($_GET['pos']--!=0) return;
 	$ext = strrchr($original,'.');
         if(preg_match('/^\.(jpg|jpeg)$/i',$ext)) {
-            $th1 = Utils_ImageCommon::create_thumb($file,$_GET['w'],$_GET['w']*2);
+            $th1 = Utils_ImageCommon::create_thumb($file,$_GET['w'],$_GET['w']*1.5);
             $photo = $th1['thumb'];
         }
 }

@@ -5,6 +5,7 @@ define('CID',false); //i know that i won't access $_SESSION['client']
 define('SET_SESSION',false);
 require_once('../../../../../include.php');
 ModuleManager::load_modules();
+
 $old_user = Acl::get_user();
 if(!$old_user) Acl::set_sa_user();
 
@@ -99,7 +100,7 @@ imagedestroy($im);
 if(!$old_user) Acl::set_user();
 
 
-function collect_photos($id,$rev,$file,$original,$args=null) {
+function collect_photos($id,$file,$original,$args=null) {
 	global $photo;
 	if($photo!=null) return;
 	$ext = strrchr($original,'.');

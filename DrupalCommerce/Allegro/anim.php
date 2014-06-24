@@ -4,10 +4,11 @@ header("Expires: Mon, 26 Jul 1997 05:00:00 GMT"); // date in the past
 define('CID',false); //i know that i won't access $_SESSION['client']
 define('SET_SESSION',false);
 require_once('../../../../../include.php');
+ModuleManager::load_modules();
+
 $old_user = Acl::get_user();
 if(!$old_user) Acl::set_sa_user();
 
-ModuleManager::load_modules();
 if(!isset($_GET['id']) || !is_numeric($_GET['id']) || !isset($_GET['w']) || !is_numeric($_GET['w'])) {
     blank_img();
     if(!$old_user) Acl::set_user();
@@ -33,7 +34,7 @@ if(!$photos) {
 if(!$old_user) Acl::set_user();
 
 
-function collect_photos($id,$rev,$file,$original,$args=null) {
+function collect_photos($id,$file,$original,$args=null) {
 	global $photos;
 	if(count($photos)>=4) return;
 	$ext = strrchr($original,'.');
