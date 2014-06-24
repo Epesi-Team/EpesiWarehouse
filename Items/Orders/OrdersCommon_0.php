@@ -1676,7 +1676,11 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
             return;
         }
         if ($mode == 'edit' || $mode == 'add') {
-            Utils_RecordBrowserCommon::QFfield_checkbox($form, $field, $label, $mode, $default, $desc, $rb_obj);
+            if ($allow_negative == 'all') {
+                $form->addElement('static',$field,$label,'<img src="'.Base_ThemeCommon::get_template_file('images','checkbox_on.png').'" alt="'.__('Yes').'" style="margin:3px 5px;vertical-align:middle;" />');
+            } else {
+                Utils_RecordBrowserCommon::QFfield_checkbox($form, $field, $label, $mode, $default, $desc, $rb_obj);
+            }
         } else {
             if ($allow_negative == 'all') {
                 $default = 1;
