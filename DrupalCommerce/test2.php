@@ -4,7 +4,7 @@ define('CID',false);
 require_once('../../../../include.php');
 ModuleManager::load_modules();
 
-Acl::set_user(1);
+Acl::set_sa_user();
 Premium_Warehouse_DrupalCommerceCommon::cron_orders();
 Premium_Warehouse_DrupalCommerceCommon::cron_categories();
 die();

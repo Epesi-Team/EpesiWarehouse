@@ -7,7 +7,7 @@ require_once('../../../../../include.php');
 ModuleManager::load_modules();
 
 $old_user = Acl::get_user();
-if(!$old_user) Acl::set_user(1);
+if(!$old_user) Acl::set_sa_user();
 
 if(!isset($_GET['id']) || !is_numeric($_GET['id']) || !isset($_GET['w']) || !is_numeric($_GET['w'])) {
     blank_img();

@@ -6,7 +6,7 @@ define('CID',false);
 require_once('../../../../include.php');
 ModuleManager::load_modules();
 
-Acl::set_user(1);
+Acl::set_sa_user();
 
 		Utils_RecordBrowserCommon::unregister_processing_callback('premium_ecommerce_pages', array('Premium_Warehouse_eCommerceCommon', 'submit_pages_position'));
 		Utils_RecordBrowserCommon::unregister_processing_callback('premium_ecommerce_polls', array('Premium_Warehouse_eCommerceCommon', 'submit_polls_position'));

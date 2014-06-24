@@ -94,14 +94,14 @@ class Premium_Warehouse_DrupalCommerce_AllegroCommon extends ModuleCommon {
 
     public static function cron_cats() {
 		$us = Acl::get_user();
-		Acl::set_user(2);
+		Acl::set_sa_user();
    		self::update_cats();
 		Acl::set_user($us);
    	}
 
     public static function cron_statuses() {
 		$us = Acl::get_user();
-		Acl::set_user(2);
+		Acl::set_sa_user();
     	self::update_statuses();
 		DB::Execute('DELETE FROM premium_ecommerce_allegro_cross WHERE created_on<%T',array(time()-3600*12));
 		Acl::set_user($us);

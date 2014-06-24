@@ -4,7 +4,7 @@ define('CID',false);
 require_once('../../../../include.php');
 ModuleManager::load_modules();
 
-Acl::set_user(1);
+Acl::set_sa_user();
 
 $drupal_id = 1;
 //$ret = Premium_Warehouse_DrupalCommerceCommon::drupal_request(1,'taxonomy_vocabulary.getTree',array(1,0,99));
