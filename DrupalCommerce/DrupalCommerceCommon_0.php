@@ -1438,6 +1438,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 			  $data = array('sku'=>$row['sku'],'title'=>$row['item_name'],'type'=>'epesi_products');
 			  if($row['weight']) $data['field_weight'] = array('weight'=>$row['weight'],'unit'=>Variable::get('premium_warehouse_weight_units','lb'));
 			  if($row['volume']) $data['field_dimensions'] = array('length'=>$row['volume'],'width'=>1,'height'=>1,'unit'=>preg_replace('/[^a-z]/','',strip_tags(Variable::get('premium_warehouse_volume_units','in'))));
+			  $prices_done = false;
 			  foreach($prices as $price) {
 			    if(!isset($currencies[$price['currency']])) continue;
 			    $currency = $currencies[$price['currency']];
@@ -1445,6 +1446,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 			                    'currency_code'=>$currency['code']);
 			    if(!isset($data['commerce_price']))
 			      $data['commerce_price'] = $data['commerce_price_'.strtolower($currency['code'])];
+			    $prices_done = true;
 			  }
 			  if($row['net_price']) {
 			    $item_price = Utils_CurrencyFieldCommon::get_values($row['net_price']);
@@ -1454,8 +1456,12 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 			                    'currency_code'=>$currency['code']);
 			      if(!isset($data['commerce_price_'.strtolower($currency['code'])]))
 			        $data['commerce_price_'.strtolower($currency['code'])] = $data['commerce_price'];
+			      $prices_done = true;
 			    }
 			  }
+			  if(!$prices_done) continue;
+			  
+			  //set quantity
 			  $quantity = Premium_Warehouse_Items_LocationCommon::get_item_quantity_in_warehouse($row['id']) - DB::GetOne('SELECT SUM(d.f_quantity) FROM premium_warehouse_items_orders_details_data_1 d INNER JOIN premium_warehouse_items_orders_data_1 o ON (o.id=d.f_transaction_id) WHERE ((o.f_transaction_type=1 AND o.f_status in (-1,2,3,4,5)) OR (o.f_transaction_type=4 AND o.f_status in (2,3))) AND d.active=1 AND o.active=1 AND d.f_item_name=%d',array($row['id']));
 			  if($quantity<=0) {
 			    if($row['always_on_stock']) {
