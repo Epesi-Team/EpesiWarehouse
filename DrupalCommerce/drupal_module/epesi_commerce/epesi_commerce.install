@@ -251,6 +251,16 @@ $endpoint->resources = array(
       ),
     ),
   ),
+  'epesi_commerce' => array(
+    'actions'=> array(
+      'get_product_fields' => array(
+        'enabled' => '1',
+      ),
+      'get_node_fields' => array(
+        'enabled' => '1',
+      ),
+    ),
+  ),
   'views' => array(
     'operations' => array(
       'retrieve' => array(

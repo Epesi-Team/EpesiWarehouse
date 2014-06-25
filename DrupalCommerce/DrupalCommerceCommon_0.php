@@ -1409,6 +1409,11 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 			$manufacturers = Utils_RecordBrowserCommon::get_records('premium_warehouse_items',array('!manufacturer'=>''),array('manufacturer'));
 			
 			//update products
+			//get fields
+			$product_fields = array_merge(Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'epesi_commerce/get_product_fields'),array('sku','title','type'));
+			$node_fields = array_merge(Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'epesi_commerce/get_node_fields'),array('type','field_title','title','promote','sticky'));
+			
+			//get old products
 			$drupal_products_tmp = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'product',array('fields'=>'product_id,sku','filter'=>array('type'=>'epesi_products'),'sort_by'=>'sku','limit'=>999999999999999999));
 			$drupal_products = array();
 			$drupal_done = array();
@@ -1536,6 +1541,14 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 			  //update each language... if there is no field_images translation, default/random language images are displayed
 			  foreach(Utils_CommonDataCommon::get_array('Premium/Warehouse/eCommerce/Languages') as $lang=>$lang_name)
 			    if(!isset($field_images[$lang])) $field_images[$lang] = array();
+			    
+			  //filter out invalid fields
+			  foreach($data as $key=>$value) {
+			    if(!in_array($key,$product_fields)) {
+			      //print('Invalid product field: '.$key."\n");
+			      unset($data[$key]);
+			    }
+			  }
 
 			  //update product
 			  $drupal_product_id = 0;
@@ -1651,6 +1664,13 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 		    	} // end for
 			    $features .= '</tbody></table>';
                 $node['body']['en'][0]['value'] .= $features;
+                
+                foreach($node as $key=>$value) {
+			      if(!in_array($key,$node_fields)) {
+			        print('Invalid node field: '.$key."\n");
+			        unset($node[$key]);
+			      }
+			    }
 
 //			    print(var_export($node));
 			    if($nid) {

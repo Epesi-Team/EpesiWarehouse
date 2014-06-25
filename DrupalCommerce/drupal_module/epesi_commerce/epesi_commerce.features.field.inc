@@ -186,7 +186,7 @@ function epesi_commerce_field_default_fields() {
           0 => 'fid',
         ),
       ),
-      'locked' => '0',
+      'locked' => '1',
       'module' => 'image',
       'settings' => array(
         'default_image' => 0,
@@ -426,7 +426,7 @@ function epesi_commerce_field_default_fields() {
       'field_name' => 'field_dimensions',
       'foreign keys' => array(),
       'indexes' => array(),
-      'locked' => '0',
+      'locked' => '1',
       'module' => 'physical',
       'settings' => array(
         'entity_translation_sync' => FALSE,
@@ -508,7 +508,7 @@ function epesi_commerce_field_default_fields() {
           0 => 'weight',
         ),
       ),
-      'locked' => '0',
+      'locked' => '1',
       'module' => 'physical',
       'settings' => array(
         'entity_translation_sync' => FALSE,
@@ -694,7 +694,7 @@ function epesi_commerce_field_default_fields() {
           0 => 'tid',
         ),
       ),
-      'locked' => '0',
+      'locked' => '1',
       'module' => 'taxonomy',
       'settings' => array(
         'allowed_values' => array(
@@ -786,7 +786,7 @@ function epesi_commerce_field_default_fields() {
           0 => 'tid',
         ),
       ),
-      'locked' => '0',
+      'locked' => '1',
       'module' => 'taxonomy',
       'settings' => array(
         'allowed_values' => array(
@@ -1087,7 +1087,7 @@ function epesi_commerce_field_default_fields() {
           0 => 'format',
         ),
       ),
-      'locked' => '0',
+      'locked' => '1',
       'module' => 'text',
       'settings' => array(
         'max_length' => '7',
@@ -1160,7 +1160,7 @@ function epesi_commerce_field_default_fields() {
           0 => 'format',
         ),
       ),
-      'locked' => '0',
+      'locked' => '1',
       'module' => 'text',
       'settings' => array(
         'max_length' => '7',

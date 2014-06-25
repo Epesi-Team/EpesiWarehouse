@@ -4,11 +4,14 @@ define('CID',false);
 require_once('../../../../include.php');
 ModuleManager::load_modules();
 
+$drupal_id = 1;
 Acl::set_sa_user();
+//$ret = Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'epesi_commerce/get_product_fields');
+//print_r($ret);
+//die();
 Premium_Warehouse_DrupalCommerceCommon::cron_orders();
 Premium_Warehouse_DrupalCommerceCommon::cron_categories();
 die();
-$drupal_id = 1;
 //$tmp = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'product/399');
 $tmp = Utils_RecordBrowserCommon::get_record('premium_warehouse_items',20);
 print_r($tmp);
