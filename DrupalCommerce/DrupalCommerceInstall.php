@@ -340,19 +340,12 @@ class Premium_Warehouse_DrupalCommerceInstall extends ModuleInstall {
 		DB::DropTable('premium_ecommerce_3rdp_plugin');
 		Premium_PaymentsCommon::delete_addon('premium_warehouse_items_orders');
 
-	
-		$langs = Utils_CommonDataCommon::get_array('Premium/Warehouse/eCommerce/Languages');
-		foreach($langs as $k=>$name) {
-			Variable::delete('ecommerce_home_'.$k,false);
-			Variable::delete('ecommerce_rules_'.$k,false);
-			Variable::delete('ecommerce_contactus_'.$k,false);
-		}
-		Variable::delete('ecommerce_home');
-		Variable::delete('ecommerce_rules');
-		Variable::delete('ecommerce_contactus');
 		Variable::delete('ecommerce_autoprice');
 		Variable::delete('ecommerce_minimal_profit');
 		Variable::delete('ecommerce_percentage_profit');
+		Variable::delete('ecommerce_item_prices');
+		Variable::delete('ecommerce_item_descriptions');
+		Variable::delete('ecommerce_item_parameters');
 
 		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_products', 'Premium_Warehouse_DrupalCommerce', 'get_3rd_party_info_addon');
 
@@ -398,8 +391,6 @@ class Premium_Warehouse_DrupalCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_prices');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_orders');
 		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_drupal');
-		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_pages');
-		Utils_RecordBrowserCommon::uninstall_recordset('premium_ecommerce_pages_data');
 		return true;
 	}
 	
