@@ -69,7 +69,8 @@ features[views_view][] = epesi_products_search_by_product_id
 core = 7.x
 
 ; Information added by drupal.org packaging script on 2013-05-22
-version = "7.x-1.x-dev"
+version = "7.x-1.0"
 core = "7.x"
 project = "epesi_commerce"
-datestamp = "1369226736"
+project status url = http://drupal.epe.si/
+datestamp = "1403782451"
