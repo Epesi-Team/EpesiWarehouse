@@ -1,14 +1,4 @@
 diff -rupN commerce_kickstart-7.x-2.15/profiles/commerce_kickstart/commerce_kickstart.info drupal-epesi-kickstart-7.x-2.15/profiles/commerce_kickstart/commerce_kickstart.info
---- commerce_kickstart-7.x-2.15/profiles/commerce_kickstart/commerce_kickstart.info	2014-06-11 16:09:51.000000000 +0200
-+++ drupal-epesi-kickstart-7.x-2.15/profiles/commerce_kickstart/commerce_kickstart.info	2014-06-26 16:04:33.273327516 +0200
-@@ -120,6 +120,7 @@ php_memory_limit = 128M
- ; Information added by Drupal.org packaging script on 2014-06-11
- version = "7.x-2.15"
- core = "7.x"
-+project status url = http://drupal.epe.si
- project = "commerce_kickstart"
- datestamp = "1402495791"
- 
 diff -rupN commerce_kickstart-7.x-2.15/profiles/commerce_kickstart/commerce_kickstart.install drupal-epesi-kickstart-7.x-2.15/profiles/commerce_kickstart/commerce_kickstart.install
 --- commerce_kickstart-7.x-2.15/profiles/commerce_kickstart/commerce_kickstart.install	2014-06-11 16:03:12.000000000 +0200
 +++ drupal-epesi-kickstart-7.x-2.15/profiles/commerce_kickstart/commerce_kickstart.install	2014-06-11 18:13:08.328376582 +0200
