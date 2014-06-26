@@ -10,5 +10,6 @@ dependencies[] = entity_translation
 version = "7.x-2.0-alpha5"
 core = "7.x"
 project = "services_entity_translation"
+project status url = http://drupal.epe.si
 datestamp = "1375891029"
 

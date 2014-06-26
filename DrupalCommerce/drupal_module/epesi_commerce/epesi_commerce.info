@@ -72,5 +72,5 @@ core = 7.x
 version = "7.x-1.0"
 core = "7.x"
 project = "epesi_commerce"
-project status url = http://drupal.epe.si/
+project status url = http://drupal.epe.si
 datestamp = "1403782451"
