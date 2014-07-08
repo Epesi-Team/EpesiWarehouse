@@ -6,8 +6,8 @@
  */
 global $translations;
 $translations['Sales Report']='';
-$translations['Total']='';
-$translations['Inventory Management']='';
+$translations['Total']='Skupno';
+$translations['Inventory Management']='Upravljanje z inventorijem';
 $translations['Unknown mode']='';
 $translations['Prices']='';
 $translations['You don\'t have permission to access this module']='';

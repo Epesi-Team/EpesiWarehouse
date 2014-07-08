@@ -5,6 +5,6 @@
  * @subpackage cs
  */
 global $translations;
-$translations['Inventory Management']='';
+$translations['Inventory Management']='Inventúra';
 $translations['Webcam']='';
 $translations['Webcam photos']='';

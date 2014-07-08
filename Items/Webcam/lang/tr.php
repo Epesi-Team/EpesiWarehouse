@@ -5,6 +5,6 @@
  * @subpackage tr
  */
 global $translations;
-$translations['Inventory Management']='';
+$translations['Inventory Management']='Envanter';
 $translations['Webcam']='';
 $translations['Webcam photos']='';

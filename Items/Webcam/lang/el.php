@@ -5,6 +5,6 @@
  * @subpackage el
  */
 global $translations;
-$translations['Inventory Management']='';
+$translations['Inventory Management']='Διαχείριση Αποθεμάτων';
 $translations['Webcam']='';
 $translations['Webcam photos']='';

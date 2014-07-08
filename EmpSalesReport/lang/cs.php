@@ -5,8 +5,8 @@
  * @subpackage cs
  */
 global $translations;
-$translations['Total']='Celkem';
-$translations['Inventory Management']='';
+$translations['Total']='Celkom';
+$translations['Inventory Management']='Inventúra';
 $translations['Employee Sales']='';
 $translations['You don\'t have permission to access this module']='';
 $translations['Employee Sales Report, %s']='';

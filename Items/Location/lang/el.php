@@ -7,14 +7,14 @@
 global $translations;
 $translations['Total']='';
 $translations['n/a']='';
-$translations['Inventory Management']='';
+$translations['Inventory Management']='Διαχείριση Αποθεμάτων';
 $translations['Quantity']='';
 $translations['Item Name']='';
+$translations['Item SKU']='';
 $translations['Quantity on Hand']='';
 $translations['Warehouse']='';
 $translations['Items Locations']='';
 $translations['Items Serials']='';
 $translations['Warehouse Items']='';
-$translations['Item SKU']='';
 $translations['Item Location']='';
 $translations['Item List']='';

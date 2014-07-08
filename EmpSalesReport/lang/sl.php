@@ -5,8 +5,8 @@
  * @subpackage sl
  */
 global $translations;
-$translations['Total']='';
-$translations['Inventory Management']='';
+$translations['Total']='Skupno';
+$translations['Inventory Management']='Upravljanje z inventorijem';
 $translations['Employee Sales']='';
 $translations['You don\'t have permission to access this module']='';
 $translations['Employee Sales Report, %s']='';
