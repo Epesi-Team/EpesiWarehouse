@@ -30,26 +30,17 @@ function epesi_commerce_enable() {
   variable_set('entity_translation_entity_types', $enabled);
 }
 
-/**
- * Implements of hook_install()
- */
-function epesi_commerce_install() {
-  db_update('system')
-    ->fields(array('weight' => 10))
-    ->condition('name', 'epesi_commerce')
-    ->execute();
-    
-
-$endpoint = new stdClass();
-$endpoint->disabled = FALSE; /* Edit this to true to make a default endpoint disabled initially */
-$endpoint->api_version = 3;
-$endpoint->name = 'epesi';
-$endpoint->server = 'rest_server';
-$endpoint->path = 'epesi';
-$endpoint->authentication = array(
-  'services' => 'services',
-);
-$endpoint->server_settings = array(
+function epesi_commerce_install_endpoint() {
+  $endpoint = new stdClass();
+  $endpoint->disabled = FALSE; /* Edit this to true to make a default endpoint disabled initially */
+  $endpoint->api_version = 3;
+  $endpoint->name = 'epesi';
+  $endpoint->server = 'rest_server';
+  $endpoint->path = 'epesi';
+  $endpoint->authentication = array(
+    'services' => 'services',
+  );
+  $endpoint->server_settings = array(
   'formatters' => array(
     'bencode' => TRUE,
     'json' => TRUE,
@@ -65,8 +56,8 @@ $endpoint->server_settings = array(
     'text/xml' => TRUE,
     'application/x-www-form-urlencoded' => FALSE,
   ),
-);
-$endpoint->resources = array(
+  );
+  $endpoint->resources = array(
   'product-display' => array(
     'operations' => array(
       'index' => array(
@@ -180,7 +171,7 @@ $endpoint->resources = array(
       ),
     ),
   ),
-  'taxonomy_term' => array(
+  'entity_taxonomy_term' => array(
     'operations' => array(
       'retrieve' => array(
         'enabled' => '1',
@@ -268,8 +259,23 @@ $endpoint->resources = array(
       ),
     ),
   ),
-);
-$endpoint->debug = 0;
+  );
+  $endpoint->debug = 0;
 
   services_endpoint_save($endpoint);
+}
+
+/**
+ * Implements of hook_install()
+ */
+function epesi_commerce_install() {
+  db_update('system')
+    ->fields(array('weight' => 10))
+    ->condition('name', 'epesi_commerce')
+    ->execute();
+  epesi_commerce_install_endpoint();
+}
+
+function epesi_commerce_update_7100() {
+  epesi_commerce_install_endpoint();
 }

@@ -1305,7 +1305,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 			    $field_images = array();
 			    foreach(Premium_Warehouse_DrupalCommerceCommon::$images as $lang=>$fids) {
 			      foreach($fids as $fid) {
-			        if($lang=='und') $term['field_category_images'][]['fid'] = $fid;
+			        if($lang=='und') $term['field_images'][]['fid'] = $fid;
 			        else $field_images[$lang][]['fid'] = $fid;
 			      }
 			    }
@@ -1342,7 +1342,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
                   $values['description_field'][$translation['language']][0]['value'] = $translation['long_description'];
                   $values['description_field'][$translation['language']][0]['format'] = 'full_html';
                   $values['description_field'][$translation['language']][0]['summary'] = $translation['short_description'];
-			      $values['field_category_images'][$translation['language']] = isset($field_images[$translation['language']])?array_merge($term['field_category_images'],$field_images[$translation['language']]):$term['field_category_images'];
+			      $values['field_images'][$translation['language']] = isset($field_images[$translation['language']])?array_merge($term['field_images'],$field_images[$translation['language']]):$term['field_images'];
                   $info = array(
                     'language'=>$translation['language'],
                     'source'=>$translation['language']=='en'?'':'en',

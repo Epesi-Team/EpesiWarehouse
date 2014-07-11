@@ -43,6 +43,7 @@ features[field][] = node-epesi_products-field_epesi_category
 features[field][] = node-epesi_products-field_product
 features[field][] = node-epesi_products-title_field
 features[field][] = taxonomy_term-epesi_category-field_epesi_category_id
+features[field][] = taxonomy_term-epesi_category-field_images
 features[field][] = taxonomy_term-epesi_manufacturer-field_epesi_manufacturer_id
 features[image][] = product_full
 features[image][] = product_medium
@@ -69,7 +70,7 @@ features[views_view][] = epesi_products_search_by_product_id
 core = 7.x
 
 ; Information added by drupal.org packaging script on 2013-05-22
-version = "7.x-1.0"
+version = "7.x-1.0.1"
 core = "7.x"
 project = "epesi_commerce"
 project status url = http://drupal.epe.si
