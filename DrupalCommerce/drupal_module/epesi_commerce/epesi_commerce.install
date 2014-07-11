@@ -278,4 +278,5 @@ function epesi_commerce_install() {
 
 function epesi_commerce_update_7100() {
   epesi_commerce_install_endpoint();
+  features_revert(array('epesi_commerce'=>array('field')));
 }
