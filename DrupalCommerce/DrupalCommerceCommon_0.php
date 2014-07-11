@@ -1318,9 +1318,19 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
                 //sync/create categories
                 if(isset($category_mapping[$id])) {
                   $term['tid'] = $category_mapping[$id];
-                  Premium_Warehouse_DrupalCommerceCommon::drupal_put($drupal_id,'entity_taxonomy_term/'.$category_mapping[$id],$term);
+                  try {
+                    Premium_Warehouse_DrupalCommerceCommon::drupal_put($drupal_id,'entity_taxonomy_term/'.$category_mapping[$id],$term);
+                  } catch(Exception $e) {
+                    $log[] = 'DRUPAL #'.$drupal_id.' Error updating category: '.$e->getMessage().' '.print_r($term,true);
+                    continue;
+                  }
                 } else {
-                  Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'entity_taxonomy_term',$term);
+                  try {
+                    Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'entity_taxonomy_term',$term);
+                  } catch(Exception $e) {
+                    $log[] = 'DRUPAL #'.$drupal_id.' Error adding category: '.$e->getMessage().' '.print_r($term,true);
+                    continue;
+                  }
                   $all_terms = Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'entity_taxonomy_vocabulary/getTree',array('vid'=>$epesi_vocabulary,'maxdepth'=>99));
                   foreach($all_terms as $t) {
                     if(!isset($category_exists[$t['tid']])) {
@@ -1349,7 +1359,11 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
                     'status'=>1,
                     'translate'=>0,
                   );
-                  Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'entity_translation/translate',array('entity_type'=>'taxonomy_term','entity_id'=>$category_mapping[$id],'translation'=>$info,'values'=>$values));
+                  try {
+                    Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'entity_translation/translate',array('entity_type'=>'taxonomy_term','entity_id'=>$category_mapping[$id],'translation'=>$info,'values'=>$values));
+                  } catch(Exception $e) {
+                    $log[] = 'DRUPAL #'.$drupal_id.' Error translating to '.$translation['language'].' category '.$category_mapping[$id].': '.$e->getMessage().' '.print_r($values,true);
+                  }
                 }
 
                 unset($epesi_category_names[$id]);
@@ -1404,9 +1418,19 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
               //sync/create categories
               if(isset($manufacturer_mapping[$id])) {
                 $term['tid'] = $manufacturer_mapping[$id];
-                Premium_Warehouse_DrupalCommerceCommon::drupal_put($drupal_id,'entity_taxonomy_term/'.$manufacturer_mapping[$id],array('term'=>$term));
+                try {
+                  Premium_Warehouse_DrupalCommerceCommon::drupal_put($drupal_id,'entity_taxonomy_term/'.$manufacturer_mapping[$id],$term);
+                } catch(Exception $e) {
+                  $log[] = 'DRUPAL #'.$drupal_id.' Error updating manufacturer: '.$e->getMessage().' '.print_r($term,true);
+                  continue;
+                }
               } else {
-                Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'entity_taxonomy_term',array('term'=>$term));
+                try {
+                  Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'entity_taxonomy_term',$term);
+                } catch(Exception $e) {
+                  $log[] = 'DRUPAL #'.$drupal_id.' Error adding manufacturer: '.$e->getMessage().' '.print_r($term,true);
+                  continue;
+                }
                 $all_terms = Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'entity_taxonomy_vocabulary/getTree',array('vid'=>$epesi_manufacturer_vocabulary,'maxdepth'=>99));
                 foreach($all_terms as $t) {
                   if(!isset($manufacturer_exists[$t['tid']])) {
