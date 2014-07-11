@@ -277,6 +277,9 @@ function epesi_commerce_install() {
 }
 
 function epesi_commerce_update_7100() {
+  module_load_include('inc', 'features', 'features.export','ctools');
+  ctools_include('export');
+  services_endpoint_delete('epesi');
   epesi_commerce_install_endpoint();
   features_revert(array('epesi_commerce'=>array('field')));
 }
