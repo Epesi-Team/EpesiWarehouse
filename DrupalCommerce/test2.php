@@ -6,11 +6,13 @@ ModuleManager::load_modules();
 
 $drupal_id = 1;
 Acl::set_sa_user();
+//			$drupal_products_tmp = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'product',array('fields'=>'product_id,sku','filter'=>array('type'=>'epesi_products'),'sort_by'=>'sku','limit'=>999999999999999999));
+
 //$ret = Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'epesi_commerce/get_product_fields');
 //print_r($ret);
 //die();
-Premium_Warehouse_DrupalCommerceCommon::cron_orders();
-Premium_Warehouse_DrupalCommerceCommon::cron_categories();
+//Premium_Warehouse_DrupalCommerceCommon::cron_orders();
+print(Premium_Warehouse_DrupalCommerceCommon::cron_categories());
 die();
 //$tmp = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'product/399');
 $tmp = Utils_RecordBrowserCommon::get_record('premium_warehouse_items',20);
@@ -156,7 +158,7 @@ foreach($products as $row) {
   }
   $quantity = Premium_Warehouse_Items_LocationCommon::get_item_quantity_in_warehouse($row['id']) - DB::GetOne('SELECT SUM(d.f_quantity) FROM premium_warehouse_items_orders_details_data_1 d INNER JOIN premium_warehouse_items_orders_data_1 o ON (o.id=d.f_transaction_id) WHERE ((o.f_transaction_type=1 AND o.f_status in (-1,2,3,4,5)) OR (o.f_transaction_type=4 AND o.f_status in (2,3))) AND d.active=1 AND o.active=1 AND d.f_item_name=%d',array($row['id']));
   if($quantity<=0) {
-    if($row['always_on_stock']) {
+    if($row['always_in_stock']) {
       $quantity = 9999999;
     /*} else {
      //TODO: distributors

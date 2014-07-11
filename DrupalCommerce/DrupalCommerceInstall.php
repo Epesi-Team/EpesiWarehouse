@@ -29,7 +29,7 @@ class Premium_Warehouse_DrupalCommerceInstall extends ModuleInstall {
 			array('name' => _M('Publish'), 		'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>true, 'filter'=>true),
 			array('name' => _M('Recommended'), 		'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>false, 'filter'=>true),
 //			array('name' => _M('Exclude compare services'),	'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>false, 'filter'=>true),
-			array('name' => _M('Always on stock'),	'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>false, 'filter'=>true),
+			array('name' => _M('Always in stock'),	'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>false, 'filter'=>true),
 			array('name' => _M('Position'), 		'type'=>'hidden', 'param'=>Utils_RecordBrowserCommon::actual_db_type('integer'), 'required'=>true, 'extra'=>false, 'visible'=>false),
 			array('name' => _M('Available'),	 	'type'=>'select', 'required'=>true, 'extra'=>false, 'visible'=>false, 'param'=>'premium_ecommerce_availability::Availability Code'),
 			array('name' => _M('Description'), 	'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>true, 'display_callback'=>array($this->get_type().'Common', 'display_description')),
@@ -49,9 +49,6 @@ class Premium_Warehouse_DrupalCommerceInstall extends ModuleInstall {
 			array('name' => _M('Display Name'),	'type'=>'text', 'param'=>128, 'required'=>true, 'extra'=>false, 'visible'=>true),
 			array('name' => _M('Short Description'), 	'type'=>'long text', 'required'=>false, 'extra'=>false, 'visible'=>true, 'QFfield_callback'=>array('Libs_CKEditorCommon', 'QFfield_cb'), 'display_callback'=>array('Libs_CKEditorCommon', 'display_cb')),
 			array('name' => _M('Long Description'), 	'type'=>'long text', 'required'=>false, 'extra'=>false, 'visible'=>false, 'QFfield_callback'=>array('Libs_CKEditorCommon', 'QFfield_cb'), 'display_callback'=>array('Libs_CKEditorCommon', 'display_cb')),
-			array('name' => _M('Page Title'), 	'type'=>'text', 'required'=>false, 'extra'=>false, 'param'=>64, 'visible'=>false),
-			array('name' => _M('Meta Description'), 	'type'=>'text', 'required'=>false, 'extra'=>false, 'param'=>256, 'visible'=>false),
-			array('name' => _M('Keywords'), 	'type'=>'text', 'required'=>false, 'extra'=>false, 'param'=>128, 'visible'=>false)
 		);
 		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_cat_descriptions', $fields);
 
@@ -77,6 +74,7 @@ class Premium_Warehouse_DrupalCommerceInstall extends ModuleInstall {
 		//product prices
 		$fields = array(
 			array('name' => _M('Item Name'), 	'type'=>'select', 'required'=>true, 'param'=>'premium_warehouse_items::Item Name;Premium_Warehouse_Items_OrdersCommon::products_crits', 'extra'=>false, 'visible'=>true, 'display_callback'=>array($this->get_type().'Common', 'display_item_name')),
+			array('name' => _M('Model'),	'type'=>'text', 'param'=>64, 'required'=>false, 'extra'=>false, 'visible'=>true),
 			array('name' => _M('Currency'), 	'type'=>'integer', 'required'=>true, 'extra'=>false,'visible'=>true, 'display_callback'=>array($this->get_type().'Common', 'display_currency'),'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_currency')),
 			array('name' => _M('Gross Price'),'type'=>'float', 'required'=>true, 'extra'=>false,'visible'=>true),
 			array('name' => _M('Tax Rate'), 	'type'=>'select', 'required'=>true, 'extra'=>false, 'visible'=>true, 'param'=>'data_tax_rates::Name', 'style'=>'integer')
@@ -279,6 +277,8 @@ class Premium_Warehouse_DrupalCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_descriptions', 'Premium/Warehouse/DrupalCommerce', 'attachment_product_desc_addon', _M('Pictures'));
 		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_products', 'Premium/Warehouse/DrupalCommerce', 'attachment_product_addon', _M('Pictures'));
 		Utils_RecordBrowserCommon::new_addon('premium_warehouse_items', 'Premium/Warehouse/DrupalCommerce', 'attachment_product_addon_item', 'Premium_Warehouse_DrupalCommerceCommon::attachment_product_addon_item_parameters');
+		Utils_RecordBrowserCommon::new_addon('premium_warehouse_items_categories', 'Premium/Warehouse/DrupalCommerce', 'attachment_categories_addon', _M('Pictures'));
+		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_cat_descriptions', 'Premium/Warehouse/DrupalCommerce', 'attachment_categories_desc_addon', _M('Pictures'));
 
 		Variable::set('ecommerce_autoprice',false);
 		Variable::set('ecommerce_minimal_profit','');
@@ -368,6 +368,8 @@ class Premium_Warehouse_DrupalCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_parameter_groups', 'Premium/Warehouse/DrupalCommerce', 'parameter_group_labels_addon');
 		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_products', 'Premium/Warehouse/DrupalCommerce', 'prices_addon');
 		Utils_RecordBrowserCommon::delete_addon('premium_warehouse_items_orders', 'Premium/Warehouse/DrupalCommerce', 'orders_addon');
+		Utils_RecordBrowserCommon::delete_addon('premium_warehouse_items_categories', 'Premium/Warehouse/DrupalCommerce', 'attachment_categories_addon');
+		Utils_RecordBrowserCommon::delete_addon('premium_ecommerce_cat_descriptions', 'Premium/Warehouse/DrupalCommerce', 'attachment_categories_desc_addon');
 
 //		Utils_AttachmentCommon::delete_addon('premium_ecommerce_descriptions');
 //		Utils_AttachmentCommon::delete_addon('premium_ecommerce_pages_data');

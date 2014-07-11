@@ -564,7 +564,7 @@ class Premium_Warehouse_DrupalCommerce extends Module {
 					    ));
  		$m->add_row(__('Published'),($rec['publish']?$on:$off),'<a '.$this->create_callback_href(array('Premium_Warehouse_DrupalCommerceCommon','toggle_publish'),array($rec['id'],!$rec['publish'])).'>'.__('Toggle').'</a>');
  		$m->add_row(__('Recommended'),($rec['recommended']?$on:$off),'<a '.$this->create_callback_href(array('Premium_Warehouse_DrupalCommerceCommon','toggle_recommended'),array($rec['id'],!$rec['recommended'])).'>'.__('Toggle').'</a>');
- 		$m->add_row(__('Always on stock'),($rec['always_on_stock']?$on:$off),'<a '.$this->create_callback_href(array('Premium_Warehouse_DrupalCommerceCommon','toggle_always_on_stock'),array($rec['id'],!$rec['always_on_stock'])).'>'.__('Toggle').'</a>');
+ 		$m->add_row(__('Always in stock'),($rec['always_in_stock']?$on:$off),'<a '.$this->create_callback_href(array('Premium_Warehouse_DrupalCommerceCommon','toggle_always_in_stock'),array($rec['id'],!$rec['always_in_stock'])).'>'.__('Toggle').'</a>');
  		$m->add_row(__('Assigned category'),($arg['category']?$on:$off),'');
 		$quantity = Utils_RecordBrowserCommon::get_records('premium_warehouse_location',array('item_sku'=>$arg['id'],'>quantity'=>0));
  		$m->add_row(__('Available in warehouse'),(empty($quantity)?$off:$on),'');
@@ -677,6 +677,16 @@ class Premium_Warehouse_DrupalCommerce extends Module {
 
 	public function attachment_product_addon($arg){
 		$a = $this->init_module('Utils/Attachment',array('premium_ecommerce_products/'.$arg['item_name']));
+		$this->display_module($a);
+	}
+
+	public function attachment_categories_addon($arg){
+		$a = $this->init_module('Utils/Attachment',array('premium_warehouse_items_categories/'.$arg['id']));
+		$this->display_module($a);
+	}
+
+	public function attachment_categories_desc_addon($arg){
+		$a = $this->init_module('Utils/Attachment',array('premium_ecommerce_cat_descriptions/'.$arg['language'].'/'.$arg['category']));
 		$this->display_module($a);
 	}
 

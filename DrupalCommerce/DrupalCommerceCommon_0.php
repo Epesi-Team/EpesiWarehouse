@@ -158,10 +158,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 
     public static function QFfield_order_status(&$form, $field, $label, $mode, $default) {
         if ($mode=='add' || $mode=='edit') {
-            $statuses = array();
-            foreach(self::$order_statuses as $k=>$v)
-                $statuses[$k] = $v;
-            $form->addElement('select', $field, $label, $statuses, array('id'=>$field));
+            $form->addElement('select', $field, $label, self::$order_statuses, array('id'=>$field));
             $form->addRule($field,'Field required','required');
             if ($mode=='edit') $form->setDefaults(array($field=>$default));
         } else {
@@ -171,7 +168,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
     }
 
     public static function display_order_status($r, $nolink=false) {
-        return self::$order_statuses[$r['type']];
+        return self::$order_statuses[$r['send_on_status']];
     }
 
     public static function QFfield_currency(&$form, $field, $label, $mode, $default) {
@@ -485,8 +482,8 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
         location(array());
     }
 
-    public static function toggle_always_on_stock($id,$v) {
-        Utils_RecordBrowserCommon::update_record('premium_ecommerce_products',$id,array('always_on_stock'=>$v?1:0));
+    public static function toggle_always_in_stock($id,$v) {
+        Utils_RecordBrowserCommon::update_record('premium_ecommerce_products',$id,array('always_in_stock'=>$v?1:0));
         location(array());
     }
 
@@ -1233,6 +1230,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 	public static function cron_categories() {
 	    $drupals = Utils_RecordBrowserCommon::get_records('premium_ecommerce_drupal');
 	    $default_lang = Base_LangCommon::get_lang_code();
+	    $log = array();
 	    foreach($drupals as $drupal_row) {
 	        $drupal_id = $drupal_row['id'];
 
@@ -1283,29 +1281,50 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
               foreach($epesi_category_names as $id=>$name) {
 		       // print("4 ".$name."\n");
                 if($epesi_category_parents[$id] && !isset($category_mapping[$epesi_category_parents[$id]])) continue;
-                $term = new stdClass();
-                $term->name = $name;
-                $term->name_original = $term->name_field['und'][0]['value'] = $term->name_field['en'][0]['value'] =  $name;
-                $term->vid = $epesi_vocabulary;
-                $term->field_epesi_category_id['und'][0]['value']=$id;
-                $term->description_field = array();
-                $term->description_original = '';
-                $term->format = 'full_html';
-                $term->translations['original']='en';
-                $term->weight = $epesi_category_weight[$id];
+                $term = array();
+                $term['name'] = $name;
+			    $term['vocabulary_machine_name'] = 'epesi_category';
+                $term['name_original'] = $term['name_field']['und'][0]['value'] = $term['name_field']['en'][0]['value'] =  $name;
+                $term['vid'] = $epesi_vocabulary;
+                $term['field_epesi_category_id']['und'][0]['value']=$id;
+                $term['description_field'] = array();
+                $term['description_original'] = '';
+                $term['format'] = 'full_html';
+                $term['translations']['original']='en';
+                $term['weight'] = $epesi_category_weight[$id];
                 
                 if($epesi_category_parents[$id])
-                  $term->parent = $category_mapping[$epesi_category_parents[$id]];
+                  $term['parent'] = $category_mapping[$epesi_category_parents[$id]];
+
+			    //get images
+			    Premium_Warehouse_DrupalCommerceCommon::$images = array();
+			    Utils_AttachmentCommon::call_user_func_on_file('premium_warehouse_items_categories/'.$id,array('Premium_Warehouse_DrupalCommerceCommon','copy_attachment'),false,array($drupal_id,1));
+			    $desc_langs = Utils_RecordBrowserCommon::get_records('premium_ecommerce_cat_descriptions',array('category'=>$id),array('language'));
+			    foreach($desc_langs as $desc_lang)
+			      Utils_AttachmentCommon::call_user_func_on_file('premium_ecommerce_cat_descriptions/'.$desc_lang['language'].'/'.$id,array('Premium_Warehouse_DrupalCommerceCommon','copy_attachment'),false,array($drupal_id,0));
+			    $field_images = array();
+			    foreach(Premium_Warehouse_DrupalCommerceCommon::$images as $lang=>$fids) {
+			      foreach($fids as $fid) {
+			        if($lang=='und') $term['field_category_images'][]['fid'] = $fid;
+			        else $field_images[$lang][]['fid'] = $fid;
+			      }
+			    }
+			    
+			    //update each language... if there is no field_images translation, default/random language images are displayed
+			    foreach(Utils_CommonDataCommon::get_array('Premium/Warehouse/eCommerce/Languages') as $lang=>$lang_name)
+			      if(!isset($field_images[$lang])) $field_images[$lang] = array();
+			      
 
                 //sync/create categories
                 if(isset($category_mapping[$id])) {
-                  Premium_Warehouse_DrupalCommerceCommon::drupal_put($drupal_id,'taxonomy_term/'.$category_mapping[$id],array('term'=>$term));
+                  $term['tid'] = $category_mapping[$id];
+                  Premium_Warehouse_DrupalCommerceCommon::drupal_put($drupal_id,'entity_taxonomy_term/'.$category_mapping[$id],$term);
                 } else {
-                  Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'taxonomy_term',array('term'=>$term));
-                  $all_terms = Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'taxonomy_vocabulary/getTree',array('vid'=>$epesi_vocabulary,'maxdepth'=>99));
+                  Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'entity_taxonomy_term',$term);
+                  $all_terms = Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'entity_taxonomy_vocabulary/getTree',array('vid'=>$epesi_vocabulary,'maxdepth'=>99));
                   foreach($all_terms as $t) {
                     if(!isset($category_exists[$t['tid']])) {
-                      $term_data = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'taxonomy_term/'.$t['tid']);
+                      $term_data = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'entity_taxonomy_term/'.$t['tid']);
                       if($term_data['field_epesi_category_id']['und'][0]['value']==$id) {
                         $category_exists[$t['tid']] = 2;
                         $category_mapping[$term_data['field_epesi_category_id']['und'][0]['value']] = $t['tid'];
@@ -1323,6 +1342,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
                   $values['description_field'][$translation['language']][0]['value'] = $translation['long_description'];
                   $values['description_field'][$translation['language']][0]['format'] = 'full_html';
                   $values['description_field'][$translation['language']][0]['summary'] = $translation['short_description'];
+			      $values['field_category_images'][$translation['language']] = isset($field_images[$translation['language']])?array_merge($term['field_category_images'],$field_images[$translation['language']]):$term['field_category_images'];
                   $info = array(
                     'language'=>$translation['language'],
                     'source'=>$translation['language']=='en'?'':'en',
@@ -1339,7 +1359,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
             //remove elements with invalid epesi_category field
             foreach($category_exists as $tid=>$val) {
               if($val===1)  try {
-                  Premium_Warehouse_DrupalCommerceCommon::drupal_delete($drupal_id,'taxonomy_term/'.$tid);
+                  Premium_Warehouse_DrupalCommerceCommon::drupal_delete($drupal_id,'entity_taxonomy_term/'.$tid);
               } catch(Exception $e) {}
             }
 
@@ -1349,7 +1369,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
             $manufacturer_exists = array();
             $manufacturer_mapping = array();
             try {
-              $terms = Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'taxonomy_vocabulary/getTree',array('vid'=>$epesi_manufacturer_vocabulary,'load_entities'=>1));
+              $terms = Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'entity_taxonomy_vocabulary/getTree',array('vid'=>$epesi_manufacturer_vocabulary,'load_entities'=>1));
               foreach($terms as $term_data) {
                 $manufacturer_exists[$term_data['tid']] = 1;
 //                $term_data = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'taxonomy_term/'.$t['tid']);
@@ -1370,26 +1390,27 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
             
             foreach($epesi_manufacturer_names as $id=>$name) {
 		        //print("5 ".$name."\n");
-              $term = new stdClass();
-              $term->name = $name;
-              $term->name_original = $name;
-              $term->vid = $epesi_manufacturer_vocabulary;
-              $term->field_epesi_manufacturer_id['und'][0]['value']=$id;
-              $term->name_field = array();
-              $term->description_field = array();
-              $term->description_original = '';
-              $term->format = 'full_html';
-              $term->translations['original']='en';
+              $term = array();
+              $term['name'] = $name;
+              $term['name_original'] = $name;
+              $term['vid'] = $epesi_manufacturer_vocabulary;
+              $term['field_epesi_manufacturer_id']['und'][0]['value']=$id;
+              $term['name_field'] = array();
+              $term['description_field'] = array();
+              $term['description_original'] = '';
+              $term['format'] = 'full_html';
+              $term['translations']['original']='en';
               
               //sync/create categories
               if(isset($manufacturer_mapping[$id])) {
-                Premium_Warehouse_DrupalCommerceCommon::drupal_put($drupal_id,'taxonomy_term/'.$manufacturer_mapping[$id],array('term'=>$term));
+                $term['tid'] = $manufacturer_mapping[$id];
+                Premium_Warehouse_DrupalCommerceCommon::drupal_put($drupal_id,'entity_taxonomy_term/'.$manufacturer_mapping[$id],array('term'=>$term));
               } else {
-                Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'taxonomy_term',array('term'=>$term));
-                $all_terms = Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'taxonomy_vocabulary/getTree',array('vid'=>$epesi_manufacturer_vocabulary,'maxdepth'=>99));
+                Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'entity_taxonomy_term',array('term'=>$term));
+                $all_terms = Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'entity_taxonomy_vocabulary/getTree',array('vid'=>$epesi_manufacturer_vocabulary,'maxdepth'=>99));
                 foreach($all_terms as $t) {
                   if(!isset($manufacturer_exists[$t['tid']])) {
-                    $term_data = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'taxonomy_term/'.$t['tid']);
+                    $term_data = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'entity_taxonomy_term/'.$t['tid']);
                     if($term_data['field_epesi_manufacturer_id']['und'][0]['value']==$id) {
                       $manufacturer_exists[$t['tid']] = 2;
                       $manufacturer_mapping[$term_data['field_epesi_manufacturer_id']['und'][0]['value']] = $t['tid'];
@@ -1403,7 +1424,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
             
             //remove elements with invalid epesi_category field
             foreach($manufacturer_exists as $tid=>$val) {
-              if($val===1) Premium_Warehouse_DrupalCommerceCommon::drupal_delete($drupal_id,'taxonomy_term/'.$tid);
+              if($val===1) Premium_Warehouse_DrupalCommerceCommon::drupal_delete($drupal_id,'entity_taxonomy_term/'.$tid);
             }
 
 			$manufacturers = Utils_RecordBrowserCommon::get_records('premium_warehouse_items',array('!manufacturer'=>''),array('manufacturer'));
@@ -1436,40 +1457,16 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 			  
 			  if(!$row['category']) continue;
 			  
-		        //print("6 ".$row['id']."\n");
-			  
-			  //set prices
-			  $prices = Utils_RecordBrowserCommon::get_records('premium_ecommerce_prices',array('item_name'=>$row['id']));
+			  //product
 			  $data = array('sku'=>$row['sku'],'title'=>$row['item_name'],'type'=>'epesi_products');
 			  if($row['weight']) $data['field_weight'] = array('weight'=>$row['weight'],'unit'=>Variable::get('premium_warehouse_weight_units','lb'));
 			  if($row['volume']) $data['field_dimensions'] = array('length'=>$row['volume'],'width'=>1,'height'=>1,'unit'=>preg_replace('/[^a-z]/','',strip_tags(Variable::get('premium_warehouse_volume_units','in'))));
-			  $prices_done = false;
-			  foreach($prices as $price) {
-			    if(!isset($currencies[$price['currency']])) continue;
-			    $currency = $currencies[$price['currency']];
-			    $data['commerce_price_'.strtolower($currency['code'])]=array('amount'=>round($export_net_price?($price['gross_price']*100/(100+($price['tax_rate']?$taxes[$price['tax_rate']]:0))):$price['gross_price'],$currency['decimals'])*pow(10,$currency['decimals']),
-			                    'currency_code'=>$currency['code']);
-			    if(!isset($data['commerce_price']))
-			      $data['commerce_price'] = $data['commerce_price_'.strtolower($currency['code'])];
-			    $prices_done = true;
-			  }
-			  if($row['net_price']) {
-			    $item_price = Utils_CurrencyFieldCommon::get_values($row['net_price']);
-			    if($item_price[0] && isset($currencies[$item_price[1]])) {
-			      $currency = $currencies[$item_price[1]];
-			      $data['commerce_price']=array('amount'=>round($export_net_price?(float)$item_price[0]:((float)$item_price[0])*(100+($row['tax_rate']?$taxes[$row['tax_rate']]:0))/100,$currency['decimals'])*pow(10,$currency['decimals']),
-			                    'currency_code'=>$currency['code']);
-			      if(!isset($data['commerce_price_'.strtolower($currency['code'])]))
-			        $data['commerce_price_'.strtolower($currency['code'])] = $data['commerce_price'];
-			      $prices_done = true;
-			    }
-			  }
-			  if(!$prices_done) continue;
+
 			  
 			  //set quantity
 			  $quantity = Premium_Warehouse_Items_LocationCommon::get_item_quantity_in_warehouse($row['id']) - DB::GetOne('SELECT SUM(d.f_quantity) FROM premium_warehouse_items_orders_details_data_1 d INNER JOIN premium_warehouse_items_orders_data_1 o ON (o.id=d.f_transaction_id) WHERE ((o.f_transaction_type=1 AND o.f_status in (-1,2,3,4,5)) OR (o.f_transaction_type=4 AND o.f_status in (2,3))) AND d.active=1 AND o.active=1 AND d.f_item_name=%d',array($row['id']));
 			  if($quantity<=0) {
-			    if($row['always_on_stock']) {
+			    if($row['always_in_stock']) {
 			      $quantity = 9999999;
 			    /*} else {
 			     //TODO: distributors
@@ -1542,61 +1539,125 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 			  foreach(Utils_CommonDataCommon::get_array('Premium/Warehouse/eCommerce/Languages') as $lang=>$lang_name)
 			    if(!isset($field_images[$lang])) $field_images[$lang] = array();
 			    
-			  //filter out invalid fields
-			  foreach($data as $key=>$value) {
-			    if(!in_array($key,$product_fields)) {
-			      //print('Invalid product field: '.$key."\n");
-			      unset($data[$key]);
+
+			  $products_queue = array();
+			  //set prices
+			  $prices = Utils_RecordBrowserCommon::get_records('premium_ecommerce_prices',array('item_name'=>$row['id']),array(),array('gross_price'=>'ASC'));
+			  if($prices) {
+			    foreach($prices as $price) {
+			      if(!isset($currencies[$price['currency']])) continue;
+			      if(isset($products_queue[$price['model']])) $tmp_data = $products_queue[$price['model']];
+			      else {
+			        $tmp_data = $data;
+			        $tmp_data['title'] = $price['model']?$price['model']:'---';
+			        $tmp_data['sku'] .= $price['model']?' '.$price['model']:'';
+			      }
+			      $currency = $currencies[$price['currency']];
+			      $tmp_data['commerce_price_'.strtolower($currency['code'])]=array('amount'=>round($export_net_price?($price['gross_price']*100/(100+($price['tax_rate']?$taxes[$price['tax_rate']]:0))):$price['gross_price'],$currency['decimals'])*pow(10,$currency['decimals']),
+			                    'currency_code'=>$currency['code']);
+			      if(!isset($data['commerce_price']))
+			        $tmp_data['commerce_price'] = $tmp_data['commerce_price_'.strtolower($currency['code'])];
+			      $products_queue[$price['model']] = $tmp_data;
+			    }
+			  } elseif($row['net_price']) {
+			    $item_price = Utils_CurrencyFieldCommon::get_values($row['net_price']);
+			    if($item_price[0] && isset($currencies[$item_price[1]])) {
+			      $currency = $currencies[$item_price[1]];
+			      $data['commerce_price']=array('amount'=>round($export_net_price?(float)$item_price[0]:((float)$item_price[0])*(100+($row['tax_rate']?$taxes[$row['tax_rate']]:0))/100,$currency['decimals'])*pow(10,$currency['decimals']),
+			                    'currency_code'=>$currency['code']);
+			      if(!isset($data['commerce_price_'.strtolower($currency['code'])]))
+			        $data['commerce_price_'.strtolower($currency['code'])] = $data['commerce_price'];
+			      $products_queue[] = $data;
 			    }
 			  }
-
+			  if(!$products_queue) continue;
+			  
 			  //update product
-			  $drupal_product_id = 0;
-			  $nid = 0;
-			  if(isset($drupal_products[$row['sku']])) {
-			    //check product
-			    $drupal_data = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'product/'.$drupal_products[$row['sku']]);
-			    $update = false;
-			    foreach($data as $key=>$val) {
-			      if(is_array($val)) {
-			        foreach($val as $key2=>$val2) {
-			          if(!isset($drupal_data[$key][$key2]) || $val2!=$drupal_data[$key][$key2]) {
+			  $drupal_product_ids = array();
+			  foreach($products_queue as $data) {
+			    //filter out invalid fields
+			    foreach($data as $key=>$value) {
+			      if(!in_array($key,$product_fields)) {
+			        //print('Invalid product field: '.$key."\n");
+			        unset($data[$key]);
+			      }
+			    }
+			    //check all required prices are set in product
+			    foreach($product_fields as $key) {
+			      if(preg_match('/^commerce_price_/',$key)) {
+			        if(!isset($data[$key])) continue 2; //skip product
+			      }
+			    }
+			    
+			    //check if product exists in drupal
+			    $drupal_product_id = 0;
+			    $nid = 0;
+			    if(isset($drupal_products[$data['sku']])) {
+			      //check product
+			      $drupal_data = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'product/'.$drupal_products[$data['sku']]);
+			      $update = false;
+			      foreach($data as $key=>$val) {
+			        if(is_array($val)) {
+			          foreach($val as $key2=>$val2) {
+			            if(!isset($drupal_data[$key][$key2]) || $val2!=$drupal_data[$key][$key2]) {
+			              $update = true;
+			              break;
+			            }
+			          }
+			        } else {
+			          if($val!=$drupal_data[$key]) {
 			            $update = true;
 			            break;
 			          }
 			        }
-			      } else {
-			        if($val!=$drupal_data[$key]) {
-			          $update = true;
-			          break;
+			      }
+			      if($update) {
+			        try {
+			          Premium_Warehouse_DrupalCommerceCommon::drupal_put($drupal_id,'product/'.$drupal_products[$data['sku']],$data);
+			        } catch(Exception $e) {
+			          $log[] = 'DRUPAL #'.$drupal_id.' Error updating product: '.$e->getMessage().' '.print_r($data,true);
+			          continue;
 			        }
 			      }
+			      $drupal_product_id = $drupal_products[$data['sku']];
+			      $nodes = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'views/epesi_products_search_by_product_id.json?'.http_build_query(array('display_id'=>'services_1','args'=>array($drupal_product_id,''))));
+			      $nid = isset($nodes[0]['nid'])?$nodes[0]['nid']:0;
+//			      $product = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'product/'.$drupal_product_id);
+			    } else {
+			      try {
+			        $product = Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'product',$data);
+			        $drupal_product_id = $product['product_id'];
+			      } catch(Exception $e) {
+			        $log[] = 'DRUPAL #'.$drupal_id.' Error adding product: '.$e->getMessage().' '.print_r($data,true);
+			        continue;
+			      }
 			    }
-			    if($update) Premium_Warehouse_DrupalCommerceCommon::drupal_put($drupal_id,'product/'.$drupal_products[$row['sku']],$data);
-			    $drupal_product_id = $drupal_products[$row['sku']];
-			    $nodes = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'views/epesi_products_search_by_product_id.json?'.http_build_query(array('display_id'=>'services_1','args'=>array($drupal_product_id,''))));
-			    $nid = isset($nodes[0]['nid'])?$nodes[0]['nid']:0;
-//			    $product = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'product/'.$drupal_product_id);
-			  } else {
-			    $product = Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'product',$data);
-			    $drupal_product_id = $product['product_id'];
+			  
+			    if(!isset($data['field_images']) || !is_array($data['field_images'])) $data['field_images'] = array();
+			    if($drupal_product_id) {
+			      //translate product images
+			      foreach($field_images as $lang=>$images) {
+			        $values=array();
+			        $values['field_images'][$lang] = array_merge($data['field_images'],$images);
+			        $info = array(
+			          'language'=>$lang,
+			          'source'=>$lang=='en'?'':'en',
+			          'status'=>1,
+			          'translate'=>0,
+			        );
+			        //error_log($drupal_product_id.' trans_prod '.var_export($values,true).' '.var_export($info,true)."\n",3,DATA_DIR.'/aaaa.log');
+			        try {
+			          Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'entity_translation/translate',array('entity_type'=>'commerce_product','entity_id'=>$drupal_product_id,'translation'=>$info,'values'=>$values));
+			        } catch(Exception $e) {
+			          $log[] = 'DRUPAL #'.$drupal_id.' Error translating to '.$lang.' product '.$drupal_product_id.': '.$e->getMessage().' '.print_r($values,true);
+			        }
+			      }
+			      $drupal_product_ids[] = array('product_id'=>$drupal_product_id);
+			      $drupal_done[$data['sku']] = 1;
+			    }
 			  }
-			
-			  if(!isset($data['field_images']) || !is_array($data['field_images'])) $data['field_images'] = array();
-			  if($drupal_product_id) {
-			    //translate product images
-			    foreach($field_images as $lang=>$images) {
-			      $values=array();
-			      $values['field_images'][$lang] = array_merge($data['field_images'],$images);
-			      $info = array(
-			        'language'=>$lang,
-			        'source'=>$lang=='en'?'':'en',
-			        'status'=>1,
-			        'translate'=>0,
-			      );
-			      //error_log($drupal_product_id.' trans_prod '.var_export($values,true).' '.var_export($info,true)."\n",3,DATA_DIR.'/aaaa.log');
-			      Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'entity_translation/translate',array('entity_type'=>'commerce_product','entity_id'=>$drupal_product_id,'translation'=>$info,'values'=>$values));
-			    }
+			    
+			    if(!$drupal_product_ids) continue;
 			
 			    //update node of product
 			    //print_r($row);
@@ -1606,8 +1667,8 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 			    $node['title']=$node['title_field']['en'][0]['value']=$node['title_field']['und'][0]['value']=$node['field_title']=$row['item_name'];
 			    $node['body']['en'][0]['value']=$row['description'];
 			    $node['body']['en'][0]['format'] = 'full_html';
-			    $node['field_product']['und'][0]['product_id'] = $drupal_product_id;
-//			    $node['field_product']['und'][0] = $product;
+//			    $node['field_product']['und'][0]['product_id'] = $drupal_product_id;
+			    $node['field_product']['und'] = $drupal_product_ids;
 			    $node['promote']=$row['recommended']?1:null; //TODO: doesn't work
 			    $node['sticky']=$row['recommended']?1:null;
 			    foreach($row['category'] as $ccc) {
@@ -1677,10 +1738,20 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 //			      print('nid='.$nid."\n");
                   $node['nid']=$nid;
 			      //error_log($nid.' upd_node '.var_export($node,true)."\n",3,DATA_DIR.'/aaaa.log');
-			      Premium_Warehouse_DrupalCommerceCommon::drupal_put($drupal_id,'entity_node/'.$nid,$node);
+			      try {
+			        Premium_Warehouse_DrupalCommerceCommon::drupal_put($drupal_id,'entity_node/'.$nid,$node);
+			      } catch(Exception $e) {
+			        $log[] = 'DRUPAL #'.$drupal_id.' Error updating node: '.$e->getMessage().' '.print_r($node,true);
+			        continue;
+			      }
 			    } else {
-			      $tmp = Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'entity_node',$node);
-			      $nid = $tmp['nid'];
+			      try {
+			        $tmp = Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'entity_node',$node);
+			        $nid = $tmp['nid'];
+			      } catch(Exception $e) {
+			        $log[] = 'DRUPAL #'.$drupal_id.' Error adding node: '.$e->getMessage().' '.print_r($node,true);
+			        continue;
+			      }
 			    }
 			    
 			    $translations = Utils_RecordBrowserCommon::get_records('premium_ecommerce_descriptions',array('item_name'=>$row['id']));
@@ -1714,24 +1785,31 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 			        'translate'=>0,
 			      );
 			      //error_log($nid.' trans '.var_export($values,true).' '.var_export($info,true)."\n",3,DATA_DIR.'/aaaa.log');
-			      Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'entity_translation/translate',array('entity_type'=>'node','entity_id'=>$nid,'translation'=>$info,'values'=>$values));
+			        try {
+			          Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'entity_translation/translate',array('entity_type'=>'node','entity_id'=>$nid,'translation'=>$info,'values'=>$values));
+			        } catch(Exception $e) {
+			          $log[] = 'DRUPAL #'.$drupal_id.' Error translating to '.$translation['language'].' node '.$nid.': '.$e->getMessage().' '.print_r($values,true);
+			        }
 			    }
 			    
-			    $drupal_done[$row['sku']] = 1;
-			  }
 			}
 
             //print("7\n");
             //print_r($drupal_done);
 			foreach($drupal_products as $sku=>$id) {
 			  if(!isset($drupal_done[$sku])) {
-                $nodes = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'views/epesi_products_search_by_product_id.json?'.http_build_query(array('display_id'=>'services_1','args'=>array($id,''))));
-                $nid = isset($nodes[0]['nid'])?$nodes[0]['nid']:0;
-                @Premium_Warehouse_DrupalCommerceCommon::drupal_delete($drupal_id,'product/'.$id);
-                if($nid) Premium_Warehouse_DrupalCommerceCommon::drupal_delete($drupal_id,'entity_node/'.$nid);
+			    try {
+                  $nodes = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'views/epesi_products_search_by_product_id.json?'.http_build_query(array('display_id'=>'services_1','args'=>array($id,''))));
+                  $nid = isset($nodes[0]['nid'])?$nodes[0]['nid']:0;
+                  @Premium_Warehouse_DrupalCommerceCommon::drupal_delete($drupal_id,'product/'.$id);
+                  if($nid) Premium_Warehouse_DrupalCommerceCommon::drupal_delete($drupal_id,'entity_node/'.$nid);
+                } catch(Exception $e) {
+			      $log[] = 'DRUPAL #'.$drupal_id.' Error deleting node '.$nid.', product '.$id.': '.$e->getMessage();
+			    }
               }
 			}
         }
+        return implode("\n",$log);
 	}
 	
 	public static function drupal_connection($drupal) {
