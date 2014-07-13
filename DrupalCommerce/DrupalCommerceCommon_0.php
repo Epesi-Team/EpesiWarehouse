@@ -1203,9 +1203,10 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
     			      $gross = $line_item['commerce_unit_price']['amount']/$currency_precission;
 			      }
 			      $node = $products[$line_item['commerce_product']];
-			      $product_id = ltrim($node['sku'],'#0');
+			      $sku = explode(' ',$node['sku'],2);
+			      $product_id = ltrim($sku[0],'#0');
 			      ob_start();
-			      Utils_RecordBrowserCommon::new_record('premium_warehouse_items_orders_details',array('transaction_id'=>$id,'item_name'=>$product_id,'quantity'=>$line_item['quantity'],'description'=>$line_item['line_item_label'].' '.$line_item['line_item_title'],'tax_rate'=>$tax,'net_price'=>$net.'__'.$currency_id,'gross_price'=>$gross.'__'.$currency_id));
+			      Utils_RecordBrowserCommon::new_record('premium_warehouse_items_orders_details',array('transaction_id'=>$id,'item_name'=>$product_id,'quantity'=>$line_item['quantity'],'description'=>(isset($sku[1])?$sku[1].' | ':'').$line_item['line_item_label'].' '.$line_item['line_item_title'],'tax_rate'=>$tax,'net_price'=>$net.'__'.$currency_id,'gross_price'=>$gross.'__'.$currency_id));
 			      ob_clean();
 			    }
 			    
