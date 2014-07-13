@@ -832,7 +832,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
         return null;//don't modify values
     }
 
-    public static function QFfield_related_products(&$form, $field, $label, $mode, $default,$y,$x) {
+/*    public static function QFfield_related_products(&$form, $field, $label, $mode, $default,$y,$x) {
         if ($mode=='edit' || $mode=='add') {
             $el = $form->addElement('automulti', $field, $label, array('Premium_Warehouse_DrupalCommerceCommon', 'automulti_search'), array($x->record), array('Premium_Warehouse_DrupalCommerceCommon','automulti_format'));
             $form->setDefaults(array($field=>$default));
@@ -912,7 +912,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 		$ids = DB::GetCol('SELECT id FROM premium_warehouse_items_data_1 WHERE (f_category '.DB::like().' CONCAT("%%\_\_",%d,"\_\_%%") OR f_category '.DB::like().' CONCAT("%%\_\_",%d,"\/%%") OR f_category '.DB::like().' CONCAT("%%\/",%d,"\_\_%%") OR f_category '.DB::like().' CONCAT("%%\/",%d,"\/%%")) AND active=1',array($choice,$choice,$choice,$choice));
 		return array('item_name'=>$ids);
 	}
-	
+*/	
 	public static function QFfield_shipment_service_type(&$form, $field, $label, $mode, $default, $desc) {
 		$param = explode('::',$desc['param']['array_id']);
 		foreach ($param as $k=>$v) if ($k!==0) $param[$k] = strtolower(str_replace(' ','_',$v));
