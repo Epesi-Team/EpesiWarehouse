@@ -1293,6 +1293,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
                 $term['format'] = 'full_html';
                 $term['translations']['original']='en';
                 $term['weight'] = $epesi_category_weight[$id];
+                $term['field_images'] = array();
                 
                 if($epesi_category_parents[$id])
                   $term['parent'] = $category_mapping[$epesi_category_parents[$id]];

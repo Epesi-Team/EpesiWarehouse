@@ -10,7 +10,7 @@ Acl::set_sa_user();
 
 //$ret = Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'epesi_commerce/get_product_fields');
 //print_r($ret);
-//die();
+//die();			$drupal_orders_tmp = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'order',array('filter'=>array('status'=>'pending'),'limit'=>999999999999999999));
 //Premium_Warehouse_DrupalCommerceCommon::cron_orders();
 print(Premium_Warehouse_DrupalCommerceCommon::cron_categories());
 die();
