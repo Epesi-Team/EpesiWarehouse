@@ -1236,7 +1236,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
 	        $drupal_id = $drupal_row['id'];
 
             //look for epesi vocabulary
-            $voc = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'taxonomy_vocabulary',array('pagesize'=>9999999999));
+            $voc = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'entity_taxonomy_vocabulary',array('pagesize'=>9999999999));
             $epesi_vocabulary = null;
             $epesi_manufacturer_vocabulary = null;
             foreach($voc as $v) {
@@ -1253,7 +1253,7 @@ if(!defined('_VALID_ACCESS') && !file_exists(EPESI_DATA_DIR)) die('Launch epesi,
             $category_exists = array();
             $category_mapping = array();
             try {
-              $terms = Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'taxonomy_vocabulary/getTree',array('vid'=>$epesi_vocabulary,'load_entities'=>1));
+              $terms = Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'entity_taxonomy_vocabulary/getTree',array('vid'=>$epesi_vocabulary,'load_entities'=>1));
               foreach($terms as $term_data) {
                 $category_exists[$term_data['tid']] = 1;
                 $category_mapping[$term_data['field_epesi_category_id']['und'][0]['value']] = $term_data['tid'];
