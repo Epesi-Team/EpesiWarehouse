@@ -195,7 +195,7 @@ function epesi_commerce_install_endpoint() {
       ),
     ),
   ),
-  'taxonomy_vocabulary' => array(
+  'entity_taxonomy_vocabulary' => array(
     'operations' => array(
       'index' => array(
         'enabled' => '1',
