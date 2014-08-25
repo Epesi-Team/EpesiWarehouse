@@ -1374,7 +1374,8 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			//get old products
 			$drupal_products_tmp = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'product',array('fields'=>'product_id,sku','filter'=>array('type'=>'epesi_products'),'sort_by'=>'sku','limit'=>999999999999999999));
 			$drupal_products = array();
-			$drupal_done = array();
+			$drupal_products_done = array();
+			$drupal_nodes_done = array();
 			foreach($drupal_products_tmp as $row) {
 			  $drupal_products[$row['sku']] = $row['product_id'];
 			}
@@ -1386,7 +1387,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			
 			$products = Utils_RecordBrowserCommon::get_records('premium_ecommerce_products',array('publish'=>1),array(),array('item_name'=>'ASC'));
 			foreach($products as $row) {
-			  if(isset($drupal_done[$row['sku']])) continue;
+			  if(isset($drupal_products_done[$row['sku']])) continue;
 			  
 			  $ecommerce_product_id = $row['id'];
 			  $row = array_merge($row,Utils_RecordBrowserCommon::get_record('premium_warehouse_items',$row['item_name']));
@@ -1590,7 +1591,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			        }
 			      }
 			      $drupal_product_ids[] = array('product_id'=>$drupal_product_id);
-			      $drupal_done[$data['sku']] = 1;
+			      $drupal_products_done[$data['sku']] = 1;
 			    }
 			  }
 			    
@@ -1690,6 +1691,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			        continue;
 			      }
 			    }
+			    $drupal_nodes_done[$nid] = 1;
 			    
 			    $translations = Utils_RecordBrowserCommon::get_records('premium_ecommerce_descriptions',array('item_name'=>$row['id']));
 			    foreach($translations as $translation) {
@@ -1732,9 +1734,9 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			}
 
             //print("7\n");
-            //print_r($drupal_done);
+            //print_r($drupal_products_done);
 			foreach($drupal_products as $sku=>$id) {
-			  if(!isset($drupal_done[$sku])) {
+			  if(!isset($drupal_products_done[$sku])) {
 			    try {
 			        $nodes = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'views/epesi_products_search_by_product_id.json?'.http_build_query(array('display_id'=>'services_1','args'=>array($id,''))));
 			    } catch(Exception $e) {
@@ -1751,7 +1753,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 
 			    try {
 			        $nid = isset($nodes[0]['nid'])?$nodes[0]['nid']:0;
-			        if($nid) Premium_Warehouse_DrupalCommerceCommon::drupal_delete($drupal_id,'entity_node/'.$nid);
+			        if($nid && !isset($drupal_nodes_done[$nid])) Premium_Warehouse_DrupalCommerceCommon::drupal_delete($drupal_id,'entity_node/'.$nid);
 			    } catch(Exception $e) {
 			        $log[] = 'DRUPAL #'.$drupal_id.' Error deleting node '.$nid.', product '.$id.': '.$e->getMessage();
 			    }
