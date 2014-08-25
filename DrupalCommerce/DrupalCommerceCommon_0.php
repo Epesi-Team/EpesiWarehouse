@@ -1736,14 +1736,26 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			foreach($drupal_products as $sku=>$id) {
 			  if(!isset($drupal_done[$sku])) {
 			    try {
-                  $nodes = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'views/epesi_products_search_by_product_id.json?'.http_build_query(array('display_id'=>'services_1','args'=>array($id,''))));
-                  $nid = isset($nodes[0]['nid'])?$nodes[0]['nid']:0;
-                  @Premium_Warehouse_DrupalCommerceCommon::drupal_delete($drupal_id,'product/'.$id);
-                  if($nid) Premium_Warehouse_DrupalCommerceCommon::drupal_delete($drupal_id,'entity_node/'.$nid);
-                } catch(Exception $e) {
-			      $log[] = 'DRUPAL #'.$drupal_id.' Error deleting node '.$nid.', product '.$id.': '.$e->getMessage();
+			        $nodes = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'views/epesi_products_search_by_product_id.json?'.http_build_query(array('display_id'=>'services_1','args'=>array($id,''))));
+			    } catch(Exception $e) {
+			        $log[] = 'DRUPAL #'.$drupal_id.' Error getting product node id '.$id.': '.$e->getMessage();
+			        continue;
 			    }
-              }
+
+			    try {
+			        Premium_Warehouse_DrupalCommerceCommon::drupal_delete($drupal_id,'product/'.$id);
+			    } catch(Exception $e) {
+			        if(stripos($e->getMessage(),'Product cannot be deleted')===false)
+			            $log[] = 'DRUPAL #'.$drupal_id.' Error deleting product '.$id.': '.$e->getMessage();
+			    }
+
+			    try {
+			        $nid = isset($nodes[0]['nid'])?$nodes[0]['nid']:0;
+			        if($nid) Premium_Warehouse_DrupalCommerceCommon::drupal_delete($drupal_id,'entity_node/'.$nid);
+			    } catch(Exception $e) {
+			        $log[] = 'DRUPAL #'.$drupal_id.' Error deleting node '.$nid.', product '.$id.': '.$e->getMessage();
+			    }
+			  }
 			}
         }
         return implode("\n",$log);
