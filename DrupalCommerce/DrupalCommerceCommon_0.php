@@ -880,7 +880,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
     public static function automulti_format($id) {
         if(is_array($id)) return DB::GetOne('SELECT f_item_name FROM premium_warehouse_items_data_1 WHERE id=%d',array($id['item_name']));
         return DB::GetOne('SELECT wp.f_item_name FROM premium_ecommerce_products_data_1 ep INNER JOIN premium_warehouse_items_data_1 wp ON ep.f_item_name=wp.id WHERE ep.id=%d',array($id));
-    }
+    }*/
     
     public static function get_categories() {
         $categories = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_categories',array(),array(),array('position'=>'ASC'));
@@ -917,7 +917,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 		$ids = DB::GetCol('SELECT id FROM premium_warehouse_items_data_1 WHERE (f_category '.DB::like().' CONCAT("%%\_\_",%d,"\_\_%%") OR f_category '.DB::like().' CONCAT("%%\_\_",%d,"\/%%") OR f_category '.DB::like().' CONCAT("%%\/",%d,"\_\_%%") OR f_category '.DB::like().' CONCAT("%%\/",%d,"\/%%")) AND active=1',array($choice,$choice,$choice,$choice));
 		return array('item_name'=>$ids);
 	}
-*/	
+	
 	public static function QFfield_shipment_service_type(&$form, $field, $label, $mode, $default, $desc) {
 		$param = explode('::',$desc['param']['array_id']);
 		foreach ($param as $k=>$v) if ($k!==0) $param[$k] = strtolower(str_replace(' ','_',$v));
@@ -1204,7 +1204,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
                 $term['format'] = 'full_html';
                 $term['translations']['original']='en';
                 $term['weight'] = $epesi_category_weight[$id];
-                $term['field_images'] = array();
+                $term['field_images'] = array('und'=>array());
                 
                 if($epesi_category_parents[$id])
                   $term['parent'] = $category_mapping[$epesi_category_parents[$id]];
@@ -1218,7 +1218,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			    $field_images = array();
 			    foreach(Premium_Warehouse_DrupalCommerceCommon::$images as $lang=>$fids) {
 			      foreach($fids as $fid) {
-			        if($lang=='und') $term['field_images'][]['fid'] = $fid;
+			        if($lang=='und') $term['field_images']['und'][]['fid'] = $fid;
 			        else $field_images[$lang][]['fid'] = $fid;
 			      }
 			    }
@@ -1227,7 +1227,6 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			    foreach(Utils_CommonDataCommon::get_array('Premium/Warehouse/eCommerce/Languages') as $lang=>$lang_name)
 			      if(!isset($field_images[$lang])) $field_images[$lang] = array();
 			      
-
                 //sync/create categories
                 if(isset($category_mapping[$id])) {
                   $term['tid'] = $category_mapping[$id];
@@ -1774,8 +1773,8 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 	      $endpoint = rtrim($drupal_record['url'],'/')."/".$drupal_record['endpoint'];
 	      $conn[$drupal] = $client = new \Guzzle\Http\Client($endpoint);
 
-	      if(isset($SESSION['drupal_cookies']) && isset($_SESSION['drupal_csrf_token'])) {
-	        $client->addSubscriber($SESSION['drupal_cookies']); 
+	      if(isset($_SESSION['drupal_cookies']) && isset($_SESSION['drupal_csrf_token']) && isset($_SESSION['drupal_uid'])) {
+	        $client->addSubscriber($_SESSION['drupal_cookies']); 
 	      } else {
 	        $cookiePlugin = new \Guzzle\Plugin\Cookie\CookiePlugin(new \Guzzle\Plugin\Cookie\CookieJar\ArrayCookieJar());
 	        $client->addSubscriber($cookiePlugin); 
@@ -1787,10 +1786,11 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 	        if(!isset($csrf_token['token']) || !$csrf_token['token']) {
 	          throw new Exception("Drupal getting csrf token failed.");
 	        }
-	        $SESSION['drupal_csrf_token'] = $csrf_token['token'];
-	        $SESSION['drupal_cookies'] = $cookiePlugin;
+	        $_SESSION['drupal_csrf_token'] = $csrf_token['token'];
+	        $_SESSION['drupal_cookies'] = $cookiePlugin;
+	        $_SESSION['drupal_uid'] = $user['user']['uid'];
 	      }
-	      $client->setDefaultOption('headers', array('X-CSRF-Token' => $SESSION['drupal_csrf_token']));
+	      $client->setDefaultOption('headers', array('X-CSRF-Token' => $_SESSION['drupal_csrf_token']));
 	    }
 	    return $conn[$drupal];
 	}
