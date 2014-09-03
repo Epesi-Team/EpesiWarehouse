@@ -1368,7 +1368,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			//update products
 			//get fields
 			$product_fields = array_merge(Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'epesi_commerce/get_product_fields'),array('sku','title','type'));
-			$node_fields = array_merge(Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'epesi_commerce/get_node_fields'),array('type','field_title','title','promote','sticky'));
+			$node_fields = array_merge(Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'epesi_commerce/get_node_fields'),array('type','field_title','title','promote','sticky','uid'));
 			
 			//get old products
 			$drupal_products_tmp = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'product',array('fields'=>'product_id,sku','filter'=>array('type'=>'epesi_products'),'sort_by'=>'sku','limit'=>999999999999999999));
@@ -1601,6 +1601,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			    //if($row['recommended']) print('RECOMMENDED!!!'."\n");
 			    $node = array();
 			    $node['type']='epesi_products';
+                $node['uid'] = $_SESSION['drupal_uid'];
 			    $node['title']=$node['title_field']['en'][0]['value']=$node['title_field']['und'][0]['value']=$node['field_title']=$row['item_name'];
 			    $node['body']['en'][0]['value']=$row['description'];
 			    $node['body']['en'][0]['format'] = 'full_html';
