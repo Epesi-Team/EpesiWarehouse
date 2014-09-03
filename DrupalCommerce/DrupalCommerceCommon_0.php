@@ -964,10 +964,14 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			    $billing = $billing['commerce_customer_address'];
 			    if(!$billing['last_name'] && $billing['name_line'])
 			      @list($billing['first_name'],$billing['last_name']) = explode(' ',$billing['name_line'],2);
-			    $shipping = array_shift($ord['commerce_customer_shipping_entities']);
-			    $shipping = $shipping['commerce_customer_address'];
-			    if(!$shipping['last_name'] && $shipping['name_line'])
-			      @list($shipping['first_name'],$shipping['last_name']) = explode(' ',$shipping['name_line'],2);
+			    if(isset($ord['commerce_customer_shipping_entities'])) {
+			      $shipping = array_shift($ord['commerce_customer_shipping_entities']);
+			      $shipping = $shipping['commerce_customer_address'];
+			      if(!$shipping['last_name'] && $shipping['name_line'])
+			        @list($shipping['first_name'],$shipping['last_name']) = explode(' ',$shipping['name_line'],2);
+			    } else {
+			      $shipping = array('organisation_name'=>'','last_name'=>'','first_name'=>'','thoroughfare'=>'','locality'=>'','postal_code'=>'','country'=>'');
+			    }
 			      
 			    $products = array();
 			    //products
