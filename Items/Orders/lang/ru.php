@@ -10,7 +10,6 @@ $translations['Pending']='';
 $translations['Weight']='Вес';
 $translations['Create Bill']='';
 $translations['Gross Cost']='';
-$translations['Settings']='';
 $translations['Memo']='Аннотация';
 $translations['Total']='';
 $translations['n/a']='';

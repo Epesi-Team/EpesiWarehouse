@@ -5,10 +5,10 @@
  * @subpackage vi
  */
 global $translations;
-$translations['Settings']='';
 $translations['Comment']='';
 $translations['Allegro']='';
 $translations['Item Name']='Tên sản phẩm';
+$translations['Model']='';
 $translations['Invoice']='Hoá đơn';
 $translations['Tax Rate']='Phần trăm Thuế';
 $translations['Gross Price']='Giá sau Thuế';
@@ -55,16 +55,16 @@ $translations['Product Name']='';
 $translations['Publish']='';
 $translations['Recommended']='';
 $translations['Exclude compare services']='';
-$translations['Always on stock']='';
+$translations['Always in stock']='';
 $translations['Related products']='';
 $translations['Popup products']='';
 $translations['eCommerce - Products']='';
 $translations['Display Name']='';
 $translations['Short Description']='';
 $translations['Long Description']='';
+$translations['eCommerce - Cat. Descriptions']='';
 $translations['Page Title']='';
 $translations['Meta Description']='';
-$translations['eCommerce - Cat. Descriptions']='';
 $translations['eCommerce - Descriptions']='';
 $translations['Parameter Code']='';
 $translations['eCommerce - Parameters']='';

@@ -6,7 +6,7 @@
  */
 global $translations;
 $translations['Sales Report']='';
-$translations['Total']='';
+$translations['Total']='Gesamt';
 $translations['Inventory Management']='Inventarverwaltung';
 $translations['Unknown mode']='';
 $translations['Prices']='';

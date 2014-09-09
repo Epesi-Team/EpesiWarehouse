@@ -5,7 +5,7 @@
  * @subpackage sl
  */
 global $translations;
-$translations['Inventory Management']='Upravljanje z inventorijem';
+$translations['Inventory Management']='Vodenje inventure';
 $translations['Bank account']='';
 $translations['Auto update']='';
 $translations['Inventory']='';

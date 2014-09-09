@@ -5,8 +5,8 @@
  * @subpackage sl
  */
 global $translations;
-$translations['Total']='Skupno';
-$translations['Inventory Management']='Upravljanje z inventorijem';
+$translations['Total']='Vse skupaj';
+$translations['Inventory Management']='Vodenje inventure';
 $translations['Warehouse']='';
 $translations['Sold Items']='';
 $translations['Sold Items Report']='';

@@ -7,7 +7,7 @@
 global $translations;
 $translations['Total']='Tổng thanh toán';
 $translations['Inventory Management']='Quản lý Kho hàng';
-$translations['Warehouse']='Danh mục kho';
+$translations['Warehouse']='Kho hàng';
 $translations['Sold Items']='';
 $translations['Sold Items Report']='';
 $translations['Sold Items, %s']='';

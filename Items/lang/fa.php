@@ -6,7 +6,6 @@
  */
 global $translations;
 $translations['Weight']='';
-$translations['Settings']='';
 $translations['Category Name']='';
 $translations['Inventory Management']='مدیریت موجودی';
 $translations['Price']='قیمت';

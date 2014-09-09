@@ -5,7 +5,7 @@
  * @subpackage de
  */
 global $translations;
-$translations['Total']='';
+$translations['Total']='Gesamt';
 $translations['Inventory Management']='Inventarverwaltung';
 $translations['Employee Sales']='';
 $translations['You don\'t have permission to access this module']='';

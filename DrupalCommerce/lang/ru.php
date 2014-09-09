@@ -5,10 +5,10 @@
  * @subpackage ru
  */
 global $translations;
-$translations['Settings']='';
 $translations['Comment']='';
 $translations['Allegro']='';
 $translations['Item Name']='Наименование товара';
+$translations['Model']='';
 $translations['Invoice']='';
 $translations['Tax Rate']='Ставка налога';
 $translations['Gross Price']='Валовая цена';
@@ -55,16 +55,16 @@ $translations['Product Name']='Наименование товара';
 $translations['Publish']='Опубликовать';
 $translations['Recommended']='Рекомендовано';
 $translations['Exclude compare services']='Исключить сравнивыемые услуги';
-$translations['Always on stock']='Всегда на складе';
+$translations['Always in stock']='';
 $translations['Related products']='Связные товары';
 $translations['Popup products']='';
 $translations['eCommerce - Products']='Эл.Коммерция - товары';
 $translations['Display Name']='Отображаемое имя';
 $translations['Short Description']='Краткое описание';
 $translations['Long Description']='Детальное описание';
+$translations['eCommerce - Cat. Descriptions']='';
 $translations['Page Title']='Заголовок страницы';
 $translations['Meta Description']='Мето описание';
-$translations['eCommerce - Cat. Descriptions']='';
 $translations['eCommerce - Descriptions']='Эл.Коммерция - Описания';
 $translations['Parameter Code']='';
 $translations['eCommerce - Parameters']='';

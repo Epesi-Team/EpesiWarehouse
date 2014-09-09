@@ -6,7 +6,6 @@
  */
 global $translations;
 $translations['Weight']='Trọng lượng';
-$translations['Settings']='';
 $translations['Category Name']='Tên Nhóm';
 $translations['Inventory Management']='Quản lý Kho hàng';
 $translations['Price']='Giá';
@@ -48,7 +47,7 @@ $translations['Non-Inventory Item']='';
 $translations['Merge categories']='';
 $translations['Inv. Item']='Sản phẩm';
 $translations['Non-Inv. Items']='Phi sản phẩm';
-$translations['Warehouse']='Danh mục kho';
+$translations['Warehouse']='Kho hàng';
 $translations['Compare Services']='';
 $translations['On Hand']='Tồn kho';
 $translations['En Route']='';

@@ -10,7 +10,6 @@ $translations['Pending']='Oczekuje';
 $translations['Weight']='Waga';
 $translations['Create Bill']='utwórz rachunek';
 $translations['Gross Cost']='Koszt Brutto';
-$translations['Settings']='Ustawienia';
 $translations['Memo']='';
 $translations['Total']='Suma';
 $translations['n/a']='';

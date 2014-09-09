@@ -5,9 +5,9 @@
  * @subpackage cs
  */
 global $translations;
-$translations['Total']='Celkom';
+$translations['Total']='Celkem';
 $translations['n/a']='';
-$translations['Inventory Management']='Inventúra';
+$translations['Inventory Management']='';
 $translations['Quantity']='';
 $translations['Item Name']='';
 $translations['Item SKU']='';

@@ -5,11 +5,11 @@
  * @subpackage ru
  */
 global $translations;
+$translations['Rates']='';
 $translations['eCommerce - prices']='Эл.коммерция - цена';
 $translations['Auto update']='';
 $translations['DrupalCommerce']='';
 $translations['Last update']='Последнее обновление';
-$translations['Rates']='';
 $translations['eCommerce Prices Auto Updater']='';
 $translations['Profit margin (in percent)']='';
 $translations['Not a number']='';

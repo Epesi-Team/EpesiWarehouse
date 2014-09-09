@@ -5,10 +5,10 @@
  * @subpackage pl
  */
 global $translations;
-$translations['Settings']='Ustawienia';
 $translations['Comment']='Komentarz';
 $translations['Allegro']='';
 $translations['Item Name']='Nazwa produktu';
+$translations['Model']='';
 $translations['Invoice']='Faktura';
 $translations['Tax Rate']='Podatek';
 $translations['Gross Price']='Cena Brutto';
@@ -55,16 +55,16 @@ $translations['Product Name']='Nazwa produktu';
 $translations['Publish']='';
 $translations['Recommended']='';
 $translations['Exclude compare services']='';
-$translations['Always on stock']='zawsze dostępne';
+$translations['Always in stock']='';
 $translations['Related products']='podobny produkt';
 $translations['Popup products']='';
 $translations['eCommerce - Products']='';
 $translations['Display Name']='Wyświetlana nazwa';
 $translations['Short Description']='krótki opis';
 $translations['Long Description']='długi opis';
+$translations['eCommerce - Cat. Descriptions']='';
 $translations['Page Title']='Tytuł strony';
 $translations['Meta Description']='';
-$translations['eCommerce - Cat. Descriptions']='';
 $translations['eCommerce - Descriptions']='';
 $translations['Parameter Code']='';
 $translations['eCommerce - Parameters']='';
