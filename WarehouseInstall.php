@@ -39,13 +39,14 @@ class Premium_WarehouseInstall extends ModuleInstall {
 		);
 
 		Utils_RecordBrowserCommon::install_new_recordset('premium_warehouse', $fields);
-		
+
 		Utils_RecordBrowserCommon::set_quickjump('premium_warehouse', 'Warehouse');
 		Utils_RecordBrowserCommon::set_favorites('premium_warehouse', true);
 		Utils_RecordBrowserCommon::set_caption('premium_warehouse', _M('Warehouse'));
 		Utils_RecordBrowserCommon::set_icon('premium_warehouse', Base_ThemeCommon::get_template_filename('Premium/Warehouse', 'icon.png'));
 		Utils_RecordBrowserCommon::enable_watchdog('premium_warehouse', array('Premium_WarehouseCommon','watchdog_label'));
-		
+        Utils_RecordBrowserCommon::set_search('premium_warehouse',2,0);
+
 // ************ addons ************** //
 		Utils_AttachmentCommon::new_addon('premium_warehouse');
 

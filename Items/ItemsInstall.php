@@ -46,7 +46,7 @@ class Premium_Warehouse_ItemsInstall extends ModuleInstall {
 		);
 
 		Utils_RecordBrowserCommon::install_new_recordset('premium_warehouse_items', $fields);
-		
+
 		Utils_RecordBrowserCommon::set_quickjump('premium_warehouse_items', 'Item Name');
 		Utils_RecordBrowserCommon::set_favorites('premium_warehouse_items', true);
 		Utils_RecordBrowserCommon::set_recent('premium_warehouse_items', 15);
@@ -54,6 +54,7 @@ class Premium_Warehouse_ItemsInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::set_icon('premium_warehouse_items', Base_ThemeCommon::get_template_filename('Premium/Warehouse/Items', 'icon.png'));
 		Utils_RecordBrowserCommon::enable_watchdog('premium_warehouse_items', array('Premium_Warehouse_ItemsCommon','watchdog_label'));
 		Utils_RecordBrowserCommon::register_processing_callback('premium_warehouse_items', array('Premium_Warehouse_ItemsCommon', 'submit_item'));
+        Utils_RecordBrowserCommon::set_search('premium_warehouse_items',2,0);
 
 		$fields = array(
 			array('name' => _M('Category Name'), 	'type'=>'text', 'param'=>128, 'required'=>true, 'extra'=>false, 'visible'=>true),
@@ -65,6 +66,7 @@ class Premium_Warehouse_ItemsInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::set_caption('premium_warehouse_items_categories', _M('Items Categories'));
 		Utils_RecordBrowserCommon::set_icon('premium_warehouse_items_categories', Base_ThemeCommon::get_template_filename('Premium/Warehouse/Items', 'icon.png'));
 		Utils_RecordBrowserCommon::register_processing_callback('premium_warehouse_items_categories', array('Premium_Warehouse_ItemsCommon', 'submit_position'));
+        Utils_RecordBrowserCommon::set_search('premium_warehouse_items_categories',2,0);
 
 // ************ addons ************** //
 		Utils_AttachmentCommon::new_addon('premium_warehouse_items');
