@@ -1606,7 +1606,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			    $node = array();
 			    $node['type']='epesi_products';
                 $node['uid'] = $_SESSION['drupal_uid'];
-			    $node['title']=$node['title_field']['en'][0]['value']=$node['title_field']['und'][0]['value']=$node['field_title']=$row['item_name'];
+			    $node['title']=$node['title_field']['en'][0]['value']=$node['title_field']['und'][0]['value']=$node['field_title']=trim($row['item_name']);
 			    $node['body']['en'][0]['value']=$row['description'];
 			    $node['body']['en'][0]['format'] = 'full_html';
 //			    $node['field_product']['und'][0]['product_id'] = $drupal_product_id;
@@ -1716,7 +1716,8 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			      $features .= '</tbody></table>';
 
 			      $values = array();
-			      $values['title_field'][$translation['language']][0]['value'] = $translation['display_name'];
+			      $display_name = trim($translation['display_name']);
+			      $values['title_field'][$translation['language']][0]['value'] = $display_name?$display_name:$node['title'];
 			      $values['body'][$translation['language']][0]['value'] = $translation['long_description'].$features;
 			      $values['body'][$translation['language']][0]['format'] = 'full_html';
 			      $values['body'][$translation['language']][0]['summary'] = $translation['short_description'];
