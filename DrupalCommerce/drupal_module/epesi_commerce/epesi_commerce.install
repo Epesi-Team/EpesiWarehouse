@@ -27,7 +27,13 @@ function epesi_commerce_enable() {
 
   $enabled = array_filter(variable_get('entity_translation_entity_types', array()));
   $enabled['taxonomy_term'] = 'taxonomy_term';
+  $enabled['node'] = 'node';
   variable_set('entity_translation_entity_types', $enabled);
+  variable_set("language_content_type_epesi_products", ENTITY_TRANSLATION_ENABLED);
+  
+  $entity_settings = variable_get('entity_translation_settings_node__epesi_products',array());
+  $entity_settings['default_language'] = 'en';
+  variable_set('entity_translation_settings_node__epesi_products',$entity_settings);
 }
 
 function epesi_commerce_install_endpoint() {
