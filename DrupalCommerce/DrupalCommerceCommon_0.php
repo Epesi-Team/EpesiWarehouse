@@ -1394,9 +1394,9 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			  
 			  $ecommerce_product_id = $row['id'];
 			  $row = array_merge($row,Utils_RecordBrowserCommon::get_record('premium_warehouse_items',$row['item_name']));
-			  $row['item_name'] = html_entity_decode($row['item_name']);
+			  if(!$row['category'] || !$row[':active']) continue;
 			  
-			  if(!$row['category']) continue;
+			  $row['item_name'] = html_entity_decode($row['item_name']);
 			  
 			  //product
 			  $data = array('sku'=>$row['sku'],'title'=>$row['item_name'],'type'=>'epesi_products');
