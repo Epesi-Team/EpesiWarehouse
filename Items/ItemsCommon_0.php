@@ -290,7 +290,7 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 	}
 	
 	public static function submit_item($values, $mode) {
-		if(isset($values['gross_price']))unset($values['gross_price']);
+		if(isset($values['gross_price']) && $mode!='browse' && $mode!='index') unset($values['gross_price']);
 		switch ($mode) {
 			case 'cloned':
 				Utils_RecordBrowserCommon::update_record('premium_warehouse_items',$values['clone'],array('quantity_on_hand'=>0));
