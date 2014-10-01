@@ -15,7 +15,7 @@
 defined("_VALID_ACCESS") || die('Direct access forbidden');
 
 class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
-    const version = '1.5.0';
+    const version = '1.5.6';
 
 	public function install() {
 		Base_LangCommon::install_translations($this->get_type());

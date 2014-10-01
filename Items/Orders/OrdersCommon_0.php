@@ -425,12 +425,13 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
         $crits[$status] = 1;
         $types[] = array('crits' => $crits, 'label' => self::display_transaction_type_order($crits));
         unset($crits[$status]);
+        unset($crits[$p]);
         // inv adjustment
         $crits[$tt] = 2;
         $types[] = array('crits' => $crits, 'label' => self::display_transaction_type_order($crits));
-        // rental
-        $crits[$tt] = 3;
-        $types[] = array('crits' => $crits, 'label' => self::display_transaction_type_order($crits));
+        // rental - commented out also in Orders_0 body
+//        $crits[$tt] = 3;
+//        $types[] = array('crits' => $crits, 'label' => self::display_transaction_type_order($crits));
         // transfer
         $crits[$tt] = 4;
         $types[] = array('crits' => $crits, 'label' => self::display_transaction_type_order($crits));
