@@ -155,7 +155,7 @@ class Premium_Warehouse_InvoiceCommon extends ModuleCommon {
 		if ($order['status']<2) return '';
 		$t = strtotime(date('Y-m-d'));//strtotime($order['transaction_date']);
 		$field = 'CONVERT(f_invoice_number,UNSIGNED)';
-		if (DATABASE_DRIVER=='postgres') $field = 'f_invoice_number::integer';
+		if (DB::is_postgresql()) $field = 'f_invoice_number::integer';
 		if ($order['receipt'])
 			$receipt = 'AND f_receipt=1';
 		else
