@@ -1752,7 +1752,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			    try {
 			        Premium_Warehouse_DrupalCommerceCommon::drupal_delete($drupal_id,'product/'.$id);
 			    } catch(Exception $e) {
-			        if(stripos($e->getMessage(),'Product cannot be deleted')===false)
+			        if(!preg_match('/(Product not found|Product cannot be deleted)/i',$e->getMessage()))
 			            $log[] = 'DRUPAL #'.$drupal_id.' Error deleting product '.$id.': '.$e->getMessage();
 			    }
 
