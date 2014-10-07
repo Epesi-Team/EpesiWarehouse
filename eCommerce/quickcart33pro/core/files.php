@@ -146,11 +146,11 @@ class Files
     	$where = 'ual.local=CONCAT(\'premium_ecommerce_products/\',%d) OR ual.local=CONCAT(\'premium_ecommerce_descriptions/\',%s,\'/\',%d)';
     }
     
-    $ret = DB::Execute('SELECT f.id,ual.local, f.original, ual.sticky, d.text
-			FROM utils_attachment_link ual 
-			INNER JOIN utils_attachment_file f ON (f.attach_id=ual.id) 
-			INNER JOIN utils_attachment_note d ON (d.attach_id=ual.id AND d.revision=(SELECT max(revision) FROM utils_attachment_note WHERE attach_id=ual.id)) 
-			WHERE ual.deleted=0 AND f.deleted=0 AND ('.$where.')',array($id,LANGUAGE,$id));
+    $ret = DB::Execute('SELECT f.id,ual.local, f.original, d.f_sticky as sticky, d.f_note as text
+			FROM utils_attachment_file f 
+			INNER JOIN utils_attachmen_data_1t d ON (d.id=f.attach_id) 
+			INNER JOIN utils_attachment_local ual ON (ual.attachment=d.id) 
+			WHERE d.active=1 AND f.deleted=0 AND ('.$where.')',array($id,LANGUAGE,$id));
     $th_size = $config['default_image_size'];
     
     $isDuplicateFile = array();
