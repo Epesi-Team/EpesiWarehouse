@@ -6,7 +6,6 @@
  */
 global $translations;
 $translations['Completed']='Завершено';
-$translations['Pending']='';
 $translations['Weight']='Вес';
 $translations['Create Bill']='';
 $translations['Gross Cost']='';
@@ -31,7 +30,6 @@ $translations['Rental']='Аренда';
 $translations['Contact Details']='Контактные данные';
 $translations['Item']='элемент';
 $translations['Invoice']='';
-$translations['Sales Quote']='';
 $translations['Total Value']='Общая стоимость';
 $translations['4 weeks']='';
 $translations['Payment Type']='Тип платежа';
@@ -43,6 +41,7 @@ $translations['Net Total']='Всего нетто';
 $translations['Gross Total']='Всего брутто';
 $translations['Cash']='Наличные';
 $translations['Check']='Проверка';
+$translations['Sales Quote']='';
 $translations['Qty']='Кол-во';
 $translations['Item SKU']='Артикул';
 $translations['SKU']='Ед.склад.учета';

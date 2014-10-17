@@ -6,7 +6,6 @@
  */
 global $translations;
 $translations['Completed']='Terminé';
-$translations['Pending']='';
 $translations['Weight']='';
 $translations['Create Bill']='';
 $translations['Gross Cost']='';
@@ -31,7 +30,6 @@ $translations['Rental']='';
 $translations['Contact Details']='';
 $translations['Item']='';
 $translations['Invoice']='';
-$translations['Sales Quote']='';
 $translations['Total Value']='';
 $translations['4 weeks']='';
 $translations['Payment Type']='';
@@ -43,6 +41,7 @@ $translations['Net Total']='';
 $translations['Gross Total']='';
 $translations['Cash']='';
 $translations['Check']='Vérifier';
+$translations['Sales Quote']='';
 $translations['Qty']='';
 $translations['Item SKU']='';
 $translations['SKU']='';

@@ -6,10 +6,10 @@
  */
 global $translations;
 $translations['Weight']='';
-$translations['Category Name']='';
+$translations['Category Name']='Nome Categoria';
 $translations['Inventory Management']='Gestione inventario';
 $translations['Price']='';
-$translations['Service']='';
+$translations['Service']='Servizio';
 $translations['Cost']='';
 $translations['Allegro']='';
 $translations['Items']='Prodotti';

@@ -6,7 +6,6 @@
  */
 global $translations;
 $translations['Completed']='Đã nghiệm thu';
-$translations['Pending']='Chờ xử lý';
 $translations['Weight']='Trọng lượng';
 $translations['Create Bill']='';
 $translations['Gross Cost']='Giá nhập sau thuế';
@@ -31,7 +30,6 @@ $translations['Rental']='';
 $translations['Contact Details']='Thông tin Khách hàng';
 $translations['Item']='Sản phẩm';
 $translations['Invoice']='Hoá đơn';
-$translations['Sales Quote']='';
 $translations['Total Value']='Tổng';
 $translations['4 weeks']='';
 $translations['Payment Type']='';
@@ -43,6 +41,7 @@ $translations['Net Total']='';
 $translations['Gross Total']='';
 $translations['Cash']='';
 $translations['Check']='';
+$translations['Sales Quote']='';
 $translations['Qty']='Số lượng';
 $translations['Item SKU']='SKU sản phẩm';
 $translations['SKU']='';
