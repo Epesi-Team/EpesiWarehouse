@@ -1009,7 +1009,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			    $contact = DB::GetOne('SELECT id FROM contact_data_1 WHERE f_email=%s AND active=1',array($ord['mail']));
 			    $company = DB::GetOne('SELECT id FROM company_data_1 WHERE f_email=%s AND active=1',array($ord['mail']));
 			    if(!$company && $billing['organisation_name']) {
-			        $company = Utils_RecordBrowserCommon::new_record('contact',array(
+			        $company = Utils_RecordBrowserCommon::new_record('company',array(
 			          'company_name'=>$billing['organisation_name'],
 			          'address_1'=>$billing['thoroughfare'],
 			          'city'=>$billing['locality'],
