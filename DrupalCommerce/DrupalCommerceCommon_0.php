@@ -984,6 +984,11 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			    if(!$products) continue;
 			      
 			    $memo = '';
+			    if(isset($ord['data']['payment_method']) && $ord['data']['payment_method']) {
+			      list($payment_method) = explode('|',$ord['data']['payment_method']);
+			      $memo .= _('Payment').': '.$payment_method."\n";
+			    }
+			    
 			    //shipping
 			    $shipping_cost = 0;
 			    $handling_cost = 0;
@@ -1016,7 +1021,9 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			          'postal_code'=>$billing['postal_code'],
 			          'phone'=>isset($billing['phone'])?$billing['phone']:'',
 			          'country'=>$billing['country'],
-			          'email'=>$ord['mail']
+			          'email'=>$ord['mail'],
+			          'group'=>'customer',
+			          'permission'=>0
 			        ));
 			    }
 			    if(!$contact) {
@@ -1029,6 +1036,8 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			        'work_phone'=>isset($billing['phone'])?$billing['phone']:'',
 			        'country'=>$billing['country'],
 			        'email'=>$ord['mail'],
+			        'group'=>'custm',
+			        'permission'=>0
 			      );
 			      if($company)
 			        $arr['company_name']=$company;
