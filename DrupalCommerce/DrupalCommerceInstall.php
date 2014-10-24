@@ -292,6 +292,9 @@ class Premium_Warehouse_DrupalCommerceInstall extends ModuleInstall {
 		
 		Utils_RecordBrowserCommon::register_processing_callback('premium_payments', array('Premium_Warehouse_DrupalCommerceCommon', 'submit_payment'));
 
+		Utils_CommonDataCommon::extend_array('Premium_Items_Orders_Payment_Types',array('Drupal'=>_M('Drupal')),false,true);
+		Utils_CommonDataCommon::extend_array('Premium_Items_Orders_Shipment_Types',array('Drupal'=>_M('Drupal')),false,true);
+
 		$this->create_data_dir();
 		Base_ThemeCommon::install_default_theme('Premium/Warehouse/DrupalCommerce');
 		
