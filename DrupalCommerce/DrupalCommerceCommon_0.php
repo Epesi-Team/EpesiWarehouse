@@ -1788,8 +1788,8 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 	      $endpoint = rtrim($drupal_record['url'],'/')."/".$drupal_record['endpoint'];
 	      $conn[$drupal] = $client = new \Guzzle\Http\Client($endpoint);
 
-	      if(isset($_SESSION['drupal_cookies']) && isset($_SESSION['drupal_csrf_token']) && isset($_SESSION['drupal_uid'])&& 0) {
-	        $cookiePlugin = new \Guzzle\Plugin\Cookie\CookiePlugin($_SESSION['drupal_cookies']);
+	      if(isset($_SESSION['drupal_cookies']) && isset($_SESSION['drupal_csrf_token']) && isset($_SESSION['drupal_uid'])) {
+	        $cookiePlugin = new \Guzzle\Plugin\Cookie\CookiePlugin(unserialize($_SESSION['drupal_cookies']));
 	        $client->addSubscriber($cookiePlugin); 
 	      } else {
 	        $cookieJar = new \Guzzle\Plugin\Cookie\CookieJar\ArrayCookieJar();
@@ -1804,7 +1804,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 	          throw new Exception("Drupal getting csrf token failed.");
 	        }
 	        $_SESSION['drupal_csrf_token'] = $csrf_token['token'];
-	        $_SESSION['drupal_cookies'] = $cookieJar;
+	        $_SESSION['drupal_cookies'] = serialize($cookieJar);
 	        $_SESSION['drupal_uid'] = $user['user']['uid'];
 	      }
 	      $client->setDefaultOption('headers', array('X-CSRF-Token' => $_SESSION['drupal_csrf_token']));
