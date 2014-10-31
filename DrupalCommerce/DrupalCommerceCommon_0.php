@@ -1381,7 +1381,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			//update products
 			//get fields
 			$product_fields = array_merge(Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'epesi_commerce/get_product_fields'),array('sku','title','type'));
-			$node_fields = array_merge(Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'epesi_commerce/get_node_fields'),array('type','field_title','title','promote','sticky','uid'));
+			$node_fields = array_merge(Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'epesi_commerce/get_node_fields'),array('type','field_title','title','promote','sticky','uid','revision','created','changed'));
 			
 			//get old products
 			$drupal_products_tmp = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'product',array('fields'=>'product_id,sku','filter'=>array('type'=>'epesi_products'),'sort_by'=>'sku','limit'=>999999999999999999));
@@ -1389,6 +1389,8 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			$drupal_products_done = array();
 			$drupal_nodes_done = array();
 			foreach($drupal_products_tmp as $row) {
+			  if(isset($drupal_products[$row['sku']]))
+			    $row['sku'] .= '#delete-'.$row['product_id']; //force delete duplicate sku products
 			  $drupal_products[$row['sku']] = $row['product_id'];
 			}
 			unset($drupal_products_tmp);
@@ -1542,6 +1544,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			    //check if product exists in drupal
 			    $drupal_product_id = 0;
 			    $nid = 0;
+			    $vid = 0;
 			    if(isset($drupal_products[$data['sku']])) {
 			      //check product
 			      $drupal_data = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'product/'.$drupal_products[$data['sku']]);
@@ -1572,6 +1575,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			      $drupal_product_id = $drupal_products[$data['sku']];
 			      $nodes = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'views/epesi_products_search_by_product_id.json?'.http_build_query(array('display_id'=>'services_1','args'=>array($drupal_product_id,''))));
 			      $nid = isset($nodes[0]['nid'])?$nodes[0]['nid']:0;
+			      $vid = isset($nodes[0]['node_revision_vid'])?$nodes[0]['node_revision_vid']:0;
 //			      $product = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'product/'.$drupal_product_id);
 			    } else {
 			      try {
@@ -1622,6 +1626,9 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			    $node['field_product']['und'] = $drupal_product_ids;
 			    $node['promote']=$row['recommended']?1:null; //TODO: doesn't work
 			    $node['sticky']=$row['recommended']?1:null;
+			    $node['created']=strtotime($row['created_on']);
+			    $node['changed']=time();
+//			    $node['revision']=1;
 			    foreach($row['category'] as $ccc) {
 			      $category_id = array_pop(explode('/',$ccc));
 			      if(isset($category_mapping[$category_id])) $node['field_epesi_category']['und'][]['tid'] = $category_mapping[$category_id];
@@ -1688,6 +1695,12 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			    if($nid) {
 //			      print('nid='.$nid."\n");
                   $node['nid']=$nid;
+                  if($vid) {
+	                  $node['vid']=$vid;
+                  } else {
+	                  $old_node = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'entity_node/'.$nid);
+	                  $node['vid'] = $old_node['vid'];
+	              }
 			      //error_log($nid.' upd_node '.var_export($node,true)."\n",3,DATA_DIR.'/aaaa.log');
 			      try {
 			        Premium_Warehouse_DrupalCommerceCommon::drupal_put($drupal_id,'entity_node/'.$nid,$node);

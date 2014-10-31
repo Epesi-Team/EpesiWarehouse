@@ -7,6 +7,12 @@ ModuleManager::load_modules();
 Acl::set_sa_user();
 
 $drupal_id = 1;
+$x = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'views/epesi_products_search_by_product_id.json?'.http_build_query(array('display_id'=>'services_1','args'=>array(1303,''))));
+print_r($x);
+//				Premium_Warehouse_DrupalCommerceCommon::drupal_put($drupal_id,'order/'.$drupal_order_id,array('status'=>$drupal_status));
+die();
+
+
 //$ret = Premium_Warehouse_DrupalCommerceCommon::drupal_request(1,'taxonomy_vocabulary.getTree',array(1,0,99));
 $voc = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'taxonomy_vocabulary',array('pagesize'=>10000));
 $epesi_vocabulary = null;
