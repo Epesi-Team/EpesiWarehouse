@@ -1618,7 +1618,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			    //if($row['recommended']) print('RECOMMENDED!!!'."\n");
 			    $node = array();
 			    $node['type']='epesi_products';
-                $node['uid'] = $_SESSION['drupal_uid'];
+                $node['uid'] = $_SESSION['drupal_uid'][$drupal_id];
 			    $node['title']=$node['title_field']['en'][0]['value']=$node['title_field']['und'][0]['value']=$node['field_title']=trim($row['item_name']);
 			    $node['body']['en'][0]['value']=$row['description'];
 			    $node['body']['en'][0]['format'] = 'full_html';
@@ -1801,8 +1801,8 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 	      $endpoint = rtrim($drupal_record['url'],'/')."/".$drupal_record['endpoint'];
 	      $conn[$drupal] = $client = new \Guzzle\Http\Client($endpoint);
 
-	      if(isset($_SESSION['drupal_cookies']) && isset($_SESSION['drupal_csrf_token']) && isset($_SESSION['drupal_uid'])) {
-	        $cookiePlugin = new \Guzzle\Plugin\Cookie\CookiePlugin(unserialize($_SESSION['drupal_cookies']));
+	      if(isset($_SESSION['drupal_cookies'][$drupal]) && isset($_SESSION['drupal_csrf_token'][$drupal]) && isset($_SESSION['drupal_uid'][$drupal])) {
+	        $cookiePlugin = new \Guzzle\Plugin\Cookie\CookiePlugin(unserialize($_SESSION['drupal_cookies'][$drupal]));
 	        $client->addSubscriber($cookiePlugin); 
 	      } else {
 	        $cookieJar = new \Guzzle\Plugin\Cookie\CookieJar\ArrayCookieJar();
@@ -1816,11 +1816,14 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 	        if(!isset($csrf_token['token']) || !$csrf_token['token']) {
 	          throw new Exception("Drupal getting csrf token failed.");
 	        }
-	        $_SESSION['drupal_csrf_token'] = $csrf_token['token'];
-	        $_SESSION['drupal_cookies'] = serialize($cookieJar);
-	        $_SESSION['drupal_uid'] = $user['user']['uid'];
+	        if(!isset($_SESSION['drupal_csrf_token'])) $_SESSION['drupal_csrf_token'] = array();
+	        $_SESSION['drupal_csrf_token'][$drupal] = $csrf_token['token'];
+	        if(!isset($_SESSION['drupal_cookies'])) $_SESSION['drupal_cookies'] = array();
+	        $_SESSION['drupal_cookies'][$drupal] = serialize($cookieJar);
+	        if(!isset($_SESSION['drupal_uid'])) $_SESSION['drupal_uid'] = array();
+	        $_SESSION['drupal_uid'][$drupal] = $user['user']['uid'];
 	      }
-	      $client->setDefaultOption('headers', array('X-CSRF-Token' => $_SESSION['drupal_csrf_token']));
+	      $client->setDefaultOption('headers', array('X-CSRF-Token' => $_SESSION['drupal_csrf_token'][$drupal]));
 	    }
 	    return $conn[$drupal];
 	}
