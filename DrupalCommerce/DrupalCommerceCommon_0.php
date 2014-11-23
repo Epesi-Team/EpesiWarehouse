@@ -1091,7 +1091,11 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			      'shipping_company'=>$company
 			    ));
 			    
-			    $drupal_user = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'user/'.$ord['uid']);
+			    try {
+			      $drupal_user = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'user/'.$ord['uid']);
+			    } catch(Exception $e) {
+			      $drupal_user=array('language'=>'');
+			    }
 			    
 			    Utils_RecordBrowserCommon::new_record('premium_ecommerce_orders',array(
 			      'drupal'=>$drupal_id,
