@@ -227,10 +227,13 @@ class Premium_Warehouse_SalesReport_Calculator {
         $sale = $this->_add_int_values($sale);
 
         if ($sale['item_type'] > 1) { // non-inventory item - whole price is our earning
+            $quantity = $sale['quantity'];
+            $gross_value_int = $sale['gross_value_int'] * $quantity;
+            $net_value_int = $sale['net_value_int'] * $quantity;
             $this->db->store_earning($sale['order_details_id'],
-                $sale['quantity'], $sale['quantity'],
-                $sale['gross_value_int'], $sale['gross_value_int'],
-                $sale['net_value_int'], $sale['net_value_int']);
+                                     $quantity, $quantity,
+                                     $gross_value_int, $gross_value_int,
+                                     $net_value_int, $net_value_int);
             return;
         }
 
