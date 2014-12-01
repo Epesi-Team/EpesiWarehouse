@@ -17,7 +17,7 @@ defined("_VALID_ACCESS") || die('Direct access forbidden');
 class Premium_WarehouseInstall extends ModuleInstall {
     // If you change any submodule please increase this version number and assign it to that submodule
     // It should be max over all submodules versions
-    const version = '1.5.6';
+    const version = '1.5.7';
 
 	public function install() {
 		set_time_limit(0);
