@@ -1223,7 +1223,6 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 				Base_ActionBarCommon::add($icon,$label,Module::create_href(array('premium_warehouse_change_active_order'=>$values['id'])));
 				if (isset($_REQUEST['premium_warehouse_add_bill']) && $_REQUEST['premium_warehouse_add_bill']==$values['id']) {
 					$bill = $values;
-					foreach ($bill as $b=>$bb) $bill[$b] = htmlspecialchars_decode($bb);
 					$bill['transaction_type'] = 1;
 					$bill['transaction_date'] = date('Y-m-d');
 					$bill['status'] = '';
