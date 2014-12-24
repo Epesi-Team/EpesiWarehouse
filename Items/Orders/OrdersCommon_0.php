@@ -887,7 +887,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 
 	public static function applet_settings() {
 		$opts = array('all'=>'---', 604800=>__('1 week'), 1209600=>__('2 weeks'), 2419200=>__('4 weeks'));
-		$types = array(0=>__('Purchase'), 1=>__('Sale'), 2=>__('Inv. Adjustment'), 3=>__('Rental'), 4=>__('Transfer'));
+		$types = array(0=>__('Purchase'), 1=>__('Sale'), 2=>__('Inv. Adjustment'), 4=>__('Transfer'));
 		$warehouses = Utils_RecordBrowserCommon::get_records('premium_warehouse');
 		$wopts = array(''=>'---');
 		foreach ($warehouses as $v)

@@ -186,9 +186,9 @@ class Premium_Warehouse_Items_Orders extends Module {
 		if($conf['older']!='all')
 			$crits['<=:Created_on'] = date('Y-m-d H:i:s',time()-$conf['older']);
 
+		$me = CRM_ContactsCommon::get_my_record();
 		if($conf['my']) {
-			$my_rec = CRM_ContactsCommon::get_my_record();
-			$crits['employee'] = array('',$my_rec['id']);
+			$crits['employee'] = array('',$me['id']);
 		}
 
 		if($conf['warehouse']) {
@@ -215,7 +215,24 @@ class Premium_Warehouse_Items_Orders extends Module {
 									$conf,
 									& $opts
 				);
-		$opts['actions'][] = Utils_RecordBrowserCommon::applet_new_record_button('premium_warehouse_items_orders',array('transaction_type'=>$conf['type'],'payment_type'=>0, 'shipment_type'=>0,'terms'=>0));
+		$new_def = array(	'country'=>Base_User_SettingsCommon::get('Base_RegionalSettings','default_country'),
+							'zone'=>Base_User_SettingsCommon::get('Base_RegionalSettings','default_state'),
+							'transaction_date'=>date('Y-m-d'),
+							'employee'=>$me['id'],
+							'warehouse'=>Base_User_SettingsCommon::get('Premium_Warehouse','my_warehouse'),
+							'tax_calculation'=> Variable::get('premium_warehouse_def_tax_calc', false)
+							);
+		switch($conf['type']) {
+		    case 0: $new_def = array_merge($new_def,array('transaction_type'=>0,'terms'=>0,'payment'=>1,'transaction_date'=>date('Y-m-d')));
+		        break;
+		    case 1: $new_def = array_merge($new_def,array('transaction_type'=>1, 'status'=>2,'payment'=>1, 'payment_type'=>0, 'shipment_type'=>0,'terms'=>0,'transaction_date'=>date('Y-m-d')));
+		        break;
+		    case 2: $new_def = array_merge($new_def,array('transaction_type'=>2,'transaction_date'=>date('Y-m-d')));
+		        break;
+		    case 4: $new_def = array_merge($new_def,array('transaction_type'=>4,'transaction_date'=>date('Y-m-d')));
+		        break;
+		}
+		$opts['actions'][] = Utils_RecordBrowserCommon::applet_new_record_button('premium_warehouse_items_orders',$new_def);
 		$this->display_module($rb, $conds, 'mini_view');
 	}
 	
