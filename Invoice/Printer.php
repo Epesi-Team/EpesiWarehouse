@@ -2,6 +2,10 @@
 
 class Premium_Warehouse_Invoice_Printer extends Base_Print_Printer {
 
+    public function get_document_config() {
+        return array('title'=>null,'logo'=>false);
+    }
+
     public function document_name()
     {
         return _M('Transaction Print');
@@ -9,6 +13,7 @@ class Premium_Warehouse_Invoice_Printer extends Base_Print_Printer {
 
     protected function init_data($order_id)
     {
+        if(!Utils_RecordBrowserCommon::get_records_count('premium_warehouse_items_orders_details', array('transaction_id' => $order_id))) die(__('Please add some items to transaction'));
         $this->print_filename = $this->document_name();
         $this->order = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $order_id);
         if (!$this->order) {
@@ -21,7 +26,9 @@ class Premium_Warehouse_Invoice_Printer extends Base_Print_Printer {
         $order = & $this->order;
         if ($order['transaction_type'] == 1) {
             if (!$order['invoice_number']) {
-                $order['invoice_number'] = Premium_Warehouse_InvoiceCommon::generate_invoice_number($order);
+                Premium_Warehouse_InvoiceCommon::generate_invoice_number($order);
+                $this->order = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $order_id);
+                $order = & $this->order;
             }
             $order['proforma_id'] = str_pad($order['id'], 4, '0', STR_PAD_LEFT);
             $order['invoice_id'] = Premium_Warehouse_InvoiceCommon::format_invoice_number($order['invoice_number'], $order);
@@ -32,10 +39,10 @@ class Premium_Warehouse_Invoice_Printer extends Base_Print_Printer {
             $order['invoice_id'] = $order['invoice_number'];
         }
 
-        if (!$order['invoice_print_date'] && $order['status'] > 2) {
+/*        if (!$order['invoice_print_date'] && $order['status'] > 2) {
             $order['invoice_print_date'] = date('Y-m-d');
             Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $order['id'], array('invoice_print_date' => $order['invoice_print_date']));
-        }
+        }*/
 
         $order['employee_name'] = CRM_ContactsCommon::contact_format_no_company(CRM_ContactsCommon::get_contact($order['employee']));
         $order['payment_type_label'] = Utils_CommonDataCommon::get_value('Premium_Items_Orders_Payment_Types/' . $order['payment_type'], true);

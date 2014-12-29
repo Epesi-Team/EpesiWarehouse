@@ -26,6 +26,7 @@ class Premium_Warehouse_InvoiceCommon extends ModuleCommon {
         if (Utils_RecordBrowser::$mode != 'view')
             return;
 		if (isset($record['id']) && (!isset($record['payment']) || $record['payment'])) {
+            if(!Utils_RecordBrowserCommon::get_records_count('premium_warehouse_items_orders_details', array('transaction_id' => $record['id'])) || $record['status']<2) return array('show'=>false);
             // POSNET printing
             $print_receipt_as_invoice = true;
 			if(isset($_GET['receipt_printed']) && $_GET['receipt_printed']==$record['id']) {
