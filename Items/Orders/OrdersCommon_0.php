@@ -1191,6 +1191,27 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 				}
 				if (self::$status_blocked)
 					print('<b>'.__('Warning: status change impossible - select warehouse first.').'</b>');
+				if ($values['transaction_type']==1 && $values['status']>20) {
+					Base_ActionBarCommon::add('attach',__('Corrective Transaction'),Module::create_href(array('premium_warehouse_correct'=>$values['id'])));
+					if (isset($_REQUEST['premium_warehouse_correct']) && $_REQUEST['premium_warehouse_correct']==$values['id']) {
+						$vals = $values;
+						$vals['related'] = $values['id'];
+						unset($vals['invoice_number']);
+						unset($vals['invoice_print_date']);
+						unset($vals['id']);
+						$new_id = Utils_RecordBrowserCommon::new_record('premium_warehouse_items_orders', $vals);
+						Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $values['id'],array('related'=>$new_id));
+						$det = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$values['id']));
+						foreach ($det as $d) {
+							$d['transaction_id']=$new_id;
+							$d['quantity'] = -$d['quantity'];
+							unset($d['id']);
+							Utils_RecordBrowserCommon::new_record('premium_warehouse_items_orders_details', $d);
+						}
+						unset($_REQUEST['premium_warehouse_correct']);
+						location(array());
+					}
+				}
 				if (Base_AclCommon::i_am_admin() && $values['transaction_type']==2) {
 					$debts = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details', array('transaction_id'=>$values['id'], '<quantity'=>0));
 					if (empty($debts)) {
@@ -1504,12 +1525,11 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	}
 	
 	public static function display_serials(&$form, $field, $label, $mode, $default, $desc, $rb_obj) {
-		if ($mode=='view') {
-			return;
-		}
 		if (isset($rb_obj->record)) $record = $rb_obj->record;
 		else $record = $rb_obj;
-		if(!isset($record['id'])) return;
+		if ($mode=='view' || !isset($record['item_name']) || !isset($record['id'])) {
+			return;
+		}
 		self::$order_details_id = $record['id'];
 		$item = Utils_RecordBrowserCommon::get_record('premium_warehouse_items', $record['item_name']);
 		if ($item['item_type']!=1) return;

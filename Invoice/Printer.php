@@ -486,6 +486,11 @@ class Premium_Warehouse_Invoice_Printer extends Base_Print_Printer {
             $thsd_0 = array('złoty', 'złotych', 'złote');
         if ($thsd_cents === null)
             $thsd_cents = array('grosz', 'groszy', 'grosze');
+            
+        if($arg<0) {
+            $minus = 'minus ';
+            $arg = -$arg;
+        } else $minus = '';
 
         $parts = explode('.', (string)$arg);
         if (intval($parts[0]) != 0) {
@@ -520,7 +525,7 @@ class Premium_Warehouse_Invoice_Printer extends Base_Print_Printer {
             else if (($parts[1]{1} >= 2 && $parts[1]{1} <= 4) && $parts[1]{0} != 1) $cents .= ' ' . $thsd_cents[2];
             else $cents .= ' ' . $thsd_cents[1];
         }
-        $text = $result . '  ' . $cents;
+        $text = $minus . $result . '  ' . $cents;
         $text = str_replace('  ', ' ', $text);
         return $text;
     }
