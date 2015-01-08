@@ -1191,7 +1191,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 				}
 				if (self::$status_blocked)
 					print('<b>'.__('Warning: status change impossible - select warehouse first.').'</b>');
-				if ($values['transaction_type']==1 && $values['status']>20) {
+				if ($values['transaction_type']==1 && $values['status']>20 && !$values['related']) {
 					Base_ActionBarCommon::add('attach',__('Corrective Transaction'),Module::create_href(array('premium_warehouse_correct'=>$values['id'])));
 					if (isset($_REQUEST['premium_warehouse_correct']) && $_REQUEST['premium_warehouse_correct']==$values['id']) {
 						$vals = $values;
