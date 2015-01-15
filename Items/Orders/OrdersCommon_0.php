@@ -898,7 +898,10 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			array('name'=>'older','label'=>__('Transaction older then'),'type'=>'select','default'=>'all','rule'=>array(array('message'=>__('Field required'), 'type'=>'required')),'values'=>$opts),
 			array('name'=>'my','label'=>__('Only mine and not assigned'),'type'=>'checkbox','default'=>0),
 			array('name'=>'type','label'=>__('Transaction Type'),'type'=>'select','default'=>1,'rule'=>array(array('message'=>__('Field required'), 'type'=>'required')),'values'=>$types),
-			array('name'=>'warehouse','label'=>__('Warehouse'),'type'=>'select','default'=>1,'values'=>$wopts)
+			array('name'=>'warehouse','label'=>__('Warehouse'),'type'=>'select','default'=>1,'values'=>$wopts),
+			array('name'=>'company','label'=>__('Display company'),'type'=>'checkbox','default'=>1),
+			array('name'=>'contact','label'=>__('Display contact'),'type'=>'checkbox','default'=>1),
+			array('name'=>'total_value','label'=>__('Display total value'),'type'=>'checkbox','default'=>0),
 			));
 		}
 

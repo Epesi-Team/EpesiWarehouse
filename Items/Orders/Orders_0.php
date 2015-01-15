@@ -161,6 +161,8 @@ class Premium_Warehouse_Items_Orders extends Module {
 
 	public function applet($conf, & $opts) {
 		$opts['go'] = true; // enable full screen
+		$types = Utils_CommonDataCommon::get_translated_array('Premium_Items_Orders_Trans_Types');
+		$opts['title'] .= ' - '.$types[$conf['type']];
 		$rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items_orders','premium_warehouse_items_orders');
 		$limit = 15;
 		switch($conf['type']) {
@@ -199,12 +201,17 @@ class Premium_Warehouse_Items_Orders extends Module {
 		
 		$sorting = array();
 		$cols = array(
-							array('field'=>'transaction_id', 'width'=>10, 'label'=>__('Trans. ID')),
-							array('field'=>'transaction_type', 'width'=>10, 'label'=>__('Trans. Type')),
+							array('field'=>'transaction_id', 'width'=>5, 'label'=>__('Trans. ID')),
 							array('field'=>'status', 'width'=>10),
 //							array('field'=>'operation', 'width'=>10),
 //							array('field'=>'quantity', 'width'=>10)
 										);
+		if($conf['company'])
+			$cols[] = array('field'=>'company', 'width'=>10, 'label'=>__('Company'));
+		if($conf['contact'])
+			$cols[] = array('field'=>'contact', 'width'=>10, 'label'=>__('Contact'));
+		if($conf['total_value'])
+			$cols[] = array('field'=>'total_value', 'width'=>10, 'label'=>__('Total'));
 
 		$conds = array(
 									$cols,
