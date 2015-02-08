@@ -47,7 +47,7 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 			array('name' => _M('Terms'),			'type'=>'commondata', 'param'=>array('order_by_key'=>true,'Premium_Items_Orders_Terms'), 'required'=>false, 'extra'=>false, 'visible'=>true),
 			array('name' => _M('Total Value'),	'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_total_value'), 'style'=>'currency'),
 			array('name' => _M('Tax Value'),		'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_tax_value'), 'style'=>'currency'),
-			array('name' => _M('Status'),			'type'=>'text', 'extra'=>false, 'param'=>'8', 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_status'),'QFfield_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'QFfield_status')),
+			array('name' => _M('Status'),			'type'=>'text', 'extra'=>false, 'param'=>'8', 'visible'=>true, 'filter'=>true, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_status'),'QFfield_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'QFfield_status')),
 			array('name' => _M('Related'),		'type'=>'select', 'required'=>false, 'param'=>'premium_warehouse_items_orders::Transaction ID;Premium_Warehouse_Items_OrdersCommon::related_transactions_crits', 'extra'=>false, 'visible'=>false, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_related_transaction')),
 
 			array('name' => _M('Memo'),			'type'=>'long text', 'required'=>false, 'param'=>'255', 'extra'=>false),
@@ -94,6 +94,7 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 //		Utils_RecordBrowserCommon::set_icon('premium_warehouse_items_orders', Base_ThemeCommon::get_template_filename('Premium/Warehouse/Items/Orders', 'icon.png'));
 		Utils_RecordBrowserCommon::enable_watchdog('premium_warehouse_items_orders', array('Premium_Warehouse_Items_OrdersCommon','watchdog_label'));
 		Utils_RecordBrowserCommon::register_processing_callback('premium_warehouse_items_orders', array('Premium_Warehouse_Items_OrdersCommon', 'submit_order'));
+        Utils_RecordBrowserCommon::new_browse_mode_details_callback('premium_warehouse_items_orders', 'Premium/Warehouse/Items/Orders', 'browse_mode_details');
 			
 		$fields = array(
 			array('name' => _M('Transaction ID'), 	'type'=>'select', 'required'=>true, 'param'=>'premium_warehouse_items_orders::Transaction ID;Premium_Warehouse_Items_OrdersCommon::transactions_crits', 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_transaction_id_in_details')),
