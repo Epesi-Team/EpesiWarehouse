@@ -123,10 +123,9 @@ class Premium_Warehouse_SalesReport_CalculatorDB {
             'o.f_target_warehouse AS target_warehouse ' .
             'FROM premium_warehouse_items_orders_details_data_1 AS od ' .
             'INNER JOIN premium_warehouse_items_orders_data_1 AS o ON o.id=od.f_transaction_id ' .
-            'INNER JOIN premium_warehouse_items_orders_edit_history AS h ON h.premium_warehouse_items_orders_id=o.id ' .
             'INNER JOIN premium_warehouse_items_data_1 AS i ON i.id=od.f_item_name ' .
             'WHERE od.active=1 AND (o.f_transaction_type=1 OR o.f_transaction_type=4) AND o.f_status=20 ' .
-            'GROUP BY od.id ORDER BY MAX(h.edited_on) ASC';
+            'ORDER BY o.f_transaction_date ASC, o.created_on ASC';
         return DB::Execute($sql);
     }
 
