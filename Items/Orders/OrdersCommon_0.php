@@ -481,14 +481,15 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	public static function check_no_empty_invoice($data) {
 		if (isset($data['receipt']) && $data['receipt']) return true;
 		if (Utils_RecordBrowser::$last_record['transaction_type']==4 || Utils_RecordBrowser::$last_record['transaction_type']==2) return true;
+		$access = Utils_RecordBrowserCommon::get_access('premium_warehouse_items_orders','edit',Utils_RecordBrowser::$last_record);
 		$ret = array();
 		if (!isset($data['company_name']) || !$data['company_name']) {
-			if (!isset($data['last_name']) || !$data['last_name']) $ret['last_name'] = __('Field required for non-receipt transactions'); 
-			if (!isset($data['first_name']) || !$data['first_name']) $ret['first_name'] = __('Field required for non-receipt transactions'); 
+			if ($access['last_name'] && (!isset($data['last_name']) || !$data['last_name'])) $ret['last_name'] = __('Field required for non-receipt transactions'); 
+			if ($access['first_name'] && (!isset($data['first_name']) || !$data['first_name'])) $ret['first_name'] = __('Field required for non-receipt transactions'); 
 		}
-		if (!isset($data['address_1']) || !$data['address_1']) $ret['address_1'] = __('Field required for non-receipt transactions'); 
-		if (!isset($data['city']) || !$data['city']) $ret['city'] = __('Field required for non-receipt transactions'); 
-		if (!isset($data['country']) || !$data['country']) $ret['country'] = __('Field required for non-receipt transactions'); 
+		if ($access['address_1'] && (!isset($data['address_1']) || !$data['address_1'])) $ret['address_1'] = __('Field required for non-receipt transactions'); 
+		if ($access['city'] && (!isset($data['city']) || !$data['city'])) $ret['city'] = __('Field required for non-receipt transactions'); 
+		if ($access['country'] && (!isset($data['country']) || !$data['country'])) $ret['country'] = __('Field required for non-receipt transactions'); 
 		return empty($ret)?true:$ret;
 	}
 
