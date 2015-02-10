@@ -176,7 +176,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
         self::init_currency();
         if ($mode=='add' || $mode=='edit') {
             $curr = self::$curr_opts_active;
-            if(!isset($curr[$default])) $curr[$default] = self::$curr_opts[$default];
+            if($default && !isset($curr[$default])) $curr[$default] = self::$curr_opts[$default];
             $form->addElement('select', $field, $label, $curr, array('id'=>$field));
             if ($mode=='edit') $form->setDefaults(array($field=>$default));
         } else {
