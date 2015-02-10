@@ -111,6 +111,8 @@ class Premium_Warehouse_Invoice_Printer extends Base_Print_Printer {
 
     protected function print_document($order_id)
     {
+        $this->section_header();
+        
         $this->init_data($order_id);
         $this->check_access();
 
@@ -158,6 +160,12 @@ class Premium_Warehouse_Invoice_Printer extends Base_Print_Printer {
             $section->assign('payments', $payments);
         }
         $this->print_section('top', $section);
+    }
+
+    protected function section_header()
+    {
+        $section = $this->new_section();
+        $this->print_section('header', $section);
     }
     
     protected function section_table_row()
@@ -407,7 +415,7 @@ class Premium_Warehouse_Invoice_Printer extends Base_Print_Printer {
         $p = 'Premium/Warehouse/Invoice/';
         foreach ($enabled_tpls as $tpl => $label) {
             $tpl_obj = new Base_Print_Template_Template();
-            foreach(array('top', 'table_row', 'summary', 'bottom', 'footer', 'filename') as $section) {
+            foreach(array('top', 'table_row', 'summary', 'bottom', 'footer', 'filename','header') as $section) {
                 $file = $p . $tpl . '/' . $section;
 
                 if (Base_ThemeCommon::get_template_file($file . ".tpl")) {
