@@ -1167,6 +1167,8 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
             $voc = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'entity_taxonomy_vocabulary',array('pagesize'=>9999999999));
             $epesi_vocabulary = null;
             $epesi_manufacturer_vocabulary = null;
+            $pathauto_i18n = $drupal_row['pathauto_i18n'];
+            
             foreach($voc as $v) {
               if($v['machine_name']=='epesi_category')
                 $epesi_vocabulary = $v['vid'];
@@ -1222,6 +1224,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
                 $term['translations']['original']='en';
                 $term['weight'] = $epesi_category_weight[$id];
                 $term['field_images'] = array('und'=>array());
+                if($pathauto_i18n) $term['path']['pathauto_i18n_status'] = 1;
                 
                 if($epesi_category_parents[$id])
                   $term['parent'] = $category_mapping[$epesi_category_parents[$id]];
@@ -1343,6 +1346,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
               $term['description_original'] = '';
               $term['format'] = 'full_html';
               $term['translations']['original']='en';
+              if($pathauto_i18n) $term['path']['pathauto_i18n_status'] = 1;
               
               //sync/create categories
               if(isset($manufacturer_mapping[$id])) {
@@ -1385,7 +1389,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			//update products
 			//get fields
 			$product_fields = array_merge(Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'epesi_commerce/get_product_fields'),array('sku','title','type'));
-			$node_fields = array_merge(Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'epesi_commerce/get_node_fields'),array('type','field_title','title','promote','sticky','uid','revision','created','changed'));
+			$node_fields = array_merge(Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'epesi_commerce/get_node_fields'),array('type','field_title','title','promote','sticky','uid','revision','created','changed','path'));
 			
 			//get old products
 			$drupal_products_tmp = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'product',array('fields'=>'product_id,sku','filter'=>array('type'=>'epesi_products'),'sort_by'=>'sku','limit'=>999999999999999999));
@@ -1414,7 +1418,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			  $row['item_name'] = html_entity_decode($row['item_name']);
 			  
 			  //product
-			  $data = array('sku'=>$row['sku'],'title'=>$row['item_name'],'type'=>'epesi_products');
+			  $data = array('sku'=>$row['sku'],'title'=>$row['item_name'],'type'=>'epesi_products','status'=>1);
 			  if($row['weight']) $data['field_weight'] = array('weight'=>$row['weight'],'unit'=>Variable::get('premium_warehouse_weight_units','lb'));
 			  if($row['volume']) $data['field_dimensions'] = array('length'=>$row['volume'],'width'=>1,'height'=>1,'unit'=>preg_replace('/[^a-z]/','',strip_tags(Variable::get('premium_warehouse_volume_units','in'))));
 
@@ -1498,6 +1502,17 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 
 			  $products_queue = array();
 			  //set prices
+			  if($row['net_price']) {
+			    $item_price = Utils_CurrencyFieldCommon::get_values($row['net_price']);
+			    if($item_price[0] && isset($currencies[$item_price[1]])) {
+			      $currency = $currencies[$item_price[1]];
+			      $data['commerce_price']=array('amount'=>round($export_net_price?(float)$item_price[0]:((float)$item_price[0])*(100+($row['tax_rate']?$taxes[$row['tax_rate']]:0))/100,$currency['decimals'])*pow(10,$currency['decimals']),
+			                    'currency_code'=>$currency['code']);
+			      if(!isset($data['commerce_price_'.strtolower($currency['code'])]))
+			        $data['commerce_price_'.strtolower($currency['code'])] = $data['commerce_price'];
+			      $products_queue[''] = $data;
+			    }
+			  }
 			  $prices = Utils_RecordBrowserCommon::get_records('premium_ecommerce_prices',array('item_name'=>$row['id']),array(),array('gross_price'=>'ASC'));
 			  if($prices) {
 			    foreach($prices as $price) {
@@ -1514,16 +1529,6 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			      if(!isset($data['commerce_price']))
 			        $tmp_data['commerce_price'] = $tmp_data['commerce_price_'.strtolower($currency['code'])];
 			      $products_queue[$price['model']] = $tmp_data;
-			    }
-			  } elseif($row['net_price']) {
-			    $item_price = Utils_CurrencyFieldCommon::get_values($row['net_price']);
-			    if($item_price[0] && isset($currencies[$item_price[1]])) {
-			      $currency = $currencies[$item_price[1]];
-			      $data['commerce_price']=array('amount'=>round($export_net_price?(float)$item_price[0]:((float)$item_price[0])*(100+($row['tax_rate']?$taxes[$row['tax_rate']]:0))/100,$currency['decimals'])*pow(10,$currency['decimals']),
-			                    'currency_code'=>$currency['code']);
-			      if(!isset($data['commerce_price_'.strtolower($currency['code'])]))
-			        $data['commerce_price_'.strtolower($currency['code'])] = $data['commerce_price'];
-			      $products_queue[] = $data;
 			    }
 			  }
 			  if(!$products_queue) continue;
@@ -1632,6 +1637,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			    $node['sticky']=$row['recommended']?1:null;
 			    $node['created']=strtotime($row['created_on']);
 			    $node['changed']=time();
+                if($pathauto_i18n) $node['path']['pathauto_i18n_status'] = 1;
 //			    $node['revision']=1;
 			    foreach($row['category'] as $ccc) {
 			      $category_id = array_pop(explode('/',$ccc));
@@ -1695,7 +1701,6 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			      }
 			    }
 
-//			    print(var_export($node));
 			    if($nid) {
 //			      print('nid='.$nid."\n");
                   $node['nid']=$nid;
