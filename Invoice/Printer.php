@@ -182,6 +182,15 @@ class Premium_Warehouse_Invoice_Printer extends Base_Print_Printer {
         foreach ($items as $k => $v) {
             $tax = Data_TaxRatesCommon::get_tax_rate($items[$k]['tax_rate']);
             $items[$k]['item_details'] = Utils_RecordBrowserCommon::get_record('premium_warehouse_items', $v['item_name']);
+            if(ModuleManager::is_installed('Premium/Warehouse/DrupalCommerce')>=0) {
+                $descs = Utils_RecordBrowserCommon::get_records('premium_ecommerce_descriptions', array('item_name'=>$v['item_name'],'language'=>Base_LangCommon::get_lang_code()));
+                foreach($descs as $desc) {
+                    if($desc['display_name']) {
+                        $items[$k]['item_details']['item_name'] = $desc['display_name'];
+                        break;
+                    }
+                }
+            }
             $items[$k]['net_price'] = Utils_CurrencyFieldCommon::get_values($items[$k]['net_price']);
             $items[$k]['unit_price'] = Utils_CurrencyFieldCommon::get_values($items[$k]['unit_price']);
             $items[$k]['gross_price'] = array();
