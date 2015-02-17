@@ -1578,7 +1578,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			$str = DB::Concat(DB::qstr('%'), '%s', DB::qstr('%'));
             $fields_to_search = array('item_name', 'sku', 'product_code', 'manufacturer_part_number');
             foreach ($fields_to_search as & $field_name) {
-                $field_name = "f_{$field_name} " . DB::like() . ' ' . $str;  // make f_name LIKE %%s% stmt
+                $field_name = "pwi.f_{$field_name} " . DB::like() . ' ' . $str;  // make f_name LIKE %%s% stmt
                 $vals[] = $w;  // put value for every %s - yes we know that it's the same for all
             }
 			$qry[] = '(' . implode(' OR ', $fields_to_search) . ')';  // merge with OR stmts
@@ -1629,6 +1629,9 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
         $result = array();
 		while ($row = $ret->FetchRow()) {
 			if ($empty) $result[''] = $header;
+			$qty = Premium_Warehouse_Items_LocationCommon::display_item_quantity_in_warehouse_and_total(array('id'=>$row['id'], 'item_type'=>$row['f_item_type']), $my_warehouse, true);
+			$rqty = Premium_Warehouse_Items_OrdersCommon::display_reserved_qty(array('id'=>$row['id'], 'item_type'=>$row['f_item_type']), true);
+			$price_col = '';
 			$l = '<span style="display:none;">'.$row['id'].'__'.$row['f_item_name'].'</span><table style="width: ' . $table_width . '" class="informal">'.
 				'<tr>'.
 				'<td width="300px;">'.
@@ -1644,15 +1647,15 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 					$row['f_product_code'].
 				'</td>'.
 				'<td width="60px;" align="right">'.
-					Premium_Warehouse_Items_LocationCommon::display_item_quantity_in_warehouse_and_total(array('id'=>$row['id'], 'item_type'=>$row['f_item_type']), $my_warehouse, true).
+					$qty.
 				'</td>'.
 				'<td width="60px;" align="right">'.
-					Premium_Warehouse_Items_OrdersCommon::display_reserved_qty(array('id'=>$row['id'], 'item_type'=>$row['f_item_type']), true).
+					$rqty.
 				'</td>';
 						
 			if ($trans_type==0 || $trans_type==1) {
 				$l .= 	'<td width="90px;" align="right">'.
-							Utils_CurrencyFieldCommon::format($trans_type==0?$row['f_cost']:$row['f_net_price']).
+							($price_col = Utils_CurrencyFieldCommon::format($trans_type==0?$row['f_cost']:$row['f_net_price'])).
 						'</td>';
                 if ($use_last_sale_or_purchase_price) {
                     $l .= '<td width="90px;" align="right">' .
@@ -1663,7 +1666,46 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 				$l .= '</tr>'.
 					'</table>';
 			$empty = false;
-			$result[$row['id']] = $l;
+			$result[$row['id'].'/0'] = $l;
+                        if(ModuleManager::is_installed('Premium/Warehouse/DrupalCommerce')>=0 && $trans_type==1) {
+                            $prices = Utils_RecordBrowserCommon::get_records('premium_ecommerce_prices',array('item_name'=>$row['id']));
+                            foreach($prices as $price) {
+                                $tax_rate = Data_TaxRatesCommon::get_tax_rate($price['tax_rate']);
+                                $eprice_col = Utils_CurrencyFieldCommon::format($price['gross_price']*100/(100+$tax_rate),$price['currency']);
+                                if($eprice_col == $price_col) continue;
+                                $l = '<span style="display:none;">'.$row['id'].'/'.$price['id'].'__'.$row['f_item_name'].'</span><table style="width: ' . $table_width . '" class="informal">'.
+				'<tr>'.
+				'<td width="300px;">'.
+					$row['f_item_name'].
+				'</td>'.
+				'<td width="80px;">'.
+					$row['f_sku'].
+				'</td>'.
+                                '<td width="80px;">'.
+                                    $row['f_manufacturer_part_number'].
+                                '</td>'.
+				'<td width="80px;">'.
+					$row['f_product_code'].
+				'</td>'.
+				'<td width="60px;" align="right">'.
+					$qty.
+				'</td>'.
+				'<td width="60px;" align="right">'.
+					$rqty.
+				'</td>';
+				$l .= 	'<td width="90px;" align="right">'.
+							$eprice_col.
+						'</td>';
+                                if ($use_last_sale_or_purchase_price) {
+                                    $l .= '<td width="90px;" align="right">' .
+                                    Utils_CurrencyFieldCommon::format($row['f_last_sale_price']) .
+                                    '</td>';
+                                }
+				$l .= '</tr>'.
+					'</table>';
+	        		$result[$row['id'].'/'.$price['id']] = $l;
+                            }
+                        }
 		}
 		if (!empty($result))
 			$result = '<ul style="width: ' . $table_width . '"><li>'.implode('</li><li>',$result).'</li></ul>';
