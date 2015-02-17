@@ -81,7 +81,7 @@ if ($trans['transaction_type']<2) {
     }
     $cost = Utils_CurrencyFieldCommon::get_values($rec['cost']);
 
-	$gross_price = Utils_CurrencyFieldCommon::get_values(Utils_CurrencyFieldCommon::format_default($price[0]*(100+Data_TaxRatesCommon::get_tax_rate($rec['tax_rate']))/100, $price[1]));
+	$gross_price = Utils_CurrencyFieldCommon::get_values(Utils_CurrencyFieldCommon::format_default($price[0]*(100+Data_TaxRatesCommon::get_tax_rate($ja['tax_rate']))/100, $price[1]));
     $ja['net_price'] = implode(Utils_currencyFieldCommon::get_decimal_point(),explode('.',$price[0]));
     $ja['__net_price__currency'] = $price[1];
     $ja['unit_price'] = $ja['net_price'];

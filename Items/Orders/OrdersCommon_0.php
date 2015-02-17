@@ -691,7 +691,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		if (!isset($data['item_name'])) {
 			$item_id = Utils_RecordBrowser::$last_record['item_name'];
 		} else {
-			$item_id = $data['item_name'];
+			list($item_id) = explode('/',$data['item_name']);
 			if (!is_numeric($item_id))
 				$item_id = Utils_RecordBrowserCommon::get_id('premium_warehouse_items', 'item_name', $data['item_name']);
 		}
@@ -797,6 +797,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		self::get_trans();
 		if (isset($data['quantity']) && intval($data['quantity'])!=$data['quantity']) return array('item_name'=>__( 'Invalid amount'));
 		if (self::$trans['transaction_type']==0) return true;
+		list($data['item_name']) = explode('/',$data['item_name']);
 		if (isset(Utils_RecordBrowser::$last_record['quantity'])) {
 			if (isset($data['quantity'])) {
 				$ord_qty = $data['quantity'];
@@ -1357,9 +1358,15 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		if ($mode=='edit_changes') return $values;
 		static $notice='';
    		if($mode!='adding') unset($_SESSION['client']['warehouse_transaction_new_item_id']);
-		if ($notice!=='') print($notice);
-		if (isset($values['item_name']) && !is_numeric($values['item_name']))
+		if ($notice!=='' && ($mode=='browse' || $mode=='display')) {
+		    print($notice);
+		    $notice = '';
+		}
+		if (isset($values['item_name'])) {
+		    list($values['item_name']) = explode('/',$values['item_name']);
+		    if(!is_numeric($values['item_name']))
 			$values['item_name'] = Utils_RecordBrowserCommon::get_id('premium_warehouse_items', 'item_name', $values['item_name']);
+		}
 		if (isset($values['item_name'])) $item_type = Utils_RecordBrowserCommon::get_value('premium_warehouse_items', $values['item_name'], 'item_type');
 		$trans = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $values['transaction_id']);
 		if (in_array($mode, array('view', 'editing', 'adding'))) {
@@ -1417,7 +1424,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 				if (round($net[0]*(100+$tax_rate)/100,2)!=$gross[0]) {
 					$values['gross_price'] = round($net[0]*(100+$tax_rate)/100,2).'__'.$net[1];
 					$new_gross = Utils_CurrencyFieldCommon::get_values($values['gross_price']);
-					$notice = '<font color="red"><b>'.__('Notice').':</b></font> '.
+					$notice .= '<font color="red"><b>'.__('Notice').':</b></font> '.
 							__('No gross price is worth %s including %s%% tax.', array(Utils_CurrencyFieldCommon::format($gross[0], $gross[1]),$tax_rate)).'<br />'.
 							__('Gross price was adjusted to %s, based on net price', array(Utils_CurrencyFieldCommon::format($new_gross[0], $new_gross[1])));
 				}
@@ -1442,6 +1449,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			case 'view':
 				return $values;
 			case 'edit':
+				
 				if ($trans['transaction_type']==2) {
 					if ($values['debit']) $values['quantity']=-$values['debit'];
 					elseif ($values['credit']) $values['quantity']=$values['credit'];
