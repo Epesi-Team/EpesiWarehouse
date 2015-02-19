@@ -1110,6 +1110,9 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			    //products
 			    foreach($ord['commerce_line_items_entities'] as $line_item) {
 			      if($line_item['type']!='product') continue;
+			      $node = $products[$line_item['commerce_product']];
+			      $sku = explode(' ',$node['sku'],2);
+			      $product_id = ltrim($sku[0],'#0');
 			      $tax_amount = 0;
 			      $tax = 0;
 			      $tax_type = null;
@@ -1136,15 +1139,12 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			            $price = array_shift($prices);
 			            $tax = $price['tax_rate'];
 			          } else {
-			            $product = Utils_RecordBrowserCommon::get_records('premium_warehouse_items',$product_id);
+			            $product = Utils_RecordBrowserCommon::get_record('premium_warehouse_items',$product_id);
 			            $tax = $product['tax_rate'];
 			          }
 			          $gross = $line_item['commerce_unit_price']['amount']/$currency_precission;
 			          $net = $gross*100/(100+$taxes2[$tax]);
 			      }
-			      $node = $products[$line_item['commerce_product']];
-			      $sku = explode(' ',$node['sku'],2);
-			      $product_id = ltrim($sku[0],'#0');
 			      ob_start();
 			      Utils_RecordBrowserCommon::new_record('premium_warehouse_items_orders_details',array('transaction_id'=>$id,'item_name'=>$product_id,'quantity'=>$line_item['quantity'],'description'=>(isset($sku[1])?$sku[1].' | ':'').$line_item['line_item_label'].' '.$line_item['line_item_title'],'tax_rate'=>$tax,'net_price'=>$net.'__'.$currency_id,'gross_price'=>$gross.'__'.$currency_id));
 			      ob_clean();
