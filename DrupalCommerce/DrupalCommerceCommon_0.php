@@ -957,6 +957,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 
 			//create new orders
 			$taxes = DB::GetAssoc('SELECT f_percentage, id FROM data_tax_rates_data_1 WHERE active=1');
+			$taxes2 = DB::GetAssoc('SELECT id, f_percentage FROM data_tax_rates_data_1 WHERE active=1');
 			$drupal_orders_tmp = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'order',array('filter'=>array('status'=>'pending'),'limit'=>999999999999999999));
 			foreach($drupal_orders_tmp as $ord) {
 			  if(!Utils_RecordBrowserCommon::get_records_count('premium_ecommerce_orders',array('drupal'=>$drupal_id,'drupal_order_id'=>$ord['order_id']))) {
@@ -1126,9 +1127,20 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			      if($tax_type=='sales_tax') {
 	    		      $net = $line_item['commerce_unit_price']['amount']/$currency_precission;
     			      $gross = ($line_item['commerce_unit_price']['amount']+$tax_amount)/$currency_precission;
-			      } else {
+			      } elseif($tax_type!==null) {
 	    		      $net = ($line_item['commerce_unit_price']['amount']-$tax_amount)/$currency_precission;
     			      $gross = $line_item['commerce_unit_price']['amount']/$currency_precission;
+			      } else {
+			          $prices = Utils_RecordBrowserCommon::get_records('premium_ecommerce_prices',array('item_name'=>$product_id,'currency'=>$currency_id));
+			          if($prices) {
+			            $price = array_shift($prices);
+			            $tax = $price['tax_rate'];
+			          } else {
+			            $product = Utils_RecordBrowserCommon::get_records('premium_warehouse_items',$product_id);
+			            $tax = $product['tax_rate'];
+			          }
+			          $gross = $line_item['commerce_unit_price']['amount']/$currency_precission;
+			          $net = $gross*100/(100+$taxes2[$tax]);
 			      }
 			      $node = $products[$line_item['commerce_product']];
 			      $sku = explode(' ',$node['sku'],2);
