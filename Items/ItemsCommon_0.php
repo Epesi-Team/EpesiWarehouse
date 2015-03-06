@@ -330,8 +330,8 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 			case 'edit':
 				$values['sku'] = self::generate_id($values['id']);
 			case 'add':
-				if (!isset($values['reorder_point']) || !$values['reorder_point']) $values['reorder_point']=0;
-				if (!isset($values['weight']) || !$values['weight']) $values['weight']=1;
+				if (!isset($values['reorder_point']) || $values['reorder_point'] == '') $values['reorder_point'] = 0;
+				if (!isset($values['weight']) || $values['weight'] == '') $values['weight'] = 1;
 				break;
 			case 'added':
 				Utils_RecordBrowserCommon::update_record('premium_warehouse_items',$values['id'],array('sku'=>self::generate_id($values['id'])), false, null, true);
