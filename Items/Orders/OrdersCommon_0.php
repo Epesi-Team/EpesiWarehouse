@@ -455,7 +455,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 					}
 					break;
 			// INV. ADJUSTMENT
-			case 2: $opts = array(''=>__('Active'), 20=>__('Completed')); 
+			case 2: $opts = array(''=>__('Active'), 20=>__('Completed'));
 					break;
 			// RENTAL
 			case 3: if ($payment===true || ($payment===null && isset($trans['payment']) && $trans['payment']))
@@ -1315,6 +1315,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 					self::add_transaction($values, $d);
 					self::cleanup_serials($values, $d);
 				}
+                self::update_last_used_prices($values, $det);
 				break;
 			case 'added':
 				if (isset($values['online_order']) && $values['online_order']) {
@@ -1333,6 +1334,31 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		}
 		return $values;
 	}
+
+    public static function update_last_used_prices($transaction, $items_array)
+    {
+        $transaction_type = $transaction['transaction_type'];
+        $status = $transaction['status'];
+
+        $update = false;
+        if ($transaction_type == 0) { //purchase
+            if ($status == 3 || $status == 4 || $status == 20) { // new shipment, shipment received, delivered
+                $update = true;
+            }
+        }
+        if ($transaction_type == 1) { //sale
+            if ($status == 4 || $status == 6 || $status == 7 || $status == 20) { // confirmed, ready to ship, shipped, delivered
+                $update = true;
+            }
+        }
+
+        if ($update) {
+            $field = $transaction_type == 0 ? 'last_purchase_price' : 'last_sale_price';
+            foreach ($items_array as $det) {
+                Utils_RecordBrowserCommon::update_record('premium_warehouse_items', $det['item_name'], array($field => $det['net_price']));
+            }
+        }
+    }
 
 	public static function display_last_price($r, $nolink=false, $desc=null) {
 		$price = Utils_CurrencyFieldCommon::get_values($r[$desc['id']]);
@@ -1429,7 +1455,6 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 							__('Gross price was adjusted to %s, based on net price', array(Utils_CurrencyFieldCommon::format($new_gross[0], $new_gross[1])));
 				}
 				if ($trans['transaction_type']<2) {
-					Utils_RecordBrowserCommon::update_record('premium_warehouse_items', $values['item_name'], array($trans['transaction_type']==0?'last_purchase_price':'last_sale_price'=>$values['net_price']));
     				$item=Utils_RecordBrowserCommon::get_record('premium_warehouse_items', $values['item_name']);
     				$item_net = Utils_CurrencyFieldCommon::get_values($item['net_price']);
     				if ($trans['transaction_type']==0 && $trans['payment'] && $item_net[0] && $item_net[0]<$net[0] && $item_net[1]==$net[1]) {//if buy price is greater than suggested sell price
