@@ -176,22 +176,6 @@
 			</td>
 		{/if}
 	</tr>
-	<tr>
-		<td align="right" width="90px">
-			{$labels.cc_info}
-		</td>
-		{foreach from=$payments item=payment}
-			<td width="10px">
-			</td>
-			<td align="left"{if $payment_colspan} colspan="4"{/if}>
-				{$payment.card_number}, {$payment.expiration_date}, {$payment.cvc_cvv}, {$payment.amount_label}
-			</td>
-		</tr>
-		<tr>
-			<td width="90px">
-			</td>
-		{/foreach}
-	</tr>
 </table>
 <br>
 <table>

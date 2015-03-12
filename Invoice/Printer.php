@@ -147,19 +147,27 @@ class Premium_Warehouse_Invoice_Printer extends Base_Print_Printer {
         
         $paid = & $this->paid;
 
-        if (ModuleManager::is_installed('Premium_Payments') >= 0) {
-            $payments = Utils_RecordBrowserCommon::get_records('premium_payments', array('record_type' => 'premium_warehouse_items_orders', 'record_id' => $order['id']));
-            foreach ($payments as $k => $v) {
-                $payments[$k]['amount_label'] = Utils_CurrencyFieldCommon::format($v['amount']);
-                $payments[$k]['card_number'] = str_pad(substr($payments[$k]['card_number'], -4), strlen($payments[$k]['card_number']), '*', STR_PAD_LEFT);
-                $payments[$k]['cvc_cvv'] = '***';
-                $p = Utils_CurrencyFieldCommon::get_values($v['amount']);
-                if (!isset($paid[$p[1]])) $paid[$p[1]] = 0;
-                if ($v['status'] == 2) $paid[$p[1]] += $p[0];
-            }
-            $section->assign('payments', $payments);
+        $payments_sum = $this->get_payments_sum();
+        foreach ($payments_sum->get_total() as $currency => $value) {
+            $paid[$currency] = $value->get_amount();
         }
+
         $this->print_section('top', $section);
+    }
+
+    protected function get_payments_sum()
+    {
+        $ret = new Utils_CurrencyField_Sum();
+        if (ModuleManager::is_installed('Premium/Payments') >= 0
+            && class_exists('Premium_Payments_TotalPayment')) {
+            $total_calculator = new Premium_Payments_TotalPayment('premium_warehouse_items_orders', $this->order['id'], 'exchanged_amount');
+            $total_per_status = $total_calculator->sum();
+            $status = Premium_Payments_ProcessingStatus::STATUS_PAID;
+            if (isset($total_per_status[$status])) {
+                $ret = $total_per_status[$status];
+            }
+        }
+        return $ret;
     }
 
     protected function section_header()
