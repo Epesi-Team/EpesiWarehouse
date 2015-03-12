@@ -15,7 +15,7 @@
 defined("_VALID_ACCESS") || die('Direct access forbidden');
 
 class Premium_Warehouse_InvoiceInstall extends ModuleInstall {
-    const version = '1.5.5';
+    const version = '1.6.4';
 
 	public function install() {
 		Base_ThemeCommon::install_default_theme($this->get_type());
