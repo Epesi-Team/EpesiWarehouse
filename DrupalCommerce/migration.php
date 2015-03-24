@@ -118,4 +118,26 @@ Acl::set_sa_user();
         Utils_RecordBrowserCommon::delete_record_field('premium_ecommerce_products','Exclude compare services');
         Utils_RecordBrowserCommon::delete_record_field('premium_ecommerce_products','Related products');
         Utils_RecordBrowserCommon::delete_record_field('premium_ecommerce_products','Popup products');
+
+//patches
+Utils_RecordBrowserCommon::new_record_field('premium_ecommerce_drupal',
+			array('name' => _M('Export Net Price'), 			'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>true));
+
+Utils_RecordBrowserCommon::new_record_field('premium_ecommerce_products',
+			array('name' => _M('Always in stock'),	'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>false, 'filter'=>true,'position'=>'Always on stock'));
+DB::Execute('UPDATE premium_ecommerce_products_data_1 SET f_always_in_stock=f_always_on_stock');
+Utils_RecordBrowserCommon::delete_record_field('premium_ecommerce_products','Always on stock');
+
+Utils_RecordBrowserCommon::delete_record_field('premium_ecommerce_cat_descriptions','Page Title');
+Utils_RecordBrowserCommon::delete_record_field('premium_ecommerce_cat_descriptions','Meta Description');
+Utils_RecordBrowserCommon::delete_record_field('premium_ecommerce_cat_descriptions','Keywords');
+
+Utils_RecordBrowserCommon::new_record_field('premium_ecommerce_prices',
+			array('name' => _M('Model'),	'type'=>'text', 'param'=>64, 'required'=>false, 'extra'=>false, 'visible'=>true,'position'=>'Item Name'));
+
+		Utils_RecordBrowserCommon::new_addon('premium_warehouse_items_categories', 'Premium/Warehouse/DrupalCommerce', 'attachment_categories_addon', _M('Pictures'));
+		Utils_RecordBrowserCommon::new_addon('premium_ecommerce_cat_descriptions', 'Premium/Warehouse/DrupalCommerce', 'attachment_categories_desc_addon', _M('Pictures'));
+
+Utils_RecordBrowserCommon::new_record_field('premium_ecommerce_drupal',
+			array('name' => _M('Pathauto i18n'), 			'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>true));
         
