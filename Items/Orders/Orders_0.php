@@ -1442,7 +1442,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 	public function contact_orders_addon($arg){
 		$rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items_orders');
 		$order = array(
-			array('contact'=>$arg['id']), 
+			array('(contact'=>$arg['id'],'|shipping_contact'=>$arg['id']), 
 			array(), 
 			array('transaction_date'=>'DESC', 'transaction_id'=>'DESC'));
 		$rb->set_button(false);
@@ -1453,7 +1453,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 	public function company_orders_addon($arg){
 		$rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items_orders');
 		$order = array(
-			array('company'=>$arg['id']), 
+			array('(company'=>$arg['id'],'|shipping_company'=>$arg['id']), 
 			array(), 
 			array('transaction_date'=>'DESC', 'transaction_id'=>'DESC'));
 		$rb->set_button(false);
