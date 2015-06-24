@@ -1,4 +1,5 @@
 <?php
+chdir(dirname(__FILE__));
 $parent_dir = getcwd();
 
 function download_drupal_module($name) {
