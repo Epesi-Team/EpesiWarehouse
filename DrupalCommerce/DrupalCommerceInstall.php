@@ -433,20 +433,16 @@ class Premium_Warehouse_DrupalCommerceInstall extends ModuleInstall {
 
 	public static function post_install() {
 		return array(
-				array('type'=>'header','label'=>__('Please setup your drupal commerce site'),'name'=>null),
-				array('type'=>'static','label'=>'','values'=>'1. Download and install <a href="https://drupal.org/project/commerce_kickstart" target="_blank">drupal commerce kickstart</a>.'),
-				array('type'=>'static','label'=>'','values'=>'2. Install <a href="https://drupal.org/project/services" target="_blank">drupal services module</a>.'),
-				array('type'=>'static','label'=>'','values'=>'3. Install <a href="https://drupal.org/project/commerce_services" target="_blank">drupal commerce services module</a>.'),
-				array('type'=>'header','label'=>__('Drupal commerce'),'name'=>null),
-			    array('type'=>'text','name'=>'url','label'=>__('URL'),'default'=>'','param'=>array('maxlength'=>128), 'rule'=>array(array('type'=>'required','message'=>__('Field required')))),
-			    array('type'=>'text','name'=>'login','label'=>__('Login'),'default'=>'','param'=>array('maxlength'=>128), 'rule'=>array(array('type'=>'required','message'=>__('Field required')))),
-			    array('type'=>'text','name'=>'pass','label'=>__('Password'),'default'=>'','param'=>array('maxlength'=>128), 'rule'=>array(array('type'=>'required','message'=>__('Field required')))),
-			    array('type'=>'text','name'=>'endpoint','label'=>__('Endpoint'),'default'=>'epesi','param'=>array('maxlength'=>128), 'rule'=>array(array('type'=>'required','message'=>__('Field required')))),
+				array('type'=>'header','label'=>__('You have installed Epesi - Drupal Commerce bridge. Go to'),'name'=>null),
+				array('type'=>'static','label'=>'','values'=>'1. '.__('Menu')),
+				array('type'=>'static','label'=>'','values'=>'2. '.__('Administrator')),
+				array('type'=>'static','label'=>'','values'=>'3. '.__('eCommerce')),
+				array('type'=>'static','label'=>'','values'=>'4. '.__('Drupal')),
+				array('type'=>'static','label'=>'','values'=>'5. '.__('Follow tutorial to complete Drupal and bridge setup')),
 			);
 	}
 
 	public static function post_install_process($val) {
-	    Utils_RecordBrowserCommon::new_record('premium_ecommerce_drupal',array('url'=>$val['url'],'login'=>$val['login'],'password'=>$val['pass'],'endpoint'=>$val['endpoint']));
 	}
 }
 

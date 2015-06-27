@@ -333,18 +333,25 @@ class Premium_Warehouse_DrupalCommerce extends Module {
 		$this->rb->set_defaults(array('endpoint'=>'epesi','update_products_every__minutes_'=>'360'));
 		$this->display_module($this->rb);
 		
-		print('<div style="text-align:left;padding-left:20px;">You need following drupal modules installed:<ul>
-		<li><a href="https://drupal.org/project/services" target="_blank">Services</a></li>
-		<li><a href="https://drupal.org/project/commerce_multicurrency" target="_blank">Commerce Multicurrency</a></li>
-		<li><a href="https://drupal.org/project/commerce_stock" target="_blank">Commerce Stock</a></li>
-		<li><a href="https://drupal.org/project/entity_translation" target="_blank">Entrity Translation</a></li>
-		<li><a href="https://drupal.org/project/services_views" target="_blank">Services Views</a></li>
-		<li><a href="https://drupal.org/project/services_entity" target="_blank">Services Entity</a></li>
-		<li><a href="'.$this->get_module_dir().'drupal_module/commerce_services.tar.gz" target="_blank">Commerce Services</a></li>
-		<li><a href="'.$this->get_module_dir().'drupal_module/services_entity_translation.tar.gz" target="_blank">Services Entity Translation</a></li>
-		<li><a href="'.$this->get_module_dir().'drupal_module/epesi_commerce.tar.gz" target="_blank">Epesi Commerce</a></li>
-		<li><a href="'.$this->get_module_dir().'drupal_module/commerce_epesi_payment.tar.gz" target="_blank">Epesi Commerce Payment (optional)</a></li>
-		</ul></div>');
+		print('<div style="text-align:left;padding-left:20px;font-size:16px;"><h2>Initial Drupal setup</h2><ol>
+		<li><a href="http://drupal.epe.si/pkg/epesi_commerce_kickstart.tar.gz" target="_blank">'.__('Download Drupal Commerce Kickstart package with Epesi custom modules').'</a></li>
+		<li>'.__('Upload it to your server (it can be different server than Epesi) and begin drupal installation').'</li>
+		<li><u>'.__('Always use different database then Epesi one').'</u></li>
+		<li>'.__('On "Configure store" screen disable "demo store" installation and enable translations').'<br /><img style="padding:10px 0px 20px" src="'.$this->get_module_dir().'manual/0.png"></li>
+		<li>'.__('Log in to your new drupal commerce installation and go to modules').'<br /><img style="padding:10px 0px 20px" src="'.$this->get_module_dir().'manual/1.png"></li>
+		<li>'.__('Search for the phrase "epesi"').'<br /><img style="padding:10px 0px 20px" src="'.$this->get_module_dir().'manual/2.png"></li>
+		<li>'.__('Check "Epesi Commerce Connector"').'<br /><img style="padding:10px 0px 20px" src="'.$this->get_module_dir().'manual/3.png"></li>
+		<li>'.__('Save').'<br /><img style="padding:10px 0px 20px" src="'.$this->get_module_dir().'manual/4.png"></li>
+		<li>'.__('Apply dependencies installation').'<br /><img style="padding:10px 0px 20px" src="'.$this->get_module_dir().'manual/5.png"></li>
+		<li>'.__('Click "New" button on Epesi toolbar above and enter your drupal installation URL, login and password').'<br /><img style="padding:10px 0px 20px" src="'.$this->get_module_dir().'manual/e1.png"></li>
+		<li><a href="http://www.epesi.org/Cron" target="_blank">'.__('Make sure you have added Epesi cron jobs').'</a></li>
+		</ol><h2>Recommended Drupal setup</h2><ol>
+		<li>'.__('Enable other currencies and enable dedicated price fields for Epesi Products. Product in Epesi should have price set in each supported currency to be exported to Drupal.').'<br /><img style="padding:10px 0px 0px" src="'.$this->get_module_dir().'manual/currency1.png"><br /><img style="padding:10px 0px 0px" src="'.$this->get_module_dir().'manual/currency2.png"><br /><img style="padding:10px 0px 20px" src="'.$this->get_module_dir().'manual/currency3.png"></li>
+		<li>'.__('Enable currency selector block').'</li>
+		<li>'.__('Enable translations in "Basic Page" content type, menus...').'</li>
+		<li>'.__('Edit customer <u>billing</u> and <u>shipping</u> profiles (each one) - enable "Name (First name, Last name)", "Organisation (single line)" and disable "Name (single line)"').'<br /><img style="padding:10px 0px 0px" src="'.$this->get_module_dir().'manual/profiles1.png"><br /><img style="padding:10px 0px 0px" src="'.$this->get_module_dir().'manual/profiles2.png"><br /><img style="padding:10px 0px 0px" src="'.$this->get_module_dir().'manual/profiles3.png"><br /><img style="padding:10px 0px 20px" src="'.$this->get_module_dir().'manual/profiles4.png"></li>
+		<li>'.__('Add phone field to customer billing profile: text field with machine name "field_phone" and custom label, "required" is optional').'<br /><img style="padding:10px 0px 0px" src="'.$this->get_module_dir().'manual/phone1.png"><br /><img style="padding:10px 0px 0px" src="'.$this->get_module_dir().'manual/phone2.png"><br /><img style="padding:10px 0px 20px" src="'.$this->get_module_dir().'manual/phone3.png"></li>
+		</ol></div>');
 
 		return true;
 	}
