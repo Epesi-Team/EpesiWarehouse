@@ -50,6 +50,11 @@ class Allegro {
 	    return $this->call('doNewAuctionExt',0,$req);
 	}
 
+	public function finish_auction($auction_id) {
+	    $req = array('sessionHandle'=>$this->session_id,  'finishItemId' => (float)$auction_id, 'finishCancelAllBids' => 0, 'finishCancelReason' => '');
+	    return $this->call('doFinishItem',0,$req);
+	}
+
 	public function check_new_auction_price($fields) {
 	    $req = array('sessionHandle'=>$this->session_id,'fields'=>$fields);
 	    return $this->call('doCheckNewAuctionExt',0,$req);
@@ -95,7 +100,21 @@ class Allegro {
 	}
 
 	public function search($string,$category) {
-		$req = array('sessionHandle'=>$this->session_id,'searchQuery'=>array('searchString'=>$string,'searchOptions'=>32768,'searchCountry'=>1,'searchCategory'=>$category));
+		$req = array('webapiKey'=>$this->key,'countryId'=>$this->country,'sortOptions'=>array('sortType'=>'price','sortOrder'=>'asc'),'resultScope'=>3,'filterOptions'=>array(
+			array('filterId'=>'category','filterValueId'=>array($category)),
+			array('filterId'=>'search','filterValueId'=>array($string)),
+			array('filterId'=>'condition','filterValueId'=>array('new')),
+		));
+		$ret = $this->call('doGetItemsList',3600,$req);
+		if($ret['itemsCount']>0) return $ret['itemsList']->item;
+
+		$req = array('webapiKey'=>$this->key,'countryId'=>$this->country,'sortOptions'=>array('sortType'=>'price','sortOrder'=>'asc'),'resultScope'=>3,'filterOptions'=>array(
+			array('filterId'=>'search','filterValueId'=>array($string)),
+			array('filterId'=>'condition','filterValueId'=>array('new')),
+		));
+		$ret = $this->call('doGetItemsList',3600,$req);
+		if($ret['itemsCount']>0) return $ret['itemsList']->item;
+/*		$req = array('sessionHandle'=>$this->session_id,'searchQuery'=>array('searchString'=>$string,'searchOptions'=>32768,'searchCountry'=>1,'searchCategory'=>$category));
 		$ret = $this->call('doSearch',3600,$req);
 		if($ret['searchCount']>0) return is_object($ret['searchArray']->item)?array($ret['searchArray']->item):$ret['searchArray']->item;
 		
@@ -109,7 +128,7 @@ class Allegro {
 
 		$req = array('sessionHandle'=>$this->session_id,'searchQuery'=>array('searchString'=>$string,'searchOptions'=>32768+16384,'searchCountry'=>1));
 		$ret = $this->call('doSearch',3600,$req);
-		if($ret['searchCount']>0) return is_object($ret['searchArray']->item)?array($ret['searchArray']->item):$ret['searchArray']->item;
+		if($ret['searchCount']>0) return is_object($ret['searchArray']->item)?array($ret['searchArray']->item):$ret['searchArray']->item;*/
 
 		return array();
 	}
@@ -140,7 +159,7 @@ class Allegro {
 		foreach(array_chunk($ids,25) as $a) {
 			$req = array('sessionHandle'=>$this->session_id,'itemsArray'=>$a);
 			$r2 = $this->call('doGetPostBuyData',0,$req);
-			if(isset($r2['itemsPostBuyData']->item) && $r2['itemsPostBuyData']->item) {
+			if($r2['itemsPostBuyData']->item) {
 			    if(!is_array($r2['itemsPostBuyData']->item)) $r2['itemsPostBuyData']->item = array($r2['itemsPostBuyData']->item);
 			    foreach($r2['itemsPostBuyData']->item as $rec) {
 				$ret[(string)$rec->itemId] = $rec;
@@ -191,16 +210,3 @@ class Allegro {
 	}
 
 }
-/*
-$a = new Allegro('shackyt','warszawa1',228,'838df04db0');
-if($a->error())
-    print($a->error());
-//print_r($a->version());
-print_r($ret);*/
-/*
-foreach($ret as $row) {
-    print('$countries['.$row->{'country-id'}.'] = \''.$row->{'country-name'}.'\';'."\n");
-}
-print_r($a->get_sell_form_fields(1));
-print($a->error());*/
-?>

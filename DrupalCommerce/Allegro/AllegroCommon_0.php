@@ -447,8 +447,8 @@ class Premium_Warehouse_DrupalCommerce_AllegroCommon extends ModuleCommon {
 			    'receipt'=>$trans->postBuyFormInvoiceOption?0:1,
 			    'handling_cost'=>null,
 			    'shipping_company_name'=>$trans->postBuyFormShipmentAddress->postBuyFormAdrCompany,
-			    'shipping_last_name'=>$shipping_name[1],
-			    'shipping_first_name'=>$shipping_name[0],
+			    'shipping_last_name'=>isset($shipping_name[1])?$shipping_name[1]:$shipping_name[0],
+			    'shipping_first_name'=>isset($shipping_name[1])?$shipping_name[0]:'',
 			    'shipping_address_1'=>$trans->postBuyFormShipmentAddress->postBuyFormAdrStreet,
 			    'shipping_city'=>$trans->postBuyFormShipmentAddress->postBuyFormAdrCity,
 			    'shipping_postal_code'=>$trans->postBuyFormShipmentAddress->postBuyFormAdrPostcode,
@@ -1186,8 +1186,9 @@ class Premium_Warehouse_DrupalCommerce_AllegroCommon extends ModuleCommon {
 				                'fvalueRangeDateMax' => '')
 			);
 			
-//			$similar = $a->search($r['item_name'],$vals['category']);
-            $similar = array();
+			/* @var $a Allegro */
+			$a = self::get_lib();
+			$similar = $a->search($r['item_name'],$vals['category']);
 
 			$cat_fields = $a->get_sell_form_fields_for_category($vals['category']);
 			if(isset($cat_fields['sellFormFieldsForCategory']->sellFormFieldsList->item) && $cat_fields['sellFormFieldsForCategory']->sellFormFieldsList->item) {
@@ -1255,11 +1256,9 @@ class Premium_Warehouse_DrupalCommerce_AllegroCommon extends ModuleCommon {
 					}
 					
 					foreach($similar as $sid=>$it) {
-						foreach($it->sItAttribsList as $attrs) {
-							if(is_object($attrs)) $attrs = array($attrs);
-							foreach($attrs as $attr) {
-								if($attr->attribName==$cat_field->sellFormTitle) {
-									if(is_array($attr->attribValues->item)) $attr->attribValues->item = array_shift($attr->attribValues->item);
+						foreach($it->parametersInfo->item as $attr) {
+								if($attr->parameterName==$cat_field->sellFormTitle) {
+									if(is_array($attr->parameterValue->item)) $attr->parameterValue->item = array_shift($attr->parameterValue->item);
 									$arr = array(
 									         'fid' => $cat_field->sellFormId,
 									         'fvalueString' => '',
@@ -1281,29 +1280,29 @@ class Premium_Warehouse_DrupalCommerce_AllegroCommon extends ModuleCommon {
 									$param_value = '';
 									switch($cat_field->sellFormResType) {
 										case 1:
-										    if(isset($cat_select) && isset($cat_select[$attr->attribValues->item]))
-											$arr['fvalueString'] = $cat_select[$attr->attribValues->item];
+										    if(isset($cat_select) && isset($cat_select[$attr->parameterValue->item]))
+											$arr['fvalueString'] = $cat_select[$attr->parameterValue->item];
 										    else
-											$arr['fvalueString'] = $attr->attribValues->item;
+											$arr['fvalueString'] = $attr->parameterValue->item;
 										    $param_value = $arr['fvalueString'];
 										    break;
 										case 2:
-										    if(isset($cat_select) && isset($cat_select[$attr->attribValues->item]))
-											    $arr['fvalueInt'] = intval($cat_select[$attr->attribValues->item]);
+										    if(isset($cat_select) && isset($cat_select[$attr->parameterValue->item]))
+											    $arr['fvalueInt'] = intval($cat_select[$attr->parameterValue->item]);
 										    else
-											    $arr['fvalueInt'] = intval($attr->attribValues->item);
+											    $arr['fvalueInt'] = intval($attr->parameterValue->item);
 										    $param_value = $arr['fvalueInt'];
 										    break;
 										case 3:
-										    $arr['fvalueFloat'] = floatval($attr->attribValues->item);
+										    $arr['fvalueFloat'] = floatval($attr->parameterValue->item);
 										    $param_value = $arr['fvalueFloat'];
 										    break;
 										case 9:
-										    $arr['fvalueDatetime'] = $attr->attribValues->item;
+										    $arr['fvalueDatetime'] = $attr->parameterValue->item;
 										    $param_value = $arr['fvalueDatetime'];
 										    break;
 										case 13:
-										    $arr['fvalueDate'] = $attr->attribValues->item;
+										    $arr['fvalueDate'] = $attr->parameterValue->item;
 										    $param_value = $arr['fvalueDate'];
 										    break;
 									}
@@ -1345,11 +1344,12 @@ class Premium_Warehouse_DrupalCommerce_AllegroCommon extends ModuleCommon {
 									}
 									$fields[] = $arr;
 								}
-							}
+							
 						}
 					}
 				}
 			}
+			
 			return $fields;
 	}
 	
