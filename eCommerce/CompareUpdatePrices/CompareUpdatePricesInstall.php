@@ -75,7 +75,7 @@ class Premium_Warehouse_eCommerce_CompareUpdatePricesInstall extends ModuleInsta
 	}
 	
 	public static function simple_setup() {
-        return array('package'=>__('eCommerce'));
+        return array('package'=>__('old eCommerce'));
 	}
 	
 }

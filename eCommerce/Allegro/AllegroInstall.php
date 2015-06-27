@@ -110,7 +110,7 @@ class Premium_Warehouse_eCommerce_AllegroInstall extends ModuleInstall {
 	}
 	
 	public static function simple_setup() {
-        return array('package'=>'eCommerce');
+        return array('package'=>'old eCommerce');
 	}
 	
 }

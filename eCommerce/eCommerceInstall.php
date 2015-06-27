@@ -716,7 +716,7 @@ class Premium_Warehouse_eCommerceInstall extends ModuleInstall {
 	}
 	
 	public static function simple_setup() {
-        return array('package'=>__('eCommerce'), 'version' => self::version);
+        return array('package'=>__('old eCommerce'), 'version' => self::version);
 	}
 
 	public static function post_install() {

@@ -47,7 +47,7 @@ class Premium_Warehouse_eCommerce_CurrencyUpdatePricesInstall extends ModuleInst
 	}
 	
 	public static function simple_setup() {
-        return array('package'=>__('eCommerce'));
+        return array('package'=>__('old eCommerce'));
 	}
 	
 }
