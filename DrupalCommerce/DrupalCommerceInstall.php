@@ -342,7 +342,7 @@ class Premium_Warehouse_DrupalCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::delete_record_field('premium_warehouse_items_categories','Available languages');
 		Utils_RecordBrowserCommon::delete_record_field('premium_warehouse_distributor','Items Availability');
 		DB::DropTable('premium_ecommerce_3rdp_plugin');
-		Premium_PaymentsCommon::delete_addon('premium_warehouse_items_orders');
+		Premium_PaymentsCommon::remove_addon('premium_warehouse_items_orders');
 
 		Variable::delete('ecommerce_autoprice');
 		Variable::delete('ecommerce_minimal_profit');
@@ -433,7 +433,8 @@ class Premium_Warehouse_DrupalCommerceInstall extends ModuleInstall {
 
 	public static function post_install() {
 		return array(
-				array('type'=>'header','label'=>__('You have installed Epesi - Drupal Commerce bridge. Go to'),'name'=>null),
+				array('type'=>'header','label'=>__('You have installed Epesi - Drupal Commerce bridge'),'name'=>null),
+				array('type'=>'static','label'=>'','values'=>__('Go to:')),
 				array('type'=>'static','label'=>'','values'=>'1. '.__('Menu')),
 				array('type'=>'static','label'=>'','values'=>'2. '.__('Administrator')),
 				array('type'=>'static','label'=>'','values'=>'3. '.__('eCommerce')),
