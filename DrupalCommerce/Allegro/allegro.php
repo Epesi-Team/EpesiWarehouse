@@ -106,14 +106,14 @@ class Allegro {
 			array('filterId'=>'condition','filterValueId'=>array('new')),
 		));
 		$ret = $this->call('doGetItemsList',3600,$req);
-		if($ret['itemsCount']>0) return $ret['itemsList']->item;
+		if($ret['itemsCount']>0) return is_object($ret['itemsList']->item)?array($ret['itemsList']->item):$ret['itemsList']->item;
 
 		$req = array('webapiKey'=>$this->key,'countryId'=>$this->country,'sortOptions'=>array('sortType'=>'price','sortOrder'=>'asc'),'resultScope'=>3,'filterOptions'=>array(
 			array('filterId'=>'search','filterValueId'=>array($string)),
 			array('filterId'=>'condition','filterValueId'=>array('new')),
 		));
 		$ret = $this->call('doGetItemsList',3600,$req);
-		if($ret['itemsCount']>0) return $ret['itemsList']->item;
+		if($ret['itemsCount']>0) return is_object($ret['itemsList']->item)?array($ret['itemsList']->item):$ret['itemsList']->item;
 /*		$req = array('sessionHandle'=>$this->session_id,'searchQuery'=>array('searchString'=>$string,'searchOptions'=>32768,'searchCountry'=>1,'searchCategory'=>$category));
 		$ret = $this->call('doSearch',3600,$req);
 		if($ret['searchCount']>0) return is_object($ret['searchArray']->item)?array($ret['searchArray']->item):$ret['searchArray']->item;
