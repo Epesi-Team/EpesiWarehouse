@@ -1238,7 +1238,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
                 $term['field_images'] = array('und'=>array());
                 if($pathauto_i18n) $term['path']['pathauto_i18n_status'] = 1;
                 
-                $term['parent'] = $epesi_category_parents[$id]?$category_mapping[$epesi_category_parents[$id]]:null;
+                $term['parent'] = $epesi_category_parents[$id]?$category_mapping[$epesi_category_parents[$id]]:0;
 
 			    //get images
 			    Premium_Warehouse_DrupalCommerceCommon::$images = array();
