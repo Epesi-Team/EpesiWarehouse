@@ -223,7 +223,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
         $ext = strrchr($original,'.');
         if(preg_match('/^\.(jpg|jpeg|gif|png|bmp)$/i',$ext)) {
 //           print($id.' '.$file.' '.$original.' '.print_r($arr,true)."\n");
-           $files = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'views/epesi_product_images_search_by_filename.json?'.http_build_query(array('display_id'=>'services_1','args'=>array('epesi_'.$id.$ext,''))));
+           $files = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'views/epesi_product_images_search_by_filename',array('display_id'=>'services_1','args'=>array('epesi_'.$id.$ext,'')));
            if(isset($files[0]['fid'])) {
              $ret['fid'] = $files[0]['fid'];
            } else {
@@ -1216,7 +1216,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
               $epesi_category_parents[$c['id']] = $c['parent_category'];
               $epesi_category_weight[$c['id']] = $c['position'];
             }
-            //print_r($category_mapping);
+            //print_r($epesi_category_parents);
             
             do {
 		      $old_count_epesi_category_names = count($epesi_category_names);
@@ -1238,8 +1238,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
                 $term['field_images'] = array('und'=>array());
                 if($pathauto_i18n) $term['path']['pathauto_i18n_status'] = 1;
                 
-                if($epesi_category_parents[$id])
-                  $term['parent'] = $category_mapping[$epesi_category_parents[$id]];
+                $term['parent'] = $epesi_category_parents[$id]?$category_mapping[$epesi_category_parents[$id]]:null;
 
 			    //get images
 			    Premium_Warehouse_DrupalCommerceCommon::$images = array();
@@ -1287,7 +1286,6 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
                     }
                   }
                 }
-                
                 //sync translations
                 $translations = Utils_RecordBrowserCommon::get_records('premium_ecommerce_cat_descriptions',array('category'=>$id));
                 foreach($translations as $translation) {
@@ -1313,7 +1311,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
                 unset($epesi_category_names[$id]);
               }
             } while(!empty($epesi_category_names) && $old_count_epesi_category_names!=count($epesi_category_names));
-            
+
             //remove elements with invalid epesi_category field
             foreach($category_exists as $tid=>$val) {
               if($val===1)  try {
@@ -1594,7 +1592,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			        }
 			      }
 			      $drupal_product_id = $drupal_products[$data['sku']];
-			      $nodes = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'views/epesi_products_search_by_product_id.json?'.http_build_query(array('display_id'=>'services_1','args'=>array($drupal_product_id,''))));
+			      $nodes = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'views/epesi_products_search_by_product_id',array('display_id'=>'services_1','args'=>array($drupal_product_id,'')));
 			      $nid = isset($nodes[0]['nid'])?$nodes[0]['nid']:0;
 			      $vid = isset($nodes[0]['node_revision_vid'])?$nodes[0]['node_revision_vid']:0;
 //			      $product = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'product/'.$drupal_product_id);
@@ -1786,7 +1784,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			foreach($drupal_products as $sku=>$id) {
 			  if(!isset($drupal_products_done[$sku])) {
 			    try {
-			        $nodes = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'views/epesi_products_search_by_product_id.json?'.http_build_query(array('display_id'=>'services_1','args'=>array($id,''))));
+			        $nodes = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'views/epesi_products_search_by_product_id',array('display_id'=>'services_1','args'=>array($id,'')));
 			    } catch(Exception $e) {
 			        $log[] = 'DRUPAL #'.$drupal_id.' Error getting product node id '.$id.': '.$e->getMessage();
 			        continue;
