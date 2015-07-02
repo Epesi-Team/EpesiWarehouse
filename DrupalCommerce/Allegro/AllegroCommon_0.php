@@ -1256,6 +1256,8 @@ class Premium_Warehouse_DrupalCommerce_AllegroCommon extends ModuleCommon {
 					}
 					
 					foreach($similar as $sid=>$it) {
+						if(!isset($it->parametersInfo->item)) continue;
+						if(!is_array($it->parametersInfo->item)) $it->parametersInfo->item = array($it->parametersInfo->item);
 						foreach($it->parametersInfo->item as $attr) {
 								if($attr->parameterName==$cat_field->sellFormTitle) {
 									if(is_array($attr->parameterValue->item)) $attr->parameterValue->item = array_shift($attr->parameterValue->item);
