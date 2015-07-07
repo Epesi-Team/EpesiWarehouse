@@ -417,7 +417,7 @@ class Premium_Warehouse_DrupalCommerce extends Module {
 	}
 
 	public function check_fast_fill($arg) {
-		if(isset($arg['skip']) && $arg['skip']) return true;
+		if(isset($arg['skip']) && $arg['skip']) return array();
 		if(!isset($arg['upc'])) $arg['upc'] = '';
 		if(!isset($arg['manufacturer'])) $arg['manufacturer'] = '';
 		if(!isset($arg['product_code'])) $arg['product_code'] = '';
@@ -438,7 +438,7 @@ class Premium_Warehouse_DrupalCommerce extends Module {
 
 			return array('upc'=>'<span id="icecat_prod_err">'.__('Please fill manufacturer and product code, or manufacturer and part number, or UPC, or skip gettin information data.').'</span>');
 		}
-		return true;
+		return array();
 	}
 	
 	public function fast_fill_actions($r, $gb_row) {

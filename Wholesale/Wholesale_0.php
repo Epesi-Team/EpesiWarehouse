@@ -293,7 +293,7 @@ class Premium_Warehouse_Wholesale extends Module {
 		} else {
 			if (!$data['n_item_name']) return array('n_item_name'=>__('Field required'));
 		}
-		return true;
+		return array();
 	}
 
     public function dists() {

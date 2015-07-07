@@ -207,8 +207,8 @@ class Premium_Warehouse_InvoiceCommon extends ModuleCommon {
 	}
 
 	public static function check_number($data) {
-		if (Utils_RecordBrowser::$last_record['transaction_type']!=1) return true;
-		if (isset(Utils_RecordBrowser::$last_record['invoice_number']) && $data['invoice_number'] == Utils_RecordBrowser::$last_record['invoice_number']) return true;
+		if (Utils_RecordBrowser::$last_record['transaction_type']!=1) return array();
+		if (isset(Utils_RecordBrowser::$last_record['invoice_number']) && $data['invoice_number'] == Utils_RecordBrowser::$last_record['invoice_number']) return array();
 		if ($data['invoice_number'] && !is_numeric($data['invoice_number'])) return array('invoice_number'=>__('Invalid format, number expected'));
 		return true; // temporary solution - the whole duplicate mechanism is not used by UMT
 /*		if (isset($data['invoice_number']) && ($data['invoice_number'] == Utils_RecordBrowser::$last_record['invoice_number'] || !$data['invoice_number'])) return true;
