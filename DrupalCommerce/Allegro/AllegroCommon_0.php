@@ -1196,6 +1196,9 @@ class Premium_Warehouse_DrupalCommerce_AllegroCommon extends ModuleCommon {
 				foreach($cat_fields['sellFormFieldsForCategory']->sellFormFieldsList->item as $cat_field) {
 					if($cat_field->sellFormId<700 || $cat_field->sellFormResType==7) continue;
 					
+					foreach($fields as $fields_done)
+					    if($fields_done['fid']==$cat_field->sellFormId) continue 2;
+					
 					$cat_vals = explode('|',trim($cat_field->sellFormDesc));
 					$cat_keys = explode('|',trim($cat_field->sellFormOptsValues));
 					if(is_array($cat_vals) && $cat_vals && is_array($cat_keys) && $cat_keys)
@@ -1205,11 +1208,12 @@ class Premium_Warehouse_DrupalCommerce_AllegroCommon extends ModuleCommon {
 					if($val===null || $val===false) $val = DB::GetOne('SELECT v.f_value FROM premium_ecommerce_parameter_labels_data_1 l INNER JOIN premium_ecommerce_products_parameters_data_1 v ON l.f_parameter=v.f_parameter AND l.f_language=v.f_language WHERE l.f_language="pl" AND l.f_label LIKE %s AND v.f_item_name=%d',array('%%'.$cat_field->sellFormTitle.'%%',$r['id']));
 					if($val!==null && $val!==false) {
 						if(isset($cat_select) && $cat_select) {
-						    $vals = explode(',<br />',str_replace("\n",'<br />',$val));
+						    $vals = explode(',<br />',str_replace(array(', ',",\n"),',<br />',$val));
 //						    Epesi::alert($cat_field->sellFormTitle.'='.$val.' '.print_r($vals,true).' '.print_r($cat_select,true));
 						    $val = 0;
 						    foreach($vals as $cval) {
-							if(isset($cat_select[$cval])) $val |= $cat_select[$cval];
+						        foreach($cat_select as $cat_select_key=>$cat_select_val)
+						            if(strcasecmp($cat_select_key,$cval)===0) $val |= $cat_select_val;
 						    }
 //						    Epesi::alert($cat_field->sellFormTitle.'='.$val);
 						    if($val===0) $val=null;
@@ -1345,10 +1349,48 @@ class Premium_Warehouse_DrupalCommerce_AllegroCommon extends ModuleCommon {
 											Utils_RecordBrowserCommon::new_record('premium_ecommerce_products_parameters',$item_params);
 									}
 									$fields[] = $arr;
+									continue;
 								}
 							
 						}
 					}
+					
+					$param_value = '';
+					$group = Utils_RecordBrowserCommon::get_records('premium_ecommerce_parameter_groups',array('group_code'=>'Podstawowe informacje'),array('id'));
+					if($group) {
+					        $group = array_shift($group);
+					        $group = $group['id'];
+					} else {
+						$group = Utils_RecordBrowserCommon::new_record('premium_ecommerce_parameter_groups',array('group_code'=>'Podstawowe informacje'));
+					        $parameter_group_label = array('group'=>$group,
+						    'language'=>'pl',
+						    'label'=>'Podstawowe informacje');
+					        Utils_RecordBrowserCommon::new_record('premium_ecommerce_param_group_labels',$parameter_group_label);
+					}
+					$param = Utils_RecordBrowserCommon::get_records('premium_ecommerce_parameters',array('parameter_code'=>$cat_field->sellFormTitle),array('id'));
+					if($param) {
+						$param = array_shift($param);
+						$param = $param['id'];
+					} else {
+						$param = Utils_RecordBrowserCommon::new_record('premium_ecommerce_parameters',array('parameter_code'=>$cat_field->sellFormTitle));
+						        $parameter_label = array('parameter'=>$param,
+						            'language'=>'pl',
+						            'label'=>$cat_field->sellFormTitle);
+						Utils_RecordBrowserCommon::new_record('premium_ecommerce_parameter_labels',$parameter_label);
+					}
+
+					$item_params = array('item_name'=>$r['id'],
+						'parameter'=>$param,
+						'group'=>$group,
+						'language'=>'pl',
+						'value'=>$param_value,
+						'info'=>((isset($cat_select) && $cat_select)?implode(', ',array_keys($cat_select)):($cat_field->sellFormResType==1?'łańcuch znaków':'liczba')));
+					if(!Utils_RecordBrowserCommon::get_records_count('premium_ecommerce_products_parameters',array('item_name'=>$r['id'],
+						'parameter'=>$param,
+						'group'=>$group,
+						'language'=>'pl')))
+						Utils_RecordBrowserCommon::new_record('premium_ecommerce_products_parameters',$item_params);
+					
 				}
 			}
 			

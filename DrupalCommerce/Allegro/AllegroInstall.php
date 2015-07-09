@@ -79,6 +79,8 @@ class Premium_Warehouse_DrupalCommerce_AllegroInstall extends ModuleInstall {
 		Variable::set('allegro_fvat',1);
 		Variable::set('allegro_transport_description','');
 		Variable::set('allegro_template','');
+
+		Utils_RecordBrowserCommon::new_record_field('premium_ecommerce_products_parameters', array('name' => _M('Info'), 'type'=>'long text', 'required'=>false, 'extra'=>true, 'visible'=>true));
 		
 		return true;
 	}
@@ -99,6 +101,7 @@ class Premium_Warehouse_DrupalCommerce_AllegroInstall extends ModuleInstall {
 		Variable::delete('allegro_fvat',1);
 		Variable::delete('allegro_transport_description');
 		Variable::delete('allegro_template');
+		Utils_RecordBrowserCommon::delete_record_field('premium_ecommerce_products_parameters','Info');
 		return true;
 	}
 	
