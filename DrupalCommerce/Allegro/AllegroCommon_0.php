@@ -1208,15 +1208,18 @@ class Premium_Warehouse_DrupalCommerce_AllegroCommon extends ModuleCommon {
 					if($val===null || $val===false) $val = DB::GetOne('SELECT v.f_value FROM premium_ecommerce_parameter_labels_data_1 l INNER JOIN premium_ecommerce_products_parameters_data_1 v ON l.f_parameter=v.f_parameter AND l.f_language=v.f_language WHERE l.f_language="pl" AND l.f_label LIKE %s AND v.f_item_name=%d',array('%%'.$cat_field->sellFormTitle.'%%',$r['id']));
 					if($val!==null && $val!==false) {
 						if(isset($cat_select) && $cat_select) {
-						    $vals = explode(',<br />',str_replace(array(', ',",\n"),',<br />',$val));
-//						    Epesi::alert($cat_field->sellFormTitle.'='.$val.' '.print_r($vals,true).' '.print_r($cat_select,true));
-						    $val = 0;
-						    foreach($vals as $cval) {
-						        foreach($cat_select as $cat_select_key=>$cat_select_val)
-						            if(strcasecmp($cat_select_key,$cval)===0) $val |= $cat_select_val;
+						    $ret_val = 0;
+						    foreach($cat_select as $cat_select_key=>$cat_select_val)
+						        if(strcasecmp($cat_select_key,$val)===0) $ret_val |= $cat_select_val;
+						    if(!$ret_val) {
+						        $vals = explode(',<br />',str_replace(array(', ',",\n"),',<br />',$val));
+						        foreach($vals as $cval) {
+						            foreach($cat_select as $cat_select_key=>$cat_select_val)
+						                if(strcasecmp($cat_select_key,$cval)===0) $ret_val |= $cat_select_val;
+						        }
 						    }
-//						    Epesi::alert($cat_field->sellFormTitle.'='.$val);
-						    if($val===0) $val=null;
+						    if($ret_val===0) $ret_val=null;
+						    $val = $ret_val;
 						}
 						if($val!==null) {
 							$arr = array(
@@ -1384,7 +1387,7 @@ class Premium_Warehouse_DrupalCommerce_AllegroCommon extends ModuleCommon {
 						'group'=>$group,
 						'language'=>'pl',
 						'value'=>$param_value,
-						'info'=>((isset($cat_select) && $cat_select)?implode(', ',array_keys($cat_select)):($cat_field->sellFormResType==1?'łańcuch znaków':'liczba')));
+						'info'=>((isset($cat_select) && $cat_select)?implode("\n",array_keys($cat_select)):($cat_field->sellFormResType==1?'łańcuch znaków':'liczba')));
 					if(!Utils_RecordBrowserCommon::get_records_count('premium_ecommerce_products_parameters',array('item_name'=>$r['id'],
 						'parameter'=>$param,
 						'group'=>$group,
