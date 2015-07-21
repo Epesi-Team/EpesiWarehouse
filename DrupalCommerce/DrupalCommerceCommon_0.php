@@ -749,12 +749,11 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
                 $orec['shipment_handling_cost'] = Utils_CurrencyFieldCommon::format($values['handling_cost']).' + '.Utils_CurrencyFieldCommon::format($values['shipment_cost']);
             $orec['total_value'] = Premium_Warehouse_Items_OrdersCommon::display_total_value($values,true);
 
-            if(!isset($erec)) {
-            	$erec = Utils_RecordBrowserCommon::get_records('premium_ecommerce_orders',array('transaction_id'=>$values['id']));
-            	if($erec && is_array($erec) && count($erec)==1) {
-	                $erec = array_shift($erec);
-            	}
+            $erec2 = Utils_RecordBrowserCommon::get_records('premium_ecommerce_orders',array('transaction_id'=>$values['id']));
+            if($erec2 && is_array($erec2) && count($erec2)==1) {
+                $erec2 = array_shift($erec2);
             }
+            $erec = isset($erec)?array_merge($erec,$erec2):$erec2;
             if(isset($erec) && is_array($erec) && $values['status']!=-1) {
                 if(isset($erec['language']) && $erec['language'])
                     $emails = Utils_RecordBrowserCommon::get_records('premium_ecommerce_emails',array('send_on_status'=>$values['status'],'language'=>$erec['language']));
@@ -830,7 +829,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
             }
             
         	//update status
-        	if(isset($erec) && is_array($erec) && $erec['drupal'] && $erec['drupal_order_id'] && $values['status']!=-1) {
+        	if(isset($erec) && is_array($erec) && isset($erec['drupal']) && $erec['drupal'] && isset($erec['drupal_order_id']) && $erec['drupal_order_id'] && $values['status']!=-1) {
         		$drupal_id = $erec['drupal'];
         		$drupal_order_id = $erec['drupal_order_id'];
 //        		$drupal_order = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'order/'.$drupal_order_id);
