@@ -755,8 +755,11 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 	                $erec = array_shift($erec);
             	}
             }
-            if(isset($erec) && is_array($erec) && $erec['language'] && $values['status']!=-1) {
-                $emails = Utils_RecordBrowserCommon::get_records('premium_ecommerce_emails',array('send_on_status'=>$values['status'],'language'=>$erec['language']));
+            if(isset($erec) && is_array($erec) && $values['status']!=-1) {
+                if(isset($erec['language']) && $erec['language'])
+                    $emails = Utils_RecordBrowserCommon::get_records('premium_ecommerce_emails',array('send_on_status'=>$values['status'],'language'=>$erec['language']));
+                else
+                    $emails = false;
                 if(!$emails)
                     $emails = Utils_RecordBrowserCommon::get_records('premium_ecommerce_emails',array('send_on_status'=>$values['status'],'language'=>''));
                 if($emails) {
@@ -794,7 +797,10 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 
                 $sm->assign('contact_us_title',__('Contact us'));
                 if($erec) {
-                    $contactus = Variable::get('ecommerce_contactus_'.$erec['language'],false);
+                    if(isset($erec['language']) && $erec['language'])
+                        $contactus = Variable::get('ecommerce_contactus_'.$erec['language'],false);
+                    else
+                        $contactus = '';
                     if(!$contactus)
                         $contactus = Variable::get('ecommerce_contactus');
                     $email = $erec['email'];
