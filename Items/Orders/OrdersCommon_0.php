@@ -504,7 +504,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			}
 			if ($default) {
 				$form->addElement('checkbox', $field, $label);
-				$form->freeze('checkbox');
+				$form->freeze($field);
 				$form->setDefaults(array($field=>$default));
 				eval_js('hide_rb_field=function(arg){if($("_"+arg+"__label"))$("_"+arg+"__label").parentNode.parentNode.style.display="none"}');
 //				foreach(array('last_name','first_name','company_name','address_1','address_2','city','country','zone','postal_code','phone','tax_id') as $v)
