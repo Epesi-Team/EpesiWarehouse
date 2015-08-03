@@ -220,9 +220,9 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
     public static $images;
     public static function copy_attachment($id,$file,$original,$arr) {
         $drupal_id = $arr[0];
+//        print($id.' '.$file.' '.$original.' '.print_r($arr,true)."\n");
         $ext = strrchr($original,'.');
         if(preg_match('/^\.(jpg|jpeg|gif|png|bmp)$/i',$ext)) {
-//           print($id.' '.$file.' '.$original.' '.print_r($arr,true)."\n");
            $files = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'views/epesi_product_images_search_by_filename',array('display_id'=>'services_1','args'=>array('epesi_'.$id.$ext,'')));
            if(isset($files[0]['fid'])) {
              $ret['fid'] = $files[0]['fid'];
@@ -1222,7 +1222,6 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
               $epesi_category_weight[$c['id']] = $c['position'];
             }
             //print_r($epesi_category_parents);
-            
             do {
 		      $old_count_epesi_category_names = count($epesi_category_names);
               //TODO: use or remove meta tags from descriptions from ecommerce recordsets
@@ -1403,7 +1402,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			
 			//update products
 			//get fields
-			$product_fields = array_merge(Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'epesi_commerce/get_product_fields'),array('sku','title','type'));
+			$product_fields = array_merge(Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'epesi_commerce/get_product_fields'),array('sku','title','type','status'));
 			$node_fields = array_merge(Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'epesi_commerce/get_node_fields'),array('type','field_title','title','promote','sticky','uid','revision','created','changed','path'));
 			
 			//get old products
@@ -1549,6 +1548,8 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			  if(!$products_queue) continue;
 			  
 			  //update product
+			  $nid = 0;
+			  $vid = 0;
 			  $drupal_product_ids = array();
 			  foreach($products_queue as $data) {
 			    //filter out invalid fields
@@ -1567,8 +1568,6 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			    
 			    //check if product exists in drupal
 			    $drupal_product_id = 0;
-			    $nid = 0;
-			    $vid = 0;
 			    if(isset($drupal_products[$data['sku']])) {
 			      //check product
 			      $drupal_data = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'product/'.$drupal_products[$data['sku']]);
@@ -1598,8 +1597,10 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			      }
 			      $drupal_product_id = $drupal_products[$data['sku']];
 			      $nodes = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'views/epesi_products_search_by_product_id',array('display_id'=>'services_1','args'=>array($drupal_product_id,'')));
-			      $nid = isset($nodes[0]['nid'])?$nodes[0]['nid']:0;
-			      $vid = isset($nodes[0]['node_revision_vid'])?$nodes[0]['node_revision_vid']:0;
+			      if(!$nid) {
+			        $nid = isset($nodes[0]['nid'])?$nodes[0]['nid']:0;
+			        $vid = isset($nodes[0]['node_revision_vid'])?$nodes[0]['node_revision_vid']:0;
+			      }
 //			      $product = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'product/'.$drupal_product_id);
 			    } else {
 			      try {
