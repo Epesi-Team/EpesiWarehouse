@@ -1075,7 +1075,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			      'payment'=>1,
 			      'payment_type'=>'Drupal',
 			      'memo'=>$memo,
-			//	    'tax_id'=>$aForm['sNip'],
+			      'tax_id'=>isset($billing['tax_id'])?$billing['tax_id']:'',
 			      'tax_calculation'=> Variable::get('premium_warehouse_def_tax_calc', false),
 			//	    'warehouse'=>$carrier==0?$aForm['iPickupShop']:null,
 			      'online_order'=>1,
