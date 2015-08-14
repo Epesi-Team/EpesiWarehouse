@@ -1204,16 +1204,17 @@ class Premium_Warehouse_DrupalCommerce_AllegroCommon extends ModuleCommon {
 					if(is_array($cat_vals) && $cat_vals && is_array($cat_keys) && $cat_keys)
 						$cat_select = array_filter(array_combine($cat_vals,$cat_keys));
 					
-					$val = DB::GetOne('SELECT v.f_value FROM premium_ecommerce_parameter_labels_data_1 l INNER JOIN premium_ecommerce_products_parameters_data_1 v ON l.f_parameter=v.f_parameter AND l.f_language=v.f_language WHERE l.f_language="pl" AND l.f_label=%s AND v.f_item_name=%d',array($cat_field->sellFormTitle,$r['id']));
-					if($val===null || $val===false) $val = DB::GetOne('SELECT v.f_value FROM premium_ecommerce_parameter_labels_data_1 l INNER JOIN premium_ecommerce_products_parameters_data_1 v ON l.f_parameter=v.f_parameter AND l.f_language=v.f_language WHERE l.f_language="pl" AND l.f_label LIKE %s AND v.f_item_name=%d',array('%%'.$cat_field->sellFormTitle.'%%',$r['id']));
-					if($val!==null && $val!==false) {
+					$vals = DB::GetOne('SELECT v.f_value FROM premium_ecommerce_parameter_labels_data_1 l INNER JOIN premium_ecommerce_products_parameters_data_1 v ON l.f_parameter=v.f_parameter AND l.f_language=v.f_language WHERE l.f_language="pl" AND l.f_label=%s AND v.f_item_name=%d',array($cat_field->sellFormTitle,$r['id']));
+					if(!$vals) $val = DB::GetOne('SELECT v.f_value FROM premium_ecommerce_parameter_labels_data_1 l INNER JOIN premium_ecommerce_products_parameters_data_1 v ON l.f_parameter=v.f_parameter AND l.f_language=v.f_language WHERE l.f_language="pl" AND l.f_label LIKE %s AND v.f_item_name=%d',array('%%'.$cat_field->sellFormTitle.'%%',$r['id']));
+					foreach($vals as $val) {
+						$val = trim($val);
 						if(isset($cat_select) && $cat_select) {
 						    $ret_val = 0;
 						    foreach($cat_select as $cat_select_key=>$cat_select_val)
 						        if(strcasecmp($cat_select_key,$val)===0) $ret_val |= $cat_select_val;
 						    if(!$ret_val) {
-						        $vals = explode(',<br />',str_replace(array(', ',",\n"),',<br />',$val));
-						        foreach($vals as $cval) {
+						        $vals2 = explode(',<br />',str_replace(array(', ',",\n"),',<br />',$val));
+						        foreach($vals2 as $cval) {
 						            foreach($cat_select as $cat_select_key=>$cat_select_val)
 						                if(strcasecmp($cat_select_key,$cval)===0) $ret_val |= $cat_select_val;
 						        }
@@ -1257,7 +1258,7 @@ class Premium_Warehouse_DrupalCommerce_AllegroCommon extends ModuleCommon {
 							}
 							if($ok) {
 							    $fields[] = $arr;
-							    continue;
+							    continue 2;
 							}
 						}
 					}
