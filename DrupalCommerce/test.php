@@ -6,7 +6,11 @@ ModuleManager::load_modules();
 
 Acl::set_sa_user();
 
-$drupal_id = 1;
+$drupal_id = 2;
+$drupal_products_tmp = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'product',array('fields'=>'product_id,sku','filter'=>array('type'=>'epesi_products'),'sort_by'=>'sku','limit'=>999999999999999999));
+print_r($drupal_products_tmp);
+die();
+
 /*
             $voc = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'entity_taxonomy_vocabulary',array('pagesize'=>9999999999));
             $epesi_vocabulary = null;

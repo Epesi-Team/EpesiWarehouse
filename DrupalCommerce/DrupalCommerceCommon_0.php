@@ -1423,6 +1423,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			
 			$products = Utils_RecordBrowserCommon::get_records('premium_ecommerce_products',array('publish'=>1),array(),array('item_name'=>'ASC'));
 			foreach($products as $row) {
+
 			  if(isset($drupal_products_done[$row['sku']])) continue;
 			  
 			  $ecommerce_product_id = $row['id'];
@@ -1439,10 +1440,8 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			  
 			  //set quantity
 			  $quantity = Premium_Warehouse_Items_LocationCommon::get_item_quantity_in_warehouse($row['id']) - DB::GetOne('SELECT SUM(d.f_quantity) FROM premium_warehouse_items_orders_details_data_1 d INNER JOIN premium_warehouse_items_orders_data_1 o ON (o.id=d.f_transaction_id) WHERE ((o.f_transaction_type=1 AND o.f_status in (-1,2,3,4,5)) OR (o.f_transaction_type=4 AND o.f_status in (2,3))) AND d.active=1 AND o.active=1 AND d.f_item_name=%d',array($row['id']));
-			  if($quantity<=0) {
-			    if($row['always_in_stock']) {
-			      $quantity = 9999999;
-			    /*} else {
+			  if($row['always_in_stock']) $quantity = max($quantity,0)+1000000;
+			    /*else {
 			     //TODO: distributors
 			      $distributors = DB::GetAll('SELECT dist_item.quantity,
 								dist_item.quantity_info,
@@ -1489,11 +1488,8 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 							$reserved[$aExp['iProduct']] = 0;
 						}
 						unset($distributors);
-			*/
-			    }
-			
-			    if($quantity<=0) continue; //skip if not available
-			  }
+			    }*/
+			  if($quantity<=0) continue; //skip if not available
 			  $data['commerce_stock'] = $quantity;
 
 			  //get images
