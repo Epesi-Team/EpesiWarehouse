@@ -102,7 +102,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 	}
 
     // callback for custom status filter
-    public function browse_mode_details(& $form, & $external_filters, & $vals, & $crits, & $next_dont_hide, $rb_obj) {
+    public function browse_mode_details(& $form, & $external_filters, & $vals, & $crits, $rb_obj) {
         $transaction_type = isset($vals['filter__transaction_type']) ? $vals['filter__transaction_type'] : false;
         if ($transaction_type == '__NULL__')
             $transaction_type = false;

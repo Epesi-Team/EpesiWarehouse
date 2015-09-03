@@ -15,7 +15,7 @@
 defined("_VALID_ACCESS") || die('Direct access forbidden');
 
 class Premium_Warehouse_Invoice extends Module {
-	public function browse_mode_details($form, $filters, $vals, $crits, $dont_hide, $rb) {
+	public function browse_mode_details($form, $filters, $vals, $crits, $rb) {
 		$rb->set_search_calculated_callback(array($this, 'search_invoice_number'));
 	}
 	
