@@ -144,11 +144,10 @@ class Premium_Warehouse_Items_Orders_InvoiceCommon extends ModuleCommon {
 				Epesi::alert(__('Cannot delete - already billed.'));
 				return false;
 			}
-		}
-	} elseif($action=='clone') {
+		} elseif($action=='clone') {
 	        $values['billed_method'] = '';
 	        $values['billed_method_args'] = '';
-	}
+		}
         return $vals;
     }
 }

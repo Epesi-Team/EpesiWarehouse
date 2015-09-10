@@ -1,0 +1,2 @@
+<?php defined("_VALID_ACCESS") || die('Direct access forbidden');
+Utils_RecordBrowserCommon::new_record_field('company', array('name' => 'Default Transactions Markup', 'type'=>'float', 'required'=>false, 'extra'=>false, 'filter'=>false, 'visible'=>false, 'position'=>'Tax ID'));

@@ -26,7 +26,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 							'transaction_date'=>date('Y-m-d'),
 							'employee'=>$me['id'],
 							'warehouse'=>Base_User_SettingsCommon::get('Premium_Warehouse','my_warehouse'),
-							'tax_calculation'=> Variable::get('premium_warehouse_def_tax_calc', false)
+							'tax_calculation'=> Variable::get('premium_warehouse_def_tax_calc', 0)
 							);
 		if(Utils_RecordBrowserCommon::get_access('premium_warehouse_items_orders','add')) {
 
@@ -229,7 +229,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 							'transaction_date'=>date('Y-m-d'),
 							'employee'=>$me['id'],
 							'warehouse'=>Base_User_SettingsCommon::get('Premium_Warehouse','my_warehouse'),
-							'tax_calculation'=> Variable::get('premium_warehouse_def_tax_calc', false)
+							'tax_calculation'=> Variable::get('premium_warehouse_def_tax_calc', 0)
 							);
 		switch($conf['type']) {
 		    case 0: $new_def = array_merge($new_def,array('transaction_type'=>0,'terms'=>0,'payment'=>1,'transaction_date'=>date('Y-m-d')));
@@ -278,7 +278,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 	public function transaction_history_addon($arg){
 		// TODO: service?
 		$rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items_orders_details');
-		$order = array(array('item_name'=>$arg['id']), array('quantity_on_hand'=>false,'description'=>false)+('item_name'=='item_name'?array('item_name'=>false):array()), array('transaction_date'=>'DESC', 'transaction_id'=>'DESC'));
+		$order = array(array('item_name'=>$arg['id']), array('quantity_on_hand'=>false,'description'=>false)+('item_name'=='item_name'?array('item_name'=>false):array()), array('transaction_id'=>'DESC'));
 		$rb->set_button(false);
 		$rb->set_defaults(array('item_name'=>$arg['id']));
 		$rb->set_header_properties(array(
@@ -355,6 +355,7 @@ class Premium_Warehouse_Items_Orders extends Module {
 		}
 		$order = array(array('transaction_id'=>$arg['id']), $cols, array());
 		
+		$company = CRM_ContactsCommon::get_company($arg['company']);
         $defaults = array();
         $new_item_types = array(
 			__('Inv. Item')=>array('icon'=>Base_ThemeCommon::get_template_file('Premium_Warehouse_Items','inv_item.png'), 'defaults'=>array_merge($defaults,array('item_type'=>0))),
@@ -387,7 +388,7 @@ class Premium_Warehouse_Items_Orders extends Module {
     		$rb->set_button($this->create_callback_href(array($this, 'jump_to_check_in_new_item'), array($arg)));
 		else
 			$rb->enable_quick_new_records();
-		$rb->set_defaults(array('transaction_id'=>$arg['id']));
+		$rb->set_defaults(array('transaction_id'=>$arg['id'],'markup_discount_rate'=>$arg['transaction_type']==1?$company['default_transactions_markup']:0));
 		$rb->set_header_properties($header_prop);
 		$rb->disable_pdf();
 		$this->display_module($rb,$order,'show_data');

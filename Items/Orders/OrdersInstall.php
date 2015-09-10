@@ -205,7 +205,9 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items_orders', array('name' => 'Tax Calculation', 'type'=>'commondata', 'param'=>array('Premium_Items_Orders_TaxCalc'), 'required'=>true, 'extra'=>true, 'filter'=>false, 'visible'=>false, 'position'=>'Related'));
 		Utils_CommonDataCommon::new_array('Premium_Items_Orders_TaxCalc',array(0=>'Per Item',1=>'By Total'),true,true);
 
-        // deny access to disallow edit
+        Utils_RecordBrowserCommon::new_record_field('company', array('name' => 'Default Transactions Markup', 'type'=>'float', 'required'=>false, 'extra'=>false, 'filter'=>false, 'visible'=>false, 'position'=>'Tax ID'));
+		
+		// deny access to disallow edit
         Utils_RecordBrowserCommon::field_deny_access('premium_warehouse_items_orders', 'Split Transaction', 'add');
         Utils_RecordBrowserCommon::field_deny_access('premium_warehouse_items_orders', 'Split Transaction', 'edit');
 
@@ -234,6 +236,7 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 		
 		Utils_RecordBrowserCommon::delete_record_field('premium_warehouse_items','Reserved Qty');
 		Utils_RecordBrowserCommon::delete_record_field('premium_warehouse_items','Available Qty');
+		Utils_RecordBrowserCommon::delete_record_field('company', 'Default Transactions Markup');
 
 		Base_ThemeCommon::uninstall_default_theme($this->get_type());
 		Utils_RecordBrowserCommon::delete_addon('premium_warehouse_items_orders', 'Premium/Warehouse/Items/Orders', 'order_details_addon');
