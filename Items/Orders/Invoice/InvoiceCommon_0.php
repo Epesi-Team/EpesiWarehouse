@@ -67,7 +67,7 @@ class Premium_Warehouse_Items_Orders_InvoiceCommon extends ModuleCommon {
         if(!in_array('premium_warehouse_items_orders/'.$item['transaction_id'],$invoice['related'])) {
             $invoice['related'][] = 'premium_warehouse_items_orders/'.$item['transaction_id'];
         }
-        Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders_details', $id, array('billed_quantity' => $item['billed_quantity']+$inv_item['quantity']-isset($old_inv_item['quantity'])?$old_inv_item['quantity']:0, 'invoices'=>$item['invoices']));
+        Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders_details', $id, array('billed_quantity' => $item['billed_quantity']+$inv_item['quantity']-(isset($old_inv_item['quantity'])?$old_inv_item['quantity']:0), 'invoices'=>$item['invoices']));
         Utils_RecordBrowserCommon::update_record('premium_invoice', $invoice['id'], array('related' => $invoice['related']));
     }
 
@@ -145,6 +145,10 @@ class Premium_Warehouse_Items_Orders_InvoiceCommon extends ModuleCommon {
 				return false;
 			}
 		}
+	} elseif($action=='clone') {
+	        $values['billed_method'] = '';
+	        $values['billed_method_args'] = '';
+	}
         return $vals;
     }
 }
