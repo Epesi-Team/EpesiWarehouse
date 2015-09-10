@@ -24,9 +24,9 @@ class Premium_Warehouse_Items_Orders_InvoiceCommon extends ModuleCommon {
                 self::add_items_to_invoice($record);
                 Premium_InvoiceCommon::set_tax_calculation($record['company'],$record['tax_calculation']);
                 $shipment = Utils_CurrencyFieldCommon::get_values($record['shipment_cost']);
-                if($shipment[0]) Premium_InvoiceCommon::queue_item(__('Shipment Cost'), $record['shipment_cost'],'',null,1,__('pc'),'', $record['company'],null,array(),'shipment');
+                if($shipment[0]) Premium_InvoiceCommon::queue_item(__('Shipment Cost'), $record['shipment_cost'],'',null,1,__('pc'),__('Transaction ID').': '.$record['transaction_id'], $record['company'],null,array(),'shipment');
                 $handling = Utils_CurrencyFieldCommon::get_values($record['handling_cost']);
-                if($handling[0]) Premium_InvoiceCommon::queue_item(__('Handling Cost'), $record['handling_cost'],'',null,1,__('pc'),'', $record['company'],null,array(),'handling');
+                if($handling[0]) Premium_InvoiceCommon::queue_item(__('Handling Cost'), $record['handling_cost'],'',null,1,__('pc'),__('Transaction ID').': '.$record['transaction_id'], $record['company'],null,array(),'handling');
                 Premium_InvoiceCommon::pending_items();
             }
             if(self::not_billed_items($record['id'])) {
@@ -59,7 +59,7 @@ class Premium_Warehouse_Items_Orders_InvoiceCommon extends ModuleCommon {
         return false;
     }
     
-    public static function invoice($id,$invoice,$inv_item) {
+    public static function invoice($id,$invoice,$inv_item,$old_inv_item) {
         $item = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders_details', $id);
         if(!in_array($invoice['id'],$item['invoices'])) {
             $item['invoices'][] = $invoice['id'];
@@ -67,7 +67,7 @@ class Premium_Warehouse_Items_Orders_InvoiceCommon extends ModuleCommon {
         if(!in_array('premium_warehouse_items_orders/'.$item['transaction_id'],$invoice['related'])) {
             $invoice['related'][] = 'premium_warehouse_items_orders/'.$item['transaction_id'];
         }
-        Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders_details', $id, array('billed_quantity' => $inv_item['quantity'], 'invoices'=>$item['invoices']));
+        Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders_details', $id, array('billed_quantity' => $item['billed_quantity']+$inv_item['quantity']-isset($old_inv_item['quantity'])?$old_inv_item['quantity']:0, 'invoices'=>$item['invoices']));
         Utils_RecordBrowserCommon::update_record('premium_invoice', $invoice['id'], array('related' => $invoice['related']));
     }
 
@@ -134,7 +134,17 @@ class Premium_Warehouse_Items_Orders_InvoiceCommon extends ModuleCommon {
                 Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders',$vals['transaction_id'],array('billed'=>0));
             elseif(!self::not_billed_items($vals['transaction_id']))
                 Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders',$vals['transaction_id'],array('billed'=>1));
-        }
+        } elseif($action=='edit') {
+			if($vals['billed_quantity']>$vals['quantity']) {
+				$vals['quantity'] = $vals['billed_quantity'];
+				Epesi::alert(__('Quantity cannot be lower then billed quantity.'));
+			}
+		} elseif($action=='delete') {
+			if($vals['billed_quantity']>0) {
+				Epesi::alert(__('Cannot delete - already billed.'));
+				return false;
+			}
+		}
         return $vals;
     }
 }
