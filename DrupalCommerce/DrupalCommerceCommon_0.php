@@ -1523,8 +1523,9 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			      $products_queue[''] = $data;
 			    }
 			  }
-			  $prices = Utils_RecordBrowserCommon::get_records('premium_ecommerce_prices',array('item_name'=>$row['id']),array(),array('gross_price'=>'ASC'));
+			  $prices = Utils_RecordBrowserCommon::get_records('premium_ecommerce_prices',array('item_name'=>$row['id']),array(),array('currency'=>'ASC','gross_price'=>'ASC','name'=>'ASC'));
 			  if($prices) {
+			    $products_queue = array();
 			    foreach($prices as $price) {
 			      if(!isset($currencies[$price['currency']])) continue;
 			      if(isset($products_queue[$price['model']])) $tmp_data = $products_queue[$price['model']];
