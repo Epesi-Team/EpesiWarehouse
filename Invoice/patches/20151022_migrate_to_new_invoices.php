@@ -41,6 +41,8 @@ if(!$invoices_checkpoint->is_done()) {
         $invoices_qty = DB::GetOne('SELECT count(*) FROM premium_warehouse_items_orders_data_1 WHERE active=1 AND f_transaction_type=1 AND f_invoice_number is not null AND f_invoice_number!=""');
         $invoices_checkpoint->set('invoices_qty',$invoices_qty);
     }
+    $zero_tax = Utils_RecordBrowserCommon::get_records('data_tax_rates', array('percentage'=>0));
+    $zero_tax = array_shift($zero_tax);
 
     while($ret = DB::SelectLimit('SELECT id FROM premium_warehouse_items_orders_data_1 WHERE active=1 AND f_transaction_type=1 AND f_invoice_number is not null AND f_invoice_number!="" ORDER BY id',1,$invoices++)) {
         $row = $ret->FetchRow();
@@ -102,7 +104,7 @@ if(!$invoices_checkpoint->is_done()) {
                 'quantity'=>$item['quantity'],
                 'unit'=> __('ea.'),
                 'net_price'=>$item['net_price'],
-                'tax_rate'=>$item['tax_rate'],
+                'tax_rate'=>$item['tax_rate']?$item['tax_rate']:$zero_tax['id'],
                 'gross_price'=>$item['gross_price'],
                 'billed_method'=>serialize(array('Premium_Warehouse_Items_Orders_InvoiceCommon','invoice')),
                 'billed_method_args'=>serialize(array($item['id']))
