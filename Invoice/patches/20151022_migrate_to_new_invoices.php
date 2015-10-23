@@ -43,6 +43,7 @@ if(!$invoices_checkpoint->is_done()) {
     }
     $zero_tax = Utils_RecordBrowserCommon::get_records('data_tax_rates', array('percentage'=>0));
     $zero_tax = array_shift($zero_tax);
+    $def_curr = Utils_CurrencyFieldCommon::get_default_currency();
 
     while($ret = DB::SelectLimit('SELECT id FROM premium_warehouse_items_orders_data_1 WHERE active=1 AND f_transaction_type=1 AND f_invoice_number is not null AND f_invoice_number!="" ORDER BY id',1,$invoices++)) {
         $row = $ret->FetchRow();
@@ -103,7 +104,7 @@ if(!$invoices_checkpoint->is_done()) {
                 'classification'=>$item['sww'],
                 'quantity'=>$item['quantity'],
                 'unit'=> __('ea.'),
-                'net_price'=>$item['net_price'],
+                'net_price'=>$item['net_price']?$item['net_price']:($item['gross_price']?'':Utils_CurrencyFieldCommon::format_default(0,$def_curr['id'])),
                 'tax_rate'=>$item['tax_rate']?$item['tax_rate']:$zero_tax['id'],
                 'gross_price'=>$item['gross_price'],
                 'billed_method'=>serialize(array('Premium_Warehouse_Items_Orders_InvoiceCommon','invoice')),
@@ -126,3 +127,5 @@ if(!$invoices_checkpoint->is_done()) {
 
 //kolumny do skasowania z orders: payment_type, terms
 //common data: 'Premium_Items_Orders_Payment_Types', Premium_Items_Orders_Terms
+
+//dodawanie shipping i handling cost do faktury
