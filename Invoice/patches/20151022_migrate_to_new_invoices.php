@@ -18,7 +18,7 @@ if(!$numbering_checkpoint->is_done()) {
 
     $payment_types = Utils_CommonDataCommon::get_array('Premium_Items_Orders_Payment_Types');
     foreach($payment_types as $pk=>&$pt) {
-        $pt = Utils_RecordBrowserCommon::new_record_field('premium_invoice_payment_types',array('name'=>$pt));
+        $pt = Utils_RecordBrowserCommon::new_record('premium_invoice_payment_types',array('name'=>$pt));
     }
     $numbering_checkpoint->set('payments',$payment_types);
 }
