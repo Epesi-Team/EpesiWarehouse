@@ -65,7 +65,7 @@ if(!$invoices_checkpoint->is_done()) {
             'due_date'=>date('Y-m-d',strtotime('+'.$order['terms'].' days',strtotime($order['invoice_print_date']))),
             'print_date'=>$order['invoice_print_date'],
             'target_currency'=>$curr,
-            'payment_type'=>$payment_types[$order['payment_type']],
+            'payment_type'=>$order['payment_type']?$payment_types[$order['payment_type']]:'',
             'paid_date'=>'',
             'price_calculation'=>'gross',
             'tax_calculation'=>$order['tax_calculation'],
