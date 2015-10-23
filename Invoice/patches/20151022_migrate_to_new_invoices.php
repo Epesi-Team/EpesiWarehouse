@@ -42,7 +42,7 @@ if(!$invoices_checkpoint->is_done()) {
         $invoices_checkpoint->set('invoices_qty',$invoices_qty);
     }
 
-    while($ret = DB::SelectLimit('SELECT id FROM premium_warehouse_items_orders_data_1 WHERE active=1 AND f_transaction_type=1 AND f_invoice_number is not null AND f_invoice_number!="" ORDER BY f.id',1,$invoices++)) {
+    while($ret = DB::SelectLimit('SELECT id FROM premium_warehouse_items_orders_data_1 WHERE active=1 AND f_transaction_type=1 AND f_invoice_number is not null AND f_invoice_number!="" ORDER BY id',1,$invoices++)) {
         $row = $ret->FetchRow();
         if(!$row) break;
 
