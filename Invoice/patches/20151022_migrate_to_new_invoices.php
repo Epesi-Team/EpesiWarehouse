@@ -11,8 +11,8 @@ if(!$numbering_checkpoint->is_done()) {
     foreach ($warehouses as $w) {
         $wc = '';
         if (isset($w['invoice_number_code']) && $w['invoice_number_code']) $wc = $w['invoice_number_code'];
-        $wc = mb_strtoupper($w['warehouse'], 'UTF-8');
-        $numbering[$w['id']] = Utils_RecordBrowserCommon::new_record('premium_invoice_numbering', array('name' => __('Warehouse'), 'numbering_type' => '0', 'number_format' => '%Y/%n/%N-' . $wc, 'quote' => 0, 'active' => 1));
+        else $wc = mb_strtoupper($w['warehouse'], 'UTF-8');
+        $numbering[$w['id']] = Utils_RecordBrowserCommon::new_record('premium_invoice_numbering', array('name' => __('Warehouse').': '.$w['warehouse'], 'numbering_type' => '0', 'number_format' => '%Y/%n/%N-' . $wc, 'quote' => 0, 'active' => 1));
     }
     $numbering_checkpoint->set('numbering',$numbering);
 
@@ -85,6 +85,7 @@ if(!$invoices_checkpoint->is_done()) {
             'phone'=>$order['phone'],
             'tax_id'=>$order['tax_id']
         ));
+epesi_log($invoice_id.': '.print_r($order,true).print_r($items,true),'invoices');
         foreach($items as $item) {
             $it = Utils_RecordBrowserCommon::get_record('premium_warehouse_items', $item['item_name']);
             if(ModuleManager::is_installed('Premium/Warehouse/DrupalCommerce')>=0) {
@@ -110,7 +111,7 @@ if(!$invoices_checkpoint->is_done()) {
                 'billed_method'=>serialize(array('Premium_Warehouse_Items_Orders_InvoiceCommon','invoice')),
                 'billed_method_args'=>serialize(array($item['id']))
             ));
-            Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders_details',$item['id'],array('billed_quantity'=>$item['quantity'],'invoices'=>array_merge(is_array($item['invoices'])?$item['invoices']:array(),array($invoice_id))));
+//            Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders_details',$item['id'],array('billed_quantity'=>$item['quantity'],'invoices'=>array_merge(is_array($item['invoices'])?$item['invoices']:array(),array($invoice_id))));
         }
         Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders',$row['id'],array('billed'=>1));
 
