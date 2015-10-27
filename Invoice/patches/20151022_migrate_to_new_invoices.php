@@ -88,7 +88,7 @@ if(!$invoices_checkpoint->is_done()) {
             'zone'=>$order['zone'],
             'postal_code'=>$order['postal_code'],
             'phone'=>$order['phone'],
-            'tax_id'=>$order['tax_id']
+            'tax_id'=>$order['tax_id'],
         ));
         Utils_RecordBrowserCommon::update_record('premium_invoice',$invoice_id,array('invoice_number'=>$order['invoice_number']));
         foreach($items as $item) {
@@ -105,7 +105,7 @@ if(!$invoices_checkpoint->is_done()) {
 
             Utils_RecordBrowserCommon::new_record('premium_invoice_items',array(
                 'invoice_number' => $invoice_id,
-                'item_name'=>$it['item_name'],
+                'item_name'=>$it['sku'].': '.$it['item_name'],
                 'description'=>$item['description'],
                 'classification'=>$item['sww'],
                 'quantity'=>$item['quantity'],
