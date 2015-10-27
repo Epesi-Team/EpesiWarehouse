@@ -46,6 +46,7 @@ if(!$invoices_checkpoint->is_done()) {
     $zero_tax = Utils_RecordBrowserCommon::get_records('data_tax_rates', array('percentage'=>0));
     $zero_tax = array_shift($zero_tax);
     $def_curr = Utils_CurrencyFieldCommon::get_default_currency();
+    $company = CRM_ContactsCommon::get_company(CRM_ContactsCommon::get_main_company());
 
     while($ret = DB::SelectLimit('SELECT id FROM premium_warehouse_items_orders_data_1 WHERE active=1 AND f_transaction_type=1 AND f_invoice_number is not null AND f_invoice_number!="" ORDER BY id',1,$invoices++)) {
         $row = $ret->FetchRow();
@@ -58,6 +59,8 @@ if(!$invoices_checkpoint->is_done()) {
         list($amount,$curr) = Utils_CurrencyFieldCommon::get_values($item['net_price']);
         reset($items);
 
+        $due = date('Y-m-d',strtotime('+'.($order['terms']?$order['terms']:14).' days',strtotime($order['invoice_print_date'])));
+
         $invoice_id = Utils_RecordBrowserCommon::new_record('premium_invoice',array(
             'company_issuing_invoice'=>CRM_ContactsCommon::get_main_company(),
             'quote'=>0,
@@ -67,11 +70,11 @@ if(!$invoices_checkpoint->is_done()) {
             'employee'=>$order['employee'],
             'related'=> array('premium_warehouse_items_orders/'.$row['id']),
             'sales_date'=>$order['transaction_date'],
-            'due_date'=>date('Y-m-d',strtotime('+'.$order['terms'].' days',strtotime($order['invoice_print_date']))),
+            'due_date'=>$due,
             'print_date'=>$order['invoice_print_date'],
             'target_currency'=>$curr,
             'payment_type'=>$order['payment_type']?$payment_types[$order['payment_type']]:'',
-            'paid_date'=>'',
+            'paid_date'=>($order['status']==20?$due:''),
             'price_calculation'=>'gross',
             'tax_calculation'=>$order['tax_calculation'],
             'company_or_contact'=>$order['company']?'C:'.$order['company']:'P:'.$order['contact'],
@@ -114,6 +117,24 @@ if(!$invoices_checkpoint->is_done()) {
                 'billed_method_args'=>serialize(array($item['id']))
             ));
 //            Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders_details',$item['id'],array('billed_quantity'=>$item['quantity'],'invoices'=>array_merge(is_array($item['invoices'])?$item['invoices']:array(),array($invoice_id))));
+        }
+        $additional_cost = array();
+        $additional_cost['shipment'] = Utils_CurrencyFieldCommon::get_values($order['shipment_cost']);
+        $additional_cost['handling'] = Utils_CurrencyFieldCommon::get_values($order['handling_cost']);
+        foreach (array('shipment' => __('Shipment'), 'handling' => __('Handling')) as $k => $v) {
+            if ($additional_cost[$k][0]) {
+                Utils_RecordBrowserCommon::new_record('premium_invoice_items',array(
+                    'invoice_number' => $invoice_id,
+                    'item_name'=>$v,
+                    'description'=>'',
+                    'classification'=>'',
+                    'quantity'=>1,
+                    'unit'=> __('ea.'),
+                    'net_price'=>'',
+                    'tax_rate'=>($company['country']=='US'?$zero_tax['id']:23),
+                    'gross_price'=>Utils_CurrencyFieldCommon::format_default($additional_cost[$k][0],$additional_cost[$k][1]),
+                ));
+            }
         }
         Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders',$row['id'],array('billed'=>1));
 
