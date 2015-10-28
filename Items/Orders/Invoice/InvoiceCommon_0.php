@@ -22,7 +22,23 @@ class Premium_Warehouse_Items_Orders_InvoiceCommon extends ModuleCommon {
             if(isset($_REQUEST['create_invoice']) && $_REQUEST['create_invoice']==$record['id']) {
                 Premium_InvoiceCommon::clear_queue();
                 self::add_items_to_invoice($record);
-                Premium_InvoiceCommon::set_tax_calculation($record['company'],$record['tax_calculation']);
+                $payment_type = Utils_RecordBrowserCommon::get_records('premium_invoice_payment_types',array('order_payment_type'=>$record['payment_type']));
+                $payment_type = array_shift($payment_type);
+                if($payment_type) $payment_type = $payment_type['id'];
+                Premium_InvoiceCommon::set_invoice_defaults($record['company'],array(
+                    'tax_calculation'=>$record['tax_calculation'],
+                    'company_name'=>$record['company_name'],
+                    'last_name'=>$record['last_name'],
+                    'first_name'=>$record['first_name'],
+                    'address_1'=>$record['address_1'],
+                    'address_2'=>$record['address_2'],
+                    'city'=>$record['city'],
+                    'country'=>$record['country'],
+                    'zone'=>$record['zone'],
+                    'postal_code'=>$record['postal_code'],
+                    'phone'=>$record['phone'],
+                    'tax_id'=>$record['tax_id'],
+                    'payment_type'=>$payment_type));
                 $shipment = Utils_CurrencyFieldCommon::get_values($record['shipment_cost']);
                 if($shipment[0]) Premium_InvoiceCommon::queue_item(__('Shipment Cost'), $record['shipment_cost'],'',null,1,__('pc'),__('Transaction ID').': '.$record['transaction_id'], $record['company'],null,array(),'shipment');
                 $handling = Utils_CurrencyFieldCommon::get_values($record['handling_cost']);

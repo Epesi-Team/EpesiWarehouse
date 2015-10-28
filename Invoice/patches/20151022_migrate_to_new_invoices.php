@@ -18,7 +18,11 @@ if(!$numbering_checkpoint->is_done()) {
 
     $payment_types = Utils_CommonDataCommon::get_array('Premium_Items_Orders_Payment_Types');
     foreach($payment_types as $pk=>&$pt) {
-        $pt = Utils_RecordBrowserCommon::new_record('premium_invoice_payment_types',array('name'=>$pt));
+        $exists = Utils_RecordBrowserCommon::get_records('premium_invoice_payment_types',array('name'=>$pt));
+        if($exists) {
+            $exists = array_shift($exists);
+            $pt = $exists['id'];
+        } else $pt = Utils_RecordBrowserCommon::new_record('premium_invoice_payment_types',array('name'=>$pt));
     }
     $numbering_checkpoint->set('payments',$payment_types);
 
@@ -146,10 +150,8 @@ if(!$invoices_checkpoint->is_done()) {
 
 
 //remove old module
-//dla testow zakomentowane
-//ModuleManager::uninstall('Premium/Warehouse/Invoice');
+if(ModuleManager::is_installed('Custom/Dufthylki')>=0) ModuleManager::uninstall('Custom/Dufthylki');
+ModuleManager::uninstall('Premium/Warehouse/Invoice');
+Utils_RecordBrowserCommon::delete_record_field('premium_warehouse_items_orders','Terms');
+Utils_CommonDataCommon::remove('Premium_Items_Orders_Terms');
 
-//kolumny do skasowania z orders: payment_type, terms
-//common data: 'Premium_Items_Orders_Payment_Types', Premium_Items_Orders_Terms
-
-//dodawanie shipping i handling cost do faktury
