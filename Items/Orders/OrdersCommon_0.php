@@ -1201,8 +1201,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 					if (isset($_REQUEST['premium_warehouse_correct']) && $_REQUEST['premium_warehouse_correct']==$values['id']) {
 						$vals = $values;
 						$vals['related'] = $values['id'];
-						unset($vals['invoice_number']);
-						unset($vals['invoice_print_date']);
+						unset($vals['invoices']);
 						unset($vals['id']);
 						$new_id = Utils_RecordBrowserCommon::new_record('premium_warehouse_items_orders', $vals);
 						Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $values['id'],array('related'=>$new_id));

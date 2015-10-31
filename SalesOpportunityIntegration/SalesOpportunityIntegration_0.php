@@ -35,7 +35,6 @@ class Premium_Warehouse_SalesOpportunityIntegration extends Module {
 			'status'=>array('width'=>15, 'wrapmode'=>'nowrap'),
 			'transaction_id'=>array('width'=>10, 'wrapmode'=>'nowrap', 'name'=>__('Trans. ID')),
 			'transaction_type'=>array('width'=>10, 'wrapmode'=>'nowrap', 'name'=>__('Type')),
-			'invoice_number'=>array('width'=>10, 'wrapmode'=>'nowrap', 'name'=>__('Invoice')),
 			'transaction_date'=>array('width'=>10, 'wrapmode'=>'nowrap', 'name'=>__('Date'))
 		));
 		$rb->set_defaults($defaults);
