@@ -6,11 +6,11 @@
  */
 global $translations;
 $translations['Inventory Management']='Inventarverwaltung';
-$translations['Price']='';
+$translations['Price']='Preis';
 $translations['Part Number']='';
-$translations['On Hand']='';
-$translations['En Route']='';
-$translations['Avail. Qty']='';
+$translations['On Hand']='Vorrätig';
+$translations['En Route']='Unterwegs';
+$translations['Avail. Qty']='Verfügbare Menge';
 $translations['Dist Qty']='';
 $translations['Res. Qty']='';
 $translations['Items to Order']='';
