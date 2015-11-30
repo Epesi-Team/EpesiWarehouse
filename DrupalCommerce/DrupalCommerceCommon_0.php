@@ -723,7 +723,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
     }
 
     public static function submit_payment($values,$mode) {
-    	if($mode=='add' && $values['record_type']=='premium_warehouse_items_orders') {
+    	if($mode=='add' && $values['recordset']=='premium_warehouse_items_orders') {
     		$ord = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $values['record_id']);
     		if($ord && $ord['status']==-1)
     			Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $values['record_id'], array('status'=>-2));
@@ -1160,13 +1160,13 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			}
 
 			if(ModuleManager::is_installed('Premium_Payments')>=0) {
-				$payments = Utils_RecordBrowserCommon::get_records('premium_payments',array('record_id'=>''));
+				$payments = Utils_RecordBrowserCommon::get_records('premium_payments_entries',array('record_id'=>''));
 				foreach($payments as $payment) {
 					if(preg_match('/^drupal:([0-9]+):([0-9]+)$/',$payment['record_hash'],$match)) {
 						$ecomm_order = Utils_RecordBrowserCommon::get_records('premium_ecommerce_orders',array('drupal'=>$match[1],'drupal_order_id'=>$match[2]));
 						if(!$ecomm_order) continue;
 						$ecomm_order = array_shift($ecomm_order);
-						Utils_RecordBrowserCommon::update_record('premium_payments',$payment['id'],array('record_id'=>$ecomm_order['transaction_id']));
+						Utils_RecordBrowserCommon::update_record('premium_payments_entries',$payment['id'],array('record_id'=>$ecomm_order['transaction_id']));
 					}
 				}
 			}

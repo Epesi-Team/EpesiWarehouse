@@ -291,7 +291,7 @@ class Premium_Warehouse_DrupalCommerceInstall extends ModuleInstall {
 		
 		Premium_PaymentsCommon::new_addon('premium_warehouse_items_orders');
 		
-		Utils_RecordBrowserCommon::register_processing_callback('premium_payments', array('Premium_Warehouse_DrupalCommerceCommon', 'submit_payment'));
+		Utils_RecordBrowserCommon::register_processing_callback('premium_payments_entries', array('Premium_Warehouse_DrupalCommerceCommon', 'submit_payment'));
 
 		Utils_CommonDataCommon::extend_array('Premium_Items_Orders_Payment_Types',array('Drupal'=>_M('Drupal')),false,true);
 		Utils_CommonDataCommon::extend_array('Premium_Items_Orders_Shipment_Types',array('Drupal'=>_M('Drupal')),false,true);
@@ -334,7 +334,7 @@ class Premium_Warehouse_DrupalCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::unregister_processing_callback('premium_ecommerce_products', array('Premium_Warehouse_DrupalCommerceCommon', 'submit_products_position'));
 		Utils_RecordBrowserCommon::unregister_processing_callback('premium_ecommerce_parameters', array('Premium_Warehouse_DrupalCommerceCommon', 'submit_parameters_position'));
 		Utils_RecordBrowserCommon::unregister_processing_callback('premium_ecommerce_orders', array('Premium_Warehouse_DrupalCommerceCommon', 'submit_ecommerce_order'));
-		Utils_RecordBrowserCommon::unregister_processing_callback('premium_payments', array('Premium_Warehouse_DrupalCommerceCommon', 'submit_payment'));
+		Utils_RecordBrowserCommon::unregister_processing_callback('premium_payments_entries', array('Premium_Warehouse_DrupalCommerceCommon', 'submit_payment'));
 		Utils_RecordBrowserCommon::unregister_processing_callback('premium_ecommerce_parameter_groups', array('Premium_Warehouse_DrupalCommerceCommon', 'submit_parameter_groups_position'));
 		//Utils_RecordBrowserCommon::unregister_processing_callback('premium_ecommerce_param_group_labels', array('Premium_Warehouse_DrupalCommerceCommon', 'submit_parameter_labels'));
 		Utils_RecordBrowserCommon::unregister_processing_callback('premium_ecommerce_3rdp_info', array('Premium_Warehouse_DrupalCommerceCommon', 'submit_3rdp_info'));
