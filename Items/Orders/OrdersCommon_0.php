@@ -1608,7 +1608,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		}
 		foreach ($words as $w) {
 			$str = DB::Concat(DB::qstr('%'), '%s', DB::qstr('%'));
-            $fields_to_search = array('item_name', 'sku', 'product_code', 'manufacturer_part_number');
+            $fields_to_search = array('item_name', 'sku', 'product_code', 'manufacturer_part_number','upc');
             foreach ($fields_to_search as & $field_name) {
                 $field_name = "pwi.f_{$field_name} " . DB::like() . ' ' . $str;  // make f_name LIKE %%s% stmt
                 $vals[] = $w;  // put value for every %s - yes we know that it's the same for all
