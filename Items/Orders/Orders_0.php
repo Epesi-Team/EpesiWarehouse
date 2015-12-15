@@ -35,18 +35,17 @@ class Premium_Warehouse_Items_Orders extends Module {
 			else $disabled = array_flip($disabled);
 			$defaults2 = $defaults;
 			$defaults = array();
-    		if (!isset($disabled['disable_purchase'])) $defaults[__('Purchase')] = array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'purchase.png'), 'defaults'=>array_merge($defaults2,array('transaction_type'=>0,'terms'=>0,'payment'=>1,'transaction_date'=>date('Y-m-d'))));
-		    if (!isset($disabled['disable_sales_quote'])) $defaults[__('Sales Quote')] = array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'sale.png'), 'defaults'=>array_merge($defaults2,array('transaction_type'=>1,'terms'=>0,'payment'=>1,'transaction_date'=>date('Y-m-d'))));
-			if (!isset($disabled['disable_sale'])) $defaults[__('Sale')] = array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'quick_sale.png'), 'defaults'=>array_merge($defaults2,array('transaction_type'=>1, 'status'=>2,'payment'=>1, 'payment_type'=>0, 'shipment_type'=>0,'terms'=>0,'transaction_date'=>date('Y-m-d'))));
+    		if (!isset($disabled['disable_purchase'])) $defaults[__('Purchase')] = array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'purchase.png'), 'defaults'=>array_merge($defaults2,array('transaction_type'=>0,'payment'=>1,'transaction_date'=>date('Y-m-d'))));
+		    if (!isset($disabled['disable_sales_quote'])) $defaults[__('Sales Quote')] = array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'sale.png'), 'defaults'=>array_merge($defaults2,array('transaction_type'=>1,'payment'=>1,'transaction_date'=>date('Y-m-d'))));
+			if (!isset($disabled['disable_sale'])) $defaults[__('Sale')] = array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'quick_sale.png'), 'defaults'=>array_merge($defaults2,array('transaction_type'=>1, 'status'=>2,'payment'=>1, 'payment_type'=>0, 'shipment_type'=>0,'transaction_date'=>date('Y-m-d'))));
     		if (!isset($disabled['disable_inv_adj'])) $defaults[__('Inv. Adjustment')] = array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'inv_adj.png'), 'defaults'=>array_merge($defaults2,array('transaction_type'=>2,'transaction_date'=>date('Y-m-d'))));
 //	    	if (!isset($disabled['disable_rental'])) $defaults[__('Rental')] = array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'rental.png'), 'defaults'=>array_merge($defaults,array('transaction_type'=>3,'transaction_date'=>date('Y-m-d'))));
 		    if (!isset($disabled['disable_transfer'])) $defaults[__('Warehouse Transfer')] = array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'warehouse_transfer.png'), 'defaults'=>array_merge($defaults2,array('transaction_type'=>4,'transaction_date'=>date('Y-m-d'))));
-    		if (!isset($disabled['disable_checkin'])) $defaults[__('Check-in')] = array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'purchase.png'), 'defaults'=>array_merge($defaults2,array('transaction_type'=>0,'terms'=>0,'payment'=>0,'transaction_date'=>date('Y-m-d'))));
-	    	if (!isset($disabled['disable_checkout'])) $defaults[__('Check-out')] = array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'sale.png'), 'defaults'=>array_merge($defaults2,array('transaction_type'=>1,'terms'=>0,'payment'=>0,'transaction_date'=>date('Y-m-d'))));
+    		if (!isset($disabled['disable_checkin'])) $defaults[__('Check-in')] = array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'purchase.png'), 'defaults'=>array_merge($defaults2,array('transaction_type'=>0,'payment'=>0,'transaction_date'=>date('Y-m-d'))));
+	    	if (!isset($disabled['disable_checkout'])) $defaults[__('Check-out')] = array('icon'=>Base_ThemeCommon::get_template_file($this->get_type(),'sale.png'), 'defaults'=>array_merge($defaults2,array('transaction_type'=>1,'payment'=>0,'transaction_date'=>date('Y-m-d'))));
 			$this->rb->set_defaults($defaults, true);
 		} else {
 		    $defaults['transaction_type'] = 1;
-		    $defaults['terms'] = 0;
 		    $defaults['payment'] = 0;
 		    $defaults['contact'] = $me['id'];
 		    $defaults['company'] = $me['company_name'];
@@ -75,7 +74,6 @@ class Premium_Warehouse_Items_Orders extends Module {
 		$this->rb->set_additional_actions_method(array($this,'orders_actions'));
 
 		$this->rb->set_header_properties(array(
-			'terms'=>array('width'=>10, 'wrapmode'=>'nowrap'),
 			'status'=>array('width'=>15, 'wrapmode'=>'nowrap'),
 			'transaction_id'=>array('width'=>10, 'wrapmode'=>'nowrap', 'name'=>__('Trans. ID')),
 			'transaction_type'=>array('width'=>10, 'wrapmode'=>'nowrap', 'name'=>__('Type')),
@@ -231,9 +229,9 @@ class Premium_Warehouse_Items_Orders extends Module {
 							'tax_calculation'=> Variable::get('premium_warehouse_def_tax_calc', 0)
 							);
 		switch($conf['type']) {
-		    case 0: $new_def = array_merge($new_def,array('transaction_type'=>0,'terms'=>0,'payment'=>1,'transaction_date'=>date('Y-m-d')));
+		    case 0: $new_def = array_merge($new_def,array('transaction_type'=>0,'payment'=>1,'transaction_date'=>date('Y-m-d')));
 		        break;
-		    case 1: $new_def = array_merge($new_def,array('transaction_type'=>1, 'status'=>2,'payment'=>1, 'payment_type'=>0, 'shipment_type'=>0,'terms'=>0,'transaction_date'=>date('Y-m-d')));
+		    case 1: $new_def = array_merge($new_def,array('transaction_type'=>1, 'status'=>2,'payment'=>1, 'payment_type'=>0, 'shipment_type'=>0,'transaction_date'=>date('Y-m-d')));
 		        break;
 		    case 2: $new_def = array_merge($new_def,array('transaction_type'=>2,'transaction_date'=>date('Y-m-d')));
 		        break;
@@ -523,7 +521,6 @@ class Premium_Warehouse_Items_Orders extends Module {
 	public function revise_items(&$po_form, $items, $trans) {
 		$po_form->addElement('select', 'payment_type', __('Payment Type'), array(''=>'---')+Utils_CommonDataCommon::get_array('Premium_Items_Orders_Payment_Types'));
 		$po_form->addElement('text', 'payment_no', __('Payment No'));
-		$po_form->addElement('select', 'terms', __('Terms'), array(''=>'---')+Utils_CommonDataCommon::get_array('Premium_Items_Orders_Terms'));
 		$po_form->addElement('select', 'shipment_type', __('Shipment Type'), array(''=>'---')+Utils_CommonDataCommon::get_array('Premium_Items_Orders_Shipment_Types'));
 		$po_form->setDefaults($trans);
 

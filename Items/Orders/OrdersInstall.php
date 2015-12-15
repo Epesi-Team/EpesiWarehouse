@@ -44,7 +44,6 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 			array('name' => _M('Handling Cost'),	'type'=>'currency', 'required'=>false, 'extra'=>false, 'visible'=>false),
 			array('name' => _M('Weight'), 		'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>false, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_weight')),
 			array('name' => _M('Volume'),	 		'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>false, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_volume')),
-			array('name' => _M('Terms'),			'type'=>'commondata', 'param'=>array('order_by_key'=>true,'Premium_Items_Orders_Terms'), 'required'=>false, 'extra'=>false, 'visible'=>true),
 			array('name' => _M('Total Value'),	'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_total_value'), 'style'=>'currency'),
 			array('name' => _M('Tax Value'),		'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_tax_value'), 'style'=>'currency'),
 			array('name' => _M('Status'),			'type'=>'text', 'extra'=>false, 'param'=>'8', 'visible'=>true, 'filter'=>true, 'display_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'display_status'),'QFfield_callback'=>array('Premium_Warehouse_Items_OrdersCommon', 'QFfield_status')),
@@ -159,7 +158,6 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 		Utils_CommonDataCommon::new_array('Premium_Items_Orders_Trans_Types',array(0=>_M('Purchase'),1=>_M('Sale'),2=>_M('Inventory Adjustment'),3=>_M('Rental'),4=>_M('Transfer')),true,true);
 		Utils_CommonDataCommon::new_array('Premium_Items_Orders_Payment_Types',array(0=>_M('Cash'),1=>_M('Check')),true,true);
 		Utils_CommonDataCommon::new_array('Premium_Items_Orders_Shipment_Types',array(0=>_M('Pickup'),1=>_M('USPS'),2=>_M('UPS'),3=>_M('DHL'),4=>_M('FedEx'),5=>_M('Courier'),6=>_M('Other')),true,true);
-		Utils_CommonDataCommon::new_array('Premium_Items_Orders_Terms',array(0=>_M('Due on Receipt'),15=>_M('Net 15'),30=>_M('Net 30')),true,true);
 
 		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items', _M('Quantity En Route'), 'calculated', true, false, '', 'integer', false, false, 10);
 		Utils_RecordBrowserCommon::set_display_callback('premium_warehouse_items', 'Quantity En Route', array('Premium_Warehouse_Items_OrdersCommon', 'display_quantity_on_route'));
@@ -248,7 +246,6 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 		Utils_CommonDataCommon::remove('Premium_Items_Orders_Trans_Types');
 		Utils_CommonDataCommon::remove('Premium_Items_Orders_Payment_Types');
 		Utils_CommonDataCommon::remove('Premium_Items_Orders_Shipment_Types');
-		Utils_CommonDataCommon::remove('Premium_Items_Orders_Terms');
 		return true;
 	}
 	

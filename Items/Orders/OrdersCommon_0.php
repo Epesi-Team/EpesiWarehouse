@@ -449,9 +449,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			case 1: if (!$payment)
 						$opts = array(''=>__('Check-out Received'), 4=>__('Check-out confirmed'), 5=>__('On Hold'), 6=>__('Ready to Ship'), 7=>__('Shipped'), 20=>__('Delivered'), 21=>__('Canceled'), 22=>__('Missing'));
 					else {
-						$payment_ack = __('Payment Confirmed');
-						if (isset($trans['terms']) && $trans['terms']>0) $payment_ack = __('Payment Approved');
-						$opts = array(''=>__('New'), -1=>__('New Online Order'), -2=>__('New Online Order (with payment)'), 1=>__('Sales Quote'), 2=>__('Order Received'), 3=>$payment_ack, 4=>__('Order Confirmed'), 5=>__('On Hold'), 6=>__('Order Ready to Ship'), 7=>__('Shipped'), 20=>__('Delivered'), 21=>__('Canceled'), 22=>__('Missing'));
+						$opts = array(''=>__('New'), -1=>__('New Online Order'), -2=>__('New Online Order (with payment)'), 1=>__('Sales Quote'), 2=>__('Order Received'), 3=>__('Payment Approved'), 4=>__('Order Confirmed'), 5=>__('On Hold'), 6=>__('Order Ready to Ship'), 7=>__('Shipped'), 20=>__('Delivered'), 21=>__('Canceled'), 22=>__('Missing'));
 					}
 					break;
 			// INV. ADJUSTMENT
@@ -1161,7 +1159,6 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 						'$(\'payment_no\').disabled = arg;'.
 						'$(\'shipment_type\').disabled = arg;'.
 						'$(\'shipment_no\').disabled = arg;'.
-						'$(\'terms\').disabled = arg;'.
 						'if($(\'status\')){'.
 							'if(arg)'.
 								'new_opts = '.json_encode($opts_no_pay).';'.

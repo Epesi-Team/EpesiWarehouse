@@ -31,7 +31,6 @@ class Premium_Warehouse_SalesOpportunityIntegration extends Module {
 							'payment'=>1
 							);
 		$rb->set_header_properties(array(
-			'terms'=>array('width'=>10, 'wrapmode'=>'nowrap'),
 			'status'=>array('width'=>15, 'wrapmode'=>'nowrap'),
 			'transaction_id'=>array('width'=>10, 'wrapmode'=>'nowrap', 'name'=>__('Trans. ID')),
 			'transaction_type'=>array('width'=>10, 'wrapmode'=>'nowrap', 'name'=>__('Type')),

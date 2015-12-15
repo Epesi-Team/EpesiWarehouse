@@ -227,7 +227,6 @@ class Premium_Warehouse_DrupalCommerce_AllegroCommon extends ModuleCommon {
 			    'status'=>-1,
 			    'contact'=>$contact,
 			    'company'=>$company,
-			    'terms'=>null,
 			    'receipt'=>$trans->postBuyFormInvoiceOption?0:1,
 			    'handling_cost'=>null,
 			    'shipping_company_name'=>$trans->postBuyFormShipmentAddress->postBuyFormAdrCompany,
@@ -304,7 +303,6 @@ class Premium_Warehouse_DrupalCommerce_AllegroCommon extends ModuleCommon {
 			    'online_order'=>1,
 			    'status'=>-1,
 			    'contact'=>$contact,
-			    'terms'=>null,
 			    'handling_cost'=>null,
 			));
 		    
@@ -443,7 +441,6 @@ class Premium_Warehouse_DrupalCommerce_AllegroCommon extends ModuleCommon {
 			    'online_order'=>1,
 			    'status'=>-1,
 			    'company'=>$company,
-			    'terms'=>null,
 			    'receipt'=>$trans->postBuyFormInvoiceOption?0:1,
 			    'handling_cost'=>null,
 			    'shipping_company_name'=>$trans->postBuyFormShipmentAddress->postBuyFormAdrCompany,

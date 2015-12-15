@@ -17,7 +17,6 @@ warehouse_orders_hide_fields = function(trans_type, status, shipment_type, payme
 	var payments = ($('payment') && $('payment').type=='checkbox' && !$('payment').checked)?false:true;
 	warehouse_orders_hide_field('payment_type', (!payments || trans_type==2 || trans_type==4));
 	warehouse_orders_hide_field('payment_no', ((status<2 && trans_type!=3) || payment_type==0 || !payments || trans_type==2 || trans_type==4));
-	warehouse_orders_hide_field('terms', (!payments || trans_type==2 || trans_type==4));
 	warehouse_orders_hide_field('total_value', (trans_type==2 || trans_type==4));
 	warehouse_orders_hide_field('invoice_number', (!payments || trans_type==4));
 	warehouse_orders_hide_field('invoice_print_date', (!payments || trans_type==4));

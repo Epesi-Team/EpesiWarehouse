@@ -164,7 +164,7 @@ class Premium_Warehouse_EmpSalesReport extends Module {
 		$cols='';
 		// sales status can be 7 or 20
 		$orders = array(array('employee'=>$employee_id,'transaction_type'=>'1','status'=>array(20,7),'>='.$order_date=>$start, '<='.$order_date=>$end), $cols, array($order_date=>'DESC'));
-		$rb->set_header_properties(array('terms'=>array('width'=>10, 'wrapmode'=>'nowrap'),'status'=>array('width'=>10, 'wrapmode'=>'nowrap')));
+		$rb->set_header_properties(array('status'=>array('width'=>10, 'wrapmode'=>'nowrap')));
 		$this->display_module($rb,$orders,'show_data');
 		Base_ActionBarCommon::add('back',__('Back'),$this->create_back_href());
 		return true;
