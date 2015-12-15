@@ -499,7 +499,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			$form->setDefaults(array($field=>$default));
 		} else {
 			if(isset($_SESSION['client']['order_add'])) {
-				$rb_obj->switch_to_addon('Items');
+				$rb_obj->switch_to_addon(__('Items'));
 				unset($_SESSION['client']['order_add']);
 			}
 			if ($default) {
