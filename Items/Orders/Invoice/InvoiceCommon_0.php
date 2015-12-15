@@ -101,13 +101,11 @@ class Premium_Warehouse_Items_Orders_InvoiceCommon extends ModuleCommon {
     }
 
     public static function QFfield_invoices(&$form, $field, $label, $mode, $default, $desc, $rb_obj) {
-        Utils_RecordBrowserCommon::QFfield_multiselect($form,$field,$label,$mode,$default,$desc,$rb_obj);
-        $form->freeze($field);
+        Utils_RecordBrowserCommon::QFfield_static_display($form,$field,$label,$mode,$default,$desc,$rb_obj);
     }
 
     public static function QFfield_billed(&$form, $field, $label, $mode, $default,$desc,$rb) {
-        Utils_RecordBrowserCommon::QFfield_checkbox($form, $field, $label, $mode, $default,$desc,$rb);
-        $form->freeze($field);
+        Utils_RecordBrowserCommon::QFfield_static_display($form, $field, $label, $mode, $default,$desc,$rb);
     }
     
     public static function submit_order($vals,$action) {
