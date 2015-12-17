@@ -1206,6 +1206,8 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 						foreach ($det as $d) {
 							$d['transaction_id']=$new_id;
 							$d['quantity'] = -$d['quantity'];
+							unset($d['billed_quantity']);
+							unset($d['invoices']);
 							unset($d['id']);
 							Utils_RecordBrowserCommon::new_record('premium_warehouse_items_orders_details', $d);
 						}
