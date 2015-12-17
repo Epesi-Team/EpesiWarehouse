@@ -1019,6 +1019,19 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			    //contact & company
 			    $contact = DB::GetOne('SELECT id FROM contact_data_1 WHERE f_email=%s AND active=1',array($ord['mail']));
 			    $company = DB::GetOne('SELECT id FROM company_data_1 WHERE f_email=%s AND active=1',array($ord['mail']));
+                if($contact && !$company) {
+                    $contact_data = Utils_RecordBrowserCommon::get_record('contact',$contact);
+                    $company_data = Utils_RecordBrowserCommon::get_record('company',$contact_data['company_name']);
+                    if($billing['organisation_name'] && $company_data['company_name']==$billing['organisation_name']) $company = $company_data['id'];
+                }
+                if(!$company || !$contact) {
+                    $other_mails = DB::GetAll('SELECT f_record_type,f_record_id FROM rc_multiple_emails_data_1 WHERE f_email=%s AND (f_record_type="company" OR f_record_type="contact")',array($ord['mail']));
+                    foreach($other_mails as $mail) {
+                        if(!$company && $mail['record_type']=='company') $company = $mail['record_id'];
+                        if(!$contact && $mail['record_type']=='contact') $contact = $mail['record_id'];
+                    }
+                }
+
 			    if(!$company && $billing['organisation_name']) {
 			        $company = Utils_RecordBrowserCommon::new_record('company',array(
 			          'company_name'=>$billing['organisation_name'],
