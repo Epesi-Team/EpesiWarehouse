@@ -59,7 +59,7 @@ class Premium_Warehouse_Items_Orders_InvoiceCommon extends ModuleCommon {
         foreach($items as $item) {
             if($item['billed_quantity']<$item['quantity']) {
                 $description = html_entity_decode(strip_tags($item['description']));
-                Premium_InvoiceCommon::queue_item(html_entity_decode(Premium_Warehouse_ItemsCommon::display_item_name($item['item_name'],true)), $item['net_price'],$item['tax_rate'],$item['gross_price'],$item['quantity']-$item['billed_quantity'],__('pc'),($description?$description.' | ':'').($item['markup_discount_rate']<0?'Discount: '.$item['markup_discount_rate'].'% | ':'').__('Transaction ID').': '.$record['transaction_id'], $record['company'],
+                Premium_InvoiceCommon::queue_item(html_entity_decode(Premium_Warehouse_ItemsCommon::display_item_name($item['item_name'],true)), $item['net_price'],$item['tax_rate'],$item['gross_price'],$item['quantity']-$item['billed_quantity'],__('pc'),($description?$description.' | ':'').($item['markup_discount_rate']<0?__('Discount').': '.$item['markup_discount_rate'].'% | ':'').__('Transaction ID').': '.$record['transaction_id'], $record['company'],
                                 array('Premium_Warehouse_Items_Orders_InvoiceCommon','invoice'),array($item['id']),$item['id']);
 
             }
