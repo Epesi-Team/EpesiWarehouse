@@ -20,6 +20,10 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 	public static $key = null;
 	private static $status_blocked = null;
 	private static $order_details_id = null;
+
+	public static function transaction_caption($r,$nolink=false){
+		return __('Transaction %s (%s)',array($r['transaction_id'],Base_RegionalSettingsCommon::time2reg($r['transaction_date'],false,true,false)));
+	}
 	
 	public static function user_settings() {
 		return array(	
