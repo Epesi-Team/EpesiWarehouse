@@ -1,9 +1,7 @@
 <?php defined("_VALID_ACCESS") || die('Direct access forbidden');
 if(ModuleManager::is_installed('Premium/Payments')<0 || ModuleManager::is_installed('Premium/Warehouse/Items/Orders/Invoice')<0) return;
-$ret = Utils_RecordBrowserCommon::get_records('premium_payments_addons',array('recordset'=>'premium_warehouse_items_orders'));
-$addon = array_shift($ret);
-if(!$addon) return;
-$old_entries = DB::GetAssoc('SELECT id,f_record_id FROM premium_payments_entries_data_1 WHERE f_recordset=%s',array('premium_payments_entries_data_1'));
+
+$old_entries = DB::GetAssoc('SELECT id,f_record_id FROM premium_payments_entries_data_1 WHERE f_recordset=%s',array('premium_warehouse_items_orders'));
 foreach($old_entries as $pay_id=>$record_id) {
     $items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details',array('transaction_id'=>$record_id));
     foreach($items as $item) {
