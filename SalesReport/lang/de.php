@@ -7,7 +7,7 @@
 global $translations;
 $translations['Sales Report']='';
 $translations['Total']='Gesamt';
-$translations['Inventory Management']='Inventarverwaltung';
+$translations['Inventory Management']='Lagerverwaltung';
 $translations['Unknown mode']='';
 $translations['Net']='';
 $translations['Gross']='';

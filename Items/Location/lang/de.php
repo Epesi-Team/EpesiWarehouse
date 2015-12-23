@@ -7,12 +7,12 @@
 global $translations;
 $translations['Total']='Gesamt';
 $translations['n/a']='';
-$translations['Inventory Management']='Inventarverwaltung';
+$translations['Inventory Management']='Lagerverwaltung';
 $translations['Quantity']='Menge';
 $translations['Item Name']='';
 $translations['Item SKU']='';
 $translations['Warehouse']='Lager';
-$translations['Quantity on Hand']='Verfügbare Menge';
+$translations['Quantity on Hand']='Verfügbar';
 $translations['Items Locations']='';
 $translations['Items Serials']='';
 $translations['Warehouse Items']='';

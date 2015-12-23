@@ -5,10 +5,10 @@
  * @subpackage de
  */
 global $translations;
-$translations['Inventory Management']='Inventarverwaltung';
+$translations['Inventory Management']='Lagerverwaltung';
 $translations['Bank account']='Bankkonto';
 $translations['Auto update']='';
-$translations['Inventory']='';
+$translations['Inventory']='Lager';
 $translations['Popup products']='';
 $translations['Send On Status']='';
 $translations['eCommerce - e-mails']='';

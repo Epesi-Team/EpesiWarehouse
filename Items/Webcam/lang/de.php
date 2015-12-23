@@ -5,6 +5,6 @@
  * @subpackage de
  */
 global $translations;
-$translations['Inventory Management']='Inventarverwaltung';
+$translations['Inventory Management']='Lagerverwaltung';
 $translations['Webcam']='Webcam';
 $translations['Webcam photos']='';

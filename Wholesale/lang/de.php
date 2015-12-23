@@ -6,7 +6,7 @@
  */
 global $translations;
 $translations['Weight']='Gewicht';
-$translations['Inventory Management']='Inventarverwaltung';
+$translations['Inventory Management']='Lagerverwaltung';
 $translations['Price']='Preis';
 $translations['Quantity']='Menge';
 $translations['Items']='Teile';
@@ -17,7 +17,7 @@ $translations['Plugin']='';
 $translations['Auto update']='';
 $translations['Last update']='';
 $translations['eCommerce']='';
-$translations['Inventory']='';
+$translations['Inventory']='Lager';
 $translations['UPC']='';
 $translations['Product Code']='';
 $translations['URL']='';

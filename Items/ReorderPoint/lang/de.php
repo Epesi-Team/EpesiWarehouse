@@ -5,12 +5,12 @@
  * @subpackage de
  */
 global $translations;
-$translations['Inventory Management']='Inventarverwaltung';
+$translations['Inventory Management']='Lagerverwaltung';
 $translations['Price']='Preis';
 $translations['Part Number']='';
 $translations['On Hand']='Vorrätig';
 $translations['En Route']='Unterwegs';
-$translations['Avail. Qty']='Verfügbare Menge';
+$translations['Avail. Qty']='Verf. Menge';
 $translations['Dist Qty']='';
 $translations['Res. Qty']='';
 $translations['Items to Order']='';
