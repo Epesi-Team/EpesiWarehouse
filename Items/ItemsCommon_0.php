@@ -128,7 +128,7 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
     
     public static function QFfield_gross_price(&$form, $field, $label, $mode, $default) {
 		if ($mode=='edit' || $mode=='add') {
-			$form->addElement('currency', $field, $label, array('id'=>$field));
+			$form->addElement('currency', $field, $label, array(), array('id'=>$field));
 			$r=Utils_RecordBrowser::$last_record;
 			Premium_Warehouse_ItemsCommon::init_net_gross_js_calculation($form, 'tax_rate', 'net_price', 'gross_price');
 			if (isset($r['net_price'])) {

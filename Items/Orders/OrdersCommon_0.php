@@ -574,13 +574,9 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
                 $default = explode('__',$default);
                 $default = Utils_CurrencyFieldCommon::format_default($default[0], $default[1]);
             }
-            $form->addElement('currency', $field, $label, array('id'=>$field));
-            $form->setDefaults(array($field=>$default));
-            $form->setDefaults(array($field=>$default));
-        } else {
-            $form->addElement('currency', $field, $label, array('id'=>$field));
-            $form->setDefaults(array($field=>$default));
         }
+        $form->addElement('currency', $field, $label, array(), array('id'=>$field));
+        $form->setDefaults(array($field=>$default));
     }
 
     public static function QFfield_discount_rate(&$form, $field, $label, $mode, $default, $desc, $rb_obj){
@@ -604,21 +600,21 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 				$default = Utils_CurrencyFieldCommon::format_default($default[0], $default[1]);
 			}
 			Premium_Warehouse_ItemsCommon::init_net_gross_js_calculation($form, 'tax_rate', 'net_price', 'gross_price','unit_price','markup_discount_rate');
-			$form->addElement('currency', $field, $label, array('id'=>$field));
+			$form->addElement('currency', $field, $label, array(),array('id'=>$field));
 			$form->setDefaults(array($field=>$default, 'use_net_price'=>1));
 			if ($default) {
 				$decp = Utils_CurrencyFieldCommon::get_decimal_point();
 				eval_js('update_gross("'.$decp.'","net_price","gross_price","tax_rate",0);');
 			}
 		} else {
-			$form->addElement('currency', $field, $label, array('id'=>$field));
+			$form->addElement('currency', $field, $label, array(),array('id'=>$field));
 			$form->setDefaults(array($field=>$default));
 		}
 	}
 	
 	public static function QFfield_gross_price(&$form, $field, $label, $mode, $default, $desc, $rb_obj){
 		if ($mode!=='view') {
-			$form->addElement('currency', $field, $label, array('id'=>$field));
+			$form->addElement('currency', $field, $label, array(), array('id'=>$field));
 			$form->setDefaults(array($field=>$default));
 		} else {
 			$form->addElement('static', $field, $label, self::display_gross_price(Utils_RecordBrowser::$last_record, false));
