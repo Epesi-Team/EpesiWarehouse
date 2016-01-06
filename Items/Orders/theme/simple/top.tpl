@@ -150,17 +150,6 @@
 		<td width="90px" align="left">
 			{$order.payment_type_label}
 		</td>
-		{if $order.terms_label}
-            {assign var="payment_colspan" value="1"}
-			<td width="90px" align="right">
-				{$labels.due_date}
-			</td>
-			<td width="5px">
-			</td>
-			<td align="left" width="160px">
-				{$order.terms_label}
-			</td>
-		{/if}
 	</tr>
 </table>
 <br>
