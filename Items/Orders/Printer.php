@@ -89,7 +89,7 @@ class Premium_Warehouse_Items_Orders_Printer extends Base_Print_Printer {
     {
         $this->section_header();
 
-        $this->init_data($order['record_id']);
+        $this->init_data(isset($order['record_id'])?$order['record_id']:$order);
         $this->check_access();
 
         $this->footer();
