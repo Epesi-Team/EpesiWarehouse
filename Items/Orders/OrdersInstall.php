@@ -89,6 +89,7 @@ class Premium_Warehouse_Items_OrdersInstall extends ModuleInstall {
 //		Utils_RecordBrowserCommon::set_quickjump('premium_warehouse_items_orders', 'Item');
 		Utils_RecordBrowserCommon::set_favorites('premium_warehouse_items_orders', true);
 		Utils_RecordBrowserCommon::set_recent('premium_warehouse_items_orders', 15);
+		Utils_RecordBrowserCommon::set_printer('premium_warehouse_items_orders', 'Premium_Warehouse_Items_Orders_Printer');
 		Utils_RecordBrowserCommon::set_caption('premium_warehouse_items_orders', _M('Items Transactions'));
 //		Utils_RecordBrowserCommon::set_icon('premium_warehouse_items_orders', Base_ThemeCommon::get_template_filename('Premium/Warehouse/Items/Orders', 'icon.png'));
 		Utils_RecordBrowserCommon::enable_watchdog('premium_warehouse_items_orders', array('Premium_Warehouse_Items_OrdersCommon','watchdog_label'));
