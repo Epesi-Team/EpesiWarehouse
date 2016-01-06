@@ -120,30 +120,7 @@ class Premium_Warehouse_Items_Orders_Printer extends Base_Print_Printer {
         if (file_exists($file))
             $section->assign('logo', '<img src="' . $file . '" />');
 
-        
-        $paid = & $this->paid;
-
-        $payments_sum = $this->get_payments_sum();
-        foreach ($payments_sum->get_total() as $currency => $value) {
-            $paid[$currency] = $value->get_amount();
-        }
-
         $this->print_section('top', $section);
-    }
-
-    protected function get_payments_sum()
-    {
-        $ret = new Utils_CurrencyField_Sum();
-        if (ModuleManager::is_installed('Premium/Payments') >= 0
-            && class_exists('Premium_Payments_TotalPayment')) {
-            $total_calculator = new Premium_Payments_TotalPayment('premium_warehouse_items_orders', $this->order['id'], 'exchanged_amount');
-            $total_per_status = $total_calculator->sum();
-            $status = Premium_Payments_ProcessingStatus::STATUS_PAID;
-            if (isset($total_per_status[$status])) {
-                $ret = $total_per_status[$status];
-            }
-        }
-        return $ret;
     }
 
     protected function section_header()
@@ -295,7 +272,6 @@ class Premium_Warehouse_Items_Orders_Printer extends Base_Print_Printer {
         $gross_total_sum = & $this->gross_total_sum;
         $net_total_sum = & $this->net_total_sum;
         $tax_total_sum = & $this->tax_total_sum;
-        $amount_due = & $this->amount_due;
 
         $gross_total_sum_f = & $this->gross_total_sum_f;
         $net_total_sum_f = & $this->net_total_sum_f;
@@ -317,8 +293,6 @@ class Premium_Warehouse_Items_Orders_Printer extends Base_Print_Printer {
             $net_total_sum[$k]['x'] = $sum['net'];
             $tax_total_sum[$k]['x'] = $sum['tax'];
             $gross_total_sum_f[$k]['x'] = Utils_CurrencyFieldCommon::format($sum['gross'], $k);
-            if (!isset($amount_due[$k])) $amount_due[$k] = 0;
-            $amount_due[$k] += $sum['gross'];
             $net_total_sum_f[$k]['x'] = Utils_CurrencyFieldCommon::format($sum['net'], $k);
             $tax_total_sum_f[$k]['x'] = Utils_CurrencyFieldCommon::format($sum['tax'], $k);
         }
@@ -341,8 +315,6 @@ class Premium_Warehouse_Items_Orders_Printer extends Base_Print_Printer {
         $gross_total_sum_f = & $this->gross_total_sum_f;
         $net_total_sum_f = & $this->net_total_sum_f;
         $tax_total_sum_f = & $this->tax_total_sum_f;
-        $amount_due = & $this->amount_due;
-        $paid = & $this->paid;
 
         $theme = $this->new_section();
         $theme->assign('order', $order);
@@ -350,16 +322,8 @@ class Premium_Warehouse_Items_Orders_Printer extends Base_Print_Printer {
         foreach ($gross_total_sum_f as $gr) $total[] = $gr['x'];
         $total_net = array();
         foreach ($net_total_sum_f as $gr) $total_net[] = $gr['x'];
-        foreach ($amount_due as $k => $v) {
-            if (!isset($paid[$k])) $paid[$k] = 0;
-            $v -= $paid[$k];
-            $amount_due[$k] = Utils_CurrencyFieldCommon::format($v, $k);
-        }
-        foreach ($paid as $k => $v) $paid[$k] = Utils_CurrencyFieldCommon::format($v, $k);
         $theme->assign('total', implode('<br/>', $total));
         $theme->assign('net_total', implode('<br/>', $total_net));
-        $theme->assign('paid', implode('<br/>', $paid));
-        $theme->assign('amount_due', implode(', ', $amount_due));
         $PLN = DB::GetOne('SELECT id FROM utils_currency WHERE code=%s', array('PLN'));
         $USD = DB::GetOne('SELECT id FROM utils_currency WHERE code=%s', array('USD'));
         $EUR = DB::GetOne('SELECT id FROM utils_currency WHERE code=%s', array('EUR'));
@@ -382,8 +346,6 @@ class Premium_Warehouse_Items_Orders_Printer extends Base_Print_Printer {
         $theme->assign('total_word_en', implode('<br/>', $wording_en));
 
         $labels = array(
-            'amount_due' => __('AMOUNT DUE'),
-            'amount_paid' => __('AMOUNT PAID'),
             'total_price' => __('TOTAL PRICE'),
             'in_words' => __('IN WORDS'),
             'employee_sig' => __('Employee signature'),
@@ -438,9 +400,6 @@ class Premium_Warehouse_Items_Orders_Printer extends Base_Print_Printer {
     private $items;
     private $style;
     private $labels;
-    
-    private $paid = array();
-    private $amount_due = array();
     
     private $gross_total_sum = array();
     private $net_total_sum = array();
