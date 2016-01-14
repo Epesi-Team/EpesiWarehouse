@@ -964,6 +964,8 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			$taxes = DB::GetAssoc('SELECT f_percentage, id FROM data_tax_rates_data_1 WHERE active=1');
 			$taxes2 = DB::GetAssoc('SELECT id, f_percentage FROM data_tax_rates_data_1 WHERE active=1');
 			$drupal_orders_tmp = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'order',array('filter'=>array('status'=>'pending'),'limit'=>999999999999999999));
+			$drupal_orders_tmp2 = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'order',array('filter'=>array('status'=>'checkout_payment'),'limit'=>999999999999999999));
+			$drupal_orders_tmp = array_merge($drupal_orders_tmp,$drupal_orders_tmp2);
 			foreach($drupal_orders_tmp as $ord) {
 			  if(!Utils_RecordBrowserCommon::get_records_count('premium_ecommerce_orders',array('drupal'=>$drupal_id,'drupal_order_id'=>$ord['order_id']))) {
 			    $billing = array_shift($ord['commerce_customer_billing_entities']);
