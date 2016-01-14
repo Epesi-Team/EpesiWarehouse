@@ -172,6 +172,7 @@ class Premium_Warehouse_DrupalCommerceInstall extends ModuleInstall {
 			array('name' => _M('Password'), 			'type'=>'text', 'required'=>true, 'param'=>'128', 'extra'=>false, 'visible'=>false,'QFfield_callback'=>array('Premium_Warehouse_DrupalCommerceCommon','QFfield_password'), 'display_callback'=>array('Premium_Warehouse_DrupalCommerceCommon','display_password')),
 			array('name' => _M('Endpoint'), 			'type'=>'text', 'required'=>true, 'param'=>'128', 'extra'=>false, 'visible'=>true),
 			array('name' => _M('Export Net Price'), 			'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>true),
+			array('name' => _M('Import orders on payment step'), 			'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>true),
 			array('name' => _M('Pathauto i18n'), 			'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>true),
 		);
 		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_drupal', $fields);
