@@ -603,8 +603,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 			$form->addElement('currency', $field, $label, array(),array('id'=>$field));
 			$form->setDefaults(array($field=>$default, 'use_net_price'=>1));
 			if ($default) {
-				$decp = Utils_CurrencyFieldCommon::get_decimal_point();
-				eval_js('update_gross("'.$decp.'","net_price","gross_price","tax_rate",0);');
+				eval_js('update_gross("net_price","gross_price","tax_rate",0);');
 			}
 		} else {
 			$form->addElement('currency', $field, $label, array(),array('id'=>$field));
@@ -696,7 +695,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		if (!is_numeric($item_id)) return array('item_name'=>__( 'Item not found'));
 		$item = Utils_RecordBrowserCommon::get_record('premium_warehouse_items', $item_id);
 		$item['last_purchase_price'] = Utils_CurrencyFieldCommon::get_values($item['last_purchase_price']);
-		$sale_price = implode('.',explode(Utils_CurrencyFieldCommon::get_decimal_point(), $data['net_price']));
+		$sale_price = implode('.',explode(Utils_CurrencyFieldCommon::get_decimal_point($data['__net_price__currency']), $data['net_price']));
 		if (!$item['last_purchase_price'][0]) return true;
 		if ($item['last_purchase_price'][1]!=$data['__net_price__currency']) return true;
 		if ($sale_price<$item['last_purchase_price'][0]) return array('net_price'=>__('Error! Price too low.'));
@@ -735,7 +734,6 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		self::get_trans();
 		if ($mode=='add' || $mode=='edit') {
 			if (self::$trans['transaction_type']==1 && self::$trans['payment']==1) {
-				$decp = Utils_CurrencyFieldCommon::get_decimal_point();
 				load_js('modules/Premium/Warehouse/Items/Orders/check_item_price_cost.js');
 				$msg = __('Warning: Sale price is lower than the last purchase price.');
 				$sell_with_loss = Base_AclCommon::check_permission('Inventory - Sell at loss');
@@ -744,7 +742,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 					$form->addFormRule(array('Premium_Warehouse_Items_OrdersCommon','check_sale_price'));
 				}
 				$warning = $msg;
-				$form->addElement('button', 'submit', __('Submit'), array('style'=>'width:auto;', 'onclick'=>'if(check_item_price_cost_difference("'.$decp.'","'.$warning.'","'.((int)(!$sell_with_loss)).'")){'.$form->get_submit_form_js().'};'));
+				$form->addElement('button', 'submit', __('Submit'), array('style'=>'width:auto;', 'onclick'=>'if(check_item_price_cost_difference("'.$warning.'","'.((int)(!$sell_with_loss)).'")){'.$form->get_submit_form_js().'};'));
 				$form->addElement('hidden', 'last_item_price', '', array('id'=>'last_item_price'));
 			}
 			$crits = array();
@@ -770,7 +768,7 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
             $curr_format = '-?[0-9]*\.?[0-9]*';
 			eval_js('Event.observe(\''.$field.'\',\'keypress\',Utils_CurrencyField.validate.bindAsEventListener(Utils_CurrencyField,\''.Epesi::escapeJS($curr_format,false).'\'))');
 			eval_js('Event.observe(\''.$field.'\',\'blur\',Utils_CurrencyField.validate_blur.bindAsEventListener(Utils_CurrencyField,\''.Epesi::escapeJS($curr_format,false).'\'))');
-            eval_js('Event.observe("'.$field.'","keyup",function(){update_total(jq("#net_price").val(),jq("#gross_price").val(),"'.Utils_CurrencyFieldCommon::get_decimal_point().'");});');
+            eval_js('Event.observe("'.$field.'","keyup",function(){update_total(jq("#net_price").val(),jq("#gross_price").val());});');
 		} else {
 			$form->addElement('static', $field, $label);
 			$form->setDefaults(array($field=>$default));

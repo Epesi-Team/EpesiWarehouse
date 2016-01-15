@@ -147,21 +147,20 @@ class Premium_Warehouse_ItemsCommon extends ModuleCommon {
 			$js .= 'tax_values['.$k.']='.$v['percentage'].';';
 		eval_js($js);
 		// TODO: call only once
-		$decp = Utils_CurrencyFieldCommon::get_decimal_point();
 		$switch_field = 'switch_net_gross_'.md5($form->getAttribute('name').$tax_rate_field.$net_field.$gross_field);
 		load_js('modules/Premium/Warehouse/Items/net_gross.js');
-        eval_js('if ($("'.$net_field.'")) Event.observe("'.$net_field.'","keyup",function(){update_gross("'.$decp.'","'.$net_field.'","'.$gross_field.'","'.$tax_rate_field.'","'.$switch_field.'");});');
-        eval_js('if ($("'.$gross_field.'")) Event.observe("'.$gross_field.'","keyup",function(){update_net("'.$decp.'","'.$net_field.'","'.$gross_field.'","'.$tax_rate_field.'","'.$switch_field.'");});');
-		eval_js('if ($("'.$tax_rate_field.'")) Event.observe("'.$tax_rate_field.'","change",function(){if($("'.$switch_field.'").value==1)update_gross("'.$decp.'","'.$net_field.'","'.$gross_field.'","'.$tax_rate_field.'","'.$switch_field.'");else update_net("'.$decp.'","'.$net_field.'","'.$gross_field.'","'.$tax_rate_field.'","'.$switch_field.'");});');
+        eval_js('if ($("'.$net_field.'")) Event.observe("'.$net_field.'","keyup",function(){update_gross("'.$net_field.'","'.$gross_field.'","'.$tax_rate_field.'","'.$switch_field.'");});');
+        eval_js('if ($("'.$gross_field.'")) Event.observe("'.$gross_field.'","keyup",function(){update_net("'.$net_field.'","'.$gross_field.'","'.$tax_rate_field.'","'.$switch_field.'");});');
+		eval_js('if ($("'.$tax_rate_field.'")) Event.observe("'.$tax_rate_field.'","change",function(){if($("'.$switch_field.'").value==1)update_gross("'.$net_field.'","'.$gross_field.'","'.$tax_rate_field.'","'.$switch_field.'");else update_net("'.$net_field.'","'.$gross_field.'","'.$tax_rate_field.'","'.$switch_field.'");});');
 		eval_js('if ($("'.$gross_field.'")) Event.observe("__'.$gross_field.'__currency","change",function(){switch_currencies($("__'.$gross_field.'__currency").selectedIndex,"'.$net_field.'","'.$gross_field.'","'.$unit_field.'");});');
 		eval_js('if ($("'.$net_field.'")) Event.observe("__'.$net_field.'__currency","change",function(){switch_currencies($("__'.$net_field.'__currency").selectedIndex,"'.$net_field.'","'.$gross_field.'","'.$unit_field.'");});');
         if($unit_field && $discount_field) {
-            eval_js('if ($("'.$unit_field.'")) Event.observe("'.$unit_field.'","keyup",function(){update_net_discount("'.$decp.'","'.$unit_field.'","'.$net_field.'","'.$gross_field.'","'.$discount_field.'");update_gross("'.$decp.'","'.$net_field.'","'.$gross_field.'","tax_rate")});');
-            eval_js('if ($("'.$net_field.'")) Event.observe("'.$net_field.'","keyup",function(){update_unit("'.$decp.'","'.$unit_field.'","'.$net_field.'","'.$discount_field.'");});');
-            eval_js('if ($("'.$gross_field.'")) Event.observe("'.$gross_field.'","keyup",function(){update_unit("'.$decp.'","'.$unit_field.'","'.$net_field.'","'.$discount_field.'");});');
-            eval_js('if ($("'.$discount_field.'")) Event.observe("'.$discount_field.'","keyup",function(){update_net_discount("'.$decp.'","'.$unit_field.'","'.$net_field.'","'.$gross_field.'","'.$discount_field.'");update_gross("'.$decp.'","'.$net_field.'","'.$gross_field.'","tax_rate")});');
+            eval_js('if ($("'.$unit_field.'")) Event.observe("'.$unit_field.'","keyup",function(){update_net_discount("'.$unit_field.'","'.$net_field.'","'.$gross_field.'","'.$discount_field.'");update_gross("'.$net_field.'","'.$gross_field.'","tax_rate")});');
+            eval_js('if ($("'.$net_field.'")) Event.observe("'.$net_field.'","keyup",function(){update_unit("'.$unit_field.'","'.$net_field.'","'.$discount_field.'");});');
+            eval_js('if ($("'.$gross_field.'")) Event.observe("'.$gross_field.'","keyup",function(){update_unit("'.$unit_field.'","'.$net_field.'","'.$discount_field.'");});');
+            eval_js('if ($("'.$discount_field.'")) Event.observe("'.$discount_field.'","keyup",function(){update_net_discount("'.$unit_field.'","'.$net_field.'","'.$gross_field.'","'.$discount_field.'");update_gross("'.$net_field.'","'.$gross_field.'","tax_rate")});');
             eval_js('if ($("'.$unit_field.'")) Event.observe("__'.$unit_field.'__currency","change",function(){switch_currencies($("__'.$unit_field.'__currency").selectedIndex,"'.$net_field.'","'.$gross_field.'");});');
-            eval_js('if ($("'.$tax_rate_field.'")) Event.observe("'.$tax_rate_field.'","change",function(){if($("'.$switch_field.'").value==0) update_unit("'.$decp.'","'.$unit_field.'","'.$net_field.'","'.$discount_field.'","'.$switch_field.'");});');
+            eval_js('if ($("'.$tax_rate_field.'")) Event.observe("'.$tax_rate_field.'","change",function(){if($("'.$switch_field.'").value==0) update_unit("'.$unit_field.'","'.$net_field.'","'.$discount_field.'","'.$switch_field.'");});');
         }
 		$form->addElement('hidden', $switch_field, '', array('id'=>$switch_field));
 		$form->setDefaults(array($switch_field=>1));

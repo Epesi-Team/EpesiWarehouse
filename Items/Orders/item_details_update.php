@@ -82,13 +82,13 @@ if ($trans['transaction_type']<2) {
     $cost = Utils_CurrencyFieldCommon::get_values($rec['cost']);
 
 	$gross_price = Utils_CurrencyFieldCommon::get_values(Utils_CurrencyFieldCommon::format_default($price[0]*(100+Data_TaxRatesCommon::get_tax_rate($ja['tax_rate']))/100, $price[1]));
-    $ja['net_price'] = implode(Utils_currencyFieldCommon::get_decimal_point(),explode('.',$price[0]));
+    $ja['net_price'] = implode(Utils_currencyFieldCommon::get_decimal_point($price[1]),explode('.',$price[0]));
     $ja['__net_price__currency'] = $price[1];
     $ja['unit_price'] = $ja['net_price'];
     $ja['__unit_price__currency'] = $price[1];
-    $ja['gross_price'] = implode(Utils_currencyFieldCommon::get_decimal_point(),explode('.',$gross_price[0]));
+    $ja['gross_price'] = implode(Utils_currencyFieldCommon::get_decimal_point($gross_price[1]),explode('.',$gross_price[0]));
     $ja['__gross_price__currency'] = $gross_price[1];
-    $ja['cost'] = implode(Utils_currencyFieldCommon::get_decimal_point(),explode('.',$cost[0]));
+    $ja['cost'] = implode(Utils_currencyFieldCommon::get_decimal_point($cost[1]),explode('.',$cost[0]));
     $ja['__cost__currency'] = $cost[1];
     $ja['markup_discount_rate'] = 0;
 

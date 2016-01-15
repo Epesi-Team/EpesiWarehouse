@@ -1,5 +1,6 @@
-check_item_price_cost_difference = function(decp, msg, perma_error) {
+check_item_price_cost_difference = function(msg, perma_error) {
 	if ($('last_item_price').value=="") return true;
+        var decp = Utils_CurrencyField.currencies[jq("#__net_price__currency").val()]['decp'];
 	sales_net_price=parseFloat($('net_price').value.split(decp).join("."));
 	sales_currency=$('__net_price__currency').value;
 	last_purchase_cost = $('last_item_price').value.split("__")[0];

@@ -1,12 +1,5 @@
-format_currency=function(val,decp){
-	all=Math.round(val*100);
-	first=parseInt(all/100);
-	second=Math.round(all-first*100).toString(10);
-	if(isNaN(first)||isNaN(second))return"";
-	if(second.length==1)second="0"+second;
-	return first+decp+second;
-}
-update_net=function(decp,net,gross,tax,switch_field){
+update_net=function(net,gross,tax,switch_field){
+  var currency = Utils_CurrencyField.currencies[jq('#__'+gross+'__currency').val()];
   var gross_field = jq('#'+gross);
   var val = '';
   var net_val = '';
@@ -15,16 +8,17 @@ update_net=function(decp,net,gross,tax,switch_field){
     val = gross_field.val();
     if(val!='') {
       if(switch_field)jq('#'+switch_field).val(0);
-      val=parseFloat(val.split(decp).join("."));
+      val=parseFloat(val.split(currency['decp']).join("."));
       net_val = 100*val/(100+tax);
-      jq('#'+net).val(format_currency(net_val,decp));
+      jq('#'+net).val(Utils_CurrencyField.format_amount(net_val,jq('#__'+net+'__currency').val()));
     } else {
       jq('#'+net).val('');
     }
   }
-  update_total(net_val,val,decp);
+  update_total(net_val,val);
 }
-update_gross=function(decp,net,gross,tax,switch_field){
+update_gross=function(net,gross,tax,switch_field){
+  var currency = Utils_CurrencyField.currencies[jq('#__'+net+'__currency').val()];
   var net_field = jq('#'+net);
   var val = '';
   var gross_val = '';
@@ -33,23 +27,23 @@ update_gross=function(decp,net,gross,tax,switch_field){
     var val = net_field.val();
     if(val!='') {
       if(switch_field)jq('#'+switch_field).val(1);
-      val=parseFloat(val.split(decp).join("."));
+      val=parseFloat(val.split(currency['decp']).join("."));
       gross_val=val+val*tax/100;
-      jq('#'+gross).val(format_currency(gross_val,decp));
+      jq('#'+gross).val(Utils_CurrencyField.format_amount(gross_val,jq('#__'+gross+'__currency').val()));
     } else {
       jq('#'+gross).val('');
     }
   }
-  update_total(val,gross_val,decp);
+  update_total(val,gross_val);
 }
-update_total=function(net,gross,decp) {
+update_total=function(net,gross) {
     var quantity_field = jq('#quantity');
     if(!quantity_field.length) return;
 	var quantity = parseFloat(quantity_field.val());
 	var net_total = jq('#premium_warehouse_items_orders_details__net_total___');
 	if(net_total.length) {
 	  if(net!='' && quantity!='') {
-	    net_total.html(format_currency(quantity*net,decp));
+	    net_total.html(Utils_CurrencyField.format_amount(quantity*net,jq('#__'+net+'__currency').val()));
 	  } else {
 	    net_total.html('---');
 	  }
@@ -57,7 +51,7 @@ update_total=function(net,gross,decp) {
 	var gross_total = jq('#premium_warehouse_items_orders_details__gross_total___');
 	if(gross_total.length) {
 	  if(gross!='' && quantity!='') {
-	    gross_total.html(format_currency(quantity*gross,decp));
+	    gross_total.html(Utils_CurrencyField.format_amount(quantity*gross,jq('#__'+gross+'__currency').val()));
 	  } else {
 	    gross_total.html('---');
 	  }
@@ -65,22 +59,23 @@ update_total=function(net,gross,decp) {
 	var tax = jq('#premium_warehouse_items_orders_details__tax_value___');
 	if(tax.length) {
 	  if(gross!='' && net!='' && quantity!='') {
-	    tax.html(format_currency(quantity*(gross-net),decp));
+	    tax.html(Utils_CurrencyField.format_amount(quantity*(gross-net),jq('#__'+net+'__currency').val()));
 	  } else {
 	    tax.html('---');
 	  }
 	}
 }
-update_unit=function(decp,unit,net,discount){
+update_unit=function(unit,net,discount){
   var net_field = jq('#'+net);
   if (!net_field.length) return;
+  var currency = Utils_CurrencyField.currencies[jq('#__'+net+'__currency').val()];
 
   var val = net_field.val();
   if(val=='') {
     jq('#'+unit).val('');
     return;
   }
-  val=parseFloat(val.split(decp).join("."));
+  val=parseFloat(val.split(currency['decp']).join("."));
 
   var discount = jq('#'+discount);
   if(discount.length) {
@@ -89,11 +84,12 @@ update_unit=function(decp,unit,net,discount){
     else discount = parseFloat(discount);
   } else discount = 0;
 
-  jq('#'+unit).val(format_currency(100*val/(100+discount),decp));
+  jq('#'+unit).val(Utils_CurrencyField.format_amount(100*val/(100+discount),jq('#__'+net+'__currency').val()));
 }
-update_net_discount=function(decp,unit,net,gross,discount){
+update_net_discount=function(unit,net,gross,discount){
   var unit_field = jq('#'+unit);
   if (!unit_field.length) return;
+  var currency = Utils_CurrencyField.currencies[jq('#__'+net+'__currency').val()];
 
   var val=unit_field.val();
   if(val=='') {
@@ -101,7 +97,7 @@ update_net_discount=function(decp,unit,net,gross,discount){
     jq('#'+net).val('');
     return;
   }
-  val = parseFloat(val.split(decp).join("."));
+  val = parseFloat(val.split(currency['decp']).join("."));
 
   var discount = jq('#'+discount);
   if(discount.length) {
@@ -110,7 +106,7 @@ update_net_discount=function(decp,unit,net,gross,discount){
     else discount = parseFloat(discount);
   } else discount = 0;
 
-  jq('#'+net).val(format_currency(val+val*discount/100,decp));
+  jq('#'+net).val(Utils_CurrencyField.format_amount(val+val*discount/100,jq('#__'+net+'__currency').val()));
 }
 switch_currencies=function(val,net,gross,unit){
     var el;
