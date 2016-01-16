@@ -109,6 +109,30 @@ class Premium_Warehouse_Items_Orders_InvoiceCommon extends ModuleCommon {
         Utils_RecordBrowserCommon::QFfield_static_display($form, $field, $label, $mode, $default,$desc,$rb);
     }
     
+    public static function submit_invoice($vals,$action) {
+        if($action=='deleted' || $action=='restored') {
+            $items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details',array('invoices'=>$vals['id']));
+            foreach($items as $item) {
+                foreach($item['invoice_items'] as $inv_item_id) {
+                    $inv_items = Utils_RecordBrowserCommon::get_record('premium_invoice_items',$inv_item_id);
+                    $inv_item = array_shift($inv_items);
+                    if($inv_item) Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders_details',$item['id'],array('billed_quantity'=>$item['billed_quantity']+($action=='deleted'?-1:1)*$inv_item['quantity']));
+                }
+            }
+        }
+        return $vals;
+    }
+    
+    public static function submit_invoice_item($vals,$action) {
+        if($action=='deleted' || $action=='restored') {
+            $items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details',array('invoice_items'=>$vals['id']));
+            foreach($items as $item) {
+                Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders_details',$item['id'],array('billed_quantity'=>$item['billed_quantity']+($action=='deleted'?-1:1)*$vals['quantity']));
+            }
+        }
+        return $vals;
+    }
+    
     public static function submit_order($vals,$action) {
         static $done = false;
         if($action=='browse' && $done!=Utils_RecordBrowser::$rb_obj->get_path() && !Utils_RecordBrowser::$rb_obj->isset_module_variable('rp_fs_path')) {

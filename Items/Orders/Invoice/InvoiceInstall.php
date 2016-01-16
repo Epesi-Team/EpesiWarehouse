@@ -17,10 +17,13 @@ class Premium_Warehouse_Items_Orders_InvoiceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items_orders',array('name' => _M('Invoices'),	'type'=>'calculated','extra'=>false, 'required'=>false, 'visible'=>true,'display_callback'=>'Premium_Warehouse_Items_Orders_InvoiceCommon::display_invoices','position'=>'Status'));
 		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items_orders',array('name' => _M('Billed'),	'type'=>'checkbox','extra'=>false, 'required'=>false, 'visible'=>true,'filter'=>true,'QFfield_callback'=>'Premium_Warehouse_Items_Orders_InvoiceCommon::QFfield_billed','position'=>'Status'));
 		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items_orders_details',array('name' => _M('Invoices'),	'type'=>'multiselect','param'=>'premium_invoice::Invoice Number','extra'=>false, 'required'=>false, 'visible'=>false,'QFfield_callback'=>'Premium_Warehouse_Items_Orders_InvoiceCommon::QFfield_invoices'));
+		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items_orders_details',array('name' => _M('Invoice Items'),	'type'=>'multiselect','param'=>'premium_invoice_items::Item Name','extra'=>false, 'required'=>false, 'visible'=>false,'QFfield_callback'=>'Premium_Warehouse_Items_Orders_InvoiceCommon::QFfield_invoices'));
 		Utils_RecordBrowserCommon::new_record_field('premium_warehouse_items_orders_details',array('name' => _M('Billed Quantity'),	'type'=>'calculated','param'=>Utils_RecordBrowserCommon::actual_db_type('integer'),'extra'=>false, 'required'=>false, 'visible'=>true,'position'=>'Quantity'));
 		Utils_RecordBrowserCommon::new_record_field('premium_invoice_payment_types',array('name' => _M('Order Payment Type'),	'type'=>'multiselect', 'param'=>Utils_RecordBrowserCommon::multiselect_from_common('Premium_Items_Orders_Payment_Types'), 'required'=>false, 'extra'=>false, 'visible'=>true));
 		Utils_RecordBrowserCommon::register_processing_callback('premium_warehouse_items_orders', array('Premium_Warehouse_Items_Orders_InvoiceCommon', 'submit_order'));
-		Utils_RecordBrowserCommon::register_processing_callback('premium_warehouse_items_orders_details', array('Premium_Warehouse_Items_Orders_InvoiceCommon', 'submit_item'));
+		Utils_RecordBrowserCommon::register_processing_callback('premium_invoice', array('Premium_Warehouse_Items_Orders_InvoiceCommon', 'submit_invoice'));
+		Utils_RecordBrowserCommon::register_processing_callback('premium_invoice_items', array('Premium_Warehouse_Items_Orders_InvoiceCommon', 'submit_invoice_items'));
+        Utils_RecordBrowserCommon::register_processing_callback('premium_warehouse_items_orders_details', array('Premium_Warehouse_Items_Orders_InvoiceCommon', 'submit_item'));
 		DB::Execute('UPDATE premium_warehouse_items_orders_details_data_1 SET f_billed_quantity = f_quantity');
 		$payment_types = Utils_CommonDataCommon::get_array('Premium_Items_Orders_Payment_Types');
 		foreach($payment_types as $key=>$val) {
@@ -41,6 +44,8 @@ class Premium_Warehouse_Items_Orders_InvoiceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::delete_record_field('premium_warehouse_items_orders_details',_M('Billed Quantity'));
 		Utils_RecordBrowserCommon::delete_record_field('premium_invoice_payment_types',_M('Order Payment Type'));
 		Utils_RecordBrowserCommon::unregister_processing_callback('premium_warehouse_items_orders', array('Premium_Warehouse_Items_Orders_InvoiceCommon', 'submit_order'));
+		Utils_RecordBrowserCommon::unregister_processing_callback('premium_invoice', array('Premium_Warehouse_Items_Orders_InvoiceCommon', 'submit_invoice'));
+		Utils_RecordBrowserCommon::unregister_processing_callback('premium_invoice_items', array('Premium_Warehouse_Items_Orders_InvoiceCommon', 'submit_invoice_items'));
 		Utils_RecordBrowserCommon::unregister_processing_callback('premium_warehouse_items_orders_details', array('Premium_Warehouse_Items_Orders_InvoiceCommon', 'submit_item'));
 		return true;
 	}
