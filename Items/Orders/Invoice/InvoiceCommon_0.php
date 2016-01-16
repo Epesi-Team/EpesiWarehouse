@@ -81,10 +81,13 @@ class Premium_Warehouse_Items_Orders_InvoiceCommon extends ModuleCommon {
         if(!in_array($invoice['id'],$item['invoices'])) {
             $item['invoices'][] = $invoice['id'];
         }
+        if(!in_array($inv_item['id'],$item['invoice_items'])) {
+            $item['invoice_items'][] = $inv_item['id'];
+        }
         if(!in_array('premium_warehouse_items_orders/'.$item['transaction_id'],$invoice['related'])) {
             $invoice['related'][] = 'premium_warehouse_items_orders/'.$item['transaction_id'];
         }
-        Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders_details', $id, array('billed_quantity' => $item['billed_quantity']+$inv_item['quantity']-(isset($old_inv_item['quantity'])?$old_inv_item['quantity']:0), 'invoices'=>$item['invoices']));
+        Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders_details', $id, array('billed_quantity' => $item['billed_quantity']+$inv_item['quantity']-(isset($old_inv_item['quantity'])?$old_inv_item['quantity']:0), 'invoices'=>$item['invoices'], 'invoice_items'=>$item['invoice_items']));
         Utils_RecordBrowserCommon::update_record('premium_invoice', $invoice['id'], array('related' => $invoice['related']));
     }
 
