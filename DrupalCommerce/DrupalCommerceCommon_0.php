@@ -964,6 +964,8 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			$taxes = DB::GetAssoc('SELECT f_percentage, id FROM data_tax_rates_data_1 WHERE active=1');
 			$taxes2 = DB::GetAssoc('SELECT id, f_percentage FROM data_tax_rates_data_1 WHERE active=1');
 			$drupal_orders_tmp = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'order',array('filter'=>array('status'=>'pending'),'limit'=>999999999999999999));
+			$drupal_orders_tmp2 = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'order',array('filter'=>array('status'=>'checkout_complete'),'limit'=>999999999999999999));
+			$drupal_orders_tmp = array_merge($drupal_orders_tmp,$drupal_orders_tmp2);
 			if($drupal_row['import_orders_on_payment_step']) {
 			    $drupal_orders_tmp2 = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'order',array('filter'=>array('status'=>'checkout_payment'),'limit'=>999999999999999999));
 			    $drupal_orders_tmp = array_merge($drupal_orders_tmp,$drupal_orders_tmp2);
@@ -1093,7 +1095,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			      'payment_type'=>'Drupal',
 			      'memo'=>$memo,
 			      'tax_id'=>isset($billing['tax_id'])?$billing['tax_id']:'',
-			      'tax_calculation'=> Variable::get('premium_warehouse_def_tax_calc', false),
+			      'tax_calculation'=> 0,//Variable::get('premium_warehouse_def_tax_calc', false),
 			//	    'warehouse'=>$carrier==0?$aForm['iPickupShop']:null,
 			      'online_order'=>1,
 			      'status'=>-1,
