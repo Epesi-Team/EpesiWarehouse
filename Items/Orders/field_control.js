@@ -39,8 +39,8 @@ warehouse_orders_hide_fields = function(trans_type, status, shipment_type, payme
 	warehouse_orders_hide_field('zone', (trans_type==2 || trans_type==4));
 	warehouse_orders_hide_field('postal_code', (trans_type==2 || trans_type==4));
 	warehouse_orders_hide_field('phone', (trans_type==2 || trans_type==4));
-	warehouse_orders_hide_field('shipping_company', (trans_type==2 || trans_type==4));
-	warehouse_orders_hide_field('shipping_contact', (trans_type==2 || trans_type==4));
+	warehouse_orders_hide_field('shipping_company', (warehouse_order_mode=='view' || trans_type==2 || trans_type==4));
+	warehouse_orders_hide_field('shipping_contact', (warehouse_order_mode=='view' || trans_type==2 || trans_type==4));
 	warehouse_orders_hide_field('shipping_tax_id', (trans_type==2 || trans_type==4));
 	warehouse_orders_hide_field('shipping_company_name', (trans_type==2 || trans_type==4));
 	warehouse_orders_hide_field('shipping_first_name', (trans_type==2 || trans_type==4));
