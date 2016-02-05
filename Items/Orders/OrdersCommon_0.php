@@ -1124,10 +1124,19 @@ class Premium_Warehouse_Items_OrdersCommon extends ModuleCommon {
 		}
 
 		switch ($mode) {
+			case 'cloning':
+				$values['transaction_date'] = time();
+				$values['shipment_eta'] = '';
+				$values['ref_no'] = '';
+				$values['billed'] = 0;
+				break;
 			case 'cloned':
 				$recs = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders_details',array('transaction_id'=>$values['original']));
 				foreach ($recs as $r) {
 					$r['transaction_id'] = $values['clone'];
+					unset($r['invoices']);
+					unset($r['invoice_items']);
+					unset($r['billed_quantity']);
 					Utils_RecordBrowserCommon::new_record('premium_warehouse_items_orders_details',$r);
 				}
 				Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders',$values['clone'],array('status'=>''));
