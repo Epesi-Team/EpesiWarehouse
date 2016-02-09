@@ -7,9 +7,13 @@ ModuleManager::load_modules();
 Acl::set_sa_user();
 
 $drupal_id = 2;
-$drupal_products_tmp = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'product',array('fields'=>'product_id,sku','filter'=>array('type'=>'epesi_products'),'sort_by'=>'sku','limit'=>999999999999999999));
-print_r($drupal_products_tmp);
+ $prices = Utils_RecordBrowserCommon::get_records('premium_ecommerce_prices',array('item_name'=>180),array(),array('currency'=>'ASC','gross_price'=>'ASC','model'=>'ASC'));
+print_r($prices);
 die();
+
+                    $meta = Utils_FileStorageCommon::meta(102);
+                    print_r($meta);
+                    die();
 
 /*
             $voc = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'entity_taxonomy_vocabulary',array('pagesize'=>9999999999));

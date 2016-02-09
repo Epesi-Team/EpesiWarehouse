@@ -6,10 +6,14 @@ ModuleManager::load_modules();
 
 $drupal_id = 2;
 Acl::set_sa_user();
-
-/*            //look for epesi vocabulary
-            $voc = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'entity_taxonomy_vocabulary',array('pagesize'=>9999999999));
-            $epesi_vocabulary = null;
+//			$drupal_products_tmp = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'product',array('fields'=>'product_id,sku','filter'=>array('type'=>'epesi_products'),'sort_by'=>'sku','limit'=>999999999999999999));
+//print_r($drupal_products_tmp);
+//			$product_fields = array_merge(Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'epesi_commerce/get_product_fields'),array('sku','title','type','status'));
+//print_r($product_fields);
+            //look for epesi vocabulary
+//            $voc = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'entity_taxonomy_vocabulary',array('pagesize'=>9999999999));
+  //          print_r($voc);
+/*            $epesi_vocabulary = null;
             $epesi_manufacturer_vocabulary = null;
             foreach($voc as $v) {
               if($v['machine_name']=='epesi_category')

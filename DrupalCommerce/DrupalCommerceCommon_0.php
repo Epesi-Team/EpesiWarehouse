@@ -1832,6 +1832,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 	}
 	
 	private static $drupal_endpoint;
+	private static $drupal_cookies;
 	public static function drupal_connection($drupal) {
 	    static $conn;
 	    if(!isset($conn)) $conn = array();
@@ -1841,31 +1842,34 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 	      $drupal_record = Utils_RecordBrowserCommon::get_record('premium_ecommerce_drupal',$drupal);
 	      
 	      self::$drupal_endpoint = $drupal_record['endpoint'];
-	      $conn[$drupal] = $client = new \Guzzle\Http\Client(rtrim($drupal_record['url'],'/').'/');
 
 	      if(isset($_SESSION['drupal_cookies'][$drupal]) && isset($_SESSION['drupal_csrf_token'][$drupal]) && isset($_SESSION['drupal_uid'][$drupal])) {
-	        $cookiePlugin = new \Guzzle\Plugin\Cookie\CookiePlugin(unserialize($_SESSION['drupal_cookies'][$drupal]));
-	        $client->addSubscriber($cookiePlugin); 
+	        self::$drupal_cookies = \GuzzleHttp\Cookie\CookieJar::fromArray($_SESSION['drupal_cookies'][$drupal]);
 	      } else {
-	        $cookieJar = new \Guzzle\Plugin\Cookie\CookieJar\ArrayCookieJar();
-	        $cookiePlugin = new \Guzzle\Plugin\Cookie\CookiePlugin($cookieJar);
-	        $client->addSubscriber($cookiePlugin); 
-	        $user = $client->post('?q='.self::$drupal_endpoint.'/user/login.json')->setBody(json_encode(array('username'=>$drupal_record['login'],'password'=>$drupal_record['password'])),'application/json')->send()->json();
+	        self::$drupal_cookies = new \GuzzleHttp\Cookie\CookieJar();
+	      }
+	      $config = ['base_url'=>rtrim($drupal_record['url'],'/').'/', 'timeout'=>30, 'cookies'=>self::$drupal_cookies];
+	      $conn[$drupal] = $client = new \GuzzleHttp\Client($config);
+	      
+	      if(!isset($_SESSION['drupal_cookies'][$drupal]) || !isset($_SESSION['drupal_csrf_token'][$drupal]) || !isset($_SESSION['drupal_uid'][$drupal])) {
+	        $user = json_decode($client->post('?q='.self::$drupal_endpoint.'/user/login.json', ['json'=>array('username'=>$drupal_record['login'],'password'=>$drupal_record['password']),'cookies'=>self::$drupal_cookies])->getBody(),1);
+
 	        if(!isset($user['user']['uid']) || !$user['user']['uid']) {
 	          throw new Exception("Drupal login failed.");
 	        }
-	        $csrf_token=$client->post('?q='.self::$drupal_endpoint.'/user/token.json')->setBody(json_encode(array()),'application/json')->send()->json();
+	        $csrf_token=json_decode($client->post('?q='.self::$drupal_endpoint.'/user/token.json',['json'=>array(),'cookies'=>self::$drupal_cookies])->getBody(),1);
 	        if(!isset($csrf_token['token']) || !$csrf_token['token']) {
 	          throw new Exception("Drupal getting csrf token failed.");
 	        }
 	        if(!isset($_SESSION['drupal_csrf_token'])) $_SESSION['drupal_csrf_token'] = array();
 	        $_SESSION['drupal_csrf_token'][$drupal] = $csrf_token['token'];
 	        if(!isset($_SESSION['drupal_cookies'])) $_SESSION['drupal_cookies'] = array();
-	        $_SESSION['drupal_cookies'][$drupal] = serialize($cookieJar);
+	        $_SESSION['drupal_cookies'][$drupal] = self::$drupal_cookies->toArray();
 	        if(!isset($_SESSION['drupal_uid'])) $_SESSION['drupal_uid'] = array();
 	        $_SESSION['drupal_uid'][$drupal] = $user['user']['uid'];
 	      }
-	      $client->setDefaultOption('headers', array('X-CSRF-Token' => $_SESSION['drupal_csrf_token'][$drupal]));
+	      $config['headers'] = array('X-CSRF-Token' => $_SESSION['drupal_csrf_token'][$drupal]);
+	      $client->setDefaultOption('headers',$config['headers']);
 	    }
 	    return $conn[$drupal];
 	}
@@ -1873,23 +1877,23 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 	public static function drupal_get($drupal,$op,$args=array()) {
 	    $client = self::drupal_connection($drupal);
 	    $args['q']=self::$drupal_endpoint.'/'.$op.'.json';
-   	    return $client->get('?'.http_build_query($args))->send()->json();
+	    return json_decode($client->get('?'.http_build_query($args),['cookies'=>self::$drupal_cookies])->getBody(),1);
 	}
 
 	public static function drupal_put($drupal,$op,$args=array()) {
 	    $client = self::drupal_connection($drupal);
-   	    return $client->put('?'.http_build_query(array('q'=>self::$drupal_endpoint.'/'.$op.'.json')))->setBody(json_encode($args),'application/json')->send()->json();
+   	    return json_decode($client->put('?'.http_build_query(array('q'=>self::$drupal_endpoint.'/'.$op.'.json')),['json'=>$args,'cookies'=>self::$drupal_cookies])->getBody(),1);
 	}
 
 	public static function drupal_delete($drupal,$op,$args=array()) {
 	    $client = self::drupal_connection($drupal);
 	    $args['q']=self::$drupal_endpoint.'/'.$op.'.json';
-	    return $client->delete('?'.http_build_query($args))->send()->json();
+	    return json_decode($client->delete('?'.http_build_query($args),['cookies'=>self::$drupal_cookies])->getBody(),1);
 	}
 
 	public static function drupal_post($drupal,$op,$args=array()) {
 	    $client = self::drupal_connection($drupal);
-   	    return $client->post('?'.http_build_query(array('q'=>self::$drupal_endpoint.'/'.$op.'.json')))->setBody(json_encode($args),'application/json')->send()->json();
+   	    return json_decode($client->post('?'.http_build_query(array('q'=>self::$drupal_endpoint.'/'.$op.'.json')),['json'=>$args,'cookies'=>self::$drupal_cookies])->getBody(),1);
 	}
 }
 
