@@ -1838,17 +1838,18 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 	    if(!isset($conn)) $conn = array();
 	    
 	    if(!isset($conn[$drupal])) {
-		  require_once(self::Instance()->get_module_dir().'guzzle.phar');
+		  require(self::Instance()->get_module_dir().'guzzle.phar');
 	      $drupal_record = Utils_RecordBrowserCommon::get_record('premium_ecommerce_drupal',$drupal);
 	      
 	      self::$drupal_endpoint = $drupal_record['endpoint'];
+	      $drupal_url = rtrim($drupal_record['url'],'/').'/';
 
 	      if(isset($_SESSION['drupal_cookies'][$drupal]) && isset($_SESSION['drupal_csrf_token'][$drupal]) && isset($_SESSION['drupal_uid'][$drupal])) {
-	        self::$drupal_cookies = \GuzzleHttp\Cookie\CookieJar::fromArray($_SESSION['drupal_cookies'][$drupal]);
+	        self::$drupal_cookies = \GuzzleHttp\Cookie\CookieJar::fromArray($_SESSION['drupal_cookies'][$drupal],$drupal_url);
 	      } else {
 	        self::$drupal_cookies = new \GuzzleHttp\Cookie\CookieJar();
 	      }
-	      $config = ['base_url'=>rtrim($drupal_record['url'],'/').'/', 'timeout'=>30, 'cookies'=>self::$drupal_cookies];
+	      $config = ['base_url'=>$drupal_url, 'timeout'=>30, 'cookies'=>self::$drupal_cookies];
 	      $conn[$drupal] = $client = new \GuzzleHttp\Client($config);
 	      
 	      if(!isset($_SESSION['drupal_cookies'][$drupal]) || !isset($_SESSION['drupal_csrf_token'][$drupal]) || !isset($_SESSION['drupal_uid'][$drupal])) {
