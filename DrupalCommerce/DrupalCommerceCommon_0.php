@@ -1845,7 +1845,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 	      $drupal_url = rtrim($drupal_record['url'],'/').'/';
 
 	      if(isset($_SESSION['drupal_cookies'][$drupal]) && isset($_SESSION['drupal_csrf_token'][$drupal]) && isset($_SESSION['drupal_uid'][$drupal])) {
-	        self::$drupal_cookies = \GuzzleHttp\Cookie\CookieJar::fromArray($_SESSION['drupal_cookies'][$drupal],$drupal_url);
+	        self::$drupal_cookies = \GuzzleHttp\Cookie\CookieJar::fromArray($_SESSION['drupal_cookies'][$drupal],parse_url($drupal_url,PHP_URL_HOST));
 	      } else {
 	        self::$drupal_cookies = new \GuzzleHttp\Cookie\CookieJar();
 	      }
