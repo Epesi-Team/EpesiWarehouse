@@ -60,7 +60,7 @@ class Premium_Warehouse_Wholesale__Plugin_incom implements Premium_Warehouse_Who
     	    $client = new SoapClient('https://nbweb.incom.pl/NBWebServicePHP/service.svc?wsdl');
         	$result = $client->GetTowaryInfoList(array('UserName'=>$parameters['ID'],'Password'=>$parameters['Password']));
         } catch (Exception $e) {
-			Premium_Warehouse_WholesaleCommon::file_download_message(__('Error: %s'),array($e -> getMessage ())), 2, true);
+			Premium_Warehouse_WholesaleCommon::file_download_message(__('Error: %s',array($e -> getMessage ())), 2, true);
             return false;
         }
 
