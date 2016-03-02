@@ -1844,10 +1844,11 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 	      self::$drupal_endpoint = $drupal_record['endpoint'];
 	      $drupal_url = rtrim($drupal_record['url'],'/').'/';
 
+	      self::$drupal_cookies = new \GuzzleHttp\Cookie\CookieJar();
 	      if(isset($_SESSION['drupal_cookies'][$drupal]) && isset($_SESSION['drupal_csrf_token'][$drupal]) && isset($_SESSION['drupal_uid'][$drupal])) {
-	        self::$drupal_cookies = \GuzzleHttp\Cookie\CookieJar::fromArray($_SESSION['drupal_cookies'][$drupal],parse_url($drupal_url,PHP_URL_HOST));
-	      } else {
-	        self::$drupal_cookies = new \GuzzleHttp\Cookie\CookieJar();
+	        foreach ($_SESSION['drupal_cookies'][$drupal] as $cookie) {
+                  self::$drupal_cookies->setCookie(new \GuzzleHttp\Cookie\SetCookie($cookie));
+                }
 	      }
 	      $config = ['base_url'=>$drupal_url, 'timeout'=>30, 'cookies'=>self::$drupal_cookies];
 	      $conn[$drupal] = $client = new \GuzzleHttp\Client($config);
