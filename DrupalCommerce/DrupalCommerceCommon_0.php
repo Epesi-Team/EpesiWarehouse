@@ -1454,7 +1454,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			  //product
 			  $data = array('sku'=>$row['sku'],'title'=>$row['item_name'],'type'=>'epesi_products','status'=>1);
 			  $data['field_weight'] = array('weight'=>$row['weight']?$row['weight']:1,'unit'=>Variable::get('premium_warehouse_weight_units','lb'));
-			  $data['field_dimensions'] = array('length'=>$row['volume']?$row['volume']:1,'width'=>1,'height'=>1,'unit'=>preg_replace('/[^a-z]/','',strip_tags(Variable::get('premium_warehouse_volume_units','in'))));
+			  $data['field_dimensions'] = array('length'=>$row['volume']?$row['volume']:($row['weight']?$row['weight']*10:1),'width'=>1,'height'=>1,'unit'=>preg_replace('/[^a-z]/','',strip_tags(Variable::get('premium_warehouse_volume_units','in'))));
 
 			  
 			  //set quantity
