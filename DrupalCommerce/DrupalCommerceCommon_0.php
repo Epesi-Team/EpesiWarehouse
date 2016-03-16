@@ -794,17 +794,9 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
                 $sm->assign('ecommerce',$erec);
                 $sm->assign('items',$it_tmp);
 
-                $sm->assign('contact_us_title',__('Contact us'));
                 if($erec) {
-                    if(isset($erec['language']) && $erec['language'])
-                        $contactus = Variable::get('ecommerce_contactus_'.$erec['language'],false);
-                    else
-                        $contactus = '';
-                    if(!$contactus)
-                        $contactus = Variable::get('ecommerce_contactus');
                     $email = $erec['email'];
                 } else {
-                    $contactus = Variable::get('ecommerce_contactus');
                     if(is_numeric($values['contact'])) {
                         $contact = CRM_ContactsCommon::get_contact($values['contact']);
                         if(isset($contact['email']) && $contact['email'])
@@ -818,7 +810,6 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
                 }
                 if(!isset($email)) return null;
 
-                $sm->assign('contact_us',$contactus);
                 ob_start();
                 Base_ThemeCommon::display_smarty($sm, 'Premium_Warehouse_DrupalCommerce','mail');
                 $mail = ob_get_clean();
