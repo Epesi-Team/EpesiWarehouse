@@ -723,7 +723,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
     }
 
     public static function submit_payment($values,$mode) {
-    	if($mode=='add' && $values['recordset']=='premium_warehouse_items_orders') {
+    	if(($mode=='added' || $mode=='edited') && $values['recordset']=='premium_warehouse_items_orders' && $values['status']=='paid') {
     		$ord = Utils_RecordBrowserCommon::get_record('premium_warehouse_items_orders', $values['record_id']);
     		if($ord && $ord['status']==-1)
     			Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders', $values['record_id'], array('status'=>-2));
