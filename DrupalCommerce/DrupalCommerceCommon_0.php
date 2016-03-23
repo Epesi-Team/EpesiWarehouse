@@ -948,7 +948,6 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 	    $drupals = Utils_RecordBrowserCommon::get_records('premium_ecommerce_drupal');
 	    foreach($drupals as $drupal_row) {
 	        $drupal_id = $drupal_row['id'];
-	        
 //	        print("1\n");
 
 			//create new orders
@@ -963,6 +962,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			}
 			foreach($drupal_orders_tmp as $ord) {
 			  if(!Utils_RecordBrowserCommon::get_records_count('premium_ecommerce_orders',array('drupal'=>$drupal_id,'drupal_order_id'=>$ord['order_id']))) {
+	        epesi_log($ord,'drupal_log');
 			    $billing = array_shift($ord['commerce_customer_billing_entities']);
 			    $billing = $billing['commerce_customer_address'];
 			    if(!$billing['last_name'] && $billing['name_line'])

@@ -79,9 +79,9 @@ function commerce_epesi_payment_redirect_form($form, &$form_state, $order, $paym
     'limit'        => 1,
     'first_name'   => '',
     'last_name'    => '',
-    'address_1'    => '',
+    'address'    => '',
     'city'         => '',
-    'postal_code'  => '',
+    'zip'  => '',
     'country'      => '',
     'email'        => $order->mail,
     'phone'        => '',
@@ -90,18 +90,21 @@ function commerce_epesi_payment_redirect_form($form, &$form_state, $order, $paym
   );
 
   $params_map = array(
-    'last_name' => 'name_line',
-    'address_1' => 'thoroughfare',
+    'first_name' => 'first_name',
+    'last_name' => array('last_name','name_line'),
+    'address' => 'thoroughfare',
     'city' => 'locality',
-    'postal_code' => 'postal_code',
+    'zip' => 'postal_code',
     'country' => 'country',
   );
 
-  foreach ($params_map as $key => $value) {
-    if (isset($wrapper->commerce_customer_billing->commerce_customer_address->$value)) {
-      $data[$key] = $wrapper->commerce_customer_billing->commerce_customer_address->$value->value();
-    }
-    else {
+  foreach ($params_map as $key => $values) {
+    if(!is_array($values)) $values = array($values);
+    foreach($values as $value) {
+      if (isset($wrapper->commerce_customer_billing->commerce_customer_address->$value)) {
+        $data[$key] = $wrapper->commerce_customer_billing->commerce_customer_address->$value->value();
+        continue 2;
+      }
     }
   }
 
