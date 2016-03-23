@@ -962,7 +962,6 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			}
 			foreach($drupal_orders_tmp as $ord) {
 			  if(!Utils_RecordBrowserCommon::get_records_count('premium_ecommerce_orders',array('drupal'=>$drupal_id,'drupal_order_id'=>$ord['order_id']))) {
-	        epesi_log($ord,'drupal_log');
 			    $billing = array_shift($ord['commerce_customer_billing_entities']);
 			    $billing = $billing['commerce_customer_address'];
 			    if(!$billing['last_name'] && $billing['name_line'])
@@ -1012,6 +1011,10 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			    }
 			    $shipping_cost/=$currency_precission;
 			    $handling_cost/=$currency_precission;
+
+			    foreach($ord as $key=>$value) {
+				if(preg_match('/^field_(.*)$/',$key,$matches)) $memo .= $matches[1].': '.$value."\n";
+			    }
 			    
 			    //contact & company
 			    $contact = DB::GetOne('SELECT id FROM contact_data_1 WHERE f_email=%s AND active=1',array($ord['mail']));
