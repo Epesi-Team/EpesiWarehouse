@@ -119,5 +119,8 @@ function commerce_epesi_payment_redirect_form($form, &$form_state, $order, $paym
     '#value' => t('Make a payment'),
   );
 
+  $path = drupal_get_path('module', 'commerce_epesi_payment');
+  drupal_add_js ("$path/commerce_epesi_payment.js");
+
   return $form;
 }
