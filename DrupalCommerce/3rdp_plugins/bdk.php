@@ -1,7 +1,7 @@
 <?php
 defined("_VALID_ACCESS") || die('Direct access forbidden');
 
-class Premium_Warehouse_eCommerce_3rdp__Plugin_bdk implements Premium_Warehouse_eCommerce_3rdp__Plugin {
+class Premium_Warehouse_eCommerce_3rdp__Plugin_bdk implements Premium_Warehouse_DrupalCommerce_3rdp__Plugin {
 	/**
 	 * Returns the name of the plugin
 	 * 
@@ -159,7 +159,7 @@ class Premium_Warehouse_eCommerce_3rdp__Plugin_bdk implements Premium_Warehouse_
                     if(!isset($old_pics[$base_pp])) {
                         $ch = curl_init();
                         curl_setopt($ch, CURLOPT_URL,$pp['photo']);
-                        $temp_file = DATA_DIR.'/Premium_Warehouse_eCommerce/'.md5(microtime(true));
+                        $temp_file = DATA_DIR.'/Premium_Warehouse_DrupalCommerce/'.md5(microtime(true));
                         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
                         $response = curl_exec ($ch);
                         $response_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -170,7 +170,7 @@ class Premium_Warehouse_eCommerce_3rdp__Plugin_bdk implements Premium_Warehouse_
                             $temp_file2 = Utils_ImageCommon::create_thumb($temp_file,800,600);
                             $temp_file2 = $temp_file2['thumb'];
                             Utils_AttachmentCommon::add('premium_ecommerce_products/'.$item['id'],
-                                        0,Acl::get_user(),'',$base_pp,$temp_file2,null,null,array('Premium_Warehouse_eCommerceCommon','copy_attachment'));
+                                        0,Acl::get_user(),'',$base_pp,$temp_file2,null,null,array('Premium_Warehouse_DrupalCommerceCommon','copy_attachment'));
                             @unlink($temp_file2);
                             @unlink($temp_file);
                         }

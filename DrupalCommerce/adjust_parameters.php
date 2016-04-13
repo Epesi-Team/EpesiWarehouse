@@ -23,5 +23,5 @@ if (!Acl::is_user()) die('Unauthorized access');
 
 $plugin_id = trim($_POST['plugin_id'], '"');
 
-print(Premium_Warehouse_eCommerceCommon::get_change_parameters_labels_js($plugin_id));
+print(Premium_Warehouse_DrupalCommerceCommon::get_change_parameters_labels_js($plugin_id));
 ?>

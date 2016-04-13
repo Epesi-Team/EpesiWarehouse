@@ -12,7 +12,7 @@
  */
 defined("_VALID_ACCESS") || die('Direct access forbidden');
 
-interface Premium_Warehouse_eCommerce_3rdp__Plugin {
+interface Premium_Warehouse_DrupalCommerce_3rdp__Plugin {
 	/**
 	 * Returns the name of the plugin
 	 * 
