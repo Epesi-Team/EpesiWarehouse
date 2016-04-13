@@ -151,7 +151,6 @@ if(!$invoices_checkpoint->is_done()) {
 DB::Execute('UPDATE `premium_warehouse_items_orders_details_data_1` SET f_billed_quantity=f_quantity WHERE (SELECT 1 FROM premium_warehouse_items_orders_data_1 o WHERE o.id = f_transaction_id AND o.f_billed=1) IS NOT NULL');
 
 //remove old module
-if(ModuleManager::is_installed('Custom/Dufthylki')>=0) ModuleManager::uninstall('Custom/Dufthylki');
 ModuleManager::uninstall('Premium/Warehouse/Invoice');
 Utils_RecordBrowserCommon::delete_record_field('premium_warehouse_items_orders','Terms');
 Utils_CommonDataCommon::remove('Premium_Items_Orders_Terms');
