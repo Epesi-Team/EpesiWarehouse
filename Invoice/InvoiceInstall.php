@@ -18,6 +18,7 @@ class Premium_Warehouse_InvoiceInstall extends ModuleInstall {
     const version = '1.6.4';
 
 	public function install() {
+		return false;
 		Base_ThemeCommon::install_default_theme($this->get_type());
 
 		Utils_RecordBrowserCommon::new_addon('premium_warehouse_items_orders', 'Premium_Warehouse_Invoice', 'invoice', 'Premium_Warehouse_InvoiceCommon::invoice_addon_parameters');
