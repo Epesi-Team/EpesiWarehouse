@@ -64,13 +64,13 @@ class Premium_Warehouse_Items_Location extends Module {
 
 	public function warehouse_item_list_addon($arg) {
 		$rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_location','premium_warehouse_location_module');
-		$this->display_module($rb, array(array('warehouse'=>$arg['id'], '!quantity'=>0), array('warehouse'=>false,'item_name'=>true), array('item_sku'=>'ASC')), 'show_data');
+		$this->display_module($rb, array(array('warehouse'=>$arg['id'], '!quantity'=>0), array('warehouse'=>false), array('item_sku'=>'ASC')), 'show_data');
 	}
 
 	public function company_items_addon($arg){
 	    $items = DB::GetCol('SELECT location_id FROM premium_warehouse_location_serial WHERE owner=%s', array('C:'.$arg['id']));
 		$rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_location','premium_warehouse_location_module');
-		$this->display_module($rb, array(array('id'=>$items, '!quantity'=>0), array('warehouse'=>false,'item_name'=>true), array('item_sku'=>'ASC')), 'show_data');
+		$this->display_module($rb, array(array('id'=>$items, '!quantity'=>0), array('warehouse'=>false), array('item_sku'=>'ASC')), 'show_data');
 	}
 }
 
