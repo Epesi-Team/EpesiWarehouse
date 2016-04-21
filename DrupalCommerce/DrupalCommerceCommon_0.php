@@ -1241,6 +1241,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
             //print_r($epesi_category_parents);
             do {
 		      $old_count_epesi_category_names = count($epesi_category_names);
+		$old_log_count = count($log);
               //TODO: use or remove meta tags from descriptions from ecommerce recordsets
               foreach($epesi_category_names as $id=>$name) {
 		       // print("4 ".$name."\n");
@@ -1331,7 +1332,10 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 
                 unset($epesi_category_names[$id]);
               }
-			  if($old_count_epesi_category_names==count($epesi_category_names) && count($log)>$log_count+100) continue 2; //if there are too many errors skip to next drupal
+			  if($old_count_epesi_category_names==count($epesi_category_names)) {
+			    if(count($log)>$log_count+100) continue 2; //if there are too many errors skip to next drupal
+			    elseif($old_log_count==count($log)) break;
+			  }
             } while(!empty($epesi_category_names));
 
             //remove elements with invalid epesi_category field only if all epesi categories was processed
@@ -1412,8 +1416,8 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 				        }
 				      }
 				    }
-					unset($epesi_manufacturer_names[$id]);
 				  }
+				  unset($epesi_manufacturer_names[$id]);
 			  	}
 				if($old_count_epesi_manufacturer_names==count($epesi_manufacturer_names) && count($log)>$log_count+100) continue 2; //if there are too many errors skip to next drupal
 		    } while(!empty($epesi_manufacturer_names));
