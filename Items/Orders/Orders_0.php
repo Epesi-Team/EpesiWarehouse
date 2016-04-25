@@ -482,9 +482,11 @@ class Premium_Warehouse_Items_Orders extends Module {
 				$item_id = $vals['item_name'];
 				$item = Utils_RecordBrowserCommon::get_record('premium_warehouse_items', $item_id);
 			}
-			$files = Premium_Warehouse_Items_WebcamCommon::get_photos('Premium_Warehouse_check_in');
-			foreach ($files as $f)
-				Utils_AttachmentCommon::add('premium_warehouse_items/'.$item_id,0,Acl::get_user(),'Webcam photo','image.jpg',$f,array('Premium_Warehouse_ItemsCommon','search_format'),array($item_id));
+			if (ModuleManager::is_installed('Premium_Warehouse_Items_WebcamCommon') >= 0) {
+				$files = Premium_Warehouse_Items_WebcamCommon::get_photos('Premium_Warehouse_check_in');
+				foreach ($files as $f)
+					Utils_AttachmentCommon::add('premium_warehouse_items/'.$item_id,0,Acl::get_user(),'Webcam photo','image.jpg',$f,array('Premium_Warehouse_ItemsCommon','search_format'),array($item_id));
+			}
 
 			$order_details = array(
 				'transaction_id'=>$trans['id'],
