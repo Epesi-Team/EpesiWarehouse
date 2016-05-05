@@ -1040,6 +1040,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			          'postal_code'=>$billing['postal_code'],
 			          'phone'=>isset($billing['phone'])?$billing['phone']:'',
 			          'country'=>$billing['country'],
+			          'zone'=>$billing['administrative_area'],
 			          'email'=>$ord['mail'],
 			          'group'=>'customer',
 			          'permission'=>0
@@ -1054,6 +1055,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			        'postal_code'=>$billing['postal_code'],
 			        'work_phone'=>isset($billing['phone'])?$billing['phone']:'',
 			        'country'=>$billing['country'],
+			        'zone'=>$billing['administrative_area'],
 			        'email'=>$ord['mail'],
 			        'group'=>'custm',
 			        'permission'=>0
@@ -1106,6 +1108,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			      'shipping_postal_code'=>$shipping['postal_code'],
 			      'shipping_phone'=>isset($shipping['phone'])?$shipping['phone']:'',
 			      'shipping_country'=>$shipping['country'],
+			      'shipping_zone'=>$shipping['administrative_area'],
 			      'shipping_contact'=>$contact,
 			      'shipping_company'=>$company
 			    ));
