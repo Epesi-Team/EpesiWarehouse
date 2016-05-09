@@ -1040,7 +1040,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			          'postal_code'=>$billing['postal_code'],
 			          'phone'=>isset($billing['phone'])?$billing['phone']:'',
 			          'country'=>$billing['country'],
-			          'zone'=>$billing['administrative_area'],
+			          'zone'=>isset($billing['administrative_area'])?$billing['administrative_area']:null,
 			          'email'=>$ord['mail'],
 			          'group'=>'customer',
 			          'permission'=>0
@@ -1055,7 +1055,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			        'postal_code'=>$billing['postal_code'],
 			        'work_phone'=>isset($billing['phone'])?$billing['phone']:'',
 			        'country'=>$billing['country'],
-			        'zone'=>$billing['administrative_area'],
+			        'zone'=>isset($billing['administrative_area'])?$billing['administrative_area']:null,
 			        'email'=>$ord['mail'],
 			        'group'=>'custm',
 			        'permission'=>0
@@ -1083,7 +1083,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			      'postal_code'=>$billing['postal_code'],
 			      'phone'=>isset($billing['phone'])?$billing['phone']:'',
 			      'country'=>$billing['country'],
-			//	    'zone'=>$aForm['sState'],
+			      'zone'=>isset($billing['administrative_area'])?$billing['administrative_area']:null,
 			      'created_on'=>$ord['created'],
 			      'shipment_type'=>'Drupal',
 			      'shipment_cost'=>$shipping_cost.'__'.$currency_id,
@@ -1108,7 +1108,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			      'shipping_postal_code'=>$shipping['postal_code'],
 			      'shipping_phone'=>isset($shipping['phone'])?$shipping['phone']:'',
 			      'shipping_country'=>$shipping['country'],
-			      'shipping_zone'=>$shipping['administrative_area'],
+			      'shipping_zone'=>isset($shipping['administrative_area'])?$shipping['administrative_area']:null,
 			      'shipping_contact'=>$contact,
 			      'shipping_company'=>$company
 			    ));
