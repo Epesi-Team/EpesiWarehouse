@@ -111,6 +111,19 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
         return $cache[$id];
     }
 
+	public static function associations_addon_parameters($r) {
+        if(!Variable::get('ecommerce_item_associations'))
+            return array('show'=>false);
+        return array('show'=>true, 'label'=>__('Kits'));
+    }
+    public static function associations_addon_item_parameters($r) {
+        if(!isset($r['id'])) return array('show'=>false);
+        $product_exists = self::product_exists($r['id']);
+        if(!Variable::get('ecommerce_item_associations') || !$product_exists)
+            return array('show'=>false);
+        return array('show'=>true, 'label'=>__('eCommerce').'#'.__('Kits'));
+    }
+
     public static function prices_addon_parameters($r) {
         if(!Variable::get('ecommerce_item_prices'))
             return array('show'=>false);
@@ -1132,8 +1145,17 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			    foreach($ord['commerce_line_items_entities'] as $line_item) {
 			      if($line_item['type']!='product') continue;
 			      $node = $products[$line_item['commerce_product']];
-			      $sku = explode(' ',$node['sku'],2);
+			      $sku = explode(' ',$node['sku']);
 			      $product_id = ltrim($sku[0],'#0');
+				  unset($sku[0]);
+				  $associated_ids = array();
+				  for($i=1; isset($sku[$i]); $i++) {
+					  if(preg_match('/^#([0-9]+)$/',$sku[$i],$match)) {
+						$associated_ids[] = $match[1];
+						unset($sku[$i]);
+					  } else break;
+				  }
+				  $desc = implode(' ',$sku);
 			      $tax_amount = 0;
 			      $tax = 0;
 			      $tax_type = null;
@@ -1166,9 +1188,13 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			          $gross = $line_item['commerce_unit_price']['amount']/$currency_precission;
 			          $net = $gross*100/(100+$taxes2[$tax]);
 			      }
-			      ob_start();
-			      Utils_RecordBrowserCommon::new_record('premium_warehouse_items_orders_details',array('transaction_id'=>$id,'item_name'=>$product_id,'quantity'=>$line_item['quantity'],'description'=>(isset($sku[1])?$sku[1].' | ':'').$line_item['line_item_label'].' '.$line_item['line_item_title'],'tax_rate'=>$tax,'net_price'=>$net.'__'.$currency_id,'gross_price'=>$gross.'__'.$currency_id));
-			      ob_clean();
+			      //ob_start();
+			      Utils_RecordBrowserCommon::new_record('premium_warehouse_items_orders_details',array('transaction_id'=>$id,'item_name'=>$product_id,'quantity'=>$line_item['quantity'],'description'=>($desc?$desc.' | ':'').$line_item['line_item_label'].' '.$line_item['line_item_title'],'tax_rate'=>$tax,'net_price'=>$net.'__'.$currency_id,'gross_price'=>$gross.'__'.$currency_id));
+				  $master_product = Utils_RecordBrowserCommon::get_record('premium_warehouse_items',$product_id);
+				  $master_product_name = $master_product['sku'].': '.html_entity_decode($master_product['item_name']);
+				  foreach($associated_ids as $as_id)
+				  	Utils_RecordBrowserCommon::new_record('premium_warehouse_items_orders_details',array('transaction_id'=>$id,'item_name'=>$as_id,'quantity'=>$line_item['quantity'],'description'=>__('sold in set with %s',array($master_product_name)),'tax_rate'=>$tax,'net_price'=>'0__'.$currency_id,'gross_price'=>'0__'.$currency_id));
+			      //ob_clean();
 			    }
 
 				//TODO: skasowanie niepotrzebnych pol z ecommerce_orders
@@ -1361,8 +1387,8 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
                 $manufacturer_mapping[$term_data['field_epesi_manufacturer_id']['und'][0]['value']] = $term_data['tid'];
               }
             } catch(Exception $e) {
-				$log[] = 'DRUPAL #'.$drupal_id.' Error getting manufacturers: '.$e->getMessage();
-				continue;//skip this drupal sync
+				//$log[] = 'DRUPAL #'.$drupal_id.' Error getting manufacturers: '.$e->getMessage();
+				//continue;//skip this drupal sync
 			}
 
             //get local epesi manufacturers
@@ -1436,7 +1462,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			//update products
 			//get fields
 			$product_fields = array_merge(Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'epesi_commerce/get_product_fields'),array('sku','title','type','status'));
-			$node_fields = array_merge(Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'epesi_commerce/get_node_fields'),array('type','field_title','title','promote','sticky','uid','revision','created','changed','path'));
+			$node_fields = array_merge(Premium_Warehouse_DrupalCommerceCommon::drupal_post($drupal_id,'epesi_commerce/get_node_fields'),array('type','field_title','title','status','promote','sticky','uid','revision','created','changed','path'));
 
 			//get old products
 			$drupal_products_tmp = Premium_Warehouse_DrupalCommerceCommon::drupal_get($drupal_id,'product',array('fields'=>'product_id,sku','filter'=>array('type'=>'epesi_products'),'sort_by'=>'sku','limit'=>999999999999999999));
@@ -1461,7 +1487,8 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 
 			  $ecommerce_product_id = $row['id'];
 			  $row = array_merge($row,Utils_RecordBrowserCommon::get_record('premium_warehouse_items',$row['item_name']));
-			  if(!$row['category'] || !$row[':active']) continue;
+			  //if(!$row['category'] || !$row[':active']) continue;
+			  if(!$row[':active']) continue;
 
 			  $row['item_name'] = html_entity_decode($row['item_name']);
 
@@ -1542,6 +1569,9 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			  foreach(Utils_CommonDataCommon::get_array('Premium/Warehouse/eCommerce/Languages') as $lang=>$lang_name)
 			    if(!isset($field_images[$lang])) $field_images[$lang] = array();
 
+              foreach(Utils_CommonDataCommon::get_array('Premium/Warehouse/eCommerce/AssociationTypes') as $atype=>$acaption)
+  			    $data['field_'.$atype] = null;
+
 
 			  $products_queue = array();
 			  //set prices
@@ -1576,6 +1606,54 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			    }
 			  }
 			  if(!$products_queue) continue;
+
+			  $associations = Utils_RecordBrowserCommon::get_records('premium_ecommerce_associations',array('item_name'=>$row['id']),array(),array('type'=>'ASC'));
+			  $last_type = '';
+			  $products_queue2 = array();
+			  foreach($associations as $association) {
+				  if($last_type!=$association['type']) {
+					  $products_queue = array_merge($products_queue,$products_queue2);
+					  $products_queue2 = array();
+					  $last_type=$association['type'];
+				  }
+				  $associated_item = Utils_RecordBrowserCommon::get_record('premium_warehouse_items',$association['associated_item']);
+				  if(!isset($drupal_products[$associated_item['sku']])) continue;
+
+				  $associated_prices_tmp = Utils_RecordBrowserCommon::get_records('premium_ecommerce_prices',array('item_name'=>$associated_item['id']),array(),array('currency'=>'ASC','gross_price'=>'ASC','name'=>'ASC'));
+				  $associated_prices = array();
+				  if($associated_item['net_price']) {
+				    $a_item_price = Utils_CurrencyFieldCommon::get_values($associated_item['net_price']);
+				    if($a_item_price[0] && isset($currencies[$a_item_price[1]])) {
+				      $currency = $currencies[$a_item_price[1]];
+					  $associated_prices[$currency['code']] = round(($export_net_price?(float)$a_item_price[0]:((float)$a_item_price[0])*(100+($associated_item['tax_rate']?$taxes[$associated_item['tax_rate']]:0))/100)*($association['associated_item_price_change____']+100)/100,$currency['decimals'])*pow(10,$currency['decimals']);
+				    }
+				  }
+				  foreach($associated_prices_tmp as $aprice) {
+					  if(!isset($currencies[$aprice['currency']])) continue;
+					  $associated_prices[$currencies[$aprice['currency']]['code']] = round(($export_net_price?($aprice['gross_price']*100/(100+($aprice['tax_rate']?$taxes[$aprice['tax_rate']]:0))):$aprice['gross_price'])*($association['associated_item_price_change____']+100)/100,$currency['decimals'])*pow(10,$currency['decimals']);
+				  }
+				  foreach($products_queue as $model=>$pq) {
+					  $pq_tmp = array('field_'.$association['type']=>$drupal_products[$associated_item['sku']],'sku'=>$pq['sku'].' #'.$association['associated_item']);
+					  foreach($pq as $pq_key=>$pq_val) {
+						  if(preg_match('/^commerce_price/',$pq_key))
+						  	$pq_tmp[$pq_key] = null;
+					  }
+					  if(isset($associated_prices[$pq['commerce_price']['currency_code']])) {
+						  $pq_tmp['commerce_price'] = $pq['commerce_price'];
+						  $pq_tmp['commerce_price']['amount'] += $associated_prices[$pq['commerce_price']['currency_code']];
+					  }
+					  foreach($associated_prices as $acode=>$aprice) {
+						  if(!isset($pq['commerce_price_'.strtolower($acode)])) continue;
+						  $pq_tmp['commerce_price_'.strtolower($acode)] = $pq['commerce_price_'.strtolower($acode)];
+						  $pq_tmp['commerce_price_'.strtolower($acode)]['amount'] += $aprice;
+						  if(!isset($pq_tmp['commerce_price']))
+					        $pq_tmp['commerce_price'] = $pq_tmp['commerce_price_'.strtolower($acode)];
+					  }
+
+					  $products_queue2[$model.' '.$association['type'].': '.$association['associated_item']] = array_merge($pq,$pq_tmp);
+				  }
+			  }
+			  $products_queue = array_merge($products_queue,$products_queue2);
 
 			  //update product
 			  $nid = 0;
@@ -1683,13 +1761,16 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			    $node['sticky']=$row['recommended']?1:null;
 			    $node['created']=strtotime($row['created_on']);
 			    $node['changed']=time();
+				$node['status']=1;
                 if($pathauto_i18n) $node['path']['pathauto_i18n_status'] = 1;
 //			    $node['revision']=1;
 			    foreach($row['category'] as $ccc) {
 			      $category_id = array_pop(explode('/',$ccc));
 			      if(isset($category_mapping[$category_id])) $node['field_epesi_category']['und'][]['tid'] = $category_mapping[$category_id];
 			    }
-			    if(!isset($node['field_epesi_category'])) continue;
+			    if(!isset($node['field_epesi_category'])) {
+					$node['status'] = 0;
+				}
 
 			    if($row['manufacturer'] && isset($manufacturer_mapping[$row['manufacturer']]))
 			      $node['field_manufacturer']['und'][0]['tid'] = $manufacturer_mapping[$row['manufacturer']];

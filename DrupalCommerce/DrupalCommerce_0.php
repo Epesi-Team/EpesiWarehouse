@@ -18,7 +18,7 @@ class Premium_Warehouse_DrupalCommerce extends Module {
 	private $rb;
 	private $recordset;
 	private $caption;
-	
+
 	public function admin() {
 		if($this->is_back()) {
 			if($this->parent->get_type()=='Base_Admin')
@@ -52,7 +52,7 @@ class Premium_Warehouse_DrupalCommerce extends Module {
 		$theme->assign('buttons', $buttons);
 		$theme->display();
 	}
-	
+
 
 	public function body() {
 		$this->recordset = 'products';
@@ -72,7 +72,7 @@ class Premium_Warehouse_DrupalCommerce extends Module {
 	public function parameters() {
 		if($this->is_back()) return false;
 		Base_ActionBarCommon::add('back',__('Back'),$this->create_back_href());
-	
+
 		$this->recordset = 'parameters';
 		$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_parameters');
 		$this->rb->set_additional_actions_method(array($this, 'actions_for_position'));
@@ -98,7 +98,7 @@ class Premium_Warehouse_DrupalCommerce extends Module {
 	public function availability() {
 		if($this->is_back()) return false;
 		Base_ActionBarCommon::add('back',__('Back'),$this->create_back_href());
-	
+
 		$this->recordset = 'availability';
 		$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_availability');
 		$this->display_module($this->rb);
@@ -113,7 +113,7 @@ class Premium_Warehouse_DrupalCommerce extends Module {
 		    if($_REQUEST['new']>0) {
 			    $pos = Utils_RecordBrowserCommon::get_records($tab,array_merge($crits,array('>position'=>$_REQUEST['old'])),array('position'), array('position'=>'ASC'),1);
 		    } else {
-			    $pos = Utils_RecordBrowserCommon::get_records($tab,array_merge($crits,array('<position'=>$_REQUEST['old'])),array('position'), array('position'=>'DESC'),1);		    
+			    $pos = Utils_RecordBrowserCommon::get_records($tab,array_merge($crits,array('<position'=>$_REQUEST['old'])),array('position'), array('position'=>'DESC'),1);
 		    }
 		    if($pos) {
 		    	$pos = array_shift($pos);
@@ -168,7 +168,7 @@ class Premium_Warehouse_DrupalCommerce extends Module {
 									));
 		$this->display_module($rb,$order,'show_data');
 	}
-	
+
 	public function descriptions_addon($arg) {
 		$this->_descriptions_addon($arg['item_name']);
 	}
@@ -226,7 +226,7 @@ class Premium_Warehouse_DrupalCommerce extends Module {
 									));
 		$this->display_module($rb,$order,'show_data');
 	}
-	
+
 	public function prices_addon($arg) {
 		$this->_prices_addon($arg['item_name']);
 	}
@@ -244,46 +244,59 @@ class Premium_Warehouse_DrupalCommerce extends Module {
 		$this->display_module($rb,$order,'show_data');
 	}
 
+	public function associations_addon($arg) {
+		$this->_associations_addon($arg['item_name']);
+	}
+	public function associations_addon_item($arg) {
+		$this->_associations_addon($arg['id']);
+	}
+	private function _associations_addon($id) {
+		$rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_associations');
+		$order = array(array('item_name'=>$id), array('item_name'=>false), array('associated_item'=>'ASC'));
+		$rb->set_defaults(array('item_name'=>$id,'associated_item_price_change____'=>0,'associated_item_quantity'=>1));
+		$this->display_module($rb,$order,'show_data');
+	}
+
 	public function orders_addon($arg) {
 		$rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_orders');
 		//$order = array(array('transaction_id'=>$arg['id']), array('transaction_id'=>false));
 		$ord_id = Premium_Warehouse_DrupalCommerceCommon::orders_get_record();
 		$this->display_module($rb,array('view',$ord_id,null,false),'view_entry');
 		if(Base_AclCommon::i_am_admin())
-    		Base_ActionBarCommon::add('edit', __('Edit ecommerce'), $this->create_callback_href(array($this,'edit_ecommerce_order'),$ord_id));		
+    		Base_ActionBarCommon::add('edit', __('Edit ecommerce'), $this->create_callback_href(array($this,'edit_ecommerce_order'),$ord_id));
 	}
-	
+
 	public function edit_ecommerce_order($id) {
         $x = ModuleManager::get_instance('/Base_Box|0');
         if (!$x) trigger_error('There is no base box module instance',E_USER_ERROR);
 	    $x->push_main('Utils/RecordBrowser','view_entry',array('edit', $id, array(), true),array('premium_ecommerce_orders'));
 	}
-	
+
 	public function order_status_change_email_page() {
 		if($this->is_back()) return false;
 		Base_ActionBarCommon::add('back',__('Back'),$this->create_back_href());
-		
-		$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_emails');
-		$this->display_module($this->rb);		
 
-        return true;	    
+		$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_emails');
+		$this->display_module($this->rb);
+
+        return true;
 	}
-	
+
 	public function edit_variable($header, $v) {
 		if($this->is_back()) return false;
 		Base_ActionBarCommon::add('back',__('Back'),$this->create_back_href());
-	
+
 		$f = $this->init_module('Libs/QuickForm');
-		
+
 		$f->addElement('header',null,$header);
-		
+
 		$fck = & $f->addElement('ckeditor', 'content', __('Content'));
 		$fck->setFCKProps('800','300',true);
-		
+
 		$f->setDefaults(array('content'=>Variable::get($v,false)));
 
 		Base_ActionBarCommon::add('save',__('Save'),$f->get_submit_form_href());
-		
+
 		if($f->validate()) {
 			$ret = $f->exportValues();
 			$content = str_replace("\n",'',$ret['content']);
@@ -291,27 +304,27 @@ class Premium_Warehouse_DrupalCommerce extends Module {
 			Base_StatusBarCommon::message(__('Page saved'));
 			return false;
 		}
-		$f->display();	
+		$f->display();
 		return true;
 	}
 
 	public function edit_variable_mail($header, $v) {
 		if($this->is_back()) return false;
 		Base_ActionBarCommon::add('back',__('Back'),$this->create_back_href());
-	
+
 		$f = $this->init_module('Libs/QuickForm');
-		
+
 		$f->addElement('header',null,$header);
 
 		$f->addElement('text', 'subject', __('Subject'),array('maxlength'=>64));
-		
+
 		$fck = & $f->addElement('ckeditor', 'content', __('Content'));
 		$fck->setFCKProps('800','300',true);
-		
+
 		$f->setDefaults(array('content'=>Variable::get($v,false),'subject'=>Variable::get($v.'S',false)));
 
 		Base_ActionBarCommon::add('save',__('Save'),$f->get_submit_form_href());
-		
+
 		if($f->validate()) {
 			$ret = $f->exportValues();
 			$content = str_replace("\n",'',$ret['content']);
@@ -320,7 +333,7 @@ class Premium_Warehouse_DrupalCommerce extends Module {
 			Base_StatusBarCommon::message(__('Page saved'));
 			return false;
 		}
-		$f->display();	
+		$f->display();
 		return true;
 	}
 
@@ -332,7 +345,7 @@ class Premium_Warehouse_DrupalCommerce extends Module {
 		$this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_drupal');
 		$this->rb->set_defaults(array('endpoint'=>'epesi','update_products_every__minutes_'=>'360'));
 		$this->display_module($this->rb);
-		
+
 		print('<div style="text-align:left;padding-left:20px;font-size:16px;"><h2>Initial Drupal setup</h2><ol>
 		<li><a href="http://drupal.epe.si/pkg/epesi_commerce_kickstart.tar.gz" target="_blank">'.__('Download Drupal Commerce Kickstart package with Epesi custom modules').'</a></li>
 		<li>'.__('Upload it to your server (it can be different server than Epesi) and begin drupal installation').'</li>
@@ -355,7 +368,7 @@ class Premium_Warehouse_DrupalCommerce extends Module {
 
 		return true;
 	}
-	
+
 	private $manufacturers;
 	public function fast_fill() {
 		$qf = $this->init_module('Libs/QuickForm');
@@ -375,10 +388,10 @@ class Premium_Warehouse_DrupalCommerce extends Module {
 
 		$qf->addElement('checkbox','skip',__('Publish without getting information data'),'',array('id'=>'icecat_prod_skip'));
         $qf->addElement('static', '3rd party', __('Available data'),'<iframe id="3rdp_info_frame" style="width:300px; height:100px;border:0px"></iframe>');
-		
+
 		$qf->addElement('submit',null,__('Zapisz'));
 		$qf->addFormRule(array($this,'check_fast_fill'));
-		
+
 		if($qf->validate()) {
 			eval_js('leightbox_deactivate(\'fast_fill_lb\');');
 			$vals = $qf->exportValues();
@@ -390,14 +403,14 @@ class Premium_Warehouse_DrupalCommerce extends Module {
 
 		$this->rb = $this->init_module('Utils/RecordBrowser','premium_warehouse_items');
 		$this->rb->set_default_order(array('item_name'=>'ASC'));
-		
+
 		$this->rb->set_button(false);
 		$this->rb->disable_watchdog();
 		$this->rb->disable_actions(array('delete'));
-					
+
 		$cols = array('quantity_on_hand'=>false,'quantity_en_route'=>false,'available_qty'=>false,'reserved_qty'=>false,'dist_qty'=>false,
 				'quantity_sold'=>false,'vendor'=>false,'manufacturer'=>true,'product_code'=>true,'upc'=>true,'gross_price'=>false,'manufacturer_part_number'=>true);
-			
+
 		$this->rb->set_header_properties(array(
 						'manufacturer'=>array('width'=>25, 'wrapmode'=>'nowrap'),
 						'manufacturer_part_number'=>array('name'=>__('Part Number'), 'width'=>15, 'wrapmode'=>'nowrap'),
@@ -410,7 +423,7 @@ class Premium_Warehouse_DrupalCommerce extends Module {
 						));
 
   		$this->rb->set_additional_actions_method(array($this,'fast_fill_actions'));
-		
+
 		$crits = array('!id'=>Utils_RecordBrowserCommon::get_possible_values('premium_ecommerce_products','item_name'));
 		$this->display_module($this->rb, array(array(),$crits,$cols));
 //		Utils_RecordBrowserCommon::merge_crits(array('upc'=>'','(manufacturer_part_number'=>'', '|manufacturer'=>''),array('(product_code'=>'', '|manufacturer'=>''))
@@ -424,8 +437,8 @@ class Premium_Warehouse_DrupalCommerce extends Module {
 		if(!isset($arg['item_name'])) $arg['item_name'] = '';
 		if(!isset($arg['manufacturer_part_number'])) $arg['manufacturer_part_number'] = '';
 		if(!isset($arg['id']) || !is_numeric($arg['id'])) return array('upc'=>__('Invalid request without ID. Hacker?'));
-		if(empty($arg['upc']) && 
-		    (empty($arg['manufacturer']) || empty($arg['product_code'])) && 
+		if(empty($arg['upc']) &&
+		    (empty($arg['manufacturer']) || empty($arg['product_code'])) &&
 		    (empty($arg['manufacturer']) || empty($arg['manufacturer_part_number']))
 		    ) {
 		    	eval_js('$(\'icecat_prod_id\').value=\''.$arg['id'].'\';'.
@@ -440,7 +453,7 @@ class Premium_Warehouse_DrupalCommerce extends Module {
 		}
 		return array();
 	}
-	
+
 	public function fast_fill_actions($r, $gb_row) {
 		$gb_row->add_action(Libs_LeightboxCommon::get_open_href('fast_fill_lb').' id="icecat_button_'.$r['id'].'"','edit',__('Click here to fill required data'));
 		$gb_row->add_js('Event.observe(\'icecat_button_'.$r['id'].'\',\'click\',function() {'.
@@ -456,25 +469,28 @@ class Premium_Warehouse_DrupalCommerce extends Module {
 					'var err=$(\'icecat_prod_err\');if(err!=null)err.parentNode.parentNode.removeChild(err.parentNode);'.
 					'})');
 	}
-	
+
 	public function features() {
 		if($this->is_back()) return false;
-	
+
 		$form = $this->init_module('Libs/QuickForm');
 
 		$form->addElement('header', null, __('eCommerce item tabs'));
-		
+
 		$form->setDefaults(array('prices'=>Variable::get('ecommerce_item_prices'),
+					'associations'=>Variable::get('ecommerce_item_associations'),
 		            'parameters'=>Variable::get('ecommerce_item_parameters')
 				    ,'descriptions'=>Variable::get('ecommerce_item_descriptions')));
 
 		$form->addElement('checkbox', 'prices', __('Prices'),'');
 		$form->addElement('checkbox', 'parameters', __('Parameters'),'');
 		$form->addElement('checkbox', 'descriptions', __('Descriptions'),'');
+		$form->addElement('checkbox', 'associations', __('Kits / Associations'),'');
 
 		if($form->validate()) {
 			$vals = $form->exportValues();
 			Variable::set('ecommerce_item_prices',(isset($vals['prices']) && $vals['prices'])?true:false);
+			Variable::set('ecommerce_item_associations',(isset($vals['associations']) && $vals['associations'])?true:false);
 			Variable::set('ecommerce_item_descriptions',(isset($vals['descriptions']) && $vals['descriptions'])?true:false);
 			Variable::set('ecommerce_item_parameters',(isset($vals['parameters']) && $vals['parameters'])?true:false);
 			DB::Execute('UPDATE premium_ecommerce_products_field SET type=%s WHERE field=%s OR field=%s', array(Variable::get('ecommerce_item_descriptions')?'calculated':'hidden', 'Product Name', 'Description'));
@@ -483,17 +499,17 @@ class Premium_Warehouse_DrupalCommerce extends Module {
 
 		Base_ActionBarCommon::add('back',__('Back'),$this->create_back_href());
 		Base_ActionBarCommon::add('save', __('Save'), $form->get_submit_form_href(true,__('creating thumbnails, please wait')));
-		
+
     		return true;
 	}
-	
+
 	public function prices() {
 		if($this->is_back()) return false;
-	
+
 		$form = $this->init_module('Libs/QuickForm');
 
 		$form->addElement('header', null, __('Automatic prices'));
-		
+
 		eval_js_once("ecommerce_autoprices = function(val) {
 			if(val) {
 				$('ecommerce_minimal').enable();
@@ -513,7 +529,7 @@ class Premium_Warehouse_DrupalCommerce extends Module {
 
 		$form->addElement('text', 'minimal', __('Minimal profit margin'),array('id'=>'ecommerce_minimal'));
 		$form->addElement('text', 'margin', __('Percentage profit margin'),array('id'=>'ecommerce_margin'));
-		
+
 		if($enabled) {
 			$form->addRule('minimal', __('This should be numeric value'),'numeric');
 			$form->addRule('margin', __('This should be numeric value'),'numeric');
@@ -529,10 +545,10 @@ class Premium_Warehouse_DrupalCommerce extends Module {
 
 		Base_ActionBarCommon::add('back',__('Back'),$this->create_back_href());
 		Base_ActionBarCommon::add('save', __('Save'), $form->get_submit_form_href(true,__('creating thumbnails, please wait')));
-		
+
     		return true;
 	}
-	
+
 	public function check_path($p) {
 	    if(!is_dir($p) || !is_dir(rtrim($p,'/').'/files') || !is_writable(rtrim($p,'/').'/files')
 		|| (file_exists(rtrim($p,'/').'/files/epesi') && !is_writable(rtrim($p,'/').'/files/epesi'))
@@ -542,15 +558,15 @@ class Premium_Warehouse_DrupalCommerce extends Module {
 		|| (file_exists(rtrim($p,'/').'/config/epesi.php') && !is_writable(rtrim($p,'/').'/config/epesi.php'))) return false;
 	    return true;
 	}
-	
+
 	public function get_3rd_party_info_addon($arg){
 	}
-	
+
 	public function warehouse_item_addon($arg) {
 		$recs = Utils_RecordBrowserCommon::get_records('premium_ecommerce_products',array('item_name'=>$arg['id']));
 		if(empty($recs)) {
 		    print('<h1><a '.$this->create_callback_href(array('Premium_Warehouse_DrupalCommerceCommon','publish_warehouse_item'),$arg['id']).'>'.__('Publish').'</a></h1>');
-		    
+
 		    $plugins = Utils_RecordBrowserCommon::get_records('premium_ecommerce_3rdp_info',array(),array(),array('position'=>'ASC'));
 		    if($plugins) print('<h1><a '.$this->create_callback_href(array('Premium_Warehouse_DrupalCommerceCommon','publish_warehouse_item'),array($arg['id'],false)).'>'.__('Publish without getting information data').'</a></h1>');
 		    return;
@@ -559,7 +575,7 @@ class Premium_Warehouse_DrupalCommerce extends Module {
 
 		$on = '<span class="checkbox_on" />';
 		$off = '<span class="checkbox_off" />';
-		
+
 		print('<h1>'.Utils_RecordBrowserCommon::record_link_open_tag('premium_ecommerce_products',$rec['id']).__('Go to item').Utils_RecordBrowserCommon::record_link_close_tag().'</h1>');
 
 		//opts
@@ -577,7 +593,7 @@ class Premium_Warehouse_DrupalCommerce extends Module {
  		$m->add_row(__('Available in warehouse'),(empty($quantity)?$off:$on),'');
  		$m->add_row(__('Common attachments'),Utils_AttachmentCommon::count('premium_ecommerce_products/'.$arg['id']),'');
 //		$m->add_row('Related,recommended',Utils_RecordBrowserCommon::record_link_open_tag('premium_ecommerce_products',$rec['id'],false,'edit').__('Edit item').Utils_RecordBrowserCommon::record_link_close_tag());
-		
+
  		$this->display_module($m);
 
 		//langs
@@ -602,7 +618,7 @@ class Premium_Warehouse_DrupalCommerce extends Module {
     		}
  	    	$this->display_module($m);
         }
-        
+
 		//currencies
         if(Variable::get('ecommerce_item_prices')) {
      		$m = $this->init_module('Utils/GenericBrowser',null,'t2');
@@ -628,20 +644,20 @@ class Premium_Warehouse_DrupalCommerce extends Module {
  		    $this->display_module($m);
  		}
 	}
-	
+
 	public function caption(){
 		if (isset($this->caption)) return $this->caption;
 		if (isset($this->rb)) return $this->rb->caption();
 		return __('eCommerce administration');
 	}
-	
+
 	public function applet($conf, & $opts) {
 		//available applet options: toggle,href,title,go,go_function,go_arguments,go_contruct_arguments
 		$opts['go'] = false; // enable/disable full screen
 		$xxx = Premium_Warehouse_DrupalCommerceCommon::$order_statuses;
 		$xxx['active'] = __('Active');
 		$opts['title'] = __('eCommerce - %s',array($xxx[$conf['status']]));
-		
+
 		$crits = array('online_order'=>1);
 		if($conf['status']=='active')
 			$crits['status'] = array(2,3,4,5,6);
@@ -667,18 +683,18 @@ class Premium_Warehouse_DrupalCommerce extends Module {
 		$this->display_module($rb, $conds, 'mini_view');
 
 	}
-	
+
 	public function setup_3rd_party_plugins() {
 		if($this->is_back()) return false;
 		Base_ActionBarCommon::add('back',__('Back'),$this->create_back_href());
-	
+
 	    Base_ActionBarCommon::add('search',__('Scan plugins'), $this->create_callback_href(array('Premium_Warehouse_DrupalCommerceCommon','scan_for_3rdp_info_plugins')));
         $this->recordset = '3rdp_info';
         $this->rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_3rdp_info','premium_ecommerce_3rdp_info');
 		$this->rb->set_additional_actions_method(array($this, 'actions_for_position'));
 		$this->rb->force_order(array('position'=>'ASC'));
         $this->display_module($this->rb);
-        
+
         return true;
 	}
 
