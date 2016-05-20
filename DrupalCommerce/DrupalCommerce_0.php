@@ -349,7 +349,7 @@ class Premium_Warehouse_DrupalCommerce extends Module {
 		print('<div style="text-align:left;padding-left:20px;font-size:16px;"><h2>Initial Drupal setup</h2><ol>
 		<li><a href="http://drupal.epe.si/pkg/epesi_commerce_kickstart.tar.gz" target="_blank">'.__('Download Drupal Commerce Kickstart package with Epesi custom modules').'</a></li>
 		<li>'.__('Upload it to your server (it can be different server than Epesi) and begin drupal installation').'</li>
-		<li><u>'.__('Always use different database then Epesi one').'</u></li>
+		<li><u>'.__('Always use different database than Epesi one').'</u></li>
 		<li>'.__('On "Configure store" screen disable "demo store" installation and enable translations').'<br /><img style="padding:10px 0px 20px" src="'.$this->get_module_dir().'manual/0.png"></li>
 		<li>'.__('Log in to your new drupal commerce installation and go to modules').'<br /><img style="padding:10px 0px 20px" src="'.$this->get_module_dir().'manual/1.png"></li>
 		<li>'.__('Search for the phrase "epesi"').'<br /><img style="padding:10px 0px 20px" src="'.$this->get_module_dir().'manual/2.png"></li>

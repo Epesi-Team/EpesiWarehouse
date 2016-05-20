@@ -1249,8 +1249,8 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
                 $category_mapping[$term_data['field_epesi_category_id']['und'][0]['value']] = $term_data['tid'];
               }
             } catch(Exception $e) {
-				$log[] = 'DRUPAL #'.$drupal_id.' Error getting categories: '.$e->getMessage();
-				continue;//skip this drupal sync
+//				$log[] = 'DRUPAL #'.$drupal_id.' Error getting categories: '.$e->getMessage();
+//				continue;//skip this drupal sync
 			}
             //print_r($terms);
 
