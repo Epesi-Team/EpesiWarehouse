@@ -1150,8 +1150,8 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 				  unset($sku[0]);
 				  $associated_ids = array();
 				  for($i=1; isset($sku[$i]); $i++) {
-					  if(preg_match('/^#([0-9]+)$/',$sku[$i],$match)) {
-						$associated_ids[] = $match[1];
+					  if(preg_match('/^#([0-9]+)(\*([0-9]+))?$/',$sku[$i],$match)) {
+						$associated_ids[(int)$match[1]] = isset($match[3])?$match[3]:1;
 						unset($sku[$i]);
 					  } else break;
 				  }
@@ -1192,8 +1192,8 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			      Utils_RecordBrowserCommon::new_record('premium_warehouse_items_orders_details',array('transaction_id'=>$id,'item_name'=>$product_id,'quantity'=>$line_item['quantity'],'description'=>($desc?$desc.' | ':'').$line_item['line_item_label'].' '.$line_item['line_item_title'],'tax_rate'=>$tax,'net_price'=>$net.'__'.$currency_id,'gross_price'=>$gross.'__'.$currency_id));
 				  $master_product = Utils_RecordBrowserCommon::get_record('premium_warehouse_items',$product_id);
 				  $master_product_name = $master_product['sku'].': '.html_entity_decode($master_product['item_name']);
-				  foreach($associated_ids as $as_id)
-				  	Utils_RecordBrowserCommon::new_record('premium_warehouse_items_orders_details',array('transaction_id'=>$id,'item_name'=>$as_id,'quantity'=>$line_item['quantity'],'description'=>__('sold in set with %s',array($master_product_name)),'tax_rate'=>$tax,'net_price'=>'0__'.$currency_id,'gross_price'=>'0__'.$currency_id));
+				  foreach($associated_ids as $as_id=>$as_qty)
+				  	Utils_RecordBrowserCommon::new_record('premium_warehouse_items_orders_details',array('transaction_id'=>$id,'item_name'=>$as_id,'quantity'=>$line_item['quantity']*$as_qty,'description'=>__('sold in set with %s',array($master_product_name)),'tax_rate'=>$tax,'net_price'=>'0__'.$currency_id,'gross_price'=>'0__'.$currency_id));
 			      //ob_clean();
 			    }
 
@@ -1625,15 +1625,15 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 				    $a_item_price = Utils_CurrencyFieldCommon::get_values($associated_item['net_price']);
 				    if($a_item_price[0] && isset($currencies[$a_item_price[1]])) {
 				      $currency = $currencies[$a_item_price[1]];
-					  $associated_prices[$currency['code']] = round(($export_net_price?(float)$a_item_price[0]:((float)$a_item_price[0])*(100+($associated_item['tax_rate']?$taxes[$associated_item['tax_rate']]:0))/100)*($association['associated_item_price_change____']+100)/100,$currency['decimals'])*pow(10,$currency['decimals']);
+					  $associated_prices[$currency['code']] = round(($export_net_price?(float)$a_item_price[0]:((float)$a_item_price[0])*(100+($associated_item['tax_rate']?$taxes[$associated_item['tax_rate']]:0))/100)*($association['associated_item_price_change____']+100)*$association['associated_item_quantity']/100,$currency['decimals'])*pow(10,$currency['decimals']);
 				    }
 				  }
 				  foreach($associated_prices_tmp as $aprice) {
 					  if(!isset($currencies[$aprice['currency']])) continue;
-					  $associated_prices[$currencies[$aprice['currency']]['code']] = round(($export_net_price?($aprice['gross_price']*100/(100+($aprice['tax_rate']?$taxes[$aprice['tax_rate']]:0))):$aprice['gross_price'])*($association['associated_item_price_change____']+100)/100,$currency['decimals'])*pow(10,$currency['decimals']);
+					  $associated_prices[$currencies[$aprice['currency']]['code']] = round(($export_net_price?($aprice['gross_price']*100/(100+($aprice['tax_rate']?$taxes[$aprice['tax_rate']]:0))):$aprice['gross_price'])*($association['associated_item_price_change____']+100)*$association['associated_item_quantity']/100,$currency['decimals'])*pow(10,$currency['decimals']);
 				  }
 				  foreach($products_queue as $model=>$pq) {
-					  $pq_tmp = array('field_'.$association['type']=>$drupal_products[$associated_item['sku']],'sku'=>$pq['sku'].' #'.$association['associated_item']);
+					  $pq_tmp = array('field_'.$association['type']=>$drupal_products[$associated_item['sku']],'sku'=>$pq['sku'].' '.$associated_item['sku'].($association['associated_item_quantity']==1?'':'*'.$association['associated_item_quantity']));
 					  foreach($pq as $pq_key=>$pq_val) {
 						  if(preg_match('/^commerce_price/',$pq_key))
 						  	$pq_tmp[$pq_key] = null;

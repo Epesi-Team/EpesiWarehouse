@@ -90,7 +90,7 @@ class Premium_Warehouse_DrupalCommerceInstall extends ModuleInstall {
             array('name' => _M('Item Name'), 	'type'=>'select', 'required'=>true, 'param'=>'premium_warehouse_items::Item Name;Premium_Warehouse_Items_OrdersCommon::products_crits', 'extra'=>false, 'visible'=>true, 'display_callback'=>array($this->get_type().'Common', 'display_item_name')),
             array('name' => _M('Associated Item'), 	'type'=>'select', 'required'=>true, 'param'=>'premium_warehouse_items::Item Name;Premium_Warehouse_Items_OrdersCommon::products_crits', 'extra'=>false, 'visible'=>true),
             array('name' => _M('Type'),	'type'=>'commondata', 'param'=>array('Premium/Warehouse/eCommerce/AssociationTypes'), 'required'=>true, 'extra'=>false, 'visible'=>true),
-            //array('name' => _M('Associated Item Quantity'), 	'type'=>'float', 'required'=>true, 'extra'=>false,'visible'=>true),
+            array('name' => _M('Associated Item Quantity'), 	'type'=>'integer', 'required'=>true, 'extra'=>false,'visible'=>true),
             array('name' => _M('Associated Item Price Change (%%)'),'type'=>'float', 'required'=>true, 'extra'=>false,'visible'=>true),
         );
         Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_associations', $fields);
