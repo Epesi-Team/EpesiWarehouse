@@ -62,10 +62,8 @@ class Premium_Warehouse_DrupalCommerce extends Module {
 		$this->rb->force_order(array('position'=>'ASC'));
 
 		$opts = Premium_Warehouse_DrupalCommerceCommon::get_categories();
-		$this->rb->set_custom_filter('item_name',array('type'=>'select','label'=>__('Category'),'args'=>$opts,'trans_callback'=>array('Premium_Warehouse_DrupalCommerceCommon', 'category_filter')));
+		$this->rb->set_custom_filter('items',array('type'=>'select','label'=>__('Category'),'args'=>$opts,'trans_callback'=>array('Premium_Warehouse_DrupalCommerceCommon', 'category_filter')));
 
-//		$cols = array('item_name'=>array('name'=>'Item name')
-//		        );
 		$this->display_module($this->rb);//,array(array('position'=>'ASC'),array(),$cols));
 	}
 
@@ -170,28 +168,18 @@ class Premium_Warehouse_DrupalCommerce extends Module {
 	}
 
 	public function descriptions_addon($arg) {
-		$this->_descriptions_addon($arg['item_name']);
+		$this->_descriptions_addon($arg['id']);
 	}
 
 	public function descriptions_addon_item($arg) {
-		$this->_descriptions_addon($arg['id']);
+		$pid = Utils_RecordBrowserCommon::get_id('premium_ecommerce_products', array('items'), array($arg['id']));
+		$this->_descriptions_addon($pid);
 	}
 
 	private function _descriptions_addon($id) {
 		$rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_descriptions');
-		$order = array(array('item_name'=>$id), array('item_name'=>false), array('language'=>'ASC'));
-		$rb->set_defaults(array('item_name'=>$id,'language'=>Base_LangCommon::get_lang_code()));
-		$rb->set_header_properties(array(
-			'language'=>array('width'=>10, 'wrapmode'=>'nowrap'),
-			'description'=>array('width'=>50, 'wrapmode'=>'nowrap')
-									));
-		$this->display_module($rb,$order,'show_data');
-	}
-
-	public function item_cat_labels_addon($arg) {
-		$rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_item_cat_labels');
-		$order = array(array('item_name'=>$arg['item_name']), array('item_name'=>false), array('language'=>'ASC'));
-		$rb->set_defaults(array('item_name'=>$arg['item_name'],'language'=>Base_LangCommon::get_lang_code()));
+		$order = array(array('product'=>$id), array('product'=>false), array('language'=>'ASC'));
+		$rb->set_defaults(array('product'=>$id,'language'=>Base_LangCommon::get_lang_code()));
 		$rb->set_header_properties(array(
 			'language'=>array('width'=>10, 'wrapmode'=>'nowrap'),
 			'description'=>array('width'=>50, 'wrapmode'=>'nowrap')
@@ -211,15 +199,16 @@ class Premium_Warehouse_DrupalCommerce extends Module {
 	}
 
 	public function parameters_addon($arg) {
-		$this->_parameters_addon($arg['item_name']);
+		$this->_parameters_addon($arg['id']);
 	}
 	public function parameters_addon_item($arg) {
-		$this->_parameters_addon($arg['id']);
+		$pid = Utils_RecordBrowserCommon::get_id('premium_ecommerce_products', array('items'), array($arg['id']));
+		$this->_parameters_addon($pid);
 	}
 	private function _parameters_addon($id) {
 		$rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_products_parameters');
-		$order = array(array('item_name'=>$id), array('item_name'=>false), array('language'=>'ASC','parameter'=>'ASC'));
-		$rb->set_defaults(array('item_name'=>$id,'language'=>Base_LangCommon::get_lang_code()));
+		$order = array(array('product'=>$id), array('product'=>false), array('language'=>'ASC','parameter'=>'ASC'));
+		$rb->set_defaults(array('product'=>$id,'language'=>Base_LangCommon::get_lang_code()));
 		$rb->set_header_properties(array(
 			'parameter'=>array('wrapmode'=>'nowrap'),
 			'value'=>array('wrapmode'=>'nowrap')
@@ -228,15 +217,16 @@ class Premium_Warehouse_DrupalCommerce extends Module {
 	}
 
 	public function prices_addon($arg) {
-		$this->_prices_addon($arg['item_name']);
+		$this->_prices_addon($arg['id']);
 	}
 	public function prices_addon_item($arg) {
-		$this->_prices_addon($arg['id']);
+		$pid = Utils_RecordBrowserCommon::get_id('premium_ecommerce_products', array('items'), array($arg['id']));
+		$this->_prices_addon($pid);
 	}
 	private function _prices_addon($id) {
 		$rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_prices');
-		$order = array(array('item_name'=>$id), array('item_name'=>false), array('currency'=>'ASC'));
-		$rb->set_defaults(array('item_name'=>$id));
+		$order = array(array('product'=>$id), array('product'=>false), array('currency'=>'ASC'));
+		$rb->set_defaults(array('product'=>$id));
 		$rb->set_header_properties(array(
 			'currency'=>array('width'=>10, 'wrapmode'=>'nowrap'),
 			'price'=>array('wrapmode'=>'nowrap')
@@ -245,15 +235,16 @@ class Premium_Warehouse_DrupalCommerce extends Module {
 	}
 
 	public function associations_addon($arg) {
-		$this->_associations_addon($arg['item_name']);
+		$this->_associations_addon($arg['id']);
 	}
 	public function associations_addon_item($arg) {
-		$this->_associations_addon($arg['id']);
+		$pid = Utils_RecordBrowserCommon::get_id('premium_ecommerce_products', array('items'), array($arg['id']));
+		$this->_associations_addon($pid);
 	}
 	private function _associations_addon($id) {
 		$rb = $this->init_module('Utils/RecordBrowser','premium_ecommerce_associations');
-		$order = array(array('item_name'=>$id), array('item_name'=>false), array('associated_item'=>'ASC'));
-		$rb->set_defaults(array('item_name'=>$id,'associated_item_price_change____'=>0,'associated_item_quantity'=>1));
+		$order = array(array('product'=>$id), array('product'=>false), array('associated_item'=>'ASC'));
+		$rb->set_defaults(array('product'=>$id,'associated_item_price_change____'=>0,'associated_item_quantity'=>1));
 		$this->display_module($rb,$order,'show_data');
 	}
 
@@ -424,7 +415,7 @@ class Premium_Warehouse_DrupalCommerce extends Module {
 
   		$this->rb->set_additional_actions_method(array($this,'fast_fill_actions'));
 
-		$crits = array('!id'=>Utils_RecordBrowserCommon::get_possible_values('premium_ecommerce_products','item_name'));
+		$crits = array('!id'=>Utils_RecordBrowserCommon::get_possible_values('premium_ecommerce_products','items'));
 		$this->display_module($this->rb, array(array(),$crits,$cols));
 //		Utils_RecordBrowserCommon::merge_crits(array('upc'=>'','(manufacturer_part_number'=>'', '|manufacturer'=>''),array('(product_code'=>'', '|manufacturer'=>''))
 	}
@@ -563,7 +554,7 @@ class Premium_Warehouse_DrupalCommerce extends Module {
 	}
 
 	public function warehouse_item_addon($arg) {
-		$recs = Utils_RecordBrowserCommon::get_records('premium_ecommerce_products',array('item_name'=>$arg['id']));
+		$recs = Utils_RecordBrowserCommon::get_records('premium_ecommerce_products',array('items'=>$arg['id']));
 		if(empty($recs)) {
 		    print('<h1><a '.$this->create_callback_href(array('Premium_Warehouse_DrupalCommerceCommon','publish_warehouse_item'),$arg['id']).'>'.__('Publish').'</a></h1>');
 
@@ -609,12 +600,12 @@ class Premium_Warehouse_DrupalCommerce extends Module {
 					    ));
     		$langs = Utils_CommonDataCommon::get_array('Premium/Warehouse/eCommerce/Languages');
 	    	foreach($langs as $code=>$name) {
-		        $descs = Utils_RecordBrowserCommon::get_records('premium_ecommerce_descriptions',array('item_name'=>$rec['item_name'],'language'=>$code),array('display_name','short_description'));
+		        $descs = Utils_RecordBrowserCommon::get_records('premium_ecommerce_descriptions',array('product'=>$rec['id'],'language'=>$code),array('display_name','short_description'));
 		        $descs = array_pop($descs);
-    		    $params = Utils_RecordBrowserCommon::get_records('premium_ecommerce_products_parameters',array('item_name'=>$rec['item_name'],'language'=>$code));
-	    	    $attachments = Utils_AttachmentCommon::count('premium_ecommercedescriptions/'.$code.'/'.$arg['id']);
+    		    $params = Utils_RecordBrowserCommon::get_records('premium_ecommerce_products_parameters',array('product'=>$rec['id'],'language'=>$code));
+	    	    $attachments = Utils_AttachmentCommon::count('premium_ecommerce_descriptions/'.$descs['id']);
  		        $m->add_row($name,($descs && isset($descs['display_name']) && $descs['display_name'])?$on:$off,($descs && isset($descs['short_description']) && $descs['short_description'])?$on:$off,empty($params)?$off:$on,$attachments,
- 		        		$descs?Utils_RecordBrowserCommon::record_link_open_tag('premium_ecommerce_descriptions',$descs['id'],false,'edit').__('Edit').Utils_RecordBrowserCommon::record_link_close_tag():'<a '.Utils_RecordBrowserCommon::create_new_record_href('premium_ecommerce_descriptions',array('language'=>$code,'item_name'=>$arg['id'])).'>'.__('Add').'</a>');
+ 		        		$descs?Utils_RecordBrowserCommon::record_link_open_tag('premium_ecommerce_descriptions',$descs['id'],false,'edit').__('Edit').Utils_RecordBrowserCommon::record_link_close_tag():'<a '.Utils_RecordBrowserCommon::create_new_record_href('premium_ecommerce_descriptions',array('language'=>$code,'product'=>$rec['id'])).'>'.__('Add').'</a>');
     		}
  	    	$this->display_module($m);
         }
@@ -630,7 +621,7 @@ class Premium_Warehouse_DrupalCommerce extends Module {
 					    ));
     		$curr_opts = Premium_Warehouse_DrupalCommerceCommon::get_currencies();
 	    	foreach($curr_opts as $id=>$code) {
-		        $prices = Utils_RecordBrowserCommon::get_records('premium_ecommerce_prices',array('item_name'=>$rec['item_name'],'currency'=>$id),array('gross_price','tax_rate'));
+		        $prices = Utils_RecordBrowserCommon::get_records('premium_ecommerce_prices',array('product'=>$rec['id'],'currency'=>$id),array('gross_price','tax_rate'));
 		        $prices = array_pop($prices);
     		    if($prices && isset($prices['gross_price'])) {
     			    $tax = Utils_RecordBrowserCommon::get_record('data_tax_rates',$prices['tax_rate']);
@@ -638,7 +629,7 @@ class Premium_Warehouse_DrupalCommerce extends Module {
  		    		Utils_RecordBrowserCommon::record_link_open_tag('premium_ecommerce_prices',$prices['id'],false,'edit').__('Edit').Utils_RecordBrowserCommon::record_link_close_tag());
 	    	    } else {
          		    $m->add_row($code,$off,$off,
-         		    	'<a '.Utils_RecordBrowserCommon::create_new_record_href('premium_ecommerce_prices',array('currency'=>$id,'item_name'=>$arg['id'])).'>'.__('Add').'</a>');
+         		    	'<a '.Utils_RecordBrowserCommon::create_new_record_href('premium_ecommerce_prices',array('currency'=>$id,'product'=>$rec['id'])).'>'.__('Add').'</a>');
     		    }
 	    	}
  		    $this->display_module($m);
@@ -699,7 +690,7 @@ class Premium_Warehouse_DrupalCommerce extends Module {
 	}
 
 	public function attachment_product_addon($arg){
-		$a = $this->init_module('Utils/Attachment',array('premium_ecommerce_products/'.$arg['item_name']));
+		$a = $this->init_module('Utils/Attachment',array('premium_ecommerce_products/'.$arg['id']));
 		$this->display_module($a);
 	}
 
@@ -719,7 +710,7 @@ class Premium_Warehouse_DrupalCommerce extends Module {
 	}
 
 	public function attachment_product_desc_addon($arg){
-		$a = $this->init_module('Utils/Attachment',array('premium_ecommerce_descriptions/'.$arg['language'].'/'.$arg['item_name']));
+		$a = $this->init_module('Utils/Attachment',array('premium_ecommerce_descriptions/'.$arg['id']));
 		$this->display_module($a);
 	}
 

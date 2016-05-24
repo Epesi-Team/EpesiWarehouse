@@ -4,18 +4,18 @@ defined("_VALID_ACCESS") || die('Direct access forbidden');
 class Premium_Warehouse_eCommerce_3rdp__Plugin_bdk implements Premium_Warehouse_DrupalCommerce_3rdp__Plugin {
 	/**
 	 * Returns the name of the plugin
-	 * 
-	 * @return string plugin name 
+	 *
+	 * @return string plugin name
 	 */
 	public function get_name() {
 		return 'BDK';
 	}
-	
+
 	/**
 	 * Returns parameter list for the plugin
 	 * The list should be an array where key is paramter name/label and value is type [text|password]
-	 * 
-	 * @return array parameters list 
+	 *
+	 * @return array parameters list
 	 */
 	public function get_parameters() {
 		return array();
@@ -42,7 +42,7 @@ class Premium_Warehouse_eCommerce_3rdp__Plugin_bdk implements Premium_Warehouse_
 	        return;
 	    }
 	    set_time_limit(0);
-	    
+
 	    //parse data
 	    $ret = $r->value();
    		foreach($ret['attributes'] as & $a) {
@@ -56,7 +56,7 @@ class Premium_Warehouse_eCommerce_3rdp__Plugin_bdk implements Premium_Warehouse_
    			}
    			unset($a['tech']);
 	    }
-	    
+
 	    if(!$item['manufacturer'] && isset($ret['brand']) && $ret['brand']) {
             $manufacturers = CRM_ContactsCommon::get_companies(array('company_name'=>$ret['brand']), array('group','company_name'));
             if($manufacturer = array_shift($manufacturers)) {
@@ -76,9 +76,9 @@ class Premium_Warehouse_eCommerce_3rdp__Plugin_bdk implements Premium_Warehouse_
                 if(!preg_match('/'.$manufacturer['company_name'].'/i',$display_name) && strlen($manufacturer['company_name'].' '.$display_name)<128)
                     $display_name = $manufacturer['company_name'].' '.$display_name;
         }
-        
-        
-        $descriptions_tmp = Utils_RecordBrowserCommon::get_records('premium_ecommerce_descriptions',array('item_name'=>$item['id'],'language'=>'pl'),array('id','language'));
+
+		$pid = Utils_RecordBrowserCommon::get_id('premium_ecommerce_products', array('items'), array($item['id']));
+        $descriptions_tmp = Utils_RecordBrowserCommon::get_records('premium_ecommerce_descriptions',array('product'=>$pid,'language'=>'pl'),array('id','language'));
         $descriptions = null;
         foreach($descriptions_tmp as $rr) {
             $descriptions = $rr['id'];
@@ -86,7 +86,7 @@ class Premium_Warehouse_eCommerce_3rdp__Plugin_bdk implements Premium_Warehouse_
         }
         unset($descriptions_tmp);
 
-        $product_desc = array('item_name'=>$item['id'],
+        $product_desc = array('product'=>$pid,
                         'language'=>'pl',
                         'display_name'=>substr($display_name,0,128),
                         'short_description'=>str_replace('\n','<br />',$ret['descr']));
@@ -98,7 +98,7 @@ class Premium_Warehouse_eCommerce_3rdp__Plugin_bdk implements Premium_Warehouse_
             $descriptions = Utils_RecordBrowserCommon::new_record('premium_ecommerce_descriptions',$product_desc);
 
         //parameters
-        $item_parameters_tmp = Utils_RecordBrowserCommon::get_records('premium_ecommerce_products_parameters',array('item_name'=>$item['id'],'language'=>'pl'),array('id','parameter'));
+        $item_parameters_tmp = Utils_RecordBrowserCommon::get_records('premium_ecommerce_products_parameters',array('product'=>$pid,'language'=>'pl'),array('id','parameter'));
         $item_parameters = array();
         foreach($item_parameters_tmp as $rr)
             $item_parameters[$rr['parameter']] = $rr['id'];
@@ -130,7 +130,7 @@ class Premium_Warehouse_eCommerce_3rdp__Plugin_bdk implements Premium_Warehouse_
                 Utils_RecordBrowserCommon::new_record('premium_ecommerce_parameter_labels',$parameter_label);
             }
 
-            $item_params = array('item_name'=>$item['id'],
+            $item_params = array('product'=>$pid,
                             'parameter'=>$param,
                             'group'=>$group,
                             'language'=>'pl',
@@ -182,9 +182,9 @@ class Premium_Warehouse_eCommerce_3rdp__Plugin_bdk implements Premium_Warehouse_
                     Utils_AttachmentCommon::persistent_mass_delete('premium_ecommerce_products/'.$item['id'],false,array_values($old_pics));
             }
         }
-        
+
         return array('pl');
-    }	
+    }
 
 	public function check($parameters,$upc,$man,$mpn,$langs) {
         if(!in_array('pl',$langs)) return;

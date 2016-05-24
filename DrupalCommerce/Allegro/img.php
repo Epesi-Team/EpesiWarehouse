@@ -29,13 +29,14 @@ Utils_AttachmentCommon::call_user_func_on_file('premium_ecommerce_descriptions/p
 header("Content-type: image/jpeg");
 $im = imagecreatetruecolor(240, 240);
 $white = imagecolorallocate($im, 255, 255, 255);
-imagefill($im, 0, 0, $white); 
+imagefill($im, 0, 0, $white);
 $black = imagecolorallocate($im, 5, 5, 5);
 $gray = imagecolorallocate($im, 155, 155, 155);
 $red = imagecolorallocate($im, 205, 0, 0);
 imagerectangle($im, 0, 0, 239, 239, $gray);
 
-$desc = Utils_RecordBrowserCommon::get_records('premium_ecommerce_descriptions',array('item_name'=>$auctions[$_GET['i']]['item'],'language'=>'pl'));
+$pid = Utils_RecordBrowserCommon::get_id('premium_ecommerce_products', array('items'), array($auctions[$_GET['i']]['item']));
+$desc = Utils_RecordBrowserCommon::get_records('premium_ecommerce_descriptions',array('product'=>$pid,'language'=>'pl'));
 if($desc) {
     $desc = array_shift($desc);
     $title = trim($desc['display_name']);
@@ -64,7 +65,7 @@ foreach($texts as $k=>$text) {
 
 $is_photo = false;
 if($photo!==null) {
-    $ph = imagecreatefromjpeg($photo); 
+    $ph = imagecreatefromjpeg($photo);
     if($ph) {
 	list($width,$height,$type,$attr) = getimagesize($photo);
 	if($width>$height) {

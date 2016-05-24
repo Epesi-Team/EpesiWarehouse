@@ -1,6 +1,6 @@
 <?php
 /**
- * 
+ *
  * @author shacky@poczta.fm
  * @copyright Telaxus LLC
  * @license MIT
@@ -15,7 +15,7 @@ class Premium_Warehouse_DrupalCommerce_CurrencyUpdatePricesCommon extends Module
 	public static function admin_caption() {
 		return array('label'=>__('eCommerce - prices'), 'section'=>__('Features Configuration'));
 	}
-	
+
 	public static function update($data = null) {
         if($data===null && Variable::get('ecommerce_price_updater_last_upd')>time()-12*3600) return null;
 	if($data===null) $data = Variable::get('ecommerce_price_updater',false);
@@ -24,7 +24,7 @@ class Premium_Warehouse_DrupalCommerce_CurrencyUpdatePricesCommon extends Module
             $data = @unserialize($data);
 	    if(!$data) return null;
 	}
-        
+
         set_time_limit(0);
         $ret = @simplexml_load_file('http://www.ecb.int/stats/eurofxref/eurofxref-daily.xml');
         if(!$ret) {
@@ -53,10 +53,12 @@ class Premium_Warehouse_DrupalCommerce_CurrencyUpdatePricesCommon extends Module
 
 		foreach($recs as $r) {
 		    list($value,$curr) = Utils_CurrencyFieldCommon::get_values($r['net_price']);
+			$pid = Utils_RecordBrowserCommon::get_id('premium_ecommerce_products', array('items'), array($r['id']));
+			if(!$pid) continue;
 		    if(is_numeric($value) && $value)
 			$value = $value*(100+Data_TaxRatesCommon::get_tax_rate($r['tax_rate']))/(100*$rates[$curr]);
-		    if($wholesale && $autoprice && !$value && 
-		        (($location && Premium_Warehouse_Items_LocationCommon::get_item_quantity_in_warehouse($r['id'])==0) || 
+		    if($wholesale && $autoprice && !$value &&
+		        (($location && Premium_Warehouse_Items_LocationCommon::get_item_quantity_in_warehouse($r['id'])==0) ||
 		        (!$location && $r['quantity_on_hand']==0))) {
 		        $fff = DB::GetAll('SELECT i.price,i.price_currency,dist.f_minimal_profit,dist.f_percentage_profit FROM premium_warehouse_wholesale_items i INNER JOIN premium_warehouse_distributor_data_1 dist ON dist.id=i.distributor_id WHERE i.item_id=%d AND i.quantity>0 AND dist.active=1',array($r['id']));
 		        $min_value = null;
@@ -82,13 +84,13 @@ class Premium_Warehouse_DrupalCommerce_CurrencyUpdatePricesCommon extends Module
 		    if(is_numeric($value) && $value>0) {
 		        $euro = $value*(100+$data['profit'])/100;
 		        foreach($currencies_to_conv as $curr2) {
-		            $to_up = Utils_RecordBrowserCommon::get_records('premium_ecommerce_prices',array('item_name'=>$r['id'],'currency'=>$curr2),array('auto_update'));
+		            $to_up = Utils_RecordBrowserCommon::get_records('premium_ecommerce_prices',array('product'=>$pid,'currency'=>$curr2),array('auto_update'));
 		    	    if($curr==$curr2) {
 		    		if($to_up) {
 			        	$to_up = array_shift($to_up);
 			        	if($to_up['auto_update'])
 			        		Utils_RecordBrowserCommon::delete_record('premium_ecommerce_prices',$to_up['id']);
-		    		
+
 		    		}
 		    		continue;
 		    	    }
@@ -98,11 +100,11 @@ class Premium_Warehouse_DrupalCommerce_CurrencyUpdatePricesCommon extends Module
 		        	if($to_up['auto_update'])
 		            	    Utils_RecordBrowserCommon::update_record('premium_ecommerce_prices',$to_up['id'],array('gross_price'=>$price,'tax_rate'=>$r['tax_rate']));
 		            } else {
-		                Utils_RecordBrowserCommon::new_record('premium_ecommerce_prices',array('currency'=>$curr2,'item_name'=>$r['id'],'gross_price'=>$price,'tax_rate'=>$r['tax_rate'],'auto_update'=>1));
+		                Utils_RecordBrowserCommon::new_record('premium_ecommerce_prices',array('currency'=>$curr2,'product'=>$pid,'gross_price'=>$price,'tax_rate'=>$r['tax_rate'],'auto_update'=>1));
 		            }
 		        }
 		    } else {
-		        $to_del = Utils_RecordBrowserCommon::get_records('premium_ecommerce_prices',array('item_name'=>$r['id'],'auto_update'=>1),array());
+		        $to_del = Utils_RecordBrowserCommon::get_records('premium_ecommerce_prices',array('product'=>$pid,'auto_update'=>1),array());
 		        foreach($to_del as $del)
 		            Utils_RecordBrowserCommon::delete_record('premium_ecommerce_prices',$del['id']);
 		    }
@@ -111,7 +113,7 @@ class Premium_Warehouse_DrupalCommerce_CurrencyUpdatePricesCommon extends Module
 	    Variable::set('ecommerce_price_updater_last_upd',time());
 	    return true;
 	}
-	
+
 	public static function cron() {
         return array('cron2'=>600);
     }

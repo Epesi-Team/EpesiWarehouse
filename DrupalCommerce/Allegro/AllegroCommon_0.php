@@ -1,6 +1,6 @@
 <?php
 /**
- * 
+ *
  * @author bukowski@crazyit.pl
  * @copyright Telaxus LLC
  * @license Commercial
@@ -14,24 +14,24 @@ class Premium_Warehouse_DrupalCommerce_AllegroCommon extends ModuleCommon {
 	public static function warehouse_item_addon_label($r) {
 	if(!isset($r['id']))
 	    return array('show'=>false);
-        $x = Utils_RecordBrowserCommon::get_records_count('premium_ecommerce_products',array('item_name'=>$r['id']));
+        $x = Utils_RecordBrowserCommon::get_records_count('premium_ecommerce_products',array('items'=>$r['id']));
         if (!$x || !Variable::get('allegro_login')) return array('show'=>false);
         return array('label'=>'Allegro', 'show'=>true);
     }
-    
+
     public static function update_cats() {
     	$country = Variable::get('allegro_country');
 
     	/* @var $a Allegro */
     	$a = self::get_lib();
     	if(!$a) return array();
-    	
+
     	$fields = $a->get_sell_form_fields();
     	if(!isset($fields['sellFormFields']->item)) return array();
     	$cats = array();
     	$stan = array();
     	$stan_old = DB::GetAssoc('SELECT cat_id,field_id FROM premium_ecommerce_allegro_stan WHERE country=%d',array($country));
-    	
+
     	foreach($fields['sellFormFields']->item as $f) {
     	    if($f->{'sellFormTitle'} == 'Stan') {
     		if(!isset($stan_old[$f->{'sellFormCat'}]) || $stan_old[$f->{'sellFormCat'}]!=$f->{'sellFormId'})
@@ -72,13 +72,13 @@ class Premium_Warehouse_DrupalCommerce_AllegroCommon extends ModuleCommon {
 	    	DB::Replace('premium_ecommerce_allegro_cats', array('id'=>$k,'name'=>DB::qstr($v),'country'=>$country), array('id','country'));
     	return $cats;
     }
-    
+
     public static function update_statuses() {
     	$a = self::get_lib();
     	if(!$a) return;
-    	
+
     	DB::Execute('DELETE FROM premium_ecommerce_allegro_cross WHERE created_on<%T',array(time()-3600*12));
-    	
+
     	$ids = DB::GetCol('SELECT auction_id FROM premium_ecommerce_allegro_auctions WHERE active=1');
     	$ids = array_map(create_function('$a','return (float)$a;'),$ids);
     	$ret = $a->get_auctions_info($ids);
@@ -134,7 +134,7 @@ class Premium_Warehouse_DrupalCommerce_AllegroCommon extends ModuleCommon {
 			    }
 			}
 			if($buyer===null) continue;
-			
+
 			$company = DB::GetOne('SELECT id FROM company_data_1 WHERE f_email=%s AND active=1',array($buyer->userData->userEmail));
 			if(!$company) {
 				if(isset($trans->postBuyFormInvoiceData->postBuyFormAdrCompany) && $trans->postBuyFormInvoiceData->postBuyFormAdrCompany) {
@@ -163,7 +163,7 @@ class Premium_Warehouse_DrupalCommerce_AllegroCommon extends ModuleCommon {
 					    'email'=>$buyer->userData->userEmail,
 					    'group'=>'customer'
 					    ));
-				
+
 			}
 
 			$shipping_name = explode(" ",$trans->postBuyFormShipmentAddress->postBuyFormAdrFullName,2);
@@ -200,7 +200,7 @@ class Premium_Warehouse_DrupalCommerce_AllegroCommon extends ModuleCommon {
 			if($trans->postBuyFormPayType == 'collect_on_delivery') $pay_type = 'Płacę przy odbiorze';
 			if($trans->postBuyFormPayType == 'wire_transfer') $pay_type = 'Zwykły przelew - poza systemem Płacę z Allegro';
 			if($trans->postBuyFormPayType == 'not_specified') $pay_type = 'nie określona';
-			
+
 			$id = Utils_RecordBrowserCommon::new_record('premium_warehouse_items_orders',array(
 			    'transaction_type'=>1,
 			    'transaction_date'=>$t,
@@ -238,7 +238,7 @@ class Premium_Warehouse_DrupalCommerce_AllegroCommon extends ModuleCommon {
 			    'shipping_phone'=>$trans->postBuyFormShipmentAddress->postBuyFormAdrPhone,
 			    'shipping_country'=>'PL'
 			));
-    	
+
 
 			if( isset( $trans->postBuyFormItems->item ) ){
 			  foreach( $trans->postBuyFormItems->item as $aData ){
@@ -252,12 +252,12 @@ class Premium_Warehouse_DrupalCommerce_AllegroCommon extends ModuleCommon {
 			}
 
 		}
-		
+
 		//print_r($todo);
 //		print_r($auctions_info);
 		foreach($todo as $bid_id=>$xxxx) {
 			if(!isset($auctions_info[$bid_id])) continue;
-			
+
 			$bid = $bids_data[$bid_id];
 //			print_r($bid);
 			$buyer = null;
@@ -279,7 +279,7 @@ class Premium_Warehouse_DrupalCommerce_AllegroCommon extends ModuleCommon {
 					    'email'=>$buyer->userData->userEmail,
 					    'group'=>'customer'
 					    ));
-				
+
 			}
 
 			$t = time();
@@ -305,7 +305,7 @@ class Premium_Warehouse_DrupalCommerce_AllegroCommon extends ModuleCommon {
 			    'contact'=>$contact,
 			    'handling_cost'=>null,
 			));
-		    
+
 	/*		$item_id = DB::GetOne('SELECT item_id FROM premium_ecommerce_allegro_auctions WHERE auction_id=%s',array($bid_id));
 			$pr = Utils_RecordBrowserCommon::get_record('premium_warehouse_items',$item_id);
 			$net = $auctions_info[$bid_id]->{'itemInfo'}->{'itPrice'}*100/(100+Data_TaxRatesCommon::get_tax_rate($pr['tax_rate']));
@@ -314,19 +314,19 @@ class Premium_Warehouse_DrupalCommerce_AllegroCommon extends ModuleCommon {
 			ob_end_clean();*/
 		}
 //		if($todo) Base_MailCommon::send('bukowski@crazyit.pl','aukcje bez uzupełnionego formularza',implode("\n",array_keys($todo)));
-		
+
 		foreach($bids_ids as $bid_id) {
 			DB::Execute('UPDATE premium_ecommerce_allegro_auctions SET bids=%d WHERE auction_id=%d',array($bids[(string)$bid_id],$bid_id));
 		}
     	}
-    	if($close)    	
+    	if($close)
     		DB::Execute('UPDATE premium_ecommerce_allegro_auctions SET active=0,ended_on=%T WHERE auction_id IN ('.implode(',',$close).')',array(time()));
-    	
+
 //    	if($ret['arrayItemsNotFound'])
 //    		DB::GetCol('UPDATE premium_ecommerce_allegro_auctions SET active=0 WHERE auction_id IN ('.implode(',',$ret['arrayItemsNotFound']).')');
     	if($ret['arrayItemsAdminKilled'])
     		DB::GetCol('UPDATE premium_ecommerce_allegro_auctions SET active=0,ended_on=%T WHERE auction_id IN ('.implode(',',$ret['arrayItemsAdminKilled']).')',array(time()));
-    	
+
     	$ret = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders',array('!allegro_auction'=>'','allegro_order'=>'','status'=>-1));
 	$bids_ids = array();
 	foreach($ret as $r) {
@@ -360,7 +360,7 @@ class Premium_Warehouse_DrupalCommerce_AllegroCommon extends ModuleCommon {
 		    }
 		}
 		if($buyer===null) continue;
-		
+
 		$company = DB::GetOne('SELECT id FROM company_data_1 WHERE f_email=%s AND active=1',array($buyer->userData->userEmail));
 		if(!$company) {
 			if(isset($trans->postBuyFormInvoiceData->postBuyFormAdrCompany) && $trans->postBuyFormInvoiceData->postBuyFormAdrCompany) {
@@ -412,12 +412,12 @@ class Premium_Warehouse_DrupalCommerce_AllegroCommon extends ModuleCommon {
 		if($trans->postBuyFormPayType == 'collect_on_delivery') $pay_type = 'Płacę przy odbiorze';
 		if($trans->postBuyFormPayType == 'wire_transfer') $pay_type = 'Zwykły przelew - poza systemem Płacę z Allegro';
 		if($trans->postBuyFormPayType == 'not_specified') $pay_type = 'nie określona';
-		
+
 		$orders = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_orders',array('contact'=>$contact,'allegro_auction'=>$bid_id,'allegro_order'=>'','status'=>-1));
 		if(!$orders) continue;
 		$order = array_shift($orders);
 		$id = $order['id'];
-		
+
 		Utils_RecordBrowserCommon::update_record('premium_warehouse_items_orders',$id,array(
 			    'transaction_type'=>1,
 			    'allegro_order'=>$trans->postBuyFormId,
@@ -452,7 +452,7 @@ class Premium_Warehouse_DrupalCommerce_AllegroCommon extends ModuleCommon {
 			    'shipping_phone'=>$trans->postBuyFormShipmentAddress->postBuyFormAdrPhone,
 			    'shipping_country'=>'PL'
 			));
-    	
+
 
 		if( isset( $trans->postBuyFormItems->item ) ){
 		  foreach( $trans->postBuyFormItems->item as $aData ){
@@ -466,11 +466,11 @@ class Premium_Warehouse_DrupalCommerce_AllegroCommon extends ModuleCommon {
 		}
 	}
     }
-    
+
     public static function cron() {
         return array('update_statuses'=>5,'update_cats'=>60*24*3);
     }
-    
+
     public static function get_lib($trig_error=true) {
     	static $a;
     	if($a===null) {
@@ -487,7 +487,7 @@ class Premium_Warehouse_DrupalCommerce_AllegroCommon extends ModuleCommon {
     	}
     	return $a;
     }
-    
+
     public static function get_templates() {
 		$templates = array(''=>'---');
 		$dd = self::Instance()->get_data_dir();
@@ -496,14 +496,14 @@ class Premium_Warehouse_DrupalCommerce_AllegroCommon extends ModuleCommon {
 			if(!preg_match('/\.tpl$/i',$d)) continue;
 			$templates[$dd.$d] = $d;
 		}
-		return $templates;    	
+		return $templates;
     }
-    
-    
+
+
     public static function admin_caption() {
         return 'Allegro';
     }
-    
+
     public static function get_other_auctions($id,$cache = false) {
 	$lock_dir = DATA_DIR.'/Premium_Warehouse_DrupalCommerce_Allegro/lock';
 	@mkdir($lock_dir);
@@ -515,13 +515,13 @@ class Premium_Warehouse_DrupalCommerce_AllegroCommon extends ModuleCommon {
 		$result = DB::GetAll('SELECT c.ret_item_id as item, c.ret_auction_id as auction,a.buy_price FROM premium_ecommerce_allegro_cross c INNER JOIN premium_ecommerce_allegro_auctions a ON a.auction_id=c.ret_auction_id AND a.item_id=c.ret_item_id  WHERE c.item_id=%d AND c.ip=%s ORDER BY c.position',array($id,$_SERVER['REMOTE_ADDR']));
 		if($result) return $result;
 	}
-	
+
 	$fp = fopen($lock_file, "w");
 	flock($fp, LOCK_EX);
 
 	$result = array();
 	$skip_item_ids = array($id);
-	$items = Utils_RecordBrowserCommon::get_records('premium_ecommerce_products',array('item_name'=>$id));
+	$items = Utils_RecordBrowserCommon::get_records('premium_ecommerce_products',array('items'=>$id));
 	foreach($items as $i) {
 		foreach(array_merge($i['popup_products'],$i['related_products']) as $p) {
 			$pp = Utils_RecordBrowserCommon::get_record('premium_ecommerce_products',$p,array('item_name'));
@@ -532,9 +532,9 @@ class Premium_Warehouse_DrupalCommerce_AllegroCommon extends ModuleCommon {
 			}
 		}
 	}
-        $products = DB::GetCol('SELECT or_det.f_item_name FROM premium_warehouse_items_orders_details_data_1 or_det 
-			    WHERE or_det.f_item_name!=%d AND or_det.f_transaction_id IN 
-			    (SELECT ord.f_transaction_id FROM premium_warehouse_items_orders_details_data_1 or_det2 
+        $products = DB::GetCol('SELECT or_det.f_item_name FROM premium_warehouse_items_orders_details_data_1 or_det
+			    WHERE or_det.f_item_name!=%d AND or_det.f_transaction_id IN
+			    (SELECT ord.f_transaction_id FROM premium_warehouse_items_orders_details_data_1 or_det2
 			    INNER JOIN premium_ecommerce_orders_data_1 ord ON ord.f_transaction_id=or_det2.f_transaction_id
 			    WHERE ord.f_language="pl" AND or_det2.f_item_name=%d) GROUP BY or_det.f_item_name ORDER BY count(or_det.f_item_name) DESC LIMIT 9',array($id,$id));
 	foreach($products as $p) {
@@ -576,7 +576,7 @@ class Premium_Warehouse_DrupalCommerce_AllegroCommon extends ModuleCommon {
 		$cats = DB::GetOne('SELECT 1 FROM premium_ecommerce_allegro_cats WHERE country=%d',array($country));
 		if(!$cats)
 			Premium_Warehouse_DrupalCommerce_AllegroCommon::update_cats();
-			
+
 		$args = explode(' ',$arg);
 		$wh = '';
 		foreach($args as $aaa) {
@@ -594,7 +594,7 @@ class Premium_Warehouse_DrupalCommerce_AllegroCommon extends ModuleCommon {
 
     public static function QFfield_allegro_order(&$form, $field, $label, $mode, $default) {
         $form->addElement('static', $field, $label);
-        if($field=='allegro_auction') 
+        if($field=='allegro_auction')
             $form->setDefaults(array($field=>'<a href="http://allegro.pl/show_item.php?item='.$default.'" target="_blank">'.$default.'</a>'));
         else
 	    $form->setDefaults(array($field=>$default));
@@ -607,7 +607,7 @@ class Premium_Warehouse_DrupalCommerce_AllegroCommon extends ModuleCommon {
 	public static function applet_info() {
 		return "Ostatnio zakończone aukcje na allegro";
 	}
-	
+
 	private static $photos;
 	public static function collect_photos($id,$file,$original,$args=null) {
 	    if(count(self::$photos)==1) return;
@@ -617,12 +617,12 @@ class Premium_Warehouse_DrupalCommerce_AllegroCommon extends ModuleCommon {
 	        self::$photos[] = $th1['thumb'];
 	    }
 	}
-	
+
 	public static function delete_photos() {
 	    foreach(self::$photos as $ph)
 		@unlink($ph);
 	}
-	
+
 	public static function get_publish_array($r,$vals,$auction_cost=0) {
 			$country = Variable::get('allegro_country');
 
@@ -763,7 +763,7 @@ class Premium_Warehouse_DrupalCommerce_AllegroCommon extends ModuleCommon {
 				                'fvalueRangeDateMin' => '',
 				                'fvalueRangeDateMax' => '')
 			);
-			
+
 			$buy_now = $vals['buy_price']?$vals['buy_price']+((isset($vals['add_auction_cost']) && $vals['add_auction_cost'] && $auction_cost)?$auction_cost:0):'';
 			$fields[] = array(
 				        'fid' => 8,   // Cena kup teraz
@@ -817,7 +817,7 @@ class Premium_Warehouse_DrupalCommerce_AllegroCommon extends ModuleCommon {
 				                'fvalueRangeFloatMax' => 0),
 				        'fvalueRangeDate' => array(
 				                'fvalueRangeDateMin' => '',
-				                'fvalueRangeDateMax' => '')			
+				                'fvalueRangeDateMax' => '')
 			);
 			$fields[] = array(
 				        'fid' => 11,   // Miasto
@@ -835,7 +835,7 @@ class Premium_Warehouse_DrupalCommerce_AllegroCommon extends ModuleCommon {
 				                'fvalueRangeFloatMax' => 0),
 				        'fvalueRangeDate' => array(
 				                'fvalueRangeDateMin' => '',
-				                'fvalueRangeDateMax' => '')			
+				                'fvalueRangeDateMax' => '')
 			);
 			$fields[] = array(
 				        'fid' => 32,   // Kod pocztowy
@@ -853,7 +853,7 @@ class Premium_Warehouse_DrupalCommerce_AllegroCommon extends ModuleCommon {
 				                'fvalueRangeFloatMax' => 0),
 				        'fvalueRangeDate' => array(
 				                'fvalueRangeDateMin' => '',
-				                'fvalueRangeDateMax' => '')			
+				                'fvalueRangeDateMax' => '')
 			);
 			$fields[] = array(
 				        'fid' => 12,   // Transport
@@ -1075,14 +1075,14 @@ class Premium_Warehouse_DrupalCommerce_AllegroCommon extends ModuleCommon {
 				);
 				$carriers[] = 'Kurier (pobranie): '.$vals['ups_price_p'].' zł';
 			}
-				
+
 			$desc = Utils_RecordBrowserCommon::get_records('premium_ecommerce_descriptions',array('item_name'=>$r['id'],'language'=>'pl'));
 			if($desc) $desc = array_shift($desc);
 			$description = (isset($desc['long_description']) && $desc['long_description']?$desc['long_description']:(isset($desc['short_description']) && $desc['short_description']?$desc['short_description']:$r['description']));
 			$other_auctions = '<table border=0>';
 			for($wiersz=0;$wiersz<3;$wiersz++) {
 			    $other_auctions .= '<tr>';
-			    for($kolumna=0; $kolumna<3; $kolumna++) 
+			    for($kolumna=0; $kolumna<3; $kolumna++)
 				$other_auctions .= '<td><a target="_blank" href="'.get_epesi_url().'/modules/Premium/Warehouse/DrupalCommerce/Allegro/redirect.php?id='.$r['id'].'&i='.($kolumna+$wiersz*3).'"><img src="'.get_epesi_url().'/modules/Premium/Warehouse/DrupalCommerce/Allegro/img.php?id='.$r['id'].'&i='.($kolumna+$wiersz*3).'" border=0 /></a></td>';
 			    $other_auctions .= '</tr>';
 			}
@@ -1182,7 +1182,7 @@ class Premium_Warehouse_DrupalCommerce_AllegroCommon extends ModuleCommon {
 				                'fvalueRangeDateMin' => '',
 				                'fvalueRangeDateMax' => '')
 			);
-			
+
 			/* @var $a Allegro */
 			$a = self::get_lib();
 			$similar = $a->search($r['item_name'],$vals['category']);
@@ -1192,15 +1192,15 @@ class Premium_Warehouse_DrupalCommerce_AllegroCommon extends ModuleCommon {
 				if(!is_array($cat_fields['sellFormFieldsForCategory']->sellFormFieldsList->item)) $cat_fields['sellFormFieldsForCategory']->sellFormFieldsList->item = array($cat_fields['sellFormFieldsForCategory']->sellFormFieldsList->item);
 				foreach($cat_fields['sellFormFieldsForCategory']->sellFormFieldsList->item as $cat_field) {
 					if($cat_field->sellFormId<700 || $cat_field->sellFormResType==7) continue;
-					
+
 					foreach($fields as $fields_done)
 					    if($fields_done['fid']==$cat_field->sellFormId) continue 2;
-					
+
 					$cat_vals = explode('|',trim($cat_field->sellFormDesc));
 					$cat_keys = explode('|',trim($cat_field->sellFormOptsValues));
 					if(is_array($cat_vals) && $cat_vals && is_array($cat_keys) && $cat_keys)
 						$cat_select = array_filter(array_combine($cat_vals,$cat_keys));
-					
+
 					$vals = DB::GetOne('SELECT v.f_value FROM premium_ecommerce_parameter_labels_data_1 l INNER JOIN premium_ecommerce_products_parameters_data_1 v ON l.f_parameter=v.f_parameter AND l.f_language=v.f_language WHERE l.f_language="pl" AND l.f_label=%s AND v.f_item_name=%d',array($cat_field->sellFormTitle,$r['id']));
 					if(!$vals) $val = DB::GetOne('SELECT v.f_value FROM premium_ecommerce_parameter_labels_data_1 l INNER JOIN premium_ecommerce_products_parameters_data_1 v ON l.f_parameter=v.f_parameter AND l.f_language=v.f_language WHERE l.f_language="pl" AND l.f_label LIKE %s AND v.f_item_name=%d',array('%%'.$cat_field->sellFormTitle.'%%',$r['id']));
 					foreach($vals as $val) {
@@ -1259,7 +1259,7 @@ class Premium_Warehouse_DrupalCommerce_AllegroCommon extends ModuleCommon {
 							}
 						}
 					}
-					
+
 					foreach($similar as $sid=>$it) {
 						if(!isset($it->parametersInfo->item)) continue;
 						if(!is_array($it->parametersInfo->item)) $it->parametersInfo->item = array($it->parametersInfo->item);
@@ -1352,10 +1352,10 @@ class Premium_Warehouse_DrupalCommerce_AllegroCommon extends ModuleCommon {
 									$fields[] = $arr;
 									continue;
 								}
-							
+
 						}
 					}
-					
+
 					$param_value = '';
 					$group = Utils_RecordBrowserCommon::get_records('premium_ecommerce_parameter_groups',array('group_code'=>'Podstawowe informacje'),array('id'));
 					if($group) {
@@ -1391,13 +1391,13 @@ class Premium_Warehouse_DrupalCommerce_AllegroCommon extends ModuleCommon {
 						'group'=>$group,
 						'language'=>'pl')))
 						Utils_RecordBrowserCommon::new_record('premium_ecommerce_products_parameters',$item_params);
-					
+
 				}
 			}
-			
+
 			return $fields;
 	}
-	
+
 	public static function menu() {
 		return array('Inventory'=>array('eCommerce'=>array('Allegro'=>array(),'__submenu__'=>1),'__submenu__'=>1));
 	}

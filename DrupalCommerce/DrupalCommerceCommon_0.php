@@ -19,8 +19,12 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
     private static $curr_opts;
     private static $curr_opts_active;
 
-    public static function display_item_name($r, $nolink, $desc) {
-        return Utils_RecordBrowserCommon::create_linked_label('premium_warehouse_items','item_name',$r['item_name'],$nolink);
+    public static function display_items($r, $nolink, $desc) {
+		$ret = array();
+		foreach($r['items'] as $i) {
+			$ret[] = Premium_Warehouse_ItemsCommon::display_item_name($i);
+		}
+        return implode("<br />\n",$ret);
     }
 
     public static function QFfield_description_language(&$form, $field, $label, $mode, $default, $desc, $rb_obj) {
@@ -55,7 +59,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 
     public static function display_description($r, $nolink, $desc) {
         $lang_code = Base_LangCommon::get_lang_code();
-        $id = Utils_RecordBrowserCommon::get_id('premium_ecommerce_descriptions', array('item_name', 'language'), array($r['item_name'], $lang_code));
+        $id = Utils_RecordBrowserCommon::get_id('premium_ecommerce_descriptions', array('product', 'language'), array($r['id'], $lang_code));
         if (!is_numeric($id)) {
             $lan = Utils_CommonDataCommon::get_value('Premium/Warehouse/eCommerce/Languages/'.$lang_code);
             return __('Description in %s is missing', array('<b>'.($lan?$lan:$lang_code).'</b>'));
@@ -65,7 +69,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 
     public static function display_product_name($r, $nolink, $desc) {
         $lang_code = Base_LangCommon::get_lang_code();
-        $id = Utils_RecordBrowserCommon::get_id('premium_ecommerce_descriptions', array('item_name', 'language'), array($r['item_name'], $lang_code));
+        $id = Utils_RecordBrowserCommon::get_id('premium_ecommerce_descriptions', array('product', 'language'), array($r['id'], $lang_code));
         if (!is_numeric($id)) {
             $lan = Utils_CommonDataCommon::get_value('Premium/Warehouse/eCommerce/Languages/'.$lang_code);
             return __('Product name in %s is missing', array('<b>'.($lan?$lan:$lang_code).'</b>'));
@@ -76,9 +80,13 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
     }
 
     public static function display_sku($r, $nolink, $desc) {
-        return Utils_RecordBrowserCommon::record_link_open_tag('premium_warehouse_items',$r['item_name'],$nolink).
-                Utils_RecordBrowserCommon::get_value('premium_warehouse_items',$r['item_name'],'sku').
+        $ret = array();
+        foreach($r['items'] as $item) {
+            $ret[] = Utils_RecordBrowserCommon::record_link_open_tag('premium_warehouse_items',$item,$nolink).
+                Utils_RecordBrowserCommon::get_value('premium_warehouse_items',$item,'sku').
                 Utils_RecordBrowserCommon::record_link_close_tag();
+        }
+        return implode("<br />\n",$ret);
     }
 
     public static function items_crits() {
@@ -107,7 +115,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
         static $cache;
         if(!isset($cache)) $cache = array();
         if(isset($cache[$id])) return $cache[$id];
-        $cache[$id] = Utils_RecordBrowserCommon::get_records_count('premium_ecommerce_products',array('item_name'=>$id))>0;
+        $cache[$id] = Utils_RecordBrowserCommon::get_records_count('premium_ecommerce_products',array('items'=>$id))>0;
         return $cache[$id];
     }
 
@@ -444,7 +452,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
         if(DB::GetOne('SELECT 1 FROM premium_ecommerce_3rdp_plugin WHERE active=1')) {
             Base_ActionBarCommon::add('add',__('3rd party'),Module::create_href(array('get_3rd_party_item_data'=>1),'Getting data from 3rd party servers - please wait.'));
             if(isset($_REQUEST['get_3rd_party_item_data'])) {
-                self::get_3rd_party_item_data($r['item_name']);
+                foreach($r['items'] as $item) self::get_3rd_party_item_data($item);
                 unset($_REQUEST['get_3rd_party_item_data']);
             }
         }
@@ -506,7 +514,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
     }
 
     public static function publish_warehouse_item($id,$icecat=true) {
-        Utils_RecordBrowserCommon::new_record('premium_ecommerce_products',array('item_name'=>$id,'publish'=>1,'available'=>1));
+        Utils_RecordBrowserCommon::new_record('premium_ecommerce_products',array('items'=>$id,'publish'=>1,'available'=>1));
         if($icecat)
                 Premium_Warehouse_DrupalCommerceCommon::get_3rd_party_item_data($id,false);
     }
@@ -525,7 +533,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
         $on = '<span class="checkbox_on" />';
         $off = '<span class="checkbox_off" />';
 
-        $recs = Utils_RecordBrowserCommon::get_records('premium_ecommerce_products',array('item_name'=>$r['id']));
+        $recs = Utils_RecordBrowserCommon::get_records('premium_ecommerce_products',array('items'=>$r['id']));
         $quantity = Utils_RecordBrowserCommon::get_records('premium_warehouse_location',array('item_sku'=>$r['id'],'>quantity'=>0));
         if(empty($recs)) {
             $icon = 'notavailable.png';
@@ -639,50 +647,6 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
         }
         $form->addElement('static', $field, $label, $default?'<a '.Module::create_confirm_href(__('Mark this record as not paid?'),array('payment_realized'=>0)).'><span class="checkbox_on" /></a>':'<a '.Module::create_href(array('payment_realized'=>1)).'><span '.Utils_TooltipCommon::open_tag_attrs('Click to mark as paid').' class="checkbox_off" /></a>');
     }
-
-    public static function display_product_name_short($r) {
-        $rec = Utils_RecordBrowserCommon::get_record('premium_warehouse_items',$r['item_name']);
-        return $rec['item_name'];
-    }
-
-/*    public static function adv_related_products_params() {
-        return array('cols'=>array(),
-            'format_callback'=>array('Premium_Warehouse_DrupalCommerceCommon','display_product_name_short'));
-    }
-
-    public static function related_products_crits($arg, $r){
-        if (isset($r['id']))
-            return array('!id'=>$r['id']);
-        return array();
-    }
-
-    public static function display_related_product_name($r, $nolink=true) {
-        $ret = array();
-        if(isset($r['related_products']))
-        foreach($r['related_products'] as $p) {
-            $rr = Utils_RecordBrowserCommon::get_record('premium_ecommerce_products',$p);
-            $name = self::display_product_name_short($rr);
-            if($nolink)
-                $ret[] = $name;
-            else
-                $ret[] = Utils_RecordBrowserCommon::record_link_open_tag('premium_ecommerce_products',$p).$name.Utils_RecordBrowserCommon::record_link_close_tag();
-        }
-        return implode($ret,', ');
-    }
-
-    public static function display_popup_product_name($r, $nolink=true) {
-        $ret = array();
-        if(isset($r['popup_products']))
-        foreach($r['popup_products'] as $p) {
-            $rr = Utils_RecordBrowserCommon::get_record('premium_ecommerce_products',$p);
-            $name = self::display_product_name_short($rr);
-            if($nolink)
-                $ret[] = $name;
-            else
-                $ret[] = Utils_RecordBrowserCommon::record_link_open_tag('premium_ecommerce_products',$p).$name.Utils_RecordBrowserCommon::record_link_close_tag();
-        }
-        return implode($ret,', ');
-    }*/
 
     public static function display_category_available_languages($r, $nolink) {
         $rr = Utils_RecordBrowserCommon::get_records('premium_ecommerce_cat_descriptions',array('category'=>$r['id']),array('language'));
@@ -846,51 +810,6 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
         return null;//don't modify values
     }
 
-/*    public static function QFfield_related_products(&$form, $field, $label, $mode, $default,$y,$x) {
-        if ($mode=='edit' || $mode=='add') {
-            $el = $form->addElement('automulti', $field, $label, array('Premium_Warehouse_DrupalCommerceCommon', 'automulti_search'), array($x->record), array('Premium_Warehouse_DrupalCommerceCommon','automulti_format'));
-            $form->setDefaults(array($field=>$default));
-
-    		$opts = Premium_Warehouse_DrupalCommerceCommon::get_categories();
-			$rp = $x->init_module('Utils/RecordBrowser/RecordPicker',array());
-    		$x->display_module($rp, array('premium_ecommerce_products',$field,array('Premium_Warehouse_DrupalCommerceCommon','automulti_format'),isset($x->record['id'])?array('!id'=>$x->record['id']):array(),array(),array(),array(),array(),array('item_name'=>array('type'=>'select','label'=>__('Category'),'args'=>$opts,'trans_callback'=>array('Premium_Warehouse_DrupalCommerceCommon', 'category_filter')))));
-			$el->set_search_button('<a '.$rp->create_open_href().' '.Utils_TooltipCommon::open_tag_attrs(__('Advanced Selection')).' href="javascript:void(0);"><img border="0" src="'.Base_ThemeCommon::get_template_file('Utils_RecordBrowser','icon_zoom.png').'"></a>');
-        } else {
-            $form->addElement('static', $field, $label, self::display_related_product_name(array($field=>$default),false));
-        }
-    }
-
-    public static function QFfield_popup_products(&$form, $field, $label, $mode, $default,$y,$x) {
-        if ($mode=='edit' || $mode=='add') {
-            $el = $form->addElement('automulti', $field, $label, array('Premium_Warehouse_DrupalCommerceCommon', 'automulti_search'), array($x->record), array('Premium_Warehouse_DrupalCommerceCommon','automulti_format'));
-            $form->setDefaults(array($field=>$default));
-            $form->addRule($field,__('You can select up to 6 items'),'callback',array('Premium_Warehouse_DrupalCommerceCommon','check_related'));
-
-    		$opts = Premium_Warehouse_DrupalCommerceCommon::get_categories();
-			$rp = $x->init_module('Utils/RecordBrowser/RecordPicker',array());
-			if (isset($x->record['id'])) $crits = array('!id'=>$x->record['id']);
-			else $crits = array();
-    		$x->display_module($rp, array('premium_ecommerce_products',$field,array('Premium_Warehouse_DrupalCommerceCommon','automulti_format'),$crits,array(),array(),array(),array(),array('item_name'=>array('type'=>'select','label'=>__('Category'),'args'=>$opts,'trans_callback'=>array('Premium_Warehouse_DrupalCommerceCommon', 'category_filter')))));
-			$el->set_search_button('<a '.$rp->create_open_href().' '.Utils_TooltipCommon::open_tag_attrs(__('Advanced Selection')).' href="javascript:void(0);"><img border="0" src="'.Base_ThemeCommon::get_template_file('Utils_RecordBrowser','icon_zoom.png').'"></a>');
-        } else {
-            $form->addElement('static', $field, $label, self::display_popup_product_name(array($field=>$default),false));
-        }
-    }
-
-    public static function check_related($el) {
-	return count(array_filter(explode('__SEP__',$el)))<=6;
-    }
-
-    public static function automulti_search($arg,$r) {
-        $ret = DB::GetAssoc('SELECT ep.id, wp.f_item_name FROM premium_ecommerce_products_data_1 ep INNER JOIN premium_warehouse_items_data_1 wp ON ep.f_item_name=wp.id WHERE ep.active=1 AND wp.active=1 AND (wp.f_item_name '.DB::like().' CONCAT("%%",%s,"%%") OR wp.f_sku '.DB::like().' CONCAT("%%",%s,"%%"))'.(isset($r['id'])?' AND ep.id!='.$r['id']:'').' ORDER BY wp.f_item_name LIMIT 10',array($arg,$arg));
-        return $ret;
-    }
-
-    public static function automulti_format($id) {
-        if(is_array($id)) return DB::GetOne('SELECT f_item_name FROM premium_warehouse_items_data_1 WHERE id=%d',array($id['item_name']));
-        return DB::GetOne('SELECT wp.f_item_name FROM premium_ecommerce_products_data_1 ep INNER JOIN premium_warehouse_items_data_1 wp ON ep.f_item_name=wp.id WHERE ep.id=%d',array($id));
-    }*/
-
     public static function get_categories() {
         $categories = Utils_RecordBrowserCommon::get_records('premium_warehouse_items_categories',array(),array(),array('position'=>'ASC'));
 		$opts = array('__NULL__'=>'---');
@@ -924,7 +843,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 	public static function category_filter($choice) {
 		if ($choice=='__NULL__') return array();
 		$ids = DB::GetCol('SELECT id FROM premium_warehouse_items_data_1 WHERE (f_category '.DB::like().' CONCAT("%%\_\_",%d,"\_\_%%") OR f_category '.DB::like().' CONCAT("%%\_\_",%d,"\/%%") OR f_category '.DB::like().' CONCAT("%%\/",%d,"\_\_%%") OR f_category '.DB::like().' CONCAT("%%\/",%d,"\/%%")) AND active=1',array($choice,$choice,$choice,$choice));
-		return array('item_name'=>$ids);
+		return array('items'=>$ids);
 	}
 
 	public static function QFfield_shipment_service_type(&$form, $field, $label, $mode, $default, $desc) {
@@ -1146,7 +1065,8 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			      if($line_item['type']!='product') continue;
 			      $node = $products[$line_item['commerce_product']];
 			      $sku = explode(' ',$node['sku']);
-			      $product_id = ltrim($sku[0],'#0');
+			      $item_id = ltrim($sku[0],'#0');
+				  $product_id = Utils_RecordBrowserCommon::get_id('premium_ecommerce_products', array('items'), array($item_id));
 				  unset($sku[0]);
 				  $associated_ids = array();
 				  for($i=1; isset($sku[$i]); $i++) {
@@ -1177,20 +1097,20 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 	    		      $net = ($line_item['commerce_unit_price']['amount']-$tax_amount)/$currency_precission;
     			      $gross = $line_item['commerce_unit_price']['amount']/$currency_precission;
 			      } else {
-			          $prices = Utils_RecordBrowserCommon::get_records('premium_ecommerce_prices',array('item_name'=>$product_id,'currency'=>$currency_id));
+			          $prices = Utils_RecordBrowserCommon::get_records('premium_ecommerce_prices',array('product'=>$product_id,'currency'=>$currency_id));
 			          if($prices) {
 			            $price = array_shift($prices);
 			            $tax = $price['tax_rate'];
 			          } else {
-			            $product = Utils_RecordBrowserCommon::get_record('premium_warehouse_items',$product_id);
+			            $product = Utils_RecordBrowserCommon::get_record('premium_warehouse_items',$item_id);
 			            $tax = $product['tax_rate'];
 			          }
 			          $gross = $line_item['commerce_unit_price']['amount']/$currency_precission;
 			          $net = $gross*100/(100+$taxes2[$tax]);
 			      }
 			      //ob_start();
-			      Utils_RecordBrowserCommon::new_record('premium_warehouse_items_orders_details',array('transaction_id'=>$id,'item_name'=>$product_id,'quantity'=>$line_item['quantity'],'description'=>($desc?$desc.' | ':'').$line_item['line_item_label'].' '.$line_item['line_item_title'],'tax_rate'=>$tax,'net_price'=>$net.'__'.$currency_id,'gross_price'=>$gross.'__'.$currency_id));
-				  $master_product = Utils_RecordBrowserCommon::get_record('premium_warehouse_items',$product_id);
+			      Utils_RecordBrowserCommon::new_record('premium_warehouse_items_orders_details',array('transaction_id'=>$id,'item_name'=>$item_id,'quantity'=>$line_item['quantity'],'description'=>($desc?$desc.' | ':'').$line_item['line_item_label'].' '.$line_item['line_item_title'],'tax_rate'=>$tax,'net_price'=>$net.'__'.$currency_id,'gross_price'=>$gross.'__'.$currency_id));
+				  $master_product = Utils_RecordBrowserCommon::get_record('premium_warehouse_items',$item_id);
 				  $master_product_name = $master_product['sku'].': '.html_entity_decode($master_product['item_name']);
 				  foreach($associated_ids as $as_id=>$as_qty)
 				  	Utils_RecordBrowserCommon::new_record('premium_warehouse_items_orders_details',array('transaction_id'=>$id,'item_name'=>$as_id,'quantity'=>$line_item['quantity']*$as_qty,'description'=>__('sold in set with %s',array($master_product_name)),'tax_rate'=>$tax,'net_price'=>'0__'.$currency_id,'gross_price'=>'0__'.$currency_id));
@@ -1480,13 +1400,14 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			$taxes = DB::GetAssoc('SELECT id, f_percentage FROM data_tax_rates_data_1 WHERE active=1');
 			$export_net_price = $drupal_row['export_net_price'];
 
-			$products = Utils_RecordBrowserCommon::get_records('premium_ecommerce_products',array('publish'=>1),array(),array('item_name'=>'ASC'));
+			$products = Utils_RecordBrowserCommon::get_records('premium_ecommerce_products',array('publish'=>1),array(),array('items'=>'ASC'));
 			foreach($products as $row) {
 
 			  if(isset($drupal_products_done[$row['sku']])) continue;
 
 			  $ecommerce_product_id = $row['id'];
-			  $row = array_merge($row,Utils_RecordBrowserCommon::get_record('premium_warehouse_items',$row['item_name']));
+			  //todo - obsługa grup produktów
+			  $row = array_merge($row,Utils_RecordBrowserCommon::get_record('premium_warehouse_items',array_shift($row['items'])));
 			  //if(!$row['category'] || !$row[':active']) continue;
 			  if(!$row[':active']) continue;
 
@@ -1555,9 +1476,9 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			  //get images
 			  Premium_Warehouse_DrupalCommerceCommon::$images = array();
 			  Utils_AttachmentCommon::call_user_func_on_file('premium_ecommerce_products/'.$row['id'],array('Premium_Warehouse_DrupalCommerceCommon','copy_attachment'),false,array($drupal_id,1));
-			  $desc_langs = Utils_RecordBrowserCommon::get_records('premium_ecommerce_descriptions',array('item_name'=>$row['id']),array('language'));
+			  $desc_langs = Utils_RecordBrowserCommon::get_records('premium_ecommerce_descriptions',array('product'=>$ecommerce_product_id),array('language'));
 			  foreach($desc_langs as $desc_lang)
-			    Utils_AttachmentCommon::call_user_func_on_file('premium_ecommerce_descriptions/'.$desc_lang['language'].'/'.$row['item_name'],array('Premium_Warehouse_DrupalCommerceCommon','copy_attachment'),false,array($drupal_id,0));
+			    Utils_AttachmentCommon::call_user_func_on_file('premium_ecommerce_descriptions/'.$desc_lang['id'],array('Premium_Warehouse_DrupalCommerceCommon','copy_attachment'),false,array($drupal_id,0));
 			  $field_images = array();
 			  foreach(Premium_Warehouse_DrupalCommerceCommon::$images as $lang=>$fids) {
 			    foreach($fids as $fid) {
@@ -1586,7 +1507,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			      $products_queue[''] = $data;
 			    }
 			  }
-			  $prices = Utils_RecordBrowserCommon::get_records('premium_ecommerce_prices',array('item_name'=>$row['id']),array(),array('currency'=>'ASC','gross_price'=>'ASC','name'=>'ASC'));
+			  $prices = Utils_RecordBrowserCommon::get_records('premium_ecommerce_prices',array('product'=>$ecommerce_product_id),array(),array('currency'=>'ASC','gross_price'=>'ASC','name'=>'ASC'));
 			  if($prices) {
 			    $products_queue = array();
 			    foreach($prices as $price) {
@@ -1607,7 +1528,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			  }
 			  if(!$products_queue) continue;
 
-			  $associations = Utils_RecordBrowserCommon::get_records('premium_ecommerce_associations',array('item_name'=>$row['id']),array(),array('type'=>'ASC'));
+			  $associations = Utils_RecordBrowserCommon::get_records('premium_ecommerce_associations',array('product'=>$ecommerce_product_id),array(),array('type'=>'ASC'));
 			  $last_type = '';
 			  $products_queue2 = array();
 			  foreach($associations as $association) {
@@ -1618,8 +1539,9 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 				  }
 				  $associated_item = Utils_RecordBrowserCommon::get_record('premium_warehouse_items',$association['associated_item']);
 				  if(!isset($drupal_products[$associated_item['sku']])) continue;
+				  $associated_product = Utils_RecordBrowserCommon::get_id('premium_ecommerce_products', array('items'), array($associated_item['id']));
 
-				  $associated_prices_tmp = Utils_RecordBrowserCommon::get_records('premium_ecommerce_prices',array('item_name'=>$associated_item['id']),array(),array('currency'=>'ASC','gross_price'=>'ASC','name'=>'ASC'));
+				  $associated_prices_tmp = Utils_RecordBrowserCommon::get_records('premium_ecommerce_prices',array('product'=>$associated_product),array(),array('currency'=>'ASC','gross_price'=>'ASC','name'=>'ASC'));
 				  $associated_prices = array();
 				  if($associated_item['net_price']) {
 				    $a_item_price = Utils_CurrencyFieldCommon::get_values($associated_item['net_price']);
@@ -1774,7 +1696,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 
 			    if($row['manufacturer'] && isset($manufacturer_mapping[$row['manufacturer']]))
 			      $node['field_manufacturer']['und'][0]['tid'] = $manufacturer_mapping[$row['manufacturer']];
-			    $translations = Utils_RecordBrowserCommon::get_records('premium_ecommerce_descriptions',array('item_name'=>$row['id'],'language'=>'en'));
+			    $translations = Utils_RecordBrowserCommon::get_records('premium_ecommerce_descriptions',array('product'=>$ecommerce_product_id,'language'=>'en'));
 			    if($translations) {
 			      $translations = array_shift($translations);
 			      if($translations['display_name']) $node['title']=$node['title_field']['en'][0]['value'] = $node['title_field']['und'][0]['value']=$node['field_title']=$translations['display_name'];
@@ -1784,7 +1706,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 
 			    //features / parameters
 		        $parameters = array();
-			    $ret2 = DB::Execute('SELECT pp.f_item_name, pp.f_value,
+			    $ret2 = DB::Execute('SELECT pp.f_value,
 									p.f_parameter_code as parameter_code,
 									pl.f_label as parameter_label,
 									g.f_group_code as group_code,
@@ -1794,7 +1716,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 						INNER JOIN (premium_ecommerce_parameters_data_1 p,premium_ecommerce_parameter_groups_data_1 g) ON (p.id=pp.f_parameter AND g.id=pp.f_group)
 						LEFT JOIN premium_ecommerce_parameter_labels_data_1 pl ON (pl.f_parameter=p.id AND pl.f_language=pp.f_language AND pl.active=1)
 						LEFT JOIN premium_ecommerce_param_group_labels_data_1 gl ON (gl.f_group=g.id AND gl.f_language=pp.f_language AND gl.active=1)
-						WHERE pp.active=1 AND pp.f_item_name=%d ORDER BY pp.f_language,g.f_position,gl.f_label,g.f_group_code,p.f_position,pl.f_label,p.f_parameter_code',array($row['id']));
+						WHERE pp.active=1 AND pp.f_product=%d ORDER BY pp.f_language,g.f_position,gl.f_label,g.f_group_code,p.f_position,pl.f_label,p.f_parameter_code',array($ecommerce_product_id));
 	            while($bExp = $ret2->FetchRow()) {
 	                if(!isset($parameters[$bExp['language']])) {
 	                    $parameters[$bExp['language']] = array();
@@ -1855,7 +1777,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			    }
 			    $drupal_nodes_done[$nid] = 1;
 
-			    $translations = Utils_RecordBrowserCommon::get_records('premium_ecommerce_descriptions',array('item_name'=>$row['id']));
+			    $translations = Utils_RecordBrowserCommon::get_records('premium_ecommerce_descriptions',array('product'=>$ecommerce_product_id));
 			    foreach($translations as $translation) {
 			      //features
 			      Base_LangCommon::load($translation['language']);

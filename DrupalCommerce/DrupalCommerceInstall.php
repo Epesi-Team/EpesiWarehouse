@@ -25,7 +25,7 @@ class Premium_Warehouse_DrupalCommerceInstall extends ModuleInstall {
 		$fields = array(
 			array('name' => _M('SKU'), 		'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>false, 'display_callback'=>array('Premium_Warehouse_DrupalCommerceCommon', 'display_sku')),
 			array('name' => _M('Product Name'), 	'type'=>'calculated', 'required'=>false, 'extra'=>false, 'visible'=>true, 'display_callback'=>array($this->get_type().'Common', 'display_product_name')),
-			array('name' => _M('Item Name'), 		'type'=>'select', 'required'=>true, 'param'=>'premium_warehouse_items::SKU|Item Name;Premium_Warehouse_DrupalCommerceCommon::items_crits', 'extra'=>false, 'visible'=>true, 'display_callback'=>array($this->get_type().'Common', 'display_item_name'), 'filter'=>true),
+            array('name' => _M('Items'), 		'type'=>'multiselect', 'required'=>true, 'param'=>'premium_warehouse_items::SKU|Item Name;Premium_Warehouse_DrupalCommerceCommon::items_crits', 'extra'=>false, 'visible'=>true, 'display_callback'=>array($this->get_type().'Common', 'display_items'), 'filter'=>true),
 			array('name' => _M('Publish'), 		'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>true, 'filter'=>true),
 			array('name' => _M('Recommended'), 		'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>false, 'filter'=>true),
 //			array('name' => _M('Exclude compare services'),	'type'=>'checkbox', 'required'=>false, 'extra'=>false, 'visible'=>false, 'filter'=>true),
@@ -56,7 +56,8 @@ class Premium_Warehouse_DrupalCommerceInstall extends ModuleInstall {
 		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_cat_descriptions', _M('eCommerce - Cat. Descriptions'));
 
 		$fields = array(
-			array('name' => _M('Item Name'), 			'type'=>'select', 'required'=>true, 'param'=>'premium_warehouse_items::Item Name;Premium_Warehouse_Items_OrdersCommon::products_crits', 'extra'=>false, 'visible'=>true, 'display_callback'=>array($this->get_type().'Common', 'display_item_name')),
+//			array('name' => _M('Item Name'), 			'type'=>'select', 'required'=>true, 'param'=>'premium_warehouse_items::Item Name;Premium_Warehouse_Items_OrdersCommon::products_crits', 'extra'=>false, 'visible'=>true, 'display_callback'=>array($this->get_type().'Common', 'display_item_name')),
+            array('name' => _M('Product'), 			'type'=>'select', 'required'=>true, 'param'=>'premium_ecommerce_products::Items', 'extra'=>false, 'visible'=>true),
 			array('name' => _M('Language'), 		'type'=>'commondata', 'required'=>true, 'extra'=>false, 'visible'=>true, 'param'=>array('Premium/Warehouse/eCommerce/Languages'), 'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_description_language')),
 			array('name' => _M('Display Name'),	'type'=>'text', 'param'=>128, 'required'=>false, 'extra'=>false, 'visible'=>true),
 			array('name' => _M('Short Description'), 	'type'=>'long text', 'required'=>false, 'extra'=>false, 'visible'=>true, 'QFfield_callback'=>array('Libs_CKEditorCommon', 'QFfield_cb'), 'display_callback'=>array('Libs_CKEditorCommon', 'display_cb')),
@@ -73,21 +74,23 @@ class Premium_Warehouse_DrupalCommerceInstall extends ModuleInstall {
 
 		//product prices
 		$fields = array(
-			array('name' => _M('Item Name'), 	'type'=>'select', 'required'=>true, 'param'=>'premium_warehouse_items::Item Name;Premium_Warehouse_Items_OrdersCommon::products_crits', 'extra'=>false, 'visible'=>true, 'display_callback'=>array($this->get_type().'Common', 'display_item_name')),
+			//array('name' => _M('Item Name'), 	'type'=>'select', 'required'=>true, 'param'=>'premium_warehouse_items::Item Name;Premium_Warehouse_Items_OrdersCommon::products_crits', 'extra'=>false, 'visible'=>true, 'display_callback'=>array($this->get_type().'Common', 'display_item_name')),
+            array('name' => _M('Product'), 			'type'=>'select', 'required'=>true, 'param'=>'premium_ecommerce_products::Items', 'extra'=>false, 'visible'=>true),
 			array('name' => _M('Model'),	'type'=>'text', 'param'=>64, 'required'=>false, 'extra'=>false, 'visible'=>true),
 			array('name' => _M('Currency'), 	'type'=>'integer', 'required'=>true, 'extra'=>false,'visible'=>true, 'display_callback'=>array($this->get_type().'Common', 'display_currency'),'QFfield_callback'=>array($this->get_type().'Common', 'QFfield_currency')),
 			array('name' => _M('Gross Price'),'type'=>'float', 'required'=>true, 'extra'=>false,'visible'=>true),
 			array('name' => _M('Tax Rate'), 	'type'=>'select', 'required'=>true, 'extra'=>false, 'visible'=>true, 'param'=>'data_tax_rates::Name', 'style'=>'integer')
 		);
 		Utils_RecordBrowserCommon::install_new_recordset('premium_ecommerce_prices', $fields);
-		DB::CreateIndex('ecommerce_prices_name_currency__idx','premium_ecommerce_prices_data_1',array('f_item_name','f_currency','active'));
+		DB::CreateIndex('ecommerce_prices_name_currency__idx','premium_ecommerce_prices_data_1',array('f_product','f_currency','active'));
 
 		Utils_RecordBrowserCommon::set_favorites('premium_ecommerce_prices', false);
 		Utils_RecordBrowserCommon::set_caption('premium_ecommerce_prices', _M('eCommerce - prices'));
 
         //product associations/kits
         $fields = array(
-            array('name' => _M('Item Name'), 	'type'=>'select', 'required'=>true, 'param'=>'premium_warehouse_items::Item Name;Premium_Warehouse_Items_OrdersCommon::products_crits', 'extra'=>false, 'visible'=>true, 'display_callback'=>array($this->get_type().'Common', 'display_item_name')),
+            //array('name' => _M('Item Name'), 	'type'=>'select', 'required'=>true, 'param'=>'premium_warehouse_items::Item Name;Premium_Warehouse_Items_OrdersCommon::products_crits', 'extra'=>false, 'visible'=>true, 'display_callback'=>array($this->get_type().'Common', 'display_item_name')),
+            array('name' => _M('Product'), 			'type'=>'select', 'required'=>true, 'param'=>'premium_ecommerce_products::Items', 'extra'=>false, 'visible'=>true),
             array('name' => _M('Associated Item'), 	'type'=>'select', 'required'=>true, 'param'=>'premium_warehouse_items::Item Name;Premium_Warehouse_Items_OrdersCommon::products_crits', 'extra'=>false, 'visible'=>true),
             array('name' => _M('Type'),	'type'=>'commondata', 'param'=>array('Premium/Warehouse/eCommerce/AssociationTypes'), 'required'=>true, 'extra'=>false, 'visible'=>true),
             array('name' => _M('Associated Item Quantity'), 	'type'=>'integer', 'required'=>true, 'extra'=>false,'visible'=>true),
@@ -145,7 +148,8 @@ class Premium_Warehouse_DrupalCommerceInstall extends ModuleInstall {
 
 		//product-group-parameter-value
 		$fields = array(
-			array('name' => _M('Item Name'), 			'type'=>'select', 'required'=>true, 'param'=>'premium_warehouse_items::Item Name;Premium_Warehouse_Items_OrdersCommon::products_crits', 'extra'=>false, 'visible'=>true, 'display_callback'=>array($this->get_type().'Common', 'display_item_name')),
+			//array('name' => _M('Item Name'), 			'type'=>'select', 'required'=>true, 'param'=>'premium_warehouse_items::Item Name;Premium_Warehouse_Items_OrdersCommon::products_crits', 'extra'=>false, 'visible'=>true, 'display_callback'=>array($this->get_type().'Common', 'display_item_name')),
+            array('name' => _M('Product'), 			'type'=>'select', 'required'=>true, 'param'=>'premium_ecommerce_products::Items', 'extra'=>false, 'visible'=>true),
 			array('name' => _M('Language'), 		'type'=>'commondata', 'required'=>true, 'extra'=>false, 'visible'=>true, 'param'=>array('Premium/Warehouse/eCommerce/Languages')),
 			array('name' => _M('Parameter'), 		'type'=>'select', 'required'=>true, 'extra'=>false, 'visible'=>true, 'param'=>'premium_ecommerce_parameters::Parameter Code'),
 			array('name' => _M('Group'), 		'type'=>'select', 'required'=>true, 'extra'=>false, 'visible'=>true, 'param'=>'premium_ecommerce_parameter_groups::Group Code'),

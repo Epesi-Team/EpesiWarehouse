@@ -4,18 +4,18 @@ defined("_VALID_ACCESS") || die('Direct access forbidden');
 class Premium_Warehouse_eCommerce_3rdp__Plugin_icecat implements Premium_Warehouse_DrupalCommerce_3rdp__Plugin {
 	/**
 	 * Returns the name of the plugin
-	 * 
-	 * @return string plugin name 
+	 *
+	 * @return string plugin name
 	 */
 	public function get_name() {
 		return 'Icecat';
 	}
-	
+
 	/**
 	 * Returns parameter list for the plugin
 	 * The list should be an array where key is paramter name/label and value is type [text|password]
-	 * 
-	 * @return array parameters list 
+	 *
+	 * @return array parameters list
 	 */
 	public function get_parameters() {
 		return array(
@@ -67,8 +67,10 @@ class Premium_Warehouse_eCommerce_3rdp__Plugin_icecat implements Premium_Warehou
             return;
         }
 
+		$pid = Utils_RecordBrowserCommon::get_id('premium_ecommerce_products', array('items'), array($item['id']));
+
         //descriptions in all langs
-        $descriptions_tmp = Utils_RecordBrowserCommon::get_records('premium_ecommerce_descriptions',array('item_name'=>$item['id']),array('id','language'));
+        $descriptions_tmp = Utils_RecordBrowserCommon::get_records('premium_ecommerce_descriptions',array('product'=>$pid),array('id','language'));
         $descriptions = array();
         foreach($descriptions_tmp as $rr)
             $descriptions[$rr['language']] = $rr['id'];
@@ -119,7 +121,7 @@ class Premium_Warehouse_eCommerce_3rdp__Plugin_icecat implements Premium_Warehou
                     $display_name = $manufacturer['company_name'].' '.$display_name;
 
             }
-            $product_desc = array('item_name'=>$item['id'],
+            $product_desc = array('product'=>$pid,
                         'language'=>$code,
                         'display_name'=>substr($display_name,0,128),
                         'short_description'=>str_replace('\n','<br />',(string)(isset($obj->Product[0]->ProductDescription['ShortDesc']) && $obj->Product[0]->ProductDescription['ShortDesc']?$obj->Product[0]->ProductDescription['ShortDesc']:(isset($obj->Product[0]->ProductDescription[0]) && $obj->Product[0]->ProductDescription[0]?$obj->Product[0]->ProductDescription[0]:(isset($obj->Product[0]->SummaryDescription->ShortSummaryDescription) && $obj->Product[0]->SummaryDescription->ShortSummaryDescription?$obj->Product[0]->SummaryDescription->ShortSummaryDescription:'')))),
@@ -133,7 +135,7 @@ class Premium_Warehouse_eCommerce_3rdp__Plugin_icecat implements Premium_Warehou
                 $descriptions[$code] = Utils_RecordBrowserCommon::new_record('premium_ecommerce_descriptions',$product_desc);
 
             //parameters
-            $item_parameters_tmp = Utils_RecordBrowserCommon::get_records('premium_ecommerce_products_parameters',array('item_name'=>$item['id'],'language'=>$code),array('id','parameter'));
+            $item_parameters_tmp = Utils_RecordBrowserCommon::get_records('premium_ecommerce_products_parameters',array('product'=>$pid,'language'=>$code),array('id','parameter'));
             $item_parameters = array();
             foreach($item_parameters_tmp as $rr)
                 $item_parameters[$rr['parameter']] = $rr['id'];
@@ -187,7 +189,7 @@ class Premium_Warehouse_eCommerce_3rdp__Plugin_icecat implements Premium_Warehou
                         if($weight!==null)
                             Utils_RecordBrowserCommon::update_record('premium_warehouse_items',$item['id'],array('weight'=>$weight));
                     }
-                    $item_params = array('item_name'=>$item['id'],
+                    $item_params = array('product'=>$pid,
                             'parameter'=>$parameters[$key],
                             'group'=>$parameter_groups['icecat_'.$pf['CategoryFeatureGroup_ID']],
                             'language'=>$code,
@@ -258,7 +260,7 @@ class Premium_Warehouse_eCommerce_3rdp__Plugin_icecat implements Premium_Warehou
             }
         }
         return $langs_ok;
-    }	
+    }
 
 
     private function icecat_get($arr) {
@@ -333,7 +335,7 @@ class Premium_Warehouse_eCommerce_3rdp__Plugin_icecat implements Premium_Warehou
         }
         if(!$ret)
             return;
-            
+
         $langs_ok = array();
         foreach($langs as $code) {
             $obj = $this->icecat_get($query_arr+array('lang'=>$code,'output'=>'productxml'));
