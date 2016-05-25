@@ -386,7 +386,7 @@ class Premium_Warehouse_DrupalCommerce extends Module {
 		if($qf->validate()) {
 			eval_js('leightbox_deactivate(\'fast_fill_lb\');');
 			$vals = $qf->exportValues();
-			Utils_RecordBrowserCommon::update_record('premium_warehouse_items',$vals['id'],array('upc'=>$vals['upc'],'product_code'=>$vals['product_code'],'manufacturer_part_number'=>$vals['manufacturer_part_number'],'manufacturer'=>$vals['manufacturer']));
+			Utils_RecordBrowserCommon::update_record('premium_warehouse_items',$vals['id'],array('upc'=>$vals['upc'],'product_code'=>$vals['product_code'],'manufacturer_part_number'=>$vals['manufacturer_part_number'],'manufacturer'=>isset($vals['manufacturer'])?$vals['manufacturer']:''));
 		   	Premium_Warehouse_DrupalCommerceCommon::publish_warehouse_item($vals['id'],!(isset($vals['skip']) && $vals['skip']));
 		}
 
@@ -414,8 +414,10 @@ class Premium_Warehouse_DrupalCommerce extends Module {
 						));
 
   		$this->rb->set_additional_actions_method(array($this,'fast_fill_actions'));
-
-		$crits = array('!id'=>Utils_RecordBrowserCommon::get_possible_values('premium_ecommerce_products','items'));
+		$items_already_added = Utils_RecordBrowserCommon::get_possible_values('premium_ecommerce_products','items');
+		$ignore_items = array();
+		foreach($items_already_added as $iad) $ignore_items = array_merge($ignore_items,array_filter(explode('__',$iad)));
+		$crits = array('!id'=>array_unique($ignore_items));
 		$this->display_module($this->rb, array(array(),$crits,$cols));
 //		Utils_RecordBrowserCommon::merge_crits(array('upc'=>'','(manufacturer_part_number'=>'', '|manufacturer'=>''),array('(product_code'=>'', '|manufacturer'=>''))
 	}
@@ -447,7 +449,7 @@ class Premium_Warehouse_DrupalCommerce extends Module {
 
 	public function fast_fill_actions($r, $gb_row) {
 		$gb_row->add_action(Libs_LeightboxCommon::get_open_href('fast_fill_lb').' id="icecat_button_'.$r['id'].'"','edit',__('Click here to fill required data'));
-		$gb_row->add_js('Event.observe(\'icecat_button_'.$r['id'].'\',\'click\',function() {'.
+		$gb_row->add_js('jq(\'#icecat_button_'.$r['id'].'\').click(function() {'.
 					'$(\'icecat_prod_id\').value=\''.$r['id'].'\';'.
 					'$(\'icecat_prod_name\').innerHTML=\''.addcslashes($r['item_name'],'\'\\').'\';'.
 					'$(\'icecat_prod_nameh\').value=\''.addcslashes($r['item_name'],'\'\\').'\';'.
@@ -690,7 +692,7 @@ class Premium_Warehouse_DrupalCommerce extends Module {
 	}
 
 	public function attachment_product_addon($arg){
-		$a = $this->init_module('Utils/Attachment',array('premium_ecommerce_products/'.$arg['id']));
+		$a = $this->init_module('Utils/Attachment',array('premium_ecommerce_products/'.$arg['item_name']));
 		$this->display_module($a);
 	}
 

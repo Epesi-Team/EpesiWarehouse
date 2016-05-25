@@ -1073,7 +1073,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 					  if(preg_match('/^#([0-9]+)(\*([0-9]+))?$/',$sku[$i],$match)) {
 						$associated_ids[(int)$match[1]] = isset($match[3])?$match[3]:1;
 						unset($sku[$i]);
-					  } else break;
+					  }
 				  }
 				  $desc = implode(' ',$sku);
 			      $tax_amount = 0;
@@ -1406,8 +1406,9 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			  if(isset($drupal_products_done[$row['sku']])) continue;
 
 			  $ecommerce_product_id = $row['id'];
+			  $warehouse_items = Utils_RecordBrowserCommon::get_records('premium_warehouse_items',array('id'=>$row['items']));
 			  //todo - obsługa grup produktów
-			  $row = array_merge($row,Utils_RecordBrowserCommon::get_record('premium_warehouse_items',array_shift($row['items'])));
+			  $row = array_merge($row,reset($warehouse_items));
 			  //if(!$row['category'] || !$row[':active']) continue;
 			  if(!$row[':active']) continue;
 
@@ -1496,36 +1497,41 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 
 			  $products_queue = array();
 			  //set prices
-			  if($row['net_price']) {
-			    $item_price = Utils_CurrencyFieldCommon::get_values($row['net_price']);
-			    if($item_price[0] && isset($currencies[$item_price[1]])) {
-			      $currency = $currencies[$item_price[1]];
-			      $data['commerce_price']=array('amount'=>round($export_net_price?(float)$item_price[0]:((float)$item_price[0])*(100+($row['tax_rate']?$taxes[$row['tax_rate']]:0))/100,$currency['decimals'])*pow(10,$currency['decimals']),
-			                    'currency_code'=>$currency['code']);
-			      if(!isset($data['commerce_price_'.strtolower($currency['code'])]))
-			        $data['commerce_price_'.strtolower($currency['code'])] = $data['commerce_price'];
-			      $products_queue[''] = $data;
-			    }
+			  foreach($warehouse_items as $w_item) {
+				  $tmp_data = $data;
+				  if($w_item['net_price']) {
+					  $item_price = Utils_CurrencyFieldCommon::get_values($w_item['net_price']);
+					  if($item_price[0] && isset($currencies[$item_price[1]])) {
+						  $currency = $currencies[$item_price[1]];
+						  $tmp_data['title'] = $w_item['item_name'];
+						  $tmp_data['sku'] = $w_item['sku'];
+						  $tmp_data['commerce_price']=array('amount'=>round($export_net_price?(float)$item_price[0]:((float)$item_price[0])*(100+($w_item['tax_rate']?$taxes[$w_item['tax_rate']]:0))/100,$currency['decimals'])*pow(10,$currency['decimals']),
+					                    'currency_code'=>$currency['code']);
+					      $tmp_data['commerce_price_'.strtolower($currency['code'])] = $tmp_data['commerce_price'];
+						  $products_queue[$w_item['sku']] = $tmp_data;
+					  }
+				  }
+				  $prices = Utils_RecordBrowserCommon::get_records('premium_ecommerce_prices',array('product'=>$ecommerce_product_id),array(),array('currency'=>'ASC','gross_price'=>'ASC','name'=>'ASC'));
+				  if($prices) {
+					  foreach($prices as $price) {
+						  $p_key = $w_item['sku'].($price['model']?' '.$price['model']:'');
+		  			      if(!isset($currencies[$price['currency']])) continue;
+		  			      if(isset($products_queue[$p_key])) $tmp_data = $products_queue[$p_key];
+		  			      else {
+		  			        $tmp_data = $data;
+		  			        $tmp_data['title'] .= $price['model']?' '.$price['model']:'';
+		  			        $tmp_data['sku'] .= $price['model']?' '.$price['model']:'';
+		  			      }
+		  			      $currency = $currencies[$price['currency']];
+		  			      $tmp_data['commerce_price_'.strtolower($currency['code'])]=array('amount'=>round($export_net_price?($price['gross_price']*100/(100+($price['tax_rate']?$taxes[$price['tax_rate']]:0))):$price['gross_price'],$currency['decimals'])*pow(10,$currency['decimals']),
+		  			                    'currency_code'=>$currency['code']);
+		  			      if(!isset($data['commerce_price']))
+		  			        $tmp_data['commerce_price'] = $tmp_data['commerce_price_'.strtolower($currency['code'])];
+		  			      $products_queue[$p_key] = $tmp_data;
+					  }
+				  }
 			  }
-			  $prices = Utils_RecordBrowserCommon::get_records('premium_ecommerce_prices',array('product'=>$ecommerce_product_id),array(),array('currency'=>'ASC','gross_price'=>'ASC','name'=>'ASC'));
-			  if($prices) {
-			    $products_queue = array();
-			    foreach($prices as $price) {
-			      if(!isset($currencies[$price['currency']])) continue;
-			      if(isset($products_queue[$price['model']])) $tmp_data = $products_queue[$price['model']];
-			      else {
-			        $tmp_data = $data;
-			        $tmp_data['title'] = $price['model']?$price['model']:'---';
-			        $tmp_data['sku'] .= $price['model']?' '.$price['model']:'';
-			      }
-			      $currency = $currencies[$price['currency']];
-			      $tmp_data['commerce_price_'.strtolower($currency['code'])]=array('amount'=>round($export_net_price?($price['gross_price']*100/(100+($price['tax_rate']?$taxes[$price['tax_rate']]:0))):$price['gross_price'],$currency['decimals'])*pow(10,$currency['decimals']),
-			                    'currency_code'=>$currency['code']);
-			      if(!isset($data['commerce_price']))
-			        $tmp_data['commerce_price'] = $tmp_data['commerce_price_'.strtolower($currency['code'])];
-			      $products_queue[$price['model']] = $tmp_data;
-			    }
-			  }
+
 			  if(!$products_queue) continue;
 
 			  $associations = Utils_RecordBrowserCommon::get_records('premium_ecommerce_associations',array('product'=>$ecommerce_product_id),array(),array('type'=>'ASC'));
@@ -1572,7 +1578,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 					        $pq_tmp['commerce_price'] = $pq_tmp['commerce_price_'.strtolower($acode)];
 					  }
 
-					  $products_queue2[$model.' '.$association['type'].': '.$association['associated_item']] = array_merge($pq,$pq_tmp);
+					  $products_queue2[$pq_tmp['sku']] = array_merge($pq,$pq_tmp);
 				  }
 			  }
 			  $products_queue = array_merge($products_queue,$products_queue2);
