@@ -894,17 +894,18 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			}
 			foreach($drupal_orders_tmp as $ord) {
 			  if(!Utils_RecordBrowserCommon::get_records_count('premium_ecommerce_orders',array('drupal'=>$drupal_id,'drupal_order_id'=>$ord['order_id']))) {
-			    $billing = array_shift($ord['commerce_customer_billing_entities']);
-			    $billing = $billing['commerce_customer_address'];
+			    $billing_entity = array_shift($ord['commerce_customer_billing_entities']);
+			    $billing = $billing_entity['commerce_customer_address'];
 			    if(!$billing['last_name'] && $billing['name_line'])
 			      @list($billing['first_name'],$billing['last_name']) = explode(' ',$billing['name_line'],2);
 			    if(isset($ord['commerce_customer_shipping_entities'])) {
-			      $shipping = array_shift($ord['commerce_customer_shipping_entities']);
-			      $shipping = $shipping['commerce_customer_address'];
+			      $shipping_entity = array_shift($ord['commerce_customer_shipping_entities']);
+			      $shipping = $shipping_entity['commerce_customer_address'];
 			      if(!$shipping['last_name'] && $shipping['name_line'])
 			        @list($shipping['first_name'],$shipping['last_name']) = explode(' ',$shipping['name_line'],2);
 			    } else {
 			      $shipping = array('organisation_name'=>'','last_name'=>'','first_name'=>'','thoroughfare'=>'','locality'=>'','postal_code'=>'','country'=>'');
+				  $shipping_entity = array();
 			    }
 
 			    $products = array();
@@ -970,7 +971,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			          'address_1'=>$billing['thoroughfare'],
 			          'city'=>$billing['locality'],
 			          'postal_code'=>$billing['postal_code'],
-			          'phone'=>isset($billing['phone'])?$billing['phone']:'',
+			          'phone'=>isset($billing['phone'])?$billing['phone']:(isset($billing_entity['field_phone'])?$billing_entity['field_phone']:''),
 			          'country'=>$billing['country'],
 			          'zone'=>isset($billing['administrative_area'])?$billing['administrative_area']:null,
 			          'email'=>$ord['mail'],
@@ -985,7 +986,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			        'address_1'=>$billing['thoroughfare'],
 			        'city'=>$billing['locality'],
 			        'postal_code'=>$billing['postal_code'],
-			        'work_phone'=>isset($billing['phone'])?$billing['phone']:'',
+			        'work_phone'=>isset($billing['phone'])?$billing['phone']:(isset($billing_entity['field_phone'])?$billing_entity['field_phone']:''),
 			        'country'=>$billing['country'],
 			        'zone'=>isset($billing['administrative_area'])?$billing['administrative_area']:null,
 			        'email'=>$ord['mail'],
@@ -1013,7 +1014,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			      'address_1'=>$billing['thoroughfare'],
 			      'city'=>$billing['locality'],
 			      'postal_code'=>$billing['postal_code'],
-			      'phone'=>isset($billing['phone'])?$billing['phone']:'',
+			      'phone'=>isset($billing['phone'])?$billing['phone']:(isset($billing_entity['field_phone'])?$billing_entity['field_phone']:''),
 			      'country'=>$billing['country'],
 			      'zone'=>isset($billing['administrative_area'])?$billing['administrative_area']:null,
 			      'created_on'=>$ord['created'],
@@ -1022,7 +1023,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			      'payment'=>1,
 			      'payment_type'=>'Drupal',
 			      'memo'=>$memo,
-			      'tax_id'=>isset($billing['tax_id'])?$billing['tax_id']:'',
+			      'tax_id'=>isset($billing['tax_id'])?$billing['tax_id']:(isset($billing_entity['field_tax_id'])?$billing_entity['field_tax_id']:''),
 			      'tax_calculation'=> $drupal_row['export_net_price']?Variable::get('premium_warehouse_def_tax_calc', false):0,
 			//	    'warehouse'=>$carrier==0?$aForm['iPickupShop']:null,
 			      'online_order'=>1,
@@ -1038,7 +1039,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			      'shipping_address_1'=>$shipping['thoroughfare'],
 			      'shipping_city'=>$shipping['locality'],
 			      'shipping_postal_code'=>$shipping['postal_code'],
-			      'shipping_phone'=>isset($shipping['phone'])?$shipping['phone']:'',
+			      'shipping_phone'=>isset($shipping['phone'])?$shipping['phone']:(isset($shipping_entity['field_phone'])?$shipping_entity['field_phone']:''),
 			      'shipping_country'=>$shipping['country'],
 			      'shipping_zone'=>isset($shipping['administrative_area'])?$shipping['administrative_area']:null,
 			      'shipping_contact'=>$contact,
