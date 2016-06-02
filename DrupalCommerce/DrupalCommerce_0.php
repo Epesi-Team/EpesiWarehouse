@@ -692,7 +692,7 @@ class Premium_Warehouse_DrupalCommerce extends Module {
 	}
 
 	public function attachment_product_addon($arg){
-		$a = $this->init_module('Utils/Attachment',array('premium_ecommerce_products/'.$arg['item_name']));
+		$a = $this->init_module('Utils/Attachment',array('premium_ecommerce_products/'.$arg['id']));
 		$this->display_module($a);
 	}
 
@@ -707,7 +707,8 @@ class Premium_Warehouse_DrupalCommerce extends Module {
 	}
 
 	public function attachment_product_addon_item($arg){
-		$a = $this->init_module('Utils/Attachment',array('premium_ecommerce_products/'.$arg['id']));
+		$pid = Utils_RecordBrowserCommon::get_id('premium_ecommerce_products', array('items'), array($arg['id']));
+		$a = $this->init_module('Utils/Attachment',array('premium_ecommerce_products/'.$pid));
 		$this->display_module($a);
 	}
 
