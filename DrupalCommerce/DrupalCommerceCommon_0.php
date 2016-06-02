@@ -1399,6 +1399,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			$currencies = DB::GetAssoc('SELECT id,code,decimals FROM utils_currency WHERE active=1');
 			$taxes = DB::GetAssoc('SELECT id, f_percentage FROM data_tax_rates_data_1 WHERE active=1');
 			$export_net_price = $drupal_row['export_net_price'];
+			$export_unavailable_products = $drupal_row['export_unavailable_products'];
 
 			$products = Utils_RecordBrowserCommon::get_records('premium_ecommerce_products',array('publish'=>1),array(),array('items'=>'ASC'));
 			foreach($products as $row) {
@@ -1471,7 +1472,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 						}
 						unset($distributors);
 			    }*/
-			  if($quantity<=0) continue; //skip if not available
+			  if($quantity<=0 && !$export_unavailable_products) continue; //skip if not available
 			  $data['commerce_stock'] = $quantity;
 
 			  //get images
@@ -1733,10 +1734,10 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
     					$last_group = $bExp['group_code'];
 				    }
 			    }
-			    //Base_LangCommon::load('en');
-			    //$parameters['en'][] = array('sGroup'=>__('Codes'),'sName'=>'SKU','sValue'=>$row['sku']);
-			    //if($row['upc']) $parameters['en'][] = array('sGroup'=>'','sName'=>__('UPC'),'sValue'=>$row['upc']);
-			    //if($row['product_code']) $parameters['en'][] = array('sGroup'=>'','sName'=>__('Product code'),'sValue'=>$row['product_code']);
+			    Base_LangCommon::load('en');
+			    $parameters['en'][] = array('sGroup'=>__('Codes'),'sName'=>'SKU','sValue'=>$row['sku']);
+			    if($row['upc']) $parameters['en'][] = array('sGroup'=>'','sName'=>__('UPC'),'sValue'=>$row['upc']);
+			    if($row['product_code']) $parameters['en'][] = array('sGroup'=>'','sName'=>__('Product code'),'sValue'=>$row['product_code']);
 			    Base_LangCommon::load($default_lang);
 
 			    $features = '<table id="features" cellspacing="1"><tbody>';
@@ -1786,10 +1787,10 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			    $translations = Utils_RecordBrowserCommon::get_records('premium_ecommerce_descriptions',array('product'=>$ecommerce_product_id));
 			    foreach($translations as $translation) {
 			      //features
-			      //Base_LangCommon::load($translation['language']);
-			      //$parameters[$translation['language']][] = array('sGroup'=>__('Codes'),'sName'=>'SKU','sValue'=>$row['sku']);
-			      //if($row['upc']) $parameters[$translation['language']][] = array('sGroup'=>'','sName'=>__('UPC'),'sValue'=>$row['upc']);
-			      //if($row['product_code']) $parameters[$translation['language']][] = array('sGroup'=>'','sName'=>__('Product Code'),'sValue'=>$row['product_code']);
+			      Base_LangCommon::load($translation['language']);
+			      $parameters[$translation['language']][] = array('sGroup'=>__('Codes'),'sName'=>'SKU','sValue'=>$row['sku']);
+			      if($row['upc']) $parameters[$translation['language']][] = array('sGroup'=>'','sName'=>__('UPC'),'sValue'=>$row['upc']);
+			      if($row['product_code']) $parameters[$translation['language']][] = array('sGroup'=>'','sName'=>__('Product Code'),'sValue'=>$row['product_code']);
 			      Base_LangCommon::load($default_lang);
 
 			      $features = '<table id="features" cellspacing="1"><tbody>';
