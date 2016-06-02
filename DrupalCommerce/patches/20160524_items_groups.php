@@ -4,7 +4,7 @@ Utils_RecordBrowserCommon::new_record_field('premium_ecommerce_products',
 array('name' => _M('Items'), 		'type'=>'multiselect', 'required'=>true, 'param'=>'premium_warehouse_items::SKU|Item Name;Premium_Warehouse_DrupalCommerceCommon::items_crits', 'extra'=>false, 'visible'=>true, 'display_callback'=>array('Premium_Warehouse_DrupalCommerce'.'Common', 'display_items'), 'filter'=>true,'position'=>'Item Name'));
 DB::Execute('UPDATE premium_ecommerce_products_data_1 SET f_items=CONCAT("__",f_item_name,"__")');
 DB::Execute('UPDATE utils_attachment_local SET local=REPLACE(local,"premium_ecommerce_products/","premium_ecommerce_products_tmp/")');
-$assoc_products = DB::GetAssoc('SELECT f_item_name,id FROM premium_ecommerce_products_data_1');
+$assoc_products = DB::GetAssoc('SELECT f_item_name,id FROM premium_ecommerce_products_data_1 WHERE active=1');
 foreach($assoc_products as $warehouse=>$ecommerce) {
     DB::Execute('UPDATE utils_attachment_local SET local="premium_ecommerce_products/'.$ecommerce.'" WHERE local="premium_ecommerce_products_tmp/'.$warehouse.'"');
 }
