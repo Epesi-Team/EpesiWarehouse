@@ -1478,7 +1478,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 
 			  //get images
 			  Premium_Warehouse_DrupalCommerceCommon::$images = array();
-			  Utils_AttachmentCommon::call_user_func_on_file('premium_ecommerce_products/'.$row['id'],array('Premium_Warehouse_DrupalCommerceCommon','copy_attachment'),false,array($drupal_id,1));
+			  Utils_AttachmentCommon::call_user_func_on_file('premium_ecommerce_products/'.$ecommerce_product_id,array('Premium_Warehouse_DrupalCommerceCommon','copy_attachment'),false,array($drupal_id,1));
 			  $desc_langs = Utils_RecordBrowserCommon::get_records('premium_ecommerce_descriptions',array('product'=>$ecommerce_product_id),array('language'));
 			  foreach($desc_langs as $desc_lang)
 			    Utils_AttachmentCommon::call_user_func_on_file('premium_ecommerce_descriptions/'.$desc_lang['id'],array('Premium_Warehouse_DrupalCommerceCommon','copy_attachment'),false,array($drupal_id,0));
