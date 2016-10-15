@@ -1863,7 +1863,8 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 	    if(!isset($conn)) $conn = array();
 
 	    if(!isset($conn[$drupal])) {
-		  require(self::Instance()->get_module_dir().'guzzle.phar');
+//		  require(self::Instance()->get_module_dir().'guzzle.phar');
+              require(self::Instance()->get_module_dir().'vendor/autoload.php');
 	      $drupal_record = Utils_RecordBrowserCommon::get_record('premium_ecommerce_drupal',$drupal);
 
 	      self::$drupal_endpoint = $drupal_record['endpoint'];
