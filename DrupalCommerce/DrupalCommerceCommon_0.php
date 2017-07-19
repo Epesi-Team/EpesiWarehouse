@@ -1012,6 +1012,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			      'last_name'=>$billing['last_name'],
 			      'first_name'=>$billing['first_name'],
 			      'address_1'=>$billing['thoroughfare'],
+			      'address_2'=>isset($billing['premise'])?$billing['premise']:'',
 			      'city'=>$billing['locality'],
 			      'postal_code'=>$billing['postal_code'],
 			      'phone'=>isset($billing['phone'])?$billing['phone']:(isset($billing_entity['field_phone'])?$billing_entity['field_phone']:''),
@@ -1037,6 +1038,7 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 			      'shipping_last_name'=>$shipping['last_name'],
 			      'shipping_first_name'=>$shipping['first_name'],
 			      'shipping_address_1'=>$shipping['thoroughfare'],
+			      'shipping_address_2'=>isset($shipping['premise'])?$shipping['premise']:'',
 			      'shipping_city'=>$shipping['locality'],
 			      'shipping_postal_code'=>$shipping['postal_code'],
 			      'shipping_phone'=>isset($shipping['phone'])?$shipping['phone']:(isset($shipping_entity['field_phone'])?$shipping_entity['field_phone']:''),
@@ -1903,23 +1905,27 @@ class Premium_Warehouse_DrupalCommerceCommon extends ModuleCommon {
 	}
 
 	public static function drupal_get($drupal,$op,$args=array()) {
+            usleep(100000);
 	    $client = self::drupal_connection($drupal);
 	    $args['q']=self::$drupal_endpoint.'/'.$op.'.json';
 	    return json_decode($client->get('?'.http_build_query($args),['cookies'=>self::$drupal_cookies])->getBody(),1);
 	}
 
 	public static function drupal_put($drupal,$op,$args=array()) {
+            usleep(100000);
 	    $client = self::drupal_connection($drupal);
    	    return json_decode($client->put('?'.http_build_query(array('q'=>self::$drupal_endpoint.'/'.$op.'.json')),['json'=>$args,'cookies'=>self::$drupal_cookies])->getBody(),1);
 	}
 
 	public static function drupal_delete($drupal,$op,$args=array()) {
+            usleep(100000);
 	    $client = self::drupal_connection($drupal);
 	    $args['q']=self::$drupal_endpoint.'/'.$op.'.json';
 	    return json_decode($client->delete('?'.http_build_query($args),['cookies'=>self::$drupal_cookies])->getBody(),1);
 	}
 
 	public static function drupal_post($drupal,$op,$args=array()) {
+            usleep(100000);
 	    $client = self::drupal_connection($drupal);
    	    return json_decode($client->post('?'.http_build_query(array('q'=>self::$drupal_endpoint.'/'.$op.'.json')),['json'=>$args,'cookies'=>self::$drupal_cookies])->getBody(),1);
 	}
