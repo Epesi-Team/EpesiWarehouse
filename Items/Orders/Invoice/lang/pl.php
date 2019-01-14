@@ -6,7 +6,7 @@
  */
 global $translations;
 $translations['Billed']='Rozliczone';
-$translations['pc']='';
+$translations['pc']='szt.';
 $translations['Invoice']='Faktura';
 $translations['Transaction ID']='Transakcja Numer';
 $translations['Shipment Cost']='Koszt wysyłki';

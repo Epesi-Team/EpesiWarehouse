@@ -5,7 +5,7 @@
  * @subpackage ru
  */
 global $translations;
-$translations['Total']='';
+$translations['Total']='Всего';
 $translations['n/a']='';
 $translations['Inventory Management']='';
 $translations['Quantity']='Количество';

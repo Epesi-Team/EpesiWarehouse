@@ -8,7 +8,7 @@ global $translations;
 $translations['Weight']='';
 $translations['Inventory Management']='مدیریت موجودی';
 $translations['Price']='قیمت';
-$translations['Quantity']='';
+$translations['Quantity']='مقدار';
 $translations['Items']='';
 $translations['Item Name']='';
 $translations['Item']='';

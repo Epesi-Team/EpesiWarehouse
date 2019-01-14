@@ -8,7 +8,7 @@ global $translations;
 $translations['Billed']='Berechnet';
 $translations['pc']='';
 $translations['Invoice']='Rechnung';
-$translations['Transaction ID']='';
+$translations['Transaction ID']='Transaktions ID';
 $translations['Shipment Cost']='';
 $translations['Handling Cost']='';
 $translations['Discount']='';

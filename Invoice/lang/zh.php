@@ -80,5 +80,5 @@ $translations['Unit Price']='';
 $translations['Markup/Discount']='';
 $translations['Shipment']='';
 $translations['Handling']='';
-$translations['Warehouse']='';
+$translations['Warehouse']='倉儲位置';
 $translations['Purchase Quote']='';

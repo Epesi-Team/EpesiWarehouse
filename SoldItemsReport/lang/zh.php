@@ -7,7 +7,7 @@
 global $translations;
 $translations['Total']='';
 $translations['Inventory Management']='库存管理';
-$translations['Warehouse']='';
+$translations['Warehouse']='倉儲位置';
 $translations['Sold Items']='';
 $translations['Sold Items Report']='';
 $translations['Sold Items, %s']='';

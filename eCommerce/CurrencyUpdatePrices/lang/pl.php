@@ -5,7 +5,7 @@
  * @subpackage pl
  */
 global $translations;
-$translations['Rates']='';
+$translations['Rates']='Stawki';
 $translations['eCommerce - prices']='';
 $translations['Auto update']='';
 $translations['Last update']='';
