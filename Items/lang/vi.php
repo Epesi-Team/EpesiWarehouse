@@ -6,6 +6,7 @@
  */
 global $translations;
 $translations['Weight']='Trọng lượng';
+$translations['Category']='Nhóm hàng';
 $translations['Category Name']='Tên Nhóm';
 $translations['Inventory Management']='Quản lý Kho hàng';
 $translations['Price']='Giá';

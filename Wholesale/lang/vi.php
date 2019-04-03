@@ -6,7 +6,9 @@
  */
 global $translations;
 $translations['Weight']='Trọng lượng';
+$translations['Category']='Nhóm hàng';
 $translations['Inventory Management']='Quản lý Kho hàng';
+$translations['URL']='';
 $translations['Price']='Giá';
 $translations['Quantity']='Số lượng';
 $translations['Items']='Sản phẩm';
@@ -20,7 +22,6 @@ $translations['eCommerce']='';
 $translations['Inventory']='Kho hàng';
 $translations['UPC']='';
 $translations['Product Code']='Barcode';
-$translations['URL']='';
 $translations['Param1']='';
 $translations['Param2']='';
 $translations['Param3']='';

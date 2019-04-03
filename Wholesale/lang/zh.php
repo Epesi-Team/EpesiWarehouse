@@ -6,7 +6,9 @@
  */
 global $translations;
 $translations['Weight']='';
+$translations['Category']='类别';
 $translations['Inventory Management']='库存管理';
+$translations['URL']='';
 $translations['Price']='';
 $translations['Quantity']='';
 $translations['Items']='';
@@ -20,7 +22,6 @@ $translations['eCommerce']='电子商务';
 $translations['Inventory']='';
 $translations['UPC']='';
 $translations['Product Code']='';
-$translations['URL']='';
 $translations['Param1']='';
 $translations['Param2']='';
 $translations['Param3']='';

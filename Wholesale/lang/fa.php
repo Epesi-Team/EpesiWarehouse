@@ -6,7 +6,9 @@
  */
 global $translations;
 $translations['Weight']='';
+$translations['Category']='دسته بندی';
 $translations['Inventory Management']='مدیریت موجودی';
+$translations['URL']='';
 $translations['Price']='قیمت';
 $translations['Quantity']='مقدار';
 $translations['Items']='';
@@ -20,7 +22,6 @@ $translations['eCommerce']='تجارت الکترونیک';
 $translations['Inventory']='';
 $translations['UPC']='';
 $translations['Product Code']='';
-$translations['URL']='';
 $translations['Param1']='';
 $translations['Param2']='';
 $translations['Param3']='';

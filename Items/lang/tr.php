@@ -6,6 +6,7 @@
  */
 global $translations;
 $translations['Weight']='';
+$translations['Category']='Katerogi';
 $translations['Category Name']='';
 $translations['Inventory Management']='Envanter';
 $translations['Price']='';
