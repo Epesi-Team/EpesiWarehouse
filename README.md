@@ -6,6 +6,6 @@ Premium module for Epesi BIM
 
 Requires:
 
-* EpesiCRM
+* EpesiCRM https://github.com/jtylek/EpesiCRM
 * Data/Countries (included with EpesiCRM)
 * Utils/RecordBrowser (included with EpesiCRM)
