@@ -1,6 +1,7 @@
-# EpesiWarehouse
+# Epesi Warehouse Management System
 
 Warehouse Management System and Inventory Control
+Integrated Supply Chain Management solution for Epesi CRM
 
 Premium module for Epesi BIM
 
